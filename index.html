@@ -2,58 +2,84 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>RADIO</title>
+	<title>RADIO</title>
 
-  <link href="https://fonts.googleapis.com/css?family=PT+Sans|Permanent+Marker" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=PT+Sans|Permanent+Marker" rel="stylesheet">
 
-  <!-- Normalization CSS -->
-  <link href="css/normalize.css" rel="stylesheet">
-
-  <!-- Personal CSS -->
-  <link href="css/style1.css" rel="stylesheet">
+	<!-- Normalization CSS -->
+	<link href="css/normalize.css" rel="stylesheet">
+	<!-- Style CSS -->
+	<link href="css/style1.css" rel="stylesheet">
+	<!-- Volume Control CSS -->
+	<link href="css/volumeBar.css" rel="stylesheet">
+	
+	<!-- jQuery Google CDN -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<!-- Player buttons functionality -->
+	<script src="js/player.js"></script>
 </head>
 
 
 <body>
-  <div class="all">
-    <div id="title">
-      <h1>RADIO</h1>
-      <p>Rock / Synthpop / Metal / Rap</p>
-    </div>
+	<div class="all">
+		<div id="title">
+			<h1>RADIO</h1>
+			<p>Rock / Synthpop / Metal / Rap</p>
+		</div>
 
-    <div id="player">
-      <audio controls src="http://198.37.24.167:8000/stream"></audio>
-    </div>
+		<div id="player">
+			<!-- Connection to source -->
+			<audio id="stream" src="http://198.37.24.167:8000/stream"></audio>
+			
 
-    <div id="content">
+			<!-- Buttons stacked-->
+			<ul id="playerButtonList">
+				<li>
+					<!-- ON/OFF -->
+					<button type="button" id="playerToggle" onclick="playerToggle()">►</button>
+				</li>
+				<li id="volumeLabel">
+					<label for="volume">Volume Control</label>
+				</li>
+				<li>
+					<!-- VOLUME -->
+					<input type="range" id="volume" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)"></input>
+				</li>
+			</ul>
 
 
-      <p>This radio is a personal side project by Ken Ellorando.</p>
-      <h2>Working Features:</h2>
-      <ul>
-        <li>2/26: Streaming client and stream source</li>
-        <li>2/28: Auto streaming (until the IP expires)</li>
-        <li>3/1: Front-end prototype design</li>
-      </ul>
 
-      <h2>In progress:</h2>
-      <ul>
-        <li>Find something to replace the ugly default player</li>
-      </ul>
+		</div>
 
-      <h2>Currently planned:</h2>
-      <ul>
-        <li>Move to a dedicated server</li>
-        <li>Display current song info</li>
-        <li>Fix error that desyncs streams</li>
-        <li>Find some way to link to source that doesnt involve expiring IP addresses</li>
-        <li>Off-canvasing</li>
-      </ul>
-    </div>
-  </div>
+		<div id="content">
+
+
+			<p>This radio is a personal side project by Ken Ellorando.</p>
+			<h2>Working Features:</h2>
+			<ul>
+				<li>2/26: Streaming client and stream source</li>
+				<li>2/28: Auto streaming (until the IP expires)</li>
+				<li>3/1: Front-end prototype design</li>
+			</ul>
+
+			<h2>In progress:</h2>
+			<ul>
+				<li>Find something to replace the ugly default player</li>
+			</ul>
+
+			<h2>Currently planned:</h2>
+			<ul>
+				<li>Move to a dedicated server</li>
+				<li>Display current song info</li>
+				<li>Fix error that desyncs streams</li>
+				<li>Find some way to link to source that doesnt involve expiring IP addresses</li>
+				<li>Off-canvasing</li>
+			</ul>
+		</div>
+	</div>
 </body>
 
 </html>

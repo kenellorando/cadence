@@ -5,7 +5,7 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>RADIO</title>
+	<title>CADENCE RADIO</title>
 
 	<link href="https://fonts.googleapis.com/css?family=PT+Sans|Permanent+Marker" rel="stylesheet">
 
@@ -15,7 +15,7 @@
 	<link href="css/style1.css" rel="stylesheet">
 	<!-- Volume Control CSS -->
 	<link href="css/volumeBar.css" rel="stylesheet">
-	
+
 	<!-- jQuery Google CDN -->
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<!-- Player buttons functionality -->
@@ -26,14 +26,14 @@
 <body>
 	<div class="all">
 		<div id="title">
-			<h1>RADIO</h1>
-			<p>Rock / Synthpop / Metal / Rap</p>
+			<h1>CADENCE</h1>
+			<p id ="subtitle">Rock and Synthpop Radio</p>
 		</div>
 
 		<div id="player">
 			<!-- Connection to source -->
 			<audio id="stream" src="http://198.37.24.167:8000/stream"></audio>
-			
+
 
 			<!-- Buttons stacked-->
 			<ul id="playerButtonList">
@@ -42,41 +42,36 @@
 					<button type="button" id="playerToggle" onclick="playerToggle()">►</button>
 				</li>
 				<li id="volumeLabel">
-					<label for="volume">Volume Control</label>
+					<label for="volume">Volume</label>
 				</li>
 				<li>
 					<!-- VOLUME -->
-					<input type="range" id="volume" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)"></input>
+					<!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
+					<input type="range" id="volume" value="100" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)"></input>
 				</li>
 			</ul>
-
-
-
 		</div>
 
 		<div id="content">
-
-
 			<p>This radio is a personal side project by Ken Ellorando.</p>
 			<h2>Working Features:</h2>
 			<ul>
 				<li>2/26: Streaming client and stream source</li>
 				<li>2/28: Auto streaming (until the IP expires)</li>
 				<li>3/1: Front-end prototype design</li>
+				<li>3/2: Custom stream/volume controls + pause desynchronization fixed</li>
 			</ul>
 
 			<h2>In progress:</h2>
 			<ul>
-				<li>Find something to replace the ugly default player</li>
 			</ul>
 
 			<h2>Currently planned:</h2>
 			<ul>
 				<li>Move to a dedicated server</li>
 				<li>Display current song info</li>
-				<li>Fix error that desyncs streams</li>
 				<li>Find some way to link to source that doesnt involve expiring IP addresses</li>
-				<li>Off-canvasing</li>
+				<li>Cache set volume so it doesn't reset on stream toggle</li>
 			</ul>
 		</div>
 	</div>

@@ -1,129 +1,129 @@
 /* BASE =============================*/
 
 html {
-	background-color: #000000;
-	color: #FFFFFF;
-	font-family: 'PT Sans', sans-serif;
-	background-image: url("/media/am4abPv-min.jpg");
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-attachment: fixed;
+  background-color: #000000;
+  color: #FFFFFF;
+  font-family: 'PT Sans', sans-serif;
+  background-image: url("/media/am4abPv-min.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 body {
-	background-color: white;
-	opacity: .8;
+  background-color: white;
+  opacity: .8;
 }
 
 
 /* LAYOUT/MODULAR ===================*/
 
 .all {
-	/*something something*/
+  /*something something*/
 }
 
 #title {
-	font-family: 'Rock Salt', cursive;
-	font-size: 1.5em;
-	line-height: .9em;
-	text-align: center;
-	padding: 1.56em .23em .23em .23em;
-	background-color: #0f0f0f;
+  font-family: 'Rock Salt', cursive;
+  font-size: 1.5em;
+  line-height: .9em;
+  text-align: center;
+  padding: 1.56em .23em .23em .23em;
+  background-color: #0f0f0f;
 }
 
 #subtitle {
-	padding-top: .23em;
-	font-size: .8em;
-	font-family: 'Roboto', sans-serif;
-	font-weight: 300;
+  padding-top: .23em;
+  font-size: .8em;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
 }
 
 
 /* In the player */
 
 #player {
-	text-align: center;
-	width: 100%;
-	background-color: #0f0f0f;
-	padding: 0.56em 0em 1.56em 0em;
+  text-align: center;
+  width: 100%;
+  background-color: #0f0f0f;
+  padding: 0.56em 0em 1.56em 0em;
 }
 
 #playerButtonList {
-	list-style: none;
-	text-align: center;
-	padding: 0;
-	margin: 0;
+  list-style: none;
+  text-align: center;
+  padding: 0;
+  margin: 0;
 }
 
 #playerToggle,
 #volume {
-	display: inline-block;
+  display: inline-block;
 }
 
 #playerToggle {
-	font-family: 'PT Sans', sans-serif;
-	font-size: 1.2em;
-	margin-bottom: 1.23em;
-	padding: .56em 1.56em .56em 1.56em;
-	background-color: #0f0f0f;
-	color: #FFFFFF;
-	border-radius: 10%;
-	border-width: 3px;
-	border-color: #FFFFFF;
-	border-style: solid;
-	width: 6em;
+  font-family: 'PT Sans', sans-serif;
+  font-size: 1.2em;
+  margin-bottom: 1.23em;
+  padding: .56em 1.56em .56em 1.56em;
+  background-color: #0f0f0f;
+  color: #FFFFFF;
+  border-radius: 10%;
+  border-width: 3px;
+  border-color: #FFFFFF;
+  border-style: solid;
+  width: 6em;
 }
 
 #volumeLabel {
-	margin-bottom: .56em;
+  margin-bottom: .56em;
 }
 
 #volume {
-	width: 75%;
+  width: 75%;
 }
 
 
 /* Bottom content under player */
 
 #content {
-	padding: .86em;
-	padding-bottom: 1.5em;
-	background-color: #0f0f0f;
+  padding: .86em;
+  padding-bottom: 1.5em;
+  background-color: #0f0f0f;
 }
 
 
 /* ANIMATIONS ************************ */
 
 #playerToggle:active {
-	transform: translateY(1px);
+  transform: translateY(1px);
 }
 
 
 /* STATE =============================*/
 
 @media (min-width: 37em) {
-	html {
-		margin: 2em 5em 2em 5em;
-	}
-	#title {
-		font-size: 1.8em;
-	}
-	#volume {
-		width: 50%;
-	}
+  html {
+    margin: 2em 5em 2em 5em;
+  }
+  #title {
+    font-size: 1.8em;
+  }
+  #volume {
+    width: 50%;
+  }
 }
 
 @media (min-width: 64em) {
-	html {
-		font-size: 1.1em;
-		padding: 2em 0em 2em 0em;
-		margin: 0em 5em 2em 5em;
-	}
-	#content {
-		padding: 2em;
-	}
-	#volume {
-		width: 25%;
-	}
+  html {
+    font-size: 1.1em;
+    padding: 2em 0em 2em 0em;
+    margin: 0em 5em 2em 5em;
+  }
+  #content {
+    padding: 2em;
+  }
+  #volume {
+    width: 25%;
+  }
 }

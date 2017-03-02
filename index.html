@@ -2,80 +2,80 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta name="description" content="A Rock and Synthpop Radio by Ken Ellorando" />
-	<title>Cadence Radio</title>
-	<!-- OLD FONT: Permenant Marker
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A Rock and Synthpop Radio by Ken Ellorando" />
+  <title>Cadence Radio</title>
+  <!-- OLD FONT: Permenant Marker
 	Heading: Rock Salt; Subtitle: Roboto 300; All else: PT Sans -->
-	<link href="https://fonts.googleapis.com/css?family=PT+Sans|Roboto:300i|Rock+Salt" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans|Roboto:300i|Rock+Salt" rel="stylesheet">
 
-	<!-- Normalization CSS -->
-	<link href="css/normalize.css" rel="stylesheet">
-	<!-- Style CSS -->
-	<link href="css/style1.css" rel="stylesheet">
-	<!-- Volume Control CSS -->
-	<link href="css/volumeBar.css" rel="stylesheet">
+  <!-- Normalization CSS -->
+  <link href="css/normalize.css" rel="stylesheet">
+  <!-- Style CSS -->
+  <link href="css/style1.css" rel="stylesheet">
+  <!-- Volume Control CSS -->
+  <link href="css/volumeBar.css" rel="stylesheet">
 
-	<!-- jQuery Google CDN -->
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<!-- Player buttons functionality -->
-	<script src="js/player.js"></script>
+  <!-- jQuery Google CDN -->
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <!-- Player buttons functionality -->
+  <script src="js/player.js"></script>
 </head>
 
 
 <body>
-	<div class="all">
-		<div id="title">
-			<h1>CADENCE</h1>
-			<p id="subtitle">A Rock and Synthpop Radio</p>
-		</div>
+  <div class="all">
+    <div id="title">
+      <h1>CADENCE</h1>
+      <p id="subtitle">A Rock and Synthpop Radio</p>
+    </div>
 
-		<div id="player">
-			<!-- Connection to source -->
-			<audio id="stream" src="http://198.37.24.167:8000/stream"></audio>
+    <div id="player">
+      <!-- Connection to source -->
+      <audio id="stream" src="http://198.37.24.167:8000/stream"></audio>
 
 
-			<!-- Buttons stacked-->
-			<ul id="playerButtonList">
-				<li>
-					<!-- ON/OFF -->
-					<button type="button" id="playerToggle" onclick="playerToggle()">►</button>
-				</li>
-				<li id="volumeLabel">
-					<label for="volume">Volume</label>
-				</li>
-				<li>
-					<!-- VOLUME -->
-					<!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
-					<input type="range" id="volume" value="100" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)"></input>
-				</li>
-			</ul>
-		</div>
+      <!-- Buttons stacked-->
+      <ul id="playerButtonList">
+        <li>
+          <!-- ON/OFF -->
+          <button type="button" id="playerToggle" onclick="playerToggle()">►</button>
+        </li>
+        <li id="volumeLabel">
+          <label for="volume">Volume</label>
+        </li>
+        <li>
+          <!-- VOLUME -->
+          <!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
+          <input type="range" id="volume" value="100" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)"></input>
+        </li>
+      </ul>
+    </div>
 
-		<div id="content">
-			<p>This radio is a personal side project by Ken Ellorando.</p>
-			<h2>Recent Changes:</h2>
-			<ul>
-				<li>3/2: Custom stream/volume controls + pause desynchronization fixed</li>
-				<li>3/1: Front-end prototype design</li>
-				<li>2/28: Auto streaming (until the IP expires)</li>
-				<li>2/26: Streaming client and stream source</li>
-			</ul>
+    <div id="content">
+      <p>This radio is a personal side project by Ken Ellorando.</p>
+      <h2>Recent Changes:</h2>
+      <ul>
+        <li>3/2: Custom stream/volume controls + pause desynchronization fixed</li>
+        <li>3/1: Front-end prototype design</li>
+        <li>2/28: Auto streaming (until the IP expires)</li>
+        <li>2/26: Streaming client and stream source</li>
+      </ul>
 
-			<h2>In progress:</h2>
-			<ul>
-			</ul>
+      <h2>In progress:</h2>
+      <ul>
+      </ul>
 
-			<h2>Currently planned:</h2>
-			<ul>
-				<li>Move to a dedicated server</li>
-				<li>Display current song info</li>
-				<li>Find some way to link to source that doesnt involve expiring IP addresses</li>
-				<li>Cache set volume so it doesn't reset on stream toggle</li>
-			</ul>
-		</div>
-	</div>
+      <h2>Currently planned:</h2>
+      <ul>
+        <li>Move to a dedicated server</li>
+        <li>Display current song info</li>
+        <li>Find some way to link to source that doesnt involve expiring IP addresses</li>
+        <li>Cache set volume so it doesn't reset on stream toggle</li>
+      </ul>
+    </div>
+  </div>
 </body>
 
 </html>

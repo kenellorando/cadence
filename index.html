@@ -21,6 +21,8 @@
 
   <!-- Volume Control CSS -->
   <link href="css/volumeBar.css" rel="stylesheet">
+  <!-- Dropdown CSS -->
+  <link href="css/dropdown.css" rel="stylesheet">
 
   <!-- jQuery Google CDN -->
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -55,20 +57,25 @@
         <li>
           <!-- VOLUME -->
           <!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
-          <input type="range" id="volume" value="100" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)"></input>
-        </li>
-        <li>
-          <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()"> Chicago Evening (default)</button>
-          <button type="button" id="selectCyberpunkBartender" onclick="selectCyberpunkBartender()">Cyberpunk Bartender</button>
-          
+          <input type="range" id="volume" value="100" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)">
         </li>
       </ul>
+
+      <!-- Theme selector -->
+      <div class="dropdown">
+        <button class="dropbtn">Select Theme</button>
+        <div class="dropdown-content">
+          <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()"> Chicago Evening (default)</button>
+          <button type="button" id="selectCyberpunkBartender" onclick="selectCyberpunkBartender()">Cyberpunk Bartender</button>
+        </div>
+      </div>
     </div>
 
     <div id="content">
-      <p>This radio is a personal side project by Ken Ellorando.</p>
+      <p>This radio is a personal project made by Ken Ellorando.</p>
       <h2>Recent Changes:</h2>
       <ul>
+        <li>3/3: Changable themes (new theme: Cyberpunk Bartender)</li>
         <li>3/2: Custom stream/volume controls + pause desynchronization fixed (unless stream ends)</li>
         <li>3/1: Front-end prototype design</li>
         <li>2/28: Auto streaming (until the IP expires)</li>
@@ -77,6 +84,8 @@
 
       <h2>In progress:</h2>
       <ul>
+        <li>Cache set volume so it doesn't reset on stream toggle</li>
+        <li>Cache set theme so it doesn't reset on stream toggle</li>
       </ul>
 
       <h2>Currently planned:</h2>
@@ -84,10 +93,11 @@
         <li>Move to a dedicated server</li>
         <li>Display current song info</li>
         <li>Find some way to link to source that doesnt involve expiring IP addresses</li>
-        <li>Cache set volume so it doesn't reset on stream toggle</li>
       </ul>
     </div>
+    <!-- CONTENT -->
   </div>
+  <!-- ALL -->
 </body>
 
 </html>

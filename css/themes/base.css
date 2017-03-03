@@ -14,11 +14,12 @@ html {
   color: #FFFFFF;
   font-family: 'PT Sans', sans-serif;
   background-image: url("/media/chicagoTraffic.gif");
-  background-attachment: fixed !important;
-  background-size: cover !important;
+  background-size: cover;
   background-repeat: no-repeat !important;
-  
-
+  background-attachment: fixed !important;
+  background-position: top;
+  /*dont know if these will help. need to revisit android chrome later */
+  height: 100%;
   min-height: 100%;
 }
 

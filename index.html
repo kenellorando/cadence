@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="A Rock and Synthpop Radio by Ken Ellorando" />
+  <meta name="description" content="A Study/Relax Radio by Ken Ellorando" />
+
   <title>Cadence Radio</title>
   <!-- OLD FONT: Permenant Marker
 	Heading: Rock Salt; Subtitle: Roboto 300; All else: PT Sans -->
@@ -12,8 +13,12 @@
 
   <!-- Normalization CSS -->
   <link href="css/normalize.css" rel="stylesheet">
-  <!-- Style CSS -->
-  <link href="css/style1.css" rel="stylesheet">
+  <!-- BASE CSS -->
+  <link rel="stylesheet" href="css/themes/base.css">
+  <!-- Selected Style CSS -->
+  <link id="selectedcss" rel="stylesheet" href="">
+
+
   <!-- Volume Control CSS -->
   <link href="css/volumeBar.css" rel="stylesheet">
 
@@ -21,6 +26,8 @@
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <!-- Player buttons functionality -->
   <script src="js/player.js"></script>
+  <!-- Theme changes after base -->
+  <script src="js/themeChanger.js"></script>
 </head>
 
 
@@ -49,6 +56,11 @@
           <!-- VOLUME -->
           <!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
           <input type="range" id="volume" value="100" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)"></input>
+        </li>
+        <li>
+          <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()"> Chicago Evening (default)</button>
+          <button type="button" id="selectCyberpunkBartender" onclick="selectCyberpunkBartender()">Cyberpunk Bartender</button>
+          
         </li>
       </ul>
     </div>

@@ -1,0 +1,28 @@
+
+html {
+  background-image: url("/media/cyberpunkBartender1.gif");
+  color: #f0f0f0;
+}
+
+body {
+  opacity: 1;
+}
+
+.all {
+  background-color: rgba(0,0,0,.6);
+}
+
+#title {
+  color: deeppink;
+  text-shadow: 1px 1px 65px red;
+}
+
+#subtitle {
+  color: #f0f0f0;
+}
+
+#playerToggle {
+  border-color: cyan;
+  color: cyan;
+  box-shadow: 1px 1px 65px cyan;
+}

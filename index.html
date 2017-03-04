@@ -5,20 +5,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="" />
-  
+
   <title>Cadence Radio</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-  
+
   <!-- OLD FONT: Permenant Marker
 	Heading: Rock Salt; Subtitle: Roboto 300; All else: PT Sans -->
   <link href="https://fonts.googleapis.com/css?family=PT+Sans|Roboto:300i|Rock+Salt" rel="stylesheet">
 
   <!-- Normalization CSS -->
-  <link rel="stylesheet" href="css/normalize.css" >
+  <link rel="stylesheet" href="css/normalize.css">
   <!-- BASE CSS -->
   <link rel="stylesheet" href="css/themes/base.css">
   <!-- Selected Style CSS -->
-  <link rel="stylesheet" id="selectedcss"  href="">
+  <link rel="stylesheet" id="selectedcss" href="">
 
 
   <!-- Volume Control CSS -->
@@ -36,71 +36,72 @@
 
 
 <body>
-  <div class="all">
-    <div id="title">
-      <!-- Maybe move the title ID to h1 -->
-      <h1>CADENCE</h1>
-      <p id="subtitle">A Rhythmic Experience</p>
-    </div>
+  <div id="title">
+    <!-- Maybe move the title ID to h1 -->
+    <h1>CADENCE</h1>
+    <p id="subtitle">A Rhythmic Experience</p>
+  </div>
 
-    <div id="player">
-      <!-- Connection to source -->
-      <audio id="stream" src="http://198.37.24.167:8000/stream"></audio>
+  <div id="player">
+    <!-- Connection to source -->
+    <audio id="stream" src="http://198.37.24.167:8000/stream"></audio>
 
 
-      <!-- Buttons stacked-->
-      <ul id="playerButtonList">
-        <li>
-          <!-- ON/OFF -->
-          <button type="button" id="playerToggle" onclick="playerToggle()">►</button>
-        </li>
-        <li id="volumeLabel">
-          <label for="volume">Volume</label>
-        </li>
-        <li>
-          <!-- VOLUME -->
-          <!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
-          <input type="range" id="volume" value="100" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)">
-        </li>
-      </ul>
+    <!-- Buttons stacked-->
+    <ul id="playerButtonList">
+      <li>
+        <!-- ON/OFF -->
+        <button type="button" id="playerToggle" onclick="playerToggle()">►</button>
+      </li>
+      <li id="volumeLabel">
+        <label for="volume">Volume</label>
+      </li>
+      <li>
+        <!-- VOLUME -->
+        <!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
+        <input type="range" id="volume" value="100" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)">
+      </li>
+    </ul>
 
-      <!-- Theme selector -->
-      <div class="dropdown">
-        <button class="dropbtn">Select Theme</button>
-        <div class="dropdown-content">
-          <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()"> Chicago Evening (default)</button>
-          <button type="button" id="selectCyberpunkBartender" onclick="selectCyberpunkBartender()">Cyberpunk Bartender</button>
-        </div>
+
+    <!-- Theme selector -->
+    <div class="dropdown">
+      <button class="dropbtn">Select Theme</button>
+      <div class="dropdown-content">
+        <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()"> Chicago Evening (default)</button>
+        <button type="button" id="selectCyberpunkBartender" onclick="selectCyberpunkBartender()">Cyberpunk Bartender</button>
       </div>
     </div>
+  </div>
+  <div id="content">
+    <div class="content-left">
 
-    <div id="content">
-      <p>This radio is a personal project made by Ken Ellorando.</p>
       <h2>Recent Changes:</h2>
       <ul>
-        <li>3/3: Changable themes (new theme: Cyberpunk Bartender) + fixed android chrome background</li>
+        <li>3/3: Changable themes (new theme: Cyberpunk Bartender) + fixed Android Chrome background sizing bug</li>
         <li>3/2: Custom stream/volume controls + pause desynchronization fixed (unless stream ends)</li>
         <li>3/1: Front-end prototype design</li>
         <li>2/28: Auto streaming (until the IP expires)</li>
         <li>2/26: Streaming client and stream source</li>
       </ul>
-
-      <h2>In progress:</h2>
+    </div>
+    
+    <div class="content-right">
+      <h2>Schedule:</h2>
       <ul>
-        <li>Cache set volume so it doesn't reset on stream toggle</li>
-        <li>Cache set theme so it doesn't reset on stream toggle</li>
-      </ul>
-
-      <h2>Currently planned:</h2>
-      <ul>
-        <li>Move to a dedicated server</li>
-        <li>Display current song info</li>
-        <li>Find some way to link to source that doesnt involve expiring IP addresses</li>
+        <li>Saturday: </li>
+        <li>Sunday: </li>
+        <li>Monday: </li>
+        <li>Tuesday: Server Migration [17:00]</li>
+        <li>Wednesday: </li>
+        <li>Thursday: </li>
+        <li>Friday: </li>
       </ul>
     </div>
-    <!-- CONTENT -->
   </div>
-  <!-- ALL -->
+  <!-- CONTENT -->
+  <footer>A project by Ken Ellorando | Visit Cadence's <a href="https://github.com/kenellorando/CadenceRadio">GitHub</a>.</footer>
+  <!-- Do not remove footer; clears backdrop below content -->
 </body>
 
 </html>

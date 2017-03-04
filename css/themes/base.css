@@ -114,7 +114,6 @@ body {
 }
 
 #content li {
-  font-size: 1.1em;
   margin-bottom: .4em;
 }
 
@@ -195,6 +194,9 @@ a:active {
   }
   #content {
     padding: 2em;
+  }
+  #content li {
+    font-size: 1.1em;
   }
   #volume {
     width: 25%;

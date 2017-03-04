@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=VT323');
+@import url('https://fonts.googleapis.com/css?family=Share+Tech+Mono');
 html {
   background-image: url("/media/cyberpunk-bartender.gif");
   color: #f0f0f0;
@@ -19,7 +21,6 @@ body {
 
 
 /* Subtle blink to go with the glow */
-
 @keyframes blinker {
   50% {
     opacity: .7;

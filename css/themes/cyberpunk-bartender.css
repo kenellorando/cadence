@@ -1,6 +1,5 @@
-
 html {
-  background-image: url("/media/cyberpunkBartender1.gif");
+  background-image: url("/media/cyberpunk-bartender.gif");
   color: #f0f0f0;
 }
 
@@ -9,12 +8,22 @@ body {
 }
 
 .all {
-  background-color: rgba(0,0,0,.6);
+  background-color: rgba(0, 0, 0, .6);
 }
 
 #title {
   color: deeppink;
   text-shadow: 1px 1px 65px red;
+  animation: blinker 3s ease-in infinite;
+}
+
+
+/* Subtle blink to go with the glow */
+
+@keyframes blinker {
+  50% {
+    opacity: .7;
+  }
 }
 
 #subtitle {

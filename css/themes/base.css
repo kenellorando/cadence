@@ -13,7 +13,7 @@ html {
   background-color: #000000;
   color: #FFFFFF;
   font-family: 'PT Sans', sans-serif;
-  background-image: url("/media/chicagoTraffic.gif");
+  background-image: url("/media/chicago-traffic.gif");
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -38,15 +38,18 @@ body {
 
 #title {
   font-family: 'Rock Salt', cursive;
-  font-size: 1.5em;
-  line-height: .9em;
+  font-size: 3em;
+  line-height: .65;
   text-align: center;
-  padding: 1.56em .23em .23em .23em;
+  padding: 1.35em .23em 0em .23em;
+  margin-top: 0;
+  ;
 }
 
 #subtitle {
-  padding-top: .23em;
-  font-size: .8em;
+  text-align: center;
+  padding: 0em 0em .23em 0em;
+  font-size: 1.2em;
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
 }
@@ -167,7 +170,10 @@ a:active {
     margin-bottom: 2em;
   }
   #title {
-    font-size: 1.8em;
+    font-size: 3.6em;
+  }
+  #subtitle {
+    font-size: 1.44em;
   }
   #volume {
     width: 50%;

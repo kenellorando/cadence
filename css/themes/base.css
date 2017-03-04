@@ -24,16 +24,14 @@ html {
 }
 
 body {
+  /*Opacity of content within body*/
   opacity: .8;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 
 /* LAYOUT/MODULAR ===================*/
-
-.all {
-  /*something something, maybe move this to body*/
-  background-color: rgba(0, 0, 0, 0.6);
-}
 
 
 /* TITLE ************** */
@@ -105,6 +103,30 @@ body {
   padding-bottom: 1.5em;
 }
 
+.content-left {
+  border-style: solid;
+  border-width: 0px 0px 2px 0px;
+}
+
+.content-right {
+  border-style: solid;
+  border-width: 0px 0px 2px 0px;
+}
+
+#content li {
+  font-size: 1.1em;
+  margin-bottom: .4em;
+}
+
+footer {
+  clear: both;
+  line-height: 1.4em;
+  padding: 1em;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+}
+
 
 /* ANIMATIONS ************************ */
 
@@ -114,6 +136,29 @@ body {
 
 
 /* STATE =============================*/
+
+/* Link colors ************************/
+/* unvisited link */
+a:link {
+  color: cyan;
+}
+
+/* visited link */
+a:visited {
+  color: cyan;
+}
+
+/* mouse over link */
+a:hover {
+  color: darkcyan;
+}
+
+/* selected link */
+a:active {
+  color: darkcyan;
+}
+
+/* Media queries *********************/
 
 @media (min-width: 37em) {
   html {
@@ -135,6 +180,18 @@ body {
     font-size: 1.1em;
     padding: 2em 0em 2em 0em;
     margin: 0em 5em 2em 5em;
+  }
+  .content-left {
+    float: left;
+    width: 50%;
+    border-style: solid;
+    border-width: 0px 2px 0px 0px;
+  }
+  .content-right {
+    float: right;
+    width: 47%;
+    border-style: solid;
+    border-width: 0px 0px 0px 0px;
   }
   #content {
     padding: 2em;

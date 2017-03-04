@@ -203,4 +203,9 @@ a:active {
   #volume {
     width: 25%;
   }
+  footer {
+    margin: auto;
+    width: 30%;
+    max-width: 50%;
+  }
 }

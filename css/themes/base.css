@@ -204,8 +204,10 @@ a:active {
     width: 25%;
   }
   footer {
+    
     margin: auto;
-    width: 30%;
+    padding-top: 3em;
+    width: 60%;
     max-width: 50%;
   }
 }

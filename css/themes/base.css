@@ -139,26 +139,37 @@ footer {
 
 /* STATE =============================*/
 
+
 /* Link colors ************************/
+
+
 /* unvisited link */
+
 a:link {
   color: cyan;
 }
 
+
 /* visited link */
+
 a:visited {
   color: cyan;
 }
 
+
 /* mouse over link */
+
 a:hover {
   color: darkcyan;
 }
 
+
 /* selected link */
+
 a:active {
   color: darkcyan;
 }
+
 
 /* Media queries *********************/
 
@@ -204,10 +215,8 @@ a:active {
     width: 25%;
   }
   footer {
-    
     margin: auto;
     padding-top: 3em;
     width: 60%;
-    max-width: 50%;
   }
 }

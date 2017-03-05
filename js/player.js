@@ -43,3 +43,36 @@ function readyPlayer() {
 	stream.volume = volume / 100;
 	volumeControl.value = volume;
 }
+
+// Get the themeID of a theme by its name.
+function themeID(themeName) {
+	switch (themeName) {
+		case "chicago-evening":
+			return 0;
+		case "cyberpunk-bartender":
+			return 1;
+		// Add additional themes here
+		default: // Default back to chicago-evening
+			return 0;
+	}
+}
+
+// Set the page theme by a themeID
+function setThemeById(themeID) {
+	switch (themeID) {
+		case 0:
+			selectChicagoEvening();
+			break;
+		case 1:
+			selectCyberpunkBartender();
+			break;
+		// Add additional themes here
+		default: // Default back to chicago-evening
+			selectChicagoEvening();
+	}
+}
+
+// Convenience: Shorthand to set the page theme by theme name
+function setThemeByName(themeName) {
+	setThemeById(themeID(themeName));
+}

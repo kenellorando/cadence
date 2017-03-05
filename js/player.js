@@ -43,6 +43,10 @@ function readyPlayer() {
 	par = document.URL.match(/theme=([0-9]+)/);
 	theme = par ? par[1] : 0; // themeID defaults to 0 (chicago-evening)
 	
+	// Input validation
+	volume = Math.max(Math.min(volume, 100), 0); // Volume can be between 0 and 100. Cannot be negative or above 100%.
+	theme = Math.max(Math.min(theme, themeNames.length-1), 0); // Themes must be a valid array index (themeNames should have all themes in there)
+	
 	// Set the volume
 	var stream = document.getElementById("stream");
 	var volumeControl = document.getElementById("volume");

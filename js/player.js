@@ -26,7 +26,7 @@ function readyPlayer() {
 	
 	// Fetch the volume from the URL GET parameters
 	var par = document.URL.match(/volume=([0-9]+)/);
-	volume = par[1];
+	volume = par ? par[1] : 20; // volume defaults to 20%
 	
 	// Set the volume
 	var stream = document.getElementById("stream");

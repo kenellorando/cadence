@@ -21,4 +21,10 @@ function volumeToggle(vol) {
 // Called on page load to perform initialization and autoplay
 function readyPlayer() {
 	playerToggle(document.body);
+	
+	// Set the volume
+	var stream = document.getElementById("stream");
+	var volumeControl = document.getElementById("volume");
+	stream.volume = 0.2; // For now, default to 20% volume
+	volumeControl.value = 20;
 }

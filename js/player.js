@@ -6,9 +6,11 @@ function playerToggle(e) {
     document.getElementById("playerToggle").innerHTML = "❚❚";
   } else {
     stream.pause();
-	e.onclick = function () {
-		document.location.reload();
-	}; // The mindblowing workaround to a desyncing pause button
+	e.onclick = function () { // The mindblowing workaround to a desyncing pause button
+		var loc = document.location.pathname; // Get the path to the document, without parameters
+		loc += "?volume="+document.getElementById("volume").value; // Append the currently set volume
+		document.location = loc; // Reload the page with that volume set.
+	};
     document.getElementById("playerToggle").innerHTML = "►";
   }
 }

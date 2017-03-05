@@ -1,11 +1,14 @@
-function playerToggle() {
+function playerToggle(e) {
   var stream = document.getElementById("stream");
 
   if (stream.paused) {
     stream.play();
     document.getElementById("playerToggle").innerHTML = "❚❚";
   } else {
-    location.reload(); // The mindblowing workaround to a desyncing pause button
+    stream.pause();
+	e.onclick = function () {
+		document.location.reload();
+	}; // The mindblowing workaround to a desyncing pause button
     document.getElementById("playerToggle").innerHTML = "►";
   }
 }

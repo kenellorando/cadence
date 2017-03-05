@@ -45,7 +45,7 @@ function readyPlayer() {
 	
 	// Input validation
 	volume = Math.max(Math.min(volume, 100), 0); // Volume can be between 0 and 100. Cannot be negative or above 100%.
-	theme = Math.max(Math.min(theme, themeNames.length-1), 0); // Themes must be a valid array index (themeNames should have all themes in there)
+	theme = Math.floor(Math.max(Math.min(theme, themeNames.length-1), 0)); // Themes must be a valid array index (themeNames should have all themes in there)
 	
 	// Set the volume
 	var stream = document.getElementById("stream");

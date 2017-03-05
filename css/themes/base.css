@@ -84,7 +84,7 @@ body {
   border-radius: 10%;
   border-width: 3px;
   border-color: #FFFFFF;
-  border-style: solid;
+  border-style: outset;
   width: 6em;
 }
 
@@ -133,6 +133,7 @@ footer {
 /* ANIMATIONS ************************ */
 
 #playerToggle:active {
+  border-style: inset;
   transform: translateY(1px);
 }
 

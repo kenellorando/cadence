@@ -10,7 +10,7 @@ function playerToggle(e) {
 		var loc = document.location.pathname; // Get the path to the document, without parameters
 		loc += "?volume="+document.getElementById("volume").value; // Append the currently set volume
 		loc	+= "&theme="+document.getElementById("theme-tracker").value; // Append the current themeID
-		document.location = loc; // Reload the page with that volume set.
+		document.location.replace(loc); // Reload the page with that volume set, without making a history entry.
 	};
     document.getElementById("playerToggle").innerHTML = "►";
   }

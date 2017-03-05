@@ -22,9 +22,15 @@ function volumeToggle(vol) {
 function readyPlayer() {
 	playerToggle(document.body);
 	
+	var volume;
+	
+	// Fetch the volume from the URL GET parameters
+	var par = document.URL.match(/volume=([0-9]+)/);
+	volume = par[1];
+	
 	// Set the volume
 	var stream = document.getElementById("stream");
 	var volumeControl = document.getElementById("volume");
-	stream.volume = 0.2; // For now, default to 20% volume
-	volumeControl.value = 20;
+	stream.volume = volume / 100;
+	volumeControl.value = volume;
 }

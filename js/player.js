@@ -9,6 +9,7 @@ function playerToggle(e) {
 	e.onclick = function () { // The mindblowing workaround to a desyncing pause button
 		var loc = document.location.pathname; // Get the path to the document, without parameters
 		loc += "?volume="+document.getElementById("volume").value; // Append the currently set volume
+		loc	+= "&theme="+document.getElementById("theme-tracker").value; // Append the current themeID
 		document.location = loc; // Reload the page with that volume set.
 	};
     document.getElementById("playerToggle").innerHTML = "►";

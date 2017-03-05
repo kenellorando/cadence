@@ -31,17 +31,25 @@ function readyPlayer() {
 	playerToggle(document.body);
 	
 	var volume;
+	var theme;
 	
-	// Fetch the volume from the URL GET parameters passed earlier (or typed in a link, or by the user, or in a bookmark)
+	// Fetch the volume and themeID from the URL GET parameters passed earlier (or typed in a link, or by the user, or in a bookmark)
 	// Interesting note, the fact that this can be bookmarked means that users can personalize setting defaults by bookmarking them.
+	// First, the volume...
 	var par = document.URL.match(/volume=([0-9]+)/);
 	volume = par ? par[1] : 20; // volume defaults to 20%
+	// Now, the theme.
+	par = document.URL.match(/theme=([0-9]+)/);
+	theme = par ? par[1] : 0; // themeID defaults to 0 (chicago-evening)
 	
 	// Set the volume
 	var stream = document.getElementById("stream");
 	var volumeControl = document.getElementById("volume");
 	stream.volume = volume / 100;
 	volumeControl.value = volume;
+	
+	// Set the theme by its ID.
+	setThemeById(theme);
 }
 
 // Get the themeID of a theme by its name.

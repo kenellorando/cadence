@@ -26,7 +26,8 @@ function readyPlayer() {
 	
 	var volume;
 	
-	// Fetch the volume from the URL GET parameters
+	// Fetch the volume from the URL GET parameters passed earlier (or typed in a link, or by the user, or in a bookmark)
+	// Interesting note, the fact that this can be bookmarked means that users can personalize setting defaults by bookmarking them.
 	var par = document.URL.match(/volume=([0-9]+)/);
 	volume = par ? par[1] : 20; // volume defaults to 20%
 	

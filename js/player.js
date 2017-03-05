@@ -15,3 +15,7 @@ function volumeToggle(vol) {
   volume.volume = vol / 100;
 }
 
+// Called on page load to perform initialization and autoplay
+function readyPlayer() {
+	playerToggle(document.body);
+}

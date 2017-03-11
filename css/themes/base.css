@@ -10,6 +10,7 @@
 /* BASE =============================*/
 
 html {
+  font-size: 1.1em;
   background-color: #000000;
   color: #FFFFFF;
   font-family: 'PT Sans', sans-serif;
@@ -197,6 +198,7 @@ a:active {
     margin: 0em 5em 2em 5em;
   }
   .content-left {
+    padding-bottom: 10em;;
     float: left;
     width: 50%;
     border-style: solid;

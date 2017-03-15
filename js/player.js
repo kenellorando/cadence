@@ -14,4 +14,3 @@ function volumeToggle(vol) {
   var volume = document.getElementById("stream");
   volume.volume = vol / 100;
 }
-

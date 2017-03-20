@@ -11,14 +11,16 @@
 
   <!-- OLD FONT: Permenant Marker
 	Heading: Rock Salt; Subtitle: Roboto 300; All else: PT Sans -->
-  <link href="https://fonts.googleapis.com/css?family=PT+Sans|Roboto:300i|Rock+Salt" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
 
   <!-- Normalization CSS -->
   <link rel="stylesheet" href="css/normalize.css">
   <!-- BASE CSS -->
   <link rel="stylesheet" href="css/themes/base.css">
   <!-- Selected Style CSS -->
-  <link rel="stylesheet" id="selected-css" href="">
+  <link rel="stylesheet" id="selected-css" href="base.css">
 
 
   <!-- Volume Control CSS -->
@@ -44,7 +46,7 @@
 
   <div id="player">
     <!-- Connection to source -->
-    <audio id="stream" src="http://198.37.24.167:8000/stream"></audio>
+    <audio id="stream" src="198.37.25.127:8000/cadence1"></audio>
 
 
     <!-- Buttons stacked-->
@@ -74,22 +76,14 @@
   </div>
   <div id="content">
     <div class="content-left">
-      <h2>Schedule:</h2>
-      <!-- Need to find a way to auto reorder this -->
-      <ul>
-        <li>Sunday: </li>
-        <li>Monday: </li>
-        <li>Tuesday: Server Migration [17:00]</li>
-        <li>Wednesday: </li>
-        <li>Thursday: </li>
-        <li>Friday: </li>
-        <li>Saturday: </li>
-      </ul>
+      <h2>Announcements:</h2>
+      <h3>3/10: Audio stream will mostly be offline until 3/20</h3>
     </div>
 
     <div class="content-right">
       <h2>Recent Changes:</h2>
       <ul>
+        <li>3/20: Stream client moved to a dedicated server</li>
         <li>3/4: Autoplay stream on load + cache set volume and set theme through stream toggle + transition theme select dropdown</li>
         <li>3/3: Changable themes (new theme: Cyberpunk Bartender) + fixed Android Chrome background sizing bug</li>
         <li>3/2: Custom stream/volume controls + pause desynchronization fixed (unless stream ends)</li>
@@ -100,7 +94,7 @@
     </div>
   </div>
   <!-- CONTENT -->
-  <footer>A project by Ken Ellorando --- Visit Cadence's <a href="https://github.com/kenellorando/CadenceRadio">GitHub</a> --- All audio content is royalty-free</footer>
+  <footer>A project by Ken Ellorando --- Visit Cadence's <a href="https://github.com/kenellorando/CadenceRadio">GitHub</a> --- Cadence is a non-commercial broadcast created for educational purposes</footer>
   <!-- Do not remove footer; clears backdrop below content -->
   
   <!-- hidden -->

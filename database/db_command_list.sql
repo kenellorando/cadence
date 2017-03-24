@@ -28,7 +28,9 @@ DROP TABLE songs;
 CREATE TABLE songs (
     song_id INTEGER NOT NULL AUTO_INCREMENT,
     song_title VARCHAR(100) NOT NULL,
+    album_title VARCHAR(100),
     artist_name VARCHAR(50), 
+    song_length INTEGER NOT NULL,
     song_path VARCHAR(100) UNIQUE NOT NULL,
     PRIMARY KEY (song_id, song_path)
 );

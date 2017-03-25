@@ -64,6 +64,26 @@ body {
   padding: 0.56em 0em 1.56em 0em;
 }
 
+/* Now playing info, song title and artist name */
+#nowPlaying {
+  height: 6em;
+  padding: 0em 0em 1em 0em;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+}
+#nowPlaying span{
+  display: block;
+  position: relative;
+}
+
+#artist_name {
+  padding-bottom: .23em;
+}
+#song_title{
+  font-size: 2.66em;
+}
+
+/* start of all buttons in the player */
 #playerButtonList {
   list-style: none;
   text-align: center;

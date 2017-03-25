@@ -9,11 +9,7 @@ USE music;
 
 /* DB USER ADMIN */
 /* Will probably use to add/modify/remove songs from the music database */
-ALTER USER 'root'@'localhost' IDENTIFIED BY '1234';
-
-CREATE USER 'LOdb1user1'@'localhost' IDENTIFIED BY 'LOdb1password1';
-GRANT ALL PRIVILEGES ON *.* TO 'LOdb1user1'@'localhost';
-FLUSH PRIVILEGES;
+ALTER USER 'username'@'localhost' IDENTIFIED BY 'password';
 
 CREATE USER 'populator'@'localhost' IDENTIFIED BY 'populatorpassword';
 GRANT ALL PRIVILEGES ON *.* TO 'populator'@'localhost';

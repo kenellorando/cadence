@@ -43,8 +43,8 @@ function radioTitle() {
 $(document).ready(function () {
   setTimeout(function () {
     radioTitle();
-  }, 2000);
+  }, 0);
   setInterval(function () {
     radioTitle();
-  }, 15000);
+  }, 10000);
 });

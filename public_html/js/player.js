@@ -46,5 +46,5 @@ $(document).ready(function () {
   }, 2000);
   setInterval(function () {
     radioTitle();
-  }, 10000);
+  }, 15000);
 });

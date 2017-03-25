@@ -73,7 +73,6 @@ body {
   padding: 0em 0em 0em 0em;
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
-  margin-bottom: 1.23em;
 }
 
 #nowPlaying span {
@@ -81,7 +80,9 @@ body {
   position: relative;
 }
 
-#artist_name {}
+#artist_name {
+  
+}
 
 #song_title {
   font-size: 1.66em;

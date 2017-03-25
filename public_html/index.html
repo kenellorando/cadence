@@ -29,8 +29,8 @@
   <link href="css/dropdown.css" rel="stylesheet">
 
   <!-- jQuery Google CDN -->
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <!-- Player buttons functionality -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <!-- Player buttons functionality and now playing live info-->
   <script src="js/player.js"></script>
   <!-- Theme changes after base -->
   <script src="js/theme-changer.js"></script>
@@ -48,6 +48,12 @@
     <!-- Connection to source -->
     <audio id="stream" src="http://198.37.25.127:8000/cadence1"></audio>
 
+    <!-- Display title/artist, may add more later -->
+    <div id = "nowPlaying">
+      <span id="artist_name">Track data is loading...</span>
+      <span id="song_title"></span>
+    </div>
+    
 
     <!-- Buttons stacked-->
     <ul id="playerButtonList">
@@ -75,6 +81,7 @@
       </div>
     </div>
   </div>
+
   <div id="content">
     <div class="content-left">
       <h2>Announcements:</h2>

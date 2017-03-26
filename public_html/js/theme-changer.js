@@ -19,6 +19,6 @@ function defaultTheme() {
   } else if (theme === "cyberpunkBartender") {
     selectCyberpunkBartender();
   } else if (theme === null) {
-    selectCyberpunkBartender();
+    selectChicagoEvening();
   }
 }

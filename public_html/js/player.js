@@ -1,3 +1,11 @@
+// I'll put all the default onload stuff in here
+function playerOnLoads() {
+  var vol = 0.77;
+  document.getElementById("volume").value = 0.77;
+  var volume = document.getElementById("stream");
+  volume.volume = vol;
+}
+
 // When you hit the play button
 function playerToggle() {
   var stream = document.getElementById("stream");
@@ -6,7 +14,7 @@ function playerToggle() {
     stream.play();
     document.getElementById("playerToggle").innerHTML = "❚❚";
   } else {
-    location.reload(); // The mindblowing workaround to a desyncing pause button
+    stream.load(); // wew    
     document.getElementById("playerToggle").innerHTML = "►";
   }
 }
@@ -14,7 +22,7 @@ function playerToggle() {
 // When you change the volume
 function volumeToggle(vol) {
   var volume = document.getElementById("stream");
-  volume.volume = vol / 100;
+  volume.volume = vol;
 }
 
 // GETS and displays currently playing info

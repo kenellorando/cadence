@@ -76,30 +76,39 @@
       <button class="dropbtn">Select Theme</button>
       <div class="dropdown-content">
         <button type="button" id="selectCyberpunkBartender" onclick="selectCyberpunkBartender()">Cyberpunk Bartender</button>
-        <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()"> Chicago Evening</button>
+        <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()">Chicago Evening</button>
       </div>
     </div>
   </div>
 
   <div id="content">
     <div class="content-left">
-      <h2>Announcements:</h2>
-      <h3>3/24: Testing database is up, working on querying from the front end</h3>
-      <h3>3/22: Audio stream is mostly stable now. Next big thing is a database for music querying</h3>
+      <section>
+        <h2>Announcements:</h2>
+        <h3>3/26: Putting the database querying on hold for now, mostly because I don't know a thing about PHP</h3>
+      </section>
+      <section>
+        <h2>What is Cadence?</h2>
+        <p>Cadence is an online radio heavily inspired by 4chan/8ch's <a href="http://r-a-d.io/">R/a/dio</a>. The project is my first endeavour to practice a full range of IT-skills.</p>
+        <p>If you are interested in seeing this project's development, source is entirely available on <a href="https://github.com/kenellorando/CadenceRadio">GitHub</a>.</p>
+      </section>
     </div>
 
     <div class="content-right">
-      <h2>Recent Changes:</h2>
-      <ul>
-        <li>3/25: Live display of artist and track make Cadence DMCA compliant</li>
-        <li>3/24: Database populator tool completed</li>
-        <li>3/22: Stream/source moved to dedicated server</li>
-        <li>3/3: Changable themes (new theme: Cyberpunk Bartender) + fixed Android Chrome background sizing bug</li>
-        <li>3/2: Custom stream/volume controls + pause desynchronization fixed (unless stream ends)</li>
-        <li>3/1: Front-end prototype design</li>
-        <li>2/28: Auto streaming (until the IP expires)</li>
-        <li>2/26: Streaming client and stream source</li>
-      </ul>
+      <section>
+        <h2>Changelog:</h2>
+        <ul>
+          <li>3/26: Stream toggle no longer resets theme or volume + user picked themes are now cached + Cyberpunk Bartender updated</li>
+          <li>3/25: Live display of artist and track make Cadence DMCA compliant</li>
+          <li>3/24: Database populator tool completed</li>
+          <li>3/22: Stream/source moved to dedicated server</li>
+          <li>3/3: Changable themes (new theme: Cyberpunk Bartender) + fixed Android Chrome background sizing bug</li>
+          <li>3/2: Custom stream/volume controls + pause desynchronization fixed (unless stream ends)</li>
+          <li>3/1: Front-end prototype design</li>
+          <li>2/28: Auto streaming (until the IP expires)</li>
+          <li>2/26: Streaming client and stream source</li>
+        </ul>
+      </section>
     </div>
   </div>
   <!-- /CONTENT -->

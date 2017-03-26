@@ -36,7 +36,7 @@
 </head>
 
 
-<body>
+<body onload="defaultPlayer(); defaultTheme();">
   <div>
     <!-- Maybe move the title ID to h1 -->
     <h1 id="title">CADEN<span>C</span>E</h1>
@@ -48,11 +48,11 @@
     <audio id="stream" src="http://198.37.25.127:8000/cadence1"></audio>
 
     <!-- Display title/artist, may add more later -->
-    <div id = "nowPlaying">
+    <div id="nowPlaying">
       <span id="artist_name">Track data is loading...</span>
       <span id="song_title"></span>
     </div>
-    
+
 
     <!-- Buttons stacked-->
     <ul id="playerButtonList">
@@ -66,7 +66,7 @@
       <li>
         <!-- VOLUME -->
         <!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
-        <input type="range" id="volume" value="100" min="0" max="100" step="1" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)">
+        <input type="range" id="volume" value="1" min="0" max="1" step=".01" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)">
       </li>
     </ul>
 
@@ -75,8 +75,8 @@
     <div class="dropdown">
       <button class="dropbtn">Select Theme</button>
       <div class="dropdown-content">
-        <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()"> Chicago Evening (default)</button>
         <button type="button" id="selectCyberpunkBartender" onclick="selectCyberpunkBartender()">Cyberpunk Bartender</button>
+        <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()"> Chicago Evening</button>
       </div>
     </div>
   </div>

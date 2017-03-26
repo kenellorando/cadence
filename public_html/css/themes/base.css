@@ -14,7 +14,9 @@ html {
   background-color: #000000;
   color: #FFFFFF;
   font-family: 'PT Sans', sans-serif;
+  /*
   background-image: url("/media/chicago-traffic.gif");
+  */
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;

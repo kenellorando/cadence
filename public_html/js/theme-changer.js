@@ -18,5 +18,4 @@ function defaultTheme() {
   } else if (theme === "cyberpunkBartender") {
     selectCyberpunkBartender()
   }
-  
 }

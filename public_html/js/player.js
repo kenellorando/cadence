@@ -1,5 +1,5 @@
 // I'll put all the default onload stuff in here
-function playerOnLoads() {
+function defaultPlayer() {
   var vol = 0.77;
   document.getElementById("volume").value = 0.77;
   var volume = document.getElementById("stream");

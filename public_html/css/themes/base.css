@@ -112,7 +112,7 @@ body {
   border-radius: 10%;
   border-width: 3px;
   border-color: #FFFFFF;
-  border-style: solid;
+  border-style: outset;
   width: 6em;
 }
 
@@ -162,6 +162,7 @@ footer {
 
 #playerToggle:active {
   transform: translateY(1px);
+  border-style: inset;
 }
 
 

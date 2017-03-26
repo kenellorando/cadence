@@ -29,8 +29,8 @@
   <link href="css/dropdown.css" rel="stylesheet">
 
   <!-- jQuery Google CDN -->
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <!-- Player buttons functionality -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <!-- Player buttons functionality and now playing live info-->
   <script src="js/player.js"></script>
   <!-- Theme changes after base -->
   <script src="js/theme-changer.js"></script>
@@ -48,6 +48,12 @@
     <!-- Connection to source -->
     <audio id="stream" src="http://198.37.25.127:8000/cadence1"></audio>
 
+    <!-- Display title/artist, may add more later -->
+    <div id = "nowPlaying">
+      <span id="artist_name">Track data is loading...</span>
+      <span id="song_title"></span>
+    </div>
+    
 
     <!-- Buttons stacked-->
     <ul id="playerButtonList">
@@ -74,15 +80,19 @@
       </div>
     </div>
   </div>
+
   <div id="content">
     <div class="content-left">
       <h2>Announcements:</h2>
+      <h3>3/24: Testing database is up, working on querying from the front end</h3>
       <h3>3/22: Audio stream is mostly stable now. Next big thing is a database for music querying</h3>
     </div>
 
     <div class="content-right">
       <h2>Recent Changes:</h2>
       <ul>
+        <li>3/25: Live display of artist and track make Cadence DMCA complaint</li>
+        <li>3/24: Database populator tool completed</li>
         <li>3/22: Stream/source moved to dedicated server</li>
         <li>3/20: Stream client moved to a dedicated server</li>
         <li>3/4: Autoplay stream on load + cache set volume and set theme through stream toggle + transition theme select dropdown</li>
@@ -95,7 +105,7 @@
     </div>
   </div>
   <!-- CONTENT -->
-  <footer>A project by Ken Ellorando --- Visit Cadence's <a href="https://github.com/kenellorando/CadenceRadio">GitHub</a> --- Cadence is a non-commercial broadcast created for educational purposes</footer>
+  <footer>A project by Ken Ellorando --- Visit Cadence's <a href="https://github.com/kenellorando/CadenceRadio">GitHub</a> --- Cadence is a DMCA compliant, non-commercial webcast made for educational purposes</footer>
   <!-- Do not remove footer; clears backdrop below content -->
   
   <!-- hidden -->

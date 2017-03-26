@@ -64,6 +64,33 @@ body {
   padding: 0.56em 0em 1.56em 0em;
 }
 
+
+/* Now playing info, song title and artist name */
+
+#nowPlaying {
+  font-size: 1.2em;
+  height: 5em;
+  padding: 0em 0em 0em 0em;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+}
+
+#nowPlaying span {
+  display: block;
+  position: relative;
+}
+
+#artist_name {
+  
+}
+
+#song_title {
+  font-size: 1.66em;
+}
+
+
+/* start of all buttons in the player */
+
 #playerButtonList {
   list-style: none;
   text-align: center;
@@ -199,17 +226,16 @@ a:active {
     margin: 0em 5em 2em 5em;
   }
   .content-left {
-    padding-bottom: 10em;;
+    padding-bottom: 10em;
+    ;
     float: left;
     width: 50%;
     border-style: solid;
     border-width: 0px 2px 0px 0px;
   }
-  
   .content-left h3 {
     padding-right: 2em;
   }
-  
   .content-right {
     float: right;
     width: 47%;
@@ -218,6 +244,9 @@ a:active {
   }
   #content {
     padding: 2em;
+  }
+  #nowPlaying {
+    margin-bottom: 0em;
   }
   #volume {
     width: 25%;

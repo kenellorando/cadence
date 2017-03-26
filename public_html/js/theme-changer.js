@@ -11,11 +11,14 @@ function selectCyberpunkBartender() {
   localStorage.setItem('themeKey', 'cyberpunkBartender');
 }
 
+// This is run onload. To change the default theme, (for users that have not yet picked one) change the statement for null
 function defaultTheme() {
   var theme = localStorage.getItem('themeKey');
   if (theme === "chicagoEvening") {
     selectChicagoEvening();
   } else if (theme === "cyberpunkBartender") {
-    selectCyberpunkBartender()
+    selectCyberpunkBartender();
+  } else if (theme === null) {
+    selectCyberpunkBartender();
   }
 }

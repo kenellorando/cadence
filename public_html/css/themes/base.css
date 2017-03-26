@@ -33,6 +33,15 @@ body {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
+section {
+  padding-bottom: .56em;
+}
+
+p {
+  font-size: 1.1em;
+  line-height: 1.2em;
+}
+
 
 /* LAYOUT/MODULAR ===================*/
 
@@ -137,13 +146,12 @@ body {
 }
 
 .content-left {
-  border-style: solid;
-  border-width: 0px 0px 2px 0px;
+  
 }
 
 .content-right {
   border-style: solid;
-  border-width: 0px 0px 2px 0px;
+  border-width: 0px 0px 0px 0px;
 }
 
 #content li {
@@ -228,14 +236,13 @@ a:active {
     margin: 0em 5em 2em 5em;
   }
   .content-left {
-    padding-bottom: 10em;
-    ;
+    padding-bottom: 2em;
     float: left;
     width: 50%;
     border-style: solid;
     border-width: 0px 2px 0px 0px;
   }
-  .content-left h3 {
+  .content-left p {
     padding-right: 2em;
   }
   .content-right {

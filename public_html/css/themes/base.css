@@ -44,7 +44,6 @@ body {
   text-align: center;
   padding: 1.35em .23em 0em .23em;
   margin-top: 0;
-  ;
 }
 
 #subtitle {
@@ -69,8 +68,8 @@ body {
 
 #nowPlaying {
   font-size: 1.2em;
-  height: 5em;
   padding: 0em 0em 0em 0em;
+  min-height: 4em;
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
 }
@@ -86,6 +85,7 @@ body {
 
 #song_title {
   font-size: 1.66em;
+  padding-bottom: .76em;
 }
 
 

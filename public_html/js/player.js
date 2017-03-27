@@ -11,15 +11,17 @@ function playerToggle() {
   var stream = document.getElementById("stream");
 
   if (stream.paused) {
+	// Set the stream source back to what it should be
+	stream.src = "http://198.37.25.127:8000/cadence1"; // Make sure this stays current, otherwise the stream will not resume playing
+	// Reload and play the stream
+	stream.load();
     stream.play();
     document.getElementById("playerToggle").innerHTML = "❚❚";
   } else {
-    // Reloads the entire page (the old way) if on a mobile device so it doesnt keep loading in the background. 
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-      location.reload(); // wew wew
-    } else {
-      stream.load(); // wew 
-    }
+	// Set the stream source to an empty URL that claims to be an OGG
+	stream.src = URL.createObjectURL(new Blob([], {type:"application/ogg"}));
+	// And reload the stream (it is now paused, since it it playing nothing)
+	stream.load();
        
     document.getElementById("playerToggle").innerHTML = "►";
   }

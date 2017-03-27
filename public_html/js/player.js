@@ -4,6 +4,10 @@ function defaultPlayer() {
   document.getElementById("volume").value = 0.77;
   var volume = document.getElementById("stream");
   volume.volume = vol;
+  
+  // If on mobile, only preload stream metadata
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent))
+    document.getElementById("stream").preload="metadata";
 }
 
 // When you hit the play button

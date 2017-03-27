@@ -8,21 +8,27 @@ function defaultPlayer() {
 
 // When you hit the play button
 function playerToggle() {
+  // Whether the browser claims to be a mobile device.
+  var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
   var stream = document.getElementById("stream");
 
   if (stream.paused) {
-	// Set the stream source back to what it should be
-	stream.src = "http://198.37.25.127:8000/cadence1"; // Make sure this stays current, otherwise the stream will not resume playing
+	if (mobile) {
+	  // Set the stream source back to what it should be
+	  stream.src = "http://198.37.25.127:8000/cadence1"; // Make sure this stays current, otherwise the stream will not resume playing
+	}
 	// Reload and play the stream
 	stream.load();
     stream.play();
     document.getElementById("playerToggle").innerHTML = "❚❚";
   } else {
-	// Set the stream source to an empty URL that claims to be an OGG
-	stream.src = URL.createObjectURL(new Blob([], {type:"application/ogg"}));
-	// And reload the stream (it is now paused, since it it playing nothing)
+	if (mobile) {
+	  // Set the stream source to an empty URL that claims to be an OGG
+	  stream.src = URL.createObjectURL(new Blob([], {type:"application/ogg"}));
+	  // And reload the stream (it is now paused, since it it playing nothing)
+	  stream.load();
+	}
 	stream.load();
-       
     document.getElementById("playerToggle").innerHTML = "►";
   }
 }

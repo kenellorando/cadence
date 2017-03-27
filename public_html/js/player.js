@@ -11,16 +11,15 @@ function playerToggle() {
   var stream = document.getElementById("stream");
 
   if (stream.paused) {
+    // Loads up the real stream
+    stream.src = "http://198.37.25.127:8000/cadence1";
+    stream.load();
     stream.play();
     document.getElementById("playerToggle").innerHTML = "❚❚";
   } else {
-    // Reloads the entire page (the old way) if on a mobile device so it doesnt keep loading in the background. 
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-      location.reload(); // wew wew
-    } else {
-      stream.load(); // wew 
-    }
-       
+    // Loads up nothing
+    stream.src = "";  
+    stream.load();
     document.getElementById("playerToggle").innerHTML = "►";
   }
 }

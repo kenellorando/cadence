@@ -33,6 +33,8 @@ function playerToggle() {
 function volumeToggle(vol) {
   var volume = document.getElementById("stream");
   volume.volume = vol;
+  
+  localStorage.setItem('volumeKey', vol);
 }
 
 // GETS and displays currently playing info

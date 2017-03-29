@@ -10,7 +10,8 @@ html {
 
 /* BACKGROUND VIDEO ===================*/
 
-.fullscreen-bg {
+div.fullscreen-bg {
+  display: inline-block;
   position: fixed;
   top: 0;
   right: 0;

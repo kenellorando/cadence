@@ -74,6 +74,7 @@
 }
 
 #ISS-warning {
+  display: none;
   background-color:inherit;
   position: absolute;
   left: 100%;

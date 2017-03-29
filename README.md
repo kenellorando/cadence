@@ -11,3 +11,13 @@ Future plans for the radio include a front-end database query feature (PHP) and 
 ### User Testers
 * Michael Folk
 * Jakob Frank
+
+## Contributing
+To contribute to Cadence Radio, first install [Git LFS](https://git-lfs.github.com/), as our Space Station theme uses files hosted on LFS.
+
+As `git clone` only permits serial file download, LFS suggests disabling LFS for the clone operation and then pulling the files separately, as this can be done in parallel. The commands suggested are (taken from the [LFS Tutorial](https://github.com/git-lfs/git-lfs/wiki/Tutorial)):
+
+    GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/username/my_lfs_repo.git destination_dir
+    #git lfs ls-files # optionally see all the - showing the lfs files are not checked out
+    git lfs pull
+    #git lfs ls-files # optionally see all the * showing the lfs files are checked out

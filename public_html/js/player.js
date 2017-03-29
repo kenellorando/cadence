@@ -9,18 +9,22 @@ function defaultPlayer() {
 // When you hit the play button
 function playerToggle() {
   var stream = document.getElementById("stream");
-
+  var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+  
   if (stream.paused) {
+    // Loads up the real stream again if mobile
+    if (mobile) {
+      stream.src = "http://198.37.25.127:8000/cadence1";
+    }
+    stream.load();
     stream.play();
     document.getElementById("playerToggle").innerHTML = "❚❚";
   } else {
-    // Reloads the entire page (the old way) if on a mobile device so it doesnt keep loading in the background. 
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-      location.reload(); // wew wew
-    } else {
-      stream.load(); // wew 
+    // Loads up nothing if mobile
+    if (mobile) {
+      stream.src = "";
     }
-       
+    stream.load();
     document.getElementById("playerToggle").innerHTML = "►";
   }
 }

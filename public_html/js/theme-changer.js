@@ -18,6 +18,7 @@ function selectSpaceStation() {
   // Not sure how to get this to work. Want to keep the src empty until this is activated. Then remove it when another is selected
   var video = document.getElementById("video-source");
   video.src = "/media/iss.mp4";
+  video.parentElement.load();
 
 }
 

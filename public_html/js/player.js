@@ -1,7 +1,7 @@
 // I'll put all the default onload stuff in here
 function defaultPlayer() {
-  var vol = 0.77;
-  document.getElementById("volume").value = 0.77;
+  var vol = localStorage.getItem('volumeKey') || 0.77;
+  document.getElementById("volume").value = vol;
   var volume = document.getElementById("stream");
   volume.volume = vol;
 }

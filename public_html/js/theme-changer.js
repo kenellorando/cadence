@@ -1,5 +1,5 @@
 function selectChicagoEvening() {
-  clearTimeout(cyberpunkCancel);
+  cancelSwitcher();
   
   document.getElementById("selected-css").href = "css/themes/chicago-evening.css";
   document.getElementById("subtitle").innerHTML = "A Rhythmic Experience";
@@ -7,7 +7,7 @@ function selectChicagoEvening() {
 }
 
 function selectCyberpunkBartender() {
-  clearTimeout(cyberpunkCancel);
+  cancelSwitcher();
   
   document.getElementById("selected-css").href = "css/themes/cyberpunk-bartender.css";
   document.getElementById("subtitle").innerHTML = "A Retro Cyberpunk Jukebox";
@@ -17,7 +17,7 @@ function selectCyberpunkBartender() {
 }
 
 function selectSpaceStation() {
-  clearTimeout(cyberpunkCancel);
+  cancelSwitcher();
  
   document.getElementById("selected-css").href = "css/themes/space-station.css";
   document.getElementById("subtitle").innerHTML = "A Space Odyssey";

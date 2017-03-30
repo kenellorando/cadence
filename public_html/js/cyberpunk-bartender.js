@@ -24,3 +24,8 @@ function cyberpunkBackgroundSwitcher() {
     
     console.log(time);
 }
+
+function cancelSwitcher() {
+    clearTimeout(cyberpunkCancel);
+    document.getElementsByTagName("html")[0].style.backgroundImage = "";
+}

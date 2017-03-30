@@ -1,3 +1,5 @@
+var cyberpunkCancel;
+
 // Handles the switching of the cyberpunk bartender background
 function cyberpunkBackgroundSwitcher() {
     var URLs = [
@@ -18,5 +20,5 @@ function cyberpunkBackgroundSwitcher() {
     var minTime = 10000; // ms
     var timeRange = maxTime-minTime;
     var time = Math.floor(Math.random() * timeRange) + minTime;
-    return setTimeout(cyberpunkBackgroundSwitcher, time);
+    cyberpunkCancel = setTimeout(cyberpunkBackgroundSwitcher, time);
 }

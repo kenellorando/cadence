@@ -1,4 +1,5 @@
 var cyberpunkCancel;
+var cyberpunkLast = -1;
 
 function cancelSwitcher() {
     clearTimeout(cyberpunkCancel);
@@ -26,7 +27,12 @@ function cyberpunkBackgroundSwitcher() {
     URLroot = URLroot.substring(0, URLroot.lastIndexOf("/")+1);
     URLroot += "media/";
 
-    var index = Math.floor(Math.random() * URLs.length);
+    var index = cyberpunkLast;
+    do {
+        index = Math.floor(Math.random() * URLs.length);
+    } while (index == cyberpunkLast);
+
+    cyberpunkLast = index;
     
     var url = URLroot+URLs[index]
 

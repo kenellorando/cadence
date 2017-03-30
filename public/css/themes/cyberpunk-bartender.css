@@ -5,8 +5,19 @@
 
 html {
   color: #f0f0f0;
-  background-image: url("https://i.imgur.com/jwmBsvs.gif");
-  background-position: -32em;
+  background-image: url(/media/cyberpunk-bartender2.gif);
+  background-color: #FF0000;
+}
+
+html.transition {
+  background-image: none !important;
+
+  animation: fade 3s ease-in 1;
+}
+
+@keyframes fade {
+  0% { background-color: white;  }
+  100% { background-color: black; }
 }
 
 body {

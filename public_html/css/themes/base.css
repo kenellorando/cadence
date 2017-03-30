@@ -10,7 +10,7 @@
 /* BASE =============================*/
 
 html {
-  font-size: 1.0em;
+  font-size: 1em;
   background-color: #000000;
   color: #FFFFFF;
   font-family: 'PT Sans', sans-serif;
@@ -214,6 +214,7 @@ a:active {
 
 @media (min-width: 37em) {
   html {
+    font-size: 1.2em;
     margin: 2em 5em 2em 5em;
   }
   body {
@@ -232,9 +233,11 @@ a:active {
 
 @media (min-width: 64em) {
   html {
+    font-size: 1.4em;
     padding: 2em 0em 2em 0em;
     margin: 0em 5em 2em 5em;
   }
+  
   .content-left {
     padding-bottom: 1em;
     float: left;
@@ -264,5 +267,11 @@ a:active {
     margin: auto;
     padding-top: 3em;
     width: 60%;
+  }
+}
+
+@media (min-width: 80em) {
+  html {
+    font-size: 1.5em;
   }
 }

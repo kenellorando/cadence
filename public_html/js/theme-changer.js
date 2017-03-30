@@ -18,8 +18,8 @@ function selectSpaceStation() {
   var video = document.getElementById("video-source");
 
   // Loads the video source
-  if (video.src != "http://kenellorando.com/media/iss.mp4") {
-    video.src = "http://kenellorando.com/media/iss.mp4";
+  if (video.src != "/media/iss.mp4") {
+    video.src = "/media/iss.mp4";
     video.parentElement.load(); // The parent element of video is the div "fullscreen-bg"
   }
 }

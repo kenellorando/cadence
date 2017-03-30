@@ -13,4 +13,10 @@ function cyberpunkBackgroundSwitcher() {
     var url = URLroot+URLs[index]
 
     document.getElementsByTagName("html")[0].style.backgroundImage = "url("+url+")";
+
+    var maxTime = 120000; // ms
+    var minTime = 10000; // ms
+    var timeRange = maxTime-minTime;
+    var time = Math.floor(Math.random() * timeRange) + minTime;
+    setTimeout(cyberpunkBackgroundSwitcher, time);
 }

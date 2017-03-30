@@ -11,6 +11,8 @@ function selectCyberpunkBartender() {
   document.getElementById("subtitle").innerHTML = "A Retro Cyberpunk Jukebox";
   localStorage.setItem('themeKey', 'cyberpunkBartender');
 
+  clearTimeout(cyberpunkCancel);
+
   cyberpunkCancel = cyberpunkBackgroundSwitcher();
 }
 

@@ -1,5 +1,10 @@
 var cyberpunkCancel;
 
+function cancelSwitcher() {
+    clearTimeout(cyberpunkCancel);
+    document.getElementsByTagName("html")[0].style.backgroundImage = "";
+}
+
 // Handles the switching of the cyberpunk bartender background
 function cyberpunkBackgroundSwitcher() {
     var URLs = [
@@ -20,12 +25,10 @@ function cyberpunkBackgroundSwitcher() {
     var minTime = 100; // ms
     var timeRange = maxTime-minTime;
     var time = Math.floor(Math.random() * timeRange) + minTime;
+    
+    cancelSwitcher();
+    
     cyberpunkCancel = setTimeout(cyberpunkBackgroundSwitcher, time);
     
     console.log(time);
-}
-
-function cancelSwitcher() {
-    clearTimeout(cyberpunkCancel);
-    document.getElementsByTagName("html")[0].style.backgroundImage = "";
 }

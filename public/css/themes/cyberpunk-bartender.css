@@ -6,7 +6,7 @@
 html {
   color: #f0f0f0;
   background-image: url(/media/cyberpunk-bartender2.gif);
-  background-color: #FF0000;
+  background-color: black;
 }
 
 html.transition {

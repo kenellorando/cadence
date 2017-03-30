@@ -1,7 +1,8 @@
 // I'll put all the default onload stuff in here
 function defaultPlayer() {
-  var vol = 0.77;
-  document.getElementById("volume").value = 0.77;
+  // Selects either the localstorage volume or a default value
+  var vol = localStorage.getItem('volumeKey') || 0.77;
+  document.getElementById("volume").value = vol;
   var volume = document.getElementById("stream");
   volume.volume = vol;
 }
@@ -33,6 +34,9 @@ function playerToggle() {
 function volumeToggle(vol) {
   var volume = document.getElementById("stream");
   volume.volume = vol;
+  
+  // Sets the new set volume into localstorage
+  localStorage.setItem('volumeKey', vol);
 }
 
 // GETS and displays currently playing info

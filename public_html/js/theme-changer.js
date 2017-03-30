@@ -14,8 +14,7 @@ function selectSpaceStation() {
   document.getElementById("selected-css").href = "/css/themes/space-station.css";
   document.getElementById("subtitle").innerHTML = "A Space Odyssey";
   localStorage.setItem('themeKey', 'iss');
- 
-  // Not sure how to get this to work. Want to keep the src empty until this is activated. Then remove it when another is selected
+
   var video = document.getElementById("video-source");
   var current = document.location.href; // The URL of the current document
   current = current.substring(0, current.lastIndexOf("/")+1); // The URL of the current document's folder

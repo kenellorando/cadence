@@ -10,7 +10,7 @@
 /* BASE =============================*/
 
 html {
-  font-size: 1.0em;
+  font-size: 1em;
   background-color: #000000;
   color: #FFFFFF;
   font-family: 'PT Sans', sans-serif;
@@ -50,7 +50,7 @@ p {
   font-size: 3em;
   line-height: .65;
   text-align: center;
-  padding: 1.35em .23em 0em .23em;
+  padding: 1.1em .23em 0em .23em;
   margin-top: 0;
 }
 
@@ -206,11 +206,15 @@ a:active {
   color: darkcyan;
 }
 
+.fullscreen-bg {
+  display: none;
+}
 
 /* Media queries *********************/
 
 @media (min-width: 37em) {
   html {
+    font-size: 1.1em;
     margin: 2em 5em 2em 5em;
   }
   body {
@@ -229,9 +233,11 @@ a:active {
 
 @media (min-width: 64em) {
   html {
+    font-size: 1.1em;
     padding: 2em 0em 2em 0em;
     margin: 0em 5em 2em 5em;
   }
+
   .content-left {
     padding-bottom: 1em;
     float: left;
@@ -263,3 +269,5 @@ a:active {
     width: 60%;
   }
 }
+
+

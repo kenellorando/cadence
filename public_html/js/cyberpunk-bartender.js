@@ -10,15 +10,14 @@ function fadeFromWhite() {
 
     html.classList.add("transition");
 
-    cyberpunkCancel = setTimeout(function(){
-        html.classList.remove("transition");
-
-        cyberpunkBackgroundSwitcher();
-    }, 3000);
+    cyberpunkCancel = setTimeout(cyberpunkBackgroundSwitcher, 3000);
 }
 
 // Handles the switching of the cyberpunk bartender background
 function cyberpunkBackgroundSwitcher() {
+    var html = document.getElementsByTagName("html")[0];
+    html.classList.remove("transition");
+
     var URLs = [
     "cyberpunk-bartender.gif",
     "cyberpunk-bartender2.gif",
@@ -38,7 +37,7 @@ function cyberpunkBackgroundSwitcher() {
     
     cancelSwitcher();
 
-    document.getElementsByTagName("html")[0].style.backgroundImage = "url("+url+")";
+    html.style.backgroundImage = "url("+url+")";
     
     cyberpunkCancel = setTimeout(fadeFromWhite, time);
 }

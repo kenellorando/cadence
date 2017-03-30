@@ -10,7 +10,7 @@ function fadeFromWhite() {
 
     html.classList.add("transition");
 
-    setTimeout(function(){
+    cyberpunkCancel = setTimeout(function(){
         html.classList.remove("transition");
 
         cyberpunkBackgroundSwitcher();

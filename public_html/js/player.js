@@ -5,6 +5,10 @@ function defaultPlayer() {
   document.getElementById("volume").value = vol;
   var volume = document.getElementById("stream");
   volume.volume = vol;
+  
+  // Handle the display of the Space Station theme warning
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent))
+    document.getElementById("ISS-warning").style.display="block";
 }
 
 // When you hit the play button

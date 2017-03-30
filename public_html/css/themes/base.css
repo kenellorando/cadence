@@ -270,8 +270,4 @@ a:active {
   }
 }
 
-@media (min-width: 80em) {
-  html {
-    font-size: 1.5em;
-  }
-}
+

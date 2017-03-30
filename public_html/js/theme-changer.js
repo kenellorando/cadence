@@ -16,11 +16,12 @@ function selectSpaceStation() {
   localStorage.setItem('themeKey', 'iss');
 
   var video = document.getElementById("video-source");
-
-  // Loads the video source
-  if (video.src != "/media/iss.mp4") {
-    video.src = "/media/iss.mp4";
-    video.parentElement.load(); // The parent element of video is the div "fullscreen-bg"
+  var current = document.location.href; // The URL of the current document
+  current = current.substring(0, current.lastIndexOf("/")+1); // The URL of the current document's folder
+  var source = new URL("media/iss.mp4", current);
+  if (video.src != source) { // Force-load the video iff it is not already being played.
+	  video.src = source;
+	  video.parentElement.load();
   }
 }
 

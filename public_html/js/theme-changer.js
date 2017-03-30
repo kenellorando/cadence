@@ -1,28 +1,28 @@
 function selectChicagoEvening() {
-  document.getElementById("selected-css").href = "/css/themes/chicago-evening.css";
+  clearTimeout(cyberpunkCancel);
+  
+  document.getElementById("selected-css").href = "css/themes/chicago-evening.css";
   document.getElementById("subtitle").innerHTML = "A Rhythmic Experience";
   localStorage.setItem('themeKey', 'chicagoEvening');
-
-  clearTimeout(cyberpunkCancel);
 }
 
 function selectCyberpunkBartender() {
-  document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender.css";
+  clearTimeout(cyberpunkCancel);
+  
+  document.getElementById("selected-css").href = "css/themes/cyberpunk-bartender.css";
   document.getElementById("subtitle").innerHTML = "A Retro Cyberpunk Jukebox";
   localStorage.setItem('themeKey', 'cyberpunkBartender');
-
-  clearTimeout(cyberpunkCancel);
 
   cyberpunkCancel = cyberpunkBackgroundSwitcher();
 }
 
 function selectSpaceStation() {
-  document.getElementById("selected-css").href = "/css/themes/space-station.css";
+  clearTimeout(cyberpunkCancel);
+ 
+  document.getElementById("selected-css").href = "css/themes/space-station.css";
   document.getElementById("subtitle").innerHTML = "A Space Odyssey";
   localStorage.setItem('themeKey', 'iss');
 
-  clearTimeout(cyberpunkCancel);
- 
   // Not sure how to get this to work. Want to keep the src empty until this is activated. Then remove it when another is selected
   var video = document.getElementById("video-source");
 

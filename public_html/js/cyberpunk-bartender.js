@@ -18,5 +18,5 @@ function cyberpunkBackgroundSwitcher() {
     var minTime = 10000; // ms
     var timeRange = maxTime-minTime;
     var time = Math.floor(Math.random() * timeRange) + minTime;
-    setTimeout(cyberpunkBackgroundSwitcher, time);
+    return setTimeout(cyberpunkBackgroundSwitcher, time);
 }

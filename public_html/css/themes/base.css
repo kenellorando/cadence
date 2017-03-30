@@ -214,7 +214,7 @@ a:active {
 
 @media (min-width: 37em) {
   html {
-    font-size: 1.2em;
+    font-size: 1.1em;
     margin: 2em 5em 2em 5em;
   }
   body {
@@ -233,11 +233,11 @@ a:active {
 
 @media (min-width: 64em) {
   html {
-    font-size: 1.4em;
+    font-size: 1.1em;
     padding: 2em 0em 2em 0em;
     margin: 0em 5em 2em 5em;
   }
-  
+
   .content-left {
     padding-bottom: 1em;
     float: left;

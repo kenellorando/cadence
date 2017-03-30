@@ -13,7 +13,7 @@ function selectCyberpunkBartender() {
   document.getElementById("subtitle").innerHTML = "A Retro Cyberpunk Jukebox";
   localStorage.setItem('themeKey', 'cyberpunkBartender');
 
-  cyberpunkCancel = cyberpunkBackgroundSwitcher();
+  cyberpunkBackgroundSwitcher();
 }
 
 function selectSpaceStation() {

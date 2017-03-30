@@ -1,7 +1,7 @@
 function selectChicagoEvening() {
   cancelSwitcher();
   
-  document.getElementById("selected-css").href = "css/themes/chicago-evening.css";
+  document.getElementById("selected-css").href = "/css/themes/chicago-evening.css";
   document.getElementById("subtitle").innerHTML = "A Rhythmic Experience";
   localStorage.setItem('themeKey', 'chicagoEvening');
 }
@@ -9,7 +9,7 @@ function selectChicagoEvening() {
 function selectCyberpunkBartender() {
   cancelSwitcher();
   
-  document.getElementById("selected-css").href = "css/themes/cyberpunk-bartender.css";
+  document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender.css";
   document.getElementById("subtitle").innerHTML = "A Retro Cyberpunk Jukebox";
   localStorage.setItem('themeKey', 'cyberpunkBartender');
 
@@ -19,7 +19,7 @@ function selectCyberpunkBartender() {
 function selectSpaceStation() {
   cancelSwitcher();
  
-  document.getElementById("selected-css").href = "css/themes/space-station.css";
+  document.getElementById("selected-css").href = "/css/themes/space-station.css";
   document.getElementById("subtitle").innerHTML = "A Space Odyssey";
   localStorage.setItem('themeKey', 'iss');
 

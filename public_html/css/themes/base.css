@@ -206,6 +206,9 @@ a:active {
   color: darkcyan;
 }
 
+.fullscreen-bg {
+  display: none;
+}
 
 /* Media queries *********************/
 

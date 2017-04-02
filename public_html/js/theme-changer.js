@@ -10,20 +10,6 @@ function selectCyberpunkBartender() {
   localStorage.setItem('themeKey', 'cyberpunkBartender');
 }
 
-function selectSpaceStation() {
-  document.getElementById("selected-css").href = "/css/themes/space-station.css";
-  document.getElementById("subtitle").innerHTML = "A Space Odyssey";
-  localStorage.setItem('themeKey', 'iss');
-
-  var video = document.getElementById("video-source");
-
-  // Loads the video source
-  if (video.src != "http://kenellorando.com/media/iss.mp4") {
-    video.src = "http://kenellorando.com/media/iss.mp4";
-    video.parentElement.load(); // The parent element of video is the div "fullscreen-bg"
-  }
-}
-
 // This is run onload. To change the default theme, (for users that have not yet picked one) change the statement for null
 function defaultTheme() {
   var theme = localStorage.getItem('themeKey');
@@ -31,9 +17,7 @@ function defaultTheme() {
     selectChicagoEvening();
   } else if (theme === "cyberpunkBartender") {
     selectCyberpunkBartender();
-  } else if (theme === "iss") {
-    selectSpaceStation();
   } else if (theme === null) {
-    selectSpaceStation();
+    selectChicagoEvening();
   }
 }

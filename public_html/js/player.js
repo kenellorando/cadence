@@ -42,7 +42,7 @@ function volumeToggle(vol) {
 // GETS and displays currently playing info
 function radioTitle() {
   // Located on testament's stream web folder
-  var url = 'http://cadenceradio.com:8000/nowPlaying.xsl';
+  var url = 'http://198.37.24.193:8000/nowPlaying.xsl';
 
   $.ajax({
     type: 'GET',

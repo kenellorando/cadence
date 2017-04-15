@@ -11,3 +11,25 @@ Future plans for the radio include a front-end database query feature (PHP) and 
 ### User Testers
 * Michael Folk
 * Jakob Frank
+
+## Contributing
+To contribute to Cadence Radio, please note that git submodules are used in the 
+project. This means that in order to properly clone Cadence, you should pass 
+`--recursive` to `git clone`, or alternatively you should run these two commands 
+after cloning:
+
+1. `git submodule init`
+
+2. `git submodule update`
+
+After these are complete, or after a clone with `--recursive`, submodules will be 
+properly set up.
+
+When working with Cadence, you should occasionally run `git submodule update 
+--remote` to update the submodules.
+
+If you set the configuration setting `status.submodulesummary`, ie if you run `git 
+config status.submodulesummary 1`, then git will generate a short summary of 
+changes to submodules when running commands like `status`. Additionally, `git 
+diff` will provide some information about changes in submodules if passed 
+`--submodule`.

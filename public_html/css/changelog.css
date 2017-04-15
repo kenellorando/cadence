@@ -1,1 +1,19 @@
 /* Changelog styling */
+
+/* Daily 'blocks' of changes' */
+#changelog-container div {
+  border:3px outset white;
+  padding: 5px;
+  margin-bottom: 1em
+}
+
+/* Dates (Fri Mar 24 2017) */
+#changelog-container h3 {
+  text-decoration: underline
+}
+
+/* Each individual commit */
+#changelog-container p {
+  border-bottom: 1px dashed white;
+  padding: 2px;
+}

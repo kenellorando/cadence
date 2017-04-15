@@ -33,3 +33,18 @@ config status.submodulesummary 1`, then git will generate a short summary of
 changes to submodules when running commands like `status`. Additionally, `git 
 diff` will provide some information about changes in submodules if passed 
 `--submodule`.
+
+The changelog generated is ignored, and should not be committed into the 
+repository - Since it's basically just a styled version of the git log, the 
+correct changelog for any commit can be generated simply by checking out that 
+commit and running the generator. Thus, it should not be version controlled.
+
+Because the changelog file isn't version controlled, you will not have a 
+changelog file when you clone Cadence. If you need one, simply navigate to the 
+`changelog` directory and run `generator.sh`: It does assume the current working 
+directory is where it is stored. Wait for it to finish: It will have generated a 
+file public_html/changelog.html, which is the changelog file for the current 
+commit.
+
+If you deploy a mirror of Cadence, this changelog should be kept up-to-date, and 
+so the generator should be run every time new commits are added.

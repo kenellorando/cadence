@@ -1,0 +1,3 @@
+[submodule "changelog/generator"]
+	path = changelog/generator
+	url = https://github.com/za419/changelog-generator.git

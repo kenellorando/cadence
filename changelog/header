@@ -33,3 +33,4 @@
 <body onload="defaultTheme()">
   <h1 id="title">CADEN<span>C</span>E</h1>
   <p id="subtitle">A Rhythmic Experience</p>
+  <div id="changelog-container">

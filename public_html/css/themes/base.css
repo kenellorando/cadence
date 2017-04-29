@@ -44,6 +44,7 @@ p {
 
 
 /* TITLE ************** */
+
 #title {
   font-family: 'Rock Salt', cursive;
   font-size: 3em;
@@ -135,9 +136,12 @@ p {
 /* Bottom content under player */
 
 #content {
+  clear: both: /* In case I move the main stuff to the side */
   padding: .86em;
   padding-bottom: 1.5em;
 }
+
+
 
 .content-left {}
 
@@ -210,7 +214,7 @@ a:active {
 
 @media (min-width: 37em) {
   html {
-    font-size: 1.1em;
+    font-size: 1em;
     margin: 2em 5em 2em 5em;
   }
   body {
@@ -232,6 +236,9 @@ a:active {
     font-size: 1.1em;
     padding: 2em 0em 2em 0em;
     margin: 0em 5em 2em 5em;
+  }
+  main {
+    font-size: 1.2em;
   }
   .content-left {
     padding-bottom: 1em;

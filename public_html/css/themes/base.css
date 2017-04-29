@@ -21,8 +21,9 @@ html {
   /*dont know if these will help. need to revisit android chrome later */
   height: 110%;
   min-height: 110%;
-  
-  
+  /* Keeps the horizonal scroll bar from appearing during theme transition */
+  max-width: 100%;
+  overflow-x: hidden;
   transition: background-image .25s ease-in;
 }
 

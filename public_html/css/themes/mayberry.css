@@ -2,8 +2,6 @@
 html {
   background-image: url(/media/lauren.png);
   opacity: 1;
-  max-width: 100%;
-  overflow-x: hidden;
 }
 
 body {

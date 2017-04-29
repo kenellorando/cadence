@@ -40,3 +40,13 @@ a:active {
     margin: 0;
   }
 }
+
+@media (min-width: 64em) {
+  main {
+    float: right;
+  }
+  #content {
+    padding-top: 9em;
+    clear: both;
+  }
+}

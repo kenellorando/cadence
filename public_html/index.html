@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="" />
+  <meta name="description" content="Cadence Radio - An open source, commercial-free radio by Ken Ellorando " />
+  <meta name="keywords" content="Cadence, Radio, Cadence Radio, CadenceRadio, free radio, open source radio, github, Ken Ellorando radio" />
 
   <title>Cadence Radio</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
@@ -18,7 +19,7 @@
   <!-- Normalization CSS -->
   <link rel="stylesheet" href="/css/normalize.css">
   <!-- BASE CSS -->
-  <link rel="stylesheet" href="/css/themes/base.css">
+  <link rel="stylesheet" id="base-css" href="/css/themes/base.css">
   <!-- Selected Style CSS -->
   <link rel="stylesheet" id="selected-css" href="">
 
@@ -37,56 +38,61 @@
 
 
 <body onload="defaultTheme(); defaultPlayer();">
-  <h1 id="title">CADEN<span>C</span>E</h1>
-  <p id="subtitle">A Rhythmic Experience</p>
+  <main>
+    <h1 id="title">CADEN<span>C</span>E</h1>
+    <p id="subtitle">A Rhythmic Experience</p>
 
-  <div id="player">
-    <!-- Connection to source -->
-    <audio id="stream" src="http://198.37.24.193:8000/cadence1"></audio>
+    <div id="player">
+      <!-- Connection to source -->
+      <audio id="stream" src="http://198.37.24.193:8000/cadence1"></audio>
 
-    <!-- Display title/artist, may add more later -->
-    <div id="nowPlaying">
-      <span id="artist_name">Track data is loading...</span>
-      <span id="song_title"></span>
-    </div>
-
-
-    <!-- Buttons stacked-->
-    <ul id="playerButtonList">
-      <li>
-        <!-- ON/OFF -->
-        <button type="button" id="playerToggle" onclick="playerToggle()">►</button>
-      </li>
-      <li id="volumeLabel">
-        <label for="volume">Volume</label>
-      </li>
-      <li>
-        <!-- VOLUME -->
-        <!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
-        <input type="range" id="volume" value="1" min="0" max="1" step=".01" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)">
-      </li>
-    </ul>
+      <!-- Display title/artist, may add more later -->
+      <div id="nowPlaying">
+        <span id="artist_name">Track data is loading...</span>
+        <span id="song_title"></span>
+      </div>
 
 
-    <!-- Theme selector -->
-    <div class="dropdown">
-      <button class="dropbtn">Select Theme</button>
-      <div class="dropdown-content">
-        <button type="button" id="selectCyberpunkBartender" onclick="selectCyberpunkBartender()">Cyberpunk Bartender</button>
-        <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()">Chicago Evening</button>
+      <!-- Buttons stacked-->
+      <ul id="playerButtonList">
+        <li>
+          <!-- ON/OFF -->
+          <button type="button" id="playerToggle" onclick="playerToggle()">►</button>
+        </li>
+        <li id="volumeLabel">
+          <label for="volume">Volume</label>
+        </li>
+        <li>
+          <!-- VOLUME -->
+          <!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
+          <input type="range" id="volume" value="1" min="0" max="1" step=".01" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)">
+        </li>
+      </ul>
+
+
+      <!-- Theme selector -->
+      <div class="dropdown">
+        <button class="dropbtn">Select Theme</button>
+        <div class="dropdown-content">
+          <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()">Chicago Evening</button>
+          <button type="button" id="selectCyberpunkBartender" onclick="selectCyberpunkBartender()">Cyberpunk Bartender</button>
+          <button type="button" id="selectMayberry" onclick="selectMayberry()">Mayberry</button>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
   <div id="content">
     <div class="content-left">
       <section>
-        <!--
         <h2>Announcements:</h2>
-        -->
+        <h3>4/29: Mayberry theme available for a limited time!</h3>
       </section>
       <section>
         <h2>About Cadence:</h2>
         <p>Cadence is an online radio heavily inspired by 4chan/8ch's <a href="http://r-a-d.io/">R/a/dio</a>. The project is my first endeavour to practice a full range of IT-skills.</p>
+
+        <p>By default, the server plays all the genres of music I like, mostly classic rock, synthpop, and metal. But you'll also find anything from rap to orchestral to Jpop. I occasionally override the server and manually DJ.</p>
+
         <p>If you're interested in seeing this project's development, nearly everything is available on GitHub: <a href="https://github.com/kenellorando/CadenceRadio">source</a>/<a href="https://github.com/kenellorando/CadenceRadio/issues">issues</a>.</p>
         <p><b>Cadence Radio is a DMCA compliant, non-commercial webcast made for educational purposes.</b></p>
       </section>

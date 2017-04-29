@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Libre+Baskerville:400i');
 html {
   background-image: url(/media/lauren.png);
-  transition: background-image 2s ease-in-out;
   opacity: 1;
   max-width: 100%;
   overflow-x: hidden;
@@ -49,7 +48,4 @@ a:active {
     transform: translateX(30%);
     transition: transform 1s;
   }
-}
-
-
 }

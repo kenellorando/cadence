@@ -21,6 +21,9 @@ html {
   /*dont know if these will help. need to revisit android chrome later */
   height: 110%;
   min-height: 110%;
+  
+  
+  transition: background-image .25s ease-in;
 }
 
 body {

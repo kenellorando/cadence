@@ -31,7 +31,7 @@ body {
 }
 
 section {
-  padding-bottom: .56em;
+  padding: 1.11em;
 }
 
 p {
@@ -136,12 +136,9 @@ p {
 /* Bottom content under player */
 
 #content {
-  clear: both: /* In case I move the main stuff to the side */
-  padding: .86em;
-  padding-bottom: 1.5em;
+  clear: both:/* In case I move the main stuff to the side */
+  padding: 2em;
 }
-
-
 
 .content-left {}
 
@@ -233,12 +230,9 @@ a:active {
 
 @media (min-width: 64em) {
   html {
-    font-size: 1.1em;
+    font-size: 1em;
     padding: 2em 0em 2em 0em;
     margin: 0em 5em 2em 5em;
-  }
-  main {
-    font-size: 1.2em;
   }
   .content-left {
     padding-bottom: 1em;
@@ -257,7 +251,8 @@ a:active {
     border-width: 0px 0px 0px 0px;
   }
   #content {
-    padding: 2em;
+    padding: 2em 2em 2em 2em;
+    clear: both;
   }
   #nowPlaying {
     margin-bottom: 0em;
@@ -269,5 +264,17 @@ a:active {
     margin: auto;
     padding-top: 3em;
     width: 60%;
+  }
+}
+
+/* Vertical */
+@media (min-height: 43em) {
+  html {
+    font-size: 1.1em;
+  }
+  main {
+    font-size: 1.3em;
+    padding-top: 2em;
+    padding-bottom: 5em;
   }
 }

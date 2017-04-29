@@ -46,6 +46,7 @@ a:active {
 @media (min-width: 64em) {
   main {
     transform: translateX(30%);
+    transition: transform 1s;
   }
 }
 

@@ -2,6 +2,8 @@
 html {
   background-image: url(/media/lauren.png);
   opacity: 1;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -43,10 +45,9 @@ a:active {
 
 @media (min-width: 64em) {
   main {
-    float: right;
+    transform: translateX(30%);
   }
-  #content {
-    padding-top: 9em;
-    clear: both;
-  }
+}
+
+
 }

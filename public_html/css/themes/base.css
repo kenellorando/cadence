@@ -30,6 +30,11 @@ body {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
+main {
+  transform: translateX(0, 0);
+  transition: transform 1s;
+}
+
 section {
   padding: 1.11em;
 }
@@ -267,7 +272,9 @@ a:active {
   }
 }
 
+
 /* Vertical */
+
 @media (min-height: 43em) {
   html {
     font-size: 1.1em;

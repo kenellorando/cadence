@@ -15,7 +15,7 @@ function selectCyberpunkBartender() {
 function selectMayberry() {
   
   document.getElementById("selected-css").href = "/css/themes/mayberry.css";
-  document.getElementById("subtitle").innerHTML = "A Rhythmic Experience";
+  document.getElementById("subtitle").innerHTML = "A Rhythmic Ξxperience";
   localStorage.setItem('themeKey', 'mayberry');
 }
 

@@ -14,7 +14,7 @@ body {
 #title {
   font-family: 'Sawarabi Mincho', serif;
   font-style: italic;
-  transform: scale(1.4) translateY(-.2em);
+  transform: scale(1.2, 1.4) translateY(-.1em);
 }
 
 @media (min-width: 37em) {

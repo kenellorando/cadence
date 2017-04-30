@@ -2,12 +2,14 @@
 @import url(//fonts.googleapis.com/earlyaccess/sawarabimincho.css);
 */
 
+
 /*
 Downloaded from https://www.axfc.net/u/link.pl?dr=10287785395764&file=3679198.dat 
 */
+
 @font-face {
-    font-family: chikara-dzuyoku-b;
-    src: url(/css/fonts/851CHIKARA-DZUYOKU_kanaB.ttf);
+  font-family: chikara-dzuyoku-b;
+  src: url(/css/fonts/851CHIKARA-DZUYOKU_kanaB.ttf);
 }
 
 html {

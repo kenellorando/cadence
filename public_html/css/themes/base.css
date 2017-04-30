@@ -24,7 +24,7 @@ html {
   /* Keeps the horizonal scroll bar from appearing during theme transition */
   max-width: 100%;
   overflow-x: hidden;
-  transition: background-image .25s ease-in;
+  transition: background-image .25s ease;
 }
 
 body {
@@ -61,6 +61,11 @@ p {
   text-align: center;
   padding: 1.1em .23em 0em .23em;
   margin-top: 0;
+}
+
+#title,
+#subtitle {
+  transition: .25s ease;
 }
 
 #subtitle {

@@ -1,0 +1,29 @@
+@import url(//fonts.googleapis.com/earlyaccess/sawarabimincho.css);
+html {
+  background-image: url(/media/misaka2.jpg);
+  background-position: left;
+}
+
+body {
+  /*Opacity of content within body*/
+  opacity: 1;
+  /*Opacity of background itself */
+  background: rgba(0, 0, 0, .5);
+}
+
+#title {
+  font-family: 'Sawarabi Mincho', serif;
+  font-style: italic;
+  transform: scale(1.4) translateY(-.2em);
+}
+
+@media (min-width: 37em) {
+  html {
+    padding: 0;
+    margin: 0;
+  }
+  body {
+    padding: 2em 5em;
+    margin: 0;
+  }
+}

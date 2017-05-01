@@ -55,6 +55,12 @@
   color: white;
   padding: .56em 0em;
   width: 100%;
+
+  transition: .5 all ease;
+  -webkit-transition: .5s all ease;
+  -moz-transition: .5s all ease;
+  -o-transition: .5s all ease;
+  -ms-transition: .5s all ease;
 }
 
 
@@ -70,6 +76,11 @@
 
 .dropdown:hover .dropdown-content {
   opacity: 1;
+}
+
+.dropdown-content button:hover {
+  background-color: #f0f0f0;
+  color: black;
 }
 
 

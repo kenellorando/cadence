@@ -1,0 +1,3 @@
+[submodule "database/cadence-database-populator"]
+	path = database/cadence-database-populator
+	url = https://github.com/kenellorando/cadence-database-populator

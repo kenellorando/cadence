@@ -11,16 +11,14 @@ function clock() {
   var currentMinute = time.getMinutes();
   var currentSecond = time.getSeconds();
   //var currentMillisecond = time.getMilliseconds();
-  
+
   currentHour = checkTime(currentHour);
   currentMinute = checkTime(currentMinute);
   currentSecond = checkTime(currentSecond);
-  
-  
+
   document.getElementById("clock").innerHTML = currentHour + ":" + currentMinute + ":" + currentSecond;
 }
 
 window.setInterval(function () {
-  clock();
-  serverClock();
+  clock();\
 }, 1000);

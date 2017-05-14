@@ -1,22 +1,21 @@
 html {
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
-  background-color: rebeccapurple;
+  background-color: #220a3c;
 }
 
-html, body {
-    margin: 0;
-    height: 100%;
+body {
+  /*Opacity of content within body*/
+  opacity: 1;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0);
+  padding: 1em;
 }
 
-h1 {
-  font-size: 1.3em;
-  padding: 0;
-}
+h1 {}
 
 #heading-time {
   font-size: 1.3em;
-  padding: 1em;
 }
 
 li {
@@ -25,5 +24,11 @@ li {
   padding-bottom: 1em;
 }
 
-
-
+@media (min-width: 37em) {
+  html {
+    font-size: 1.2em;
+  }
+  body {
+    padding: 2em 5em;
+  }
+}

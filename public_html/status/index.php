@@ -20,30 +20,27 @@
   <link rel="stylesheet" href="/css/normalize.css">
   <!-- BASE CSS -->
   <link rel="stylesheet" id="base-css" href="/css/themes/base.css">
-  <!-- Selected Style CSS -->
-  <link rel="stylesheet" id="selected-css" href="">
   <!-- Status CSS -->
   <link rel="stylesheet" href="/css/status/status.css">
 
   <!-- jQuery Google CDN -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <!-- Theme changes after base -->
-  <script src="/js/theme-changer.js"></script>
   <!-- Clock -->
   <script src="/js/clock.js"></script>
 </head>
 
 
-<body onload="defaultTheme(); clock();">
-  <h1>Cadence Radio Live Status</h1>
+<body onload="clock();">
+  <h1>Cadence Radio Status</h1>
   <!-- Clock -->
   <div id="heading-time">
-    <div>Server Time:
+    <div>Data as of Server Time:
       <?php
       date_default_timezone_set('America/Chicago');
 
       $timestamp = time();
-      $date_time = date("d-m-Y (D) H:i:s", $timestamp);
+      //$date_time = date("d-m-Y (D) H:i:s", $timestamp);
+      $date_time = date("H:i:s", $timestamp);
       echo "$date_time";
       ?> (UTC-6)
     </div>
@@ -51,9 +48,9 @@
   </div>
 
   <ul>
-    <li>Music Server Status:
+    <li>Music Streaming Server:
       <?php
-          $host = 'http://169.254.131.220'; 
+          $host = '169.254.131.220'; 
             $port = 8000; 
             $waitTimeoutInSeconds = 3; 
             if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
@@ -64,9 +61,9 @@
             fclose($fp);
         ?>
     </li>
-    <li>Song Metadata Database Status:
+    <li>Song Metadata Database:
       <?php
-        $host = 'http://169.254.131.220'; 
+        $host = '169.254.131.220'; 
           $port = 3306; 
           $waitTimeoutInSeconds = 3; 
           if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   

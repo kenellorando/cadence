@@ -7,7 +7,7 @@
   <meta name="description" content="Cadence Radio - An open source, commercial-free radio by Ken Ellorando " />
   <meta name="keywords" content="Cadence, Radio, Cadence Radio, CadenceRadio, free radio, open source radio, github, Ken Ellorando radio" />
 
-  <title>Cadence Radio</title>
+  <title>Cadence Status</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
   <!-- OLD FONT: Permenant Marker
@@ -48,10 +48,10 @@
   </div>
 
   <ul>
-    <li>localhost database:
+    <li>Webserver FTP:
       <?php
           $host = 'localhost'; 
-            $port = 3306; 
+            $port = 21; 
             $waitTimeoutInSeconds = 3; 
             if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
                echo ("<div style='color:#7CFC00'> ONLINE </div>");
@@ -61,20 +61,7 @@
             fclose($fp);
         ?>
     </li>
-    <li>localhost HTTPS:
-      <?php
-          $host = 'localhost'; 
-            $port = 443; 
-            $waitTimeoutInSeconds = 3; 
-            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
-               echo ("<div style='color:#7CFC00'> ONLINE </div>");
-            } else {
-               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
-            } 
-            fclose($fp);
-        ?>
-    </li>
-    <li>localhost dummy port:
+    <li>Webserver dummy port:
       <?php
           $host = 'localhost'; 
             $port = 100000; 

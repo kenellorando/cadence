@@ -48,6 +48,71 @@
   </div>
 
   <ul>
+    <li>localhost database:
+      <?php
+          $host = 'localhost'; 
+            $port = 3306; 
+            $waitTimeoutInSeconds = 3; 
+            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
+               echo ("<div style='color:#7CFC00'> ONLINE </div>");
+            } else {
+               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
+            } 
+            fclose($fp);
+        ?>
+    </li>
+    <li>localhost HTTPS:
+      <?php
+          $host = 'localhost'; 
+            $port = 443; 
+            $waitTimeoutInSeconds = 3; 
+            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
+               echo ("<div style='color:#7CFC00'> ONLINE </div>");
+            } else {
+               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
+            } 
+            fclose($fp);
+        ?>
+    </li>
+    <li>localhost dummy port:
+      <?php
+          $host = 'localhost'; 
+            $port = 100000; 
+            $waitTimeoutInSeconds = 3; 
+            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
+               echo ("<div style='color:#7CFC00'> ONLINE </div>");
+            } else {
+               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
+            } 
+            fclose($fp);
+        ?>
+    </li>
+    <li>Google HTTP port:
+      <?php
+          $host = 'google.com'; 
+            $port = 80; 
+            $waitTimeoutInSeconds = 3; 
+            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
+               echo ("<div style='color:#7CFC00'> ONLINE </div>");
+            } else {
+               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
+            } 
+            fclose($fp);
+        ?>
+    </li>
+    <li>Google dummy port:
+      <?php
+          $host = 'google.com'; 
+            $port = 100000; 
+            $waitTimeoutInSeconds = 3; 
+            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
+               echo ("<div style='color:#7CFC00'> ONLINE </div>");
+            } else {
+               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
+            } 
+            fclose($fp);
+        ?>
+    </li>
     <li>Music Streaming Server:
       <?php
           $host = '169.254.131.220'; 

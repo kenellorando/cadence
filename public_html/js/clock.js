@@ -14,8 +14,9 @@ function clock() {
   
   currentMinute = checkTime(currentMinute);
   currentSecond = checkTime(currentSecond);
-
-  document.getElementById("clock").innerHTML = "Local Time: " + currentHour + ":" + currentMinute + ":" + currentSecond;
+  
+  
+  document.getElementById("clock").innerHTML = currentHour + ":" + currentMinute + ":" + currentSecond;
 }
 
 window.setInterval(function () {

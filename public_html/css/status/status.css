@@ -1,0 +1,17 @@
+html {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+}
+
+#clock {
+  font-size: 1.5em;
+}
+
+li {
+  list-style: none;
+  font-size: 1.4em;
+  padding-bottom: 1em;
+}
+
+
+

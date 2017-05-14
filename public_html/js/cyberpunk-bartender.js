@@ -33,7 +33,7 @@ function cyberpunkBackgroundSwitcher() {
     var URLs = [
     "cyberpunk-bartender.gif",
     "cyberpunk-bartender2.gif",
-    "cyberpunk-bartender3.gif"];
+    "cyberpunk-bartender3.gif"]; // Nighttime background intentially excluded.
 
     // A URL to the folder in which backgrounds live
     // First, our current location....

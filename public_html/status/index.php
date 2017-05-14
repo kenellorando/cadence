@@ -20,23 +20,39 @@
   <link rel="stylesheet" href="/css/normalize.css">
   <!-- BASE CSS -->
   <link rel="stylesheet" id="base-css" href="/css/themes/base.css">
+  <!-- Selected Style CSS -->
+  <link rel="stylesheet" id="selected-css" href="">
   <!-- Status CSS -->
-  <link rel="stylesheet" id="selected-css" href="/css/status/status.css">
+  <link rel="stylesheet" href="/css/status/status.css">
 
   <!-- jQuery Google CDN -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <!-- Theme changes after base -->
+  <script src="/js/theme-changer.js"></script>
   <!-- Clock -->
   <script src="/js/clock.js"></script>
 </head>
 
 
-<body onload="clock();">
+<body onload="defaultTheme(); clock();">
+  <h1>Cadence Radio Live Status</h1>
   <!-- Clock -->
-  <div id="clock"></div>
+  <div id="heading-time">
+    <div>Server Time:
+      <?php
+      date_default_timezone_set('America/Chicago');
+
+      $timestamp = time();
+      $date_time = date("d-m-Y (D) H:i:s", $timestamp);
+      echo "$date_time";
+      ?> (UTC-6)
+    </div>
+    <div>Local Time: <span id="clock"></span></div>
+  </div>
 
   <ul>
-    <li>Cadence Music Server Status:
-        <?php
+    <li>Music Server Status:
+      <?php
           $host = 'http://169.254.131.220'; 
             $port = 8000; 
             $waitTimeoutInSeconds = 3; 
@@ -48,8 +64,8 @@
             fclose($fp);
         ?>
     </li>
-    <li>Cadence Database Status
-        <?php
+    <li>Song Metadata Database Status:
+      <?php
         $host = 'http://169.254.131.220'; 
           $port = 3306; 
           $waitTimeoutInSeconds = 3; 
@@ -62,11 +78,6 @@
       ?>
     </li>
   </ul>
-
-
-
-
-
 </body>
 
 </html>

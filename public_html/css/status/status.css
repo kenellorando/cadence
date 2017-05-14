@@ -1,15 +1,27 @@
 html {
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
+  background-color: rebeccapurple;
 }
 
-#clock {
-  font-size: 1.5em;
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+h1 {
+  font-size: 1.3em;
+  padding: 0;
+}
+
+#heading-time {
+  font-size: 1.3em;
+  padding: 1em;
 }
 
 li {
   list-style: none;
-  font-size: 1.4em;
+  font-size: 1.2em;
   padding-bottom: 1em;
 }
 

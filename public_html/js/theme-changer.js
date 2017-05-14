@@ -6,9 +6,17 @@ function selectChicagoEvening() {
 }
 
 function selectCyberpunkBartender() {
-  document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender.css";
   document.getElementById("title").innerHTML = "CADEN<span>C</span>E";
   document.getElementById("subtitle").innerHTML = "A Retro Cyberpunk Jukebox";
+  
+  var currentTime = new Date().getHours();
+  // DAYTIME: 6AM - 10PM
+  // NIGHTTIME: 
+  if (currentTime >= 6 && currentTime < 22) {
+    document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender.css";
+  } else {
+    document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender-night.css";
+  }
   localStorage.setItem('themeKey', 'cyberpunkBartender');
 }
 

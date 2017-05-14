@@ -12,6 +12,7 @@ function clock() {
   var currentSecond = time.getSeconds();
   //var currentMillisecond = time.getMilliseconds();
   
+  currentHour = checkTime(currentHour);
   currentMinute = checkTime(currentMinute);
   currentSecond = checkTime(currentSecond);
   

@@ -44,7 +44,7 @@
 
     <div id="player">
       <!-- Connection to source -->
-      <audio id="stream" src="http://198.37.24.193:8000/cadence1"></audio>
+      <audio id="stream" src="http://169.254.131.220:8000/cadence1"></audio>
 
       <!-- Display title/artist, may add more later -->
       <div id="nowPlaying">
@@ -76,8 +76,10 @@
         <div class="dropdown-content">
           <button type="button" id="selectChicagoEvening" onclick="selectChicagoEvening()">Chicago Evening</button>
           <button type="button" id="selectCyberpunkBartender" onclick="selectCyberpunkBartender()">Cyberpunk Bartender</button>
+          <!--
           <button type="button" id="selectMayberry" onclick="selectMayberry()">Mayberry</button>
           <button type="button" id="selectElectromaster" onclick="selectElectromaster()">Electromaster</button>
+          -->
         </div>
       </div>
     </div>
@@ -86,8 +88,7 @@
     <div class="content-left">
       <section>
         <h2>Announcements:</h2>
-        <h3>5/5: Server is being moved and will be offline for a few days</h3>
-        <h3>4/29: Mayberry and Electromaster themes available for a limited time!</h3>
+        <h3>5/13: Music server will be offline for much longer than expected, possibly a couple more weeks.</h3>
       </section>
       <section>
         <h2>About Cadence:</h2>

@@ -1,3 +1,6 @@
+// There are TWO server addresses on this page
+//
+
 // I'll put all the default onload stuff in here
 function defaultPlayer() {
   // Selects either the localstorage volume or a default value
@@ -15,7 +18,7 @@ function playerToggle() {
   if (stream.paused) {
     // Loads up the real stream again if mobile
     if (mobile) {
-      stream.src = "http://198.37.24.193:8000/cadence1";
+      stream.src = "http://169.254.131.220:8000/cadence1";
     }
     stream.load();
     stream.play();
@@ -41,8 +44,8 @@ function volumeToggle(vol) {
 
 // GETS and displays currently playing info
 function radioTitle() {
-  // Located on testament's stream web folder
-  var url = 'http://198.37.24.193:8000/nowPlaying.xsl';
+  // Located on Testament's stream client 'web' folder
+  var url = 'http://169.254.131.220:8000/now-playing.xsl';
 
   $.ajax({
     type: 'GET',

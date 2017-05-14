@@ -5,14 +5,14 @@
 
 html {
   color: #f0f0f0;
-  background-image: url(/media/cyberpunk-bartender2.gif);
+  background-image: url(/media/cyberpunk-bartender4.gif);
 }
 
 body {
   /*Opacity of content within body*/
   opacity: 1;
   /*Opacity of background itself */
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .all {

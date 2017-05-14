@@ -1,6 +1,6 @@
 function selectChicagoEvening() {
   cancelSwitcher();
-  
+
   document.getElementById("selected-css").href = "/css/themes/chicago-evening.css";
   document.getElementById("subtitle").innerHTML = "A Rhythmic Experience";
   localStorage.setItem('themeKey', 'chicagoEvening');
@@ -8,9 +8,22 @@ function selectChicagoEvening() {
 
 function selectCyberpunkBartender() {
   cancelSwitcher();
-  
-  document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender.css";
+
+  document.getElementById("title").innerHTML = "CADEN<span>C</span>E";
   document.getElementById("subtitle").innerHTML = "A Retro Cyberpunk Jukebox";
+
+  var currentHour = new Date().getHours();
+
+  // IF condition states the daytime hours
+  // 8:00:00 PM - 9:59:59 AM
+  if (currentHour >= 8 && currentHour < 22) {
+    document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender.css";
+    cyberpunkNight=true;
+  } else {
+    document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender-night.css";
+    cyberpunkNight=false;
+  }
+
   localStorage.setItem('themeKey', 'cyberpunkBartender');
 
   cyberpunkBackgroundSwitcher();

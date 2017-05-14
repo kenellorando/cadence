@@ -1,6 +1,8 @@
 var cyberpunkCancel; // So that switches can be canceled on demand
 var cyberpunkLast = -1; // Index of the last chosen background
 
+var cyberpunkNight=0; // Are we in night mode?
+
 // Cancels a waiting switch and clears a set image
 function cancelSwitcher() {
     clearTimeout(cyberpunkCancel);
@@ -20,6 +22,10 @@ function fadeFromWhite() {
 
 // Handles the switching of the cyberpunk bartender background
 function cyberpunkBackgroundSwitcher() {
+    // If we're in night-mode, do not perform any transition
+    if (cyberpunkNight)
+        return;
+
     var html = document.getElementsByTagName("html")[0];
     html.classList.remove("transition"); // Cancel any waiting transition
 

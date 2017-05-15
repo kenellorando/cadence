@@ -1,3 +1,10 @@
 html {
   background-image: url("/media/chicago-traffic.gif");
 }
+
+body {
+  /*Opacity of content within body*/
+  opacity: .8;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0.8);
+}

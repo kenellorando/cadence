@@ -197,6 +197,14 @@ td {
   display: none;
 }
 
+#oldToggle {
+  color: cyan;
+}
+
+#oldToggle:hover {
+  color: darkcyan;
+}
+
 footer {
   clear: both;
   line-height: 1.4em;

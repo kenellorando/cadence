@@ -160,6 +160,10 @@ p {
   padding: 2em 0em;
 }
 
+.announcement {
+  line-height: 1.3em;
+}
+
 .content-left {}
 
 
@@ -284,6 +288,9 @@ a:active {
   #volume {
     width: 50%;
   }
+  .announcement {
+    width: 85%;
+  }
   #statusTable {
     padding: .3em 1.2em;
   }
@@ -339,5 +346,15 @@ a:active {
     font-size: 1.3em;
     padding-top: 2em;
     padding-bottom: 5em;
+  }
+}
+
+
+/* Tallest and widest screens */
+
+@media (min-height: 43em) and (min-width: 85em) {
+  body {
+    padding-left: 13em;
+    padding-right: 12em;
   }
 }

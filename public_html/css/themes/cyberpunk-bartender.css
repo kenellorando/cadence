@@ -1,16 +1,22 @@
+/*
 @import url('https://fonts.googleapis.com/css?family=VT323');
 @import url('https://fonts.googleapis.com/css?family=Share+Tech+Mono');
+*/
+
 html {
   color: #f0f0f0;
   background-image: url(/media/cyberpunk-bartender2.gif);
 }
 
 body {
+  /*Opacity of content within body*/
   opacity: 1;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .all {
-  background-color: rgba(0, 0, 0, .6);
+  background-color: rgba(0, 0, 0, .1);
 }
 
 #title {

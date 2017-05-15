@@ -35,7 +35,13 @@
   <!-- Theme changes after base -->
   <script src="/js/theme-changer.js"></script>
   <!-- Service status -->
-  <script src="js/service-status.js"></script>
+  <script type="text/javascript">
+    jQuery(function($) {
+      $('#statusMusicStream').load('/status/index.php #statusMusicStream');
+      $('#statusSongDatabase').load('/status/index.php #statusSongDatabase');
+      $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
+    });
+  </script>
 </head>
 
 
@@ -90,14 +96,27 @@
   </main>
   <div id="content">
     <div class="content-left">
+
       <section>
         <h2>Announcements:</h2>
-        <h3>5/14: Built a prototype service status checker, check out the link below</h3>
+        <h3>5/15: Still looking for a way to set the music server back up in a reliable way. May unfortunately takes weeks. Until then, work continues on the database.</h3>
+      </section>
 
+      <section>
+        <h2>About Cadence:</h2>
+        <p>Cadence is an online radio heavily inspired by 4chan/8ch's <a href="http://r-a-d.io/">R/a/dio</a>. The project is my first endeavour to practice a full range of IT-skills.</p>
 
-        <h4><a onClick="checkStatus(); return false;" id="statusToggle" href=".">Show Service Status</a></h4>
+        <p>By default, the server plays all the genres of music I like, mostly classic rock, synthpop, and metal. But you'll also find anything from rap to orchestral to Jpop. I occasionally override the server and manually DJ.</p>
 
-        <table id="statusTable">
+        <p>If you're interested in seeing this project's development, nearly everything is available on GitHub: <a href="https://github.com/kenellorando/CadenceRadio">source</a>/<a href="https://github.com/kenellorando/CadenceRadio/issues">issues</a>.</p>
+        <p><b>Cadence Radio is a DMCA compliant, non-commercial webcast made for educational purposes.</b></p>
+      </section>
+    </div>
+
+    <div class="content-right">
+      <section>
+        <h2>Service Status: </h2>
+        <table id="statusTable" style="display: block">
           <tr>
             <td>Music Stream Server</td>
             <td>
@@ -117,23 +136,12 @@
             </td>
           </tr>
         </table>
-
       </section>
-      <section>
-        <h2>About Cadence:</h2>
-        <p>Cadence is an online radio heavily inspired by 4chan/8ch's <a href="http://r-a-d.io/">R/a/dio</a>. The project is my first endeavour to practice a full range of IT-skills.</p>
-
-        <p>By default, the server plays all the genres of music I like, mostly classic rock, synthpop, and metal. But you'll also find anything from rap to orchestral to Jpop. I occasionally override the server and manually DJ.</p>
-
-        <p>If you're interested in seeing this project's development, nearly everything is available on GitHub: <a href="https://github.com/kenellorando/CadenceRadio">source</a>/<a href="https://github.com/kenellorando/CadenceRadio/issues">issues</a>.</p>
-        <p><b>Cadence Radio is a DMCA compliant, non-commercial webcast made for educational purposes.</b></p>
-      </section>
-    </div>
-
-    <div class="content-right">
       <section>
         <h2>Changelog:</h2>
         <ul>
+          <li>5/15: New status checker displays live-info of services</li>
+          <li>5/14: Cyberpunk theme changes from a day/night version based on client time (10PM-8AM). </li>
           <li>4/29: Transitions for theme switching added + Two new themes: Mayberry &amp; Electromaster + Sizing correction for all screen sizes</li>
           <li>4/9: New Server OS + New domain name!</li>
           <li>3/29: User set volume is now cached</li>
@@ -151,6 +159,8 @@
     </div>
 
   </div>
+
+
   <!-- /CONTENT -->
   <footer>A project by Ken Ellorando</footer>
   <!-- Do not remove footer; clears backdrop below content -->

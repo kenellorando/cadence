@@ -4,7 +4,6 @@ jQuery(function ($) {
   $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
   
   // Tests
-  $('#statusSongDatabaseTEST').load('/status/index.php #statusSongDatabaseTEST');
 });
 
 function show() {

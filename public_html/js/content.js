@@ -2,6 +2,9 @@ jQuery(function ($) {
   $('#statusMusicStream').load('/status/index.php #statusMusicStream');
   $('#statusSongDatabase').load('/status/index.php #statusSongDatabase');
   $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
+  
+  // Tests
+  $('#statusSongDatabaseTEST').load('/status/index.php #statusSongDatabaseTEST');
 });
 
 function show() {

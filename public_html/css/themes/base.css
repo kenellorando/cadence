@@ -177,15 +177,16 @@ p {
 }
 
 td {
-  text-align: justify;
+  text-align: left;
   width: 100%;
   padding-top: .25em;
   padding-bottom: .25em;
 }
 
-.check {
+td .check {
   color: mediumpurple;
-  text-align: center;
+  text-align: right;
+  
 }
 
 .content-right {

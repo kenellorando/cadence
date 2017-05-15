@@ -157,7 +157,7 @@ p {
 #content {
   clear: both;
   /* In case I move the main stuff to the side */
-  padding: 2em;
+  padding: 2em 0em;
 }
 
 .content-left {}

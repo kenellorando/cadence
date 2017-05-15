@@ -54,7 +54,7 @@
         <?php
           $host = '169.254.131.220'; 
             $port = 8000; 
-            $waitTimeoutInSeconds = 3; 
+            $waitTimeoutInSeconds = 2; 
             if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
                echo ("<div style='color:#7CFC00'> ONLINE </div>");
             } else {
@@ -68,9 +68,9 @@
     <li>
       <div id="statusSongDatabase">
         <?php
-        $host = '169.254.131.220'; 
-          $port = 3306; 
-          $waitTimeoutInSeconds = 3; 
+        $host = 'localhost'; 
+          $port = 2083; 
+          $waitTimeoutInSeconds = 2; 
           if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
              echo ("<div style='color:#7CFC00'> ONLINE </div>");
             } else {
@@ -86,7 +86,7 @@
         <?php
           $host = 'localhost'; 
             $port = 21; 
-            $waitTimeoutInSeconds = 3; 
+            $waitTimeoutInSeconds = 2; 
             if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
                echo ("<div style='color:#7CFC00'> ONLINE </div>");
             } else {

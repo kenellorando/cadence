@@ -192,6 +192,11 @@ td {
   margin-bottom: .4em;
 }
 
+/* Changelog old */
+#old {
+  display: none;
+}
+
 footer {
   clear: both;
   line-height: 1.4em;

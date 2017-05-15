@@ -34,13 +34,25 @@
   <script src="/js/player.js"></script>
   <!-- Theme changes after base -->
   <script src="/js/theme-changer.js"></script>
-  <!-- Service status -->
+  <!-- Service status, show/hide function -->
   <script type="text/javascript">
     jQuery(function($) {
       $('#statusMusicStream').load('/status/index.php #statusMusicStream');
       $('#statusSongDatabase').load('/status/index.php #statusSongDatabase');
       $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
     });
+
+    function show() {
+      var old = document.getElementById("old");
+
+      if (old.style.display === 'block') {
+        old.style.display = 'none';
+        document.getElementById("oldToggle").innerHTML = "Show Full History";
+      } else {
+        old.style.display = 'block';
+        document.getElementById("oldToggle").innerHTML = "Hide Full History";
+      }
+    }
   </script>
 </head>
 
@@ -147,13 +159,16 @@
           <li>3/29: User set volume is now cached</li>
           <li>3/26: Stream toggle no longer resets theme or volume + user picked themes are now cached + Cyberpunk Bartender updated</li>
           <li>3/25: Live display of artist and track make Cadence DMCA compliant</li>
-          <li>3/24: Database populator tool completed</li>
-          <li>3/22: Stream/source moved to dedicated server</li>
-          <li>3/3: Changable themes (new theme: Cyberpunk Bartender) + fixed Android Chrome background sizing bug</li>
-          <li>3/2: Custom stream/volume controls + pause desynchronization fixed (unless stream ends)</li>
-          <li>3/1: Front-end prototype design</li>
-          <li>2/28: Auto streaming (until the IP expires)</li>
-          <li>2/26: Streaming client and stream source</li>
+          <h4><a id="oldToggle" onclick="show()">Show Full History</a></h4>
+          <div id="old">
+            <li>3/24: Database populator tool completed</li>
+            <li>3/22: Stream/source moved to dedicated server</li>
+            <li>3/3: Changable themes (new theme: Cyberpunk Bartender) + fixed Android Chrome background sizing bug</li>
+            <li>3/2: Custom stream/volume controls + pause desynchronization fixed (unless stream ends)</li>
+            <li>3/1: Front-end prototype design</li>
+            <li>2/28: Auto streaming (until the IP expires)</li>
+            <li>2/26: Streaming client and stream source</li>
+          </div>
         </ul>
       </section>
     </div>

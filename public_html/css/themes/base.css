@@ -155,7 +155,8 @@ p {
 /* Bottom content under player */
 
 #content {
-  clear: both;/* In case I move the main stuff to the side */
+  clear: both;
+  /* In case I move the main stuff to the side */
   padding: 2em;
 }
 
@@ -192,7 +193,9 @@ td {
   margin-bottom: .4em;
 }
 
+
 /* Changelog old */
+
 #old {
   display: none;
 }

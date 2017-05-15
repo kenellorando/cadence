@@ -1,0 +1,32 @@
+html {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  background-color: #220a3c;
+}
+
+body {
+  /*Opacity of content within body*/
+  opacity: 1;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0);
+  padding: 1em;
+}
+
+#heading-time {
+  font-size: 1.3em;
+}
+
+li {
+  list-style: none;
+  font-size: 1.2em;
+  padding-bottom: 1em;
+}
+
+@media (min-width: 37em) {
+  html {
+    font-size: 1.2em;
+  }
+  body {
+    padding: 2em 5em;
+  }
+}

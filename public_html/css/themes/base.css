@@ -24,7 +24,9 @@ html {
   /* Keeps the horizonal scroll bar from appearing during theme transition */
   max-width: 100%;
   overflow-x: hidden;
-  transition: background-image .25s ease-in;
+  transition: background-image .25s ease;
+  padding: 0;
+  margin: 0;
 }
 
 body {
@@ -32,6 +34,8 @@ body {
   opacity: .8;
   /*Opacity of background itself */
   background-color: rgba(0, 0, 0, 0.7);
+  padding: 0;
+  margin: 0;
 }
 
 main {
@@ -61,6 +65,11 @@ p {
   text-align: center;
   padding: 1.1em .23em 0em .23em;
   margin-top: 0;
+}
+
+#title,
+#subtitle {
+  transition: .25s ease;
 }
 
 #subtitle {
@@ -141,7 +150,6 @@ p {
   margin-bottom: 2em;
 }
 
-
 /* Bottom content under player */
 
 #content {
@@ -221,10 +229,11 @@ a:active {
 @media (min-width: 37em) {
   html {
     font-size: 1em;
-    margin: 2em 5em 2em 5em;
+    /*margin: 2em 5em 2em 5em;*/
   }
   body {
-    margin-bottom: 2em;
+    /*margin-bottom: 2em;*/
+    padding: 2em 5em;
   }
   #title {
     font-size: 3.6em;
@@ -240,8 +249,8 @@ a:active {
 @media (min-width: 64em) {
   html {
     font-size: 1em;
-    padding: 2em 0em 2em 0em;
-    margin: 0em 5em 2em 5em;
+    /*padding: 2em 0em 2em 0em;
+    margin: 0em 5em 2em 5em;*/
   }
   .content-left {
     padding-bottom: 1em;

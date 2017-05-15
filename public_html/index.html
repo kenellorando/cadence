@@ -34,6 +34,8 @@
   <script src="/js/player.js"></script>
   <!-- Theme changes after base -->
   <script src="/js/theme-changer.js"></script>
+  <!-- Service status -->
+  <script src="js/service-status.js"></script>
 </head>
 
 
@@ -91,8 +93,31 @@
       <section>
         <h2>Announcements:</h2>
         <h3>5/14: Built a prototype service status checker, check out the link below</h3>
-        
-        <h4><a href="http://cadence.kenellorando.com/status" target="_blank">Check Service Status</a></h4>
+
+
+        <h4><a onClick="checkStatus(); return false;" id="statusToggle" href=".">Show Service Status</a></h4>
+
+        <table id="statusTable">
+          <tr>
+            <td>Music Stream Server</td>
+            <td>
+              <div class="check" id="statusMusicStream">Checking...</div>
+            </td>
+          </tr>
+          <tr>
+            <td>Song Metadata Database</td>
+            <td>
+              <div class="check" id="statusSongDatabase">Checking...</div>
+            </td>
+          </tr>
+          <tr>
+            <td>Web Server FTP</td>
+            <td>
+              <div class="check" id="statusWebserverFTP">Checking...</div>
+            </td>
+          </tr>
+        </table>
+
       </section>
       <section>
         <h2>About Cadence:</h2>

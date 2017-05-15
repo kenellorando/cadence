@@ -35,25 +35,7 @@
   <!-- Theme changes after base -->
   <script src="/js/theme-changer.js"></script>
   <!-- Service status, show/hide function -->
-  <script type="text/javascript">
-    jQuery(function($) {
-      $('#statusMusicStream').load('/status/index.php #statusMusicStream');
-      $('#statusSongDatabase').load('/status/index.php #statusSongDatabase');
-      $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
-    });
-
-    function show() {
-      var old = document.getElementById("old");
-
-      if (old.style.display === 'block') {
-        old.style.display = 'none';
-        document.getElementById("oldToggle").innerHTML = "Show Full History";
-      } else {
-        old.style.display = 'block';
-        document.getElementById("oldToggle").innerHTML = "Hide Full History";
-      }
-    }
-  </script>
+  <script src="/js/content.js"></script>
 </head>
 
 
@@ -71,7 +53,6 @@
         <span id="artist_name">Track data is loading...</span>
         <span id="song_title"></span>
       </div>
-
 
       <!-- Buttons stacked-->
       <ul id="playerButtonList">

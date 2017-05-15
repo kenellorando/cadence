@@ -28,13 +28,6 @@
 </head>
 
 <body>
-  <h1 id="title">CADENCE</h1>
-  <p id="subtitle">A Name To Remember</p>
-
-
-
-
-
   <?php
 
     /* Attempt MySQL server connection. Assuming you are running MySQL

@@ -45,6 +45,7 @@ main {
 
 section {
   padding: 1.11em;
+  padding-bottom: 0;
 }
 
 p {
@@ -154,7 +155,7 @@ p {
 /* Bottom content under player */
 
 #content {
-  clear: both:/* In case I move the main stuff to the side */
+  clear: both;/* In case I move the main stuff to the side */
   padding: 2em;
 }
 
@@ -163,13 +164,9 @@ p {
 
 /* Status checker */
 
-#statusToggle {
-  color: cyan;
-}
-
 #statusTable {
   font-family: 'Roboto', sans-serif;
-  display: none;
+  /*display: none;*/
   font-size: 1.1em;
   background-color: rgba(0, 0, 0, .2);
 }

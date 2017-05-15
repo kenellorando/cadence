@@ -48,60 +48,10 @@
   </div>
 
   <ul>
-    <li>Webserver FTP:
-      <?php
-          $host = 'localhost'; 
-            $port = 21; 
-            $waitTimeoutInSeconds = 3; 
-            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
-               echo ("<div style='color:#7CFC00'> ONLINE </div>");
-            } else {
-               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
-            } 
-            fclose($fp);
-        ?>
-    </li>
-    <li>Webserver dummy port:
-      <?php
-          $host = 'localhost'; 
-            $port = 100000; 
-            $waitTimeoutInSeconds = 3; 
-            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
-               echo ("<div style='color:#7CFC00'> ONLINE </div>");
-            } else {
-               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
-            } 
-            fclose($fp);
-        ?>
-    </li>
-    <li>Google HTTP port:
-      <?php
-          $host = 'google.com'; 
-            $port = 80; 
-            $waitTimeoutInSeconds = 3; 
-            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
-               echo ("<div style='color:#7CFC00'> ONLINE </div>");
-            } else {
-               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
-            } 
-            fclose($fp);
-        ?>
-    </li>
-    <li>Google dummy port:
-      <?php
-          $host = 'google.com'; 
-            $port = 100000; 
-            $waitTimeoutInSeconds = 3; 
-            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
-               echo ("<div style='color:#7CFC00'> ONLINE </div>");
-            } else {
-               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
-            } 
-            fclose($fp);
-        ?>
-    </li>
-    <li>Music Streaming Server:
-      <?php
+    <!-- Primary Stream -->
+    <li>
+      <div id="statusMusicStream">
+        <?php
           $host = '169.254.131.220'; 
             $port = 8000; 
             $waitTimeoutInSeconds = 3; 
@@ -112,9 +62,12 @@
             } 
             fclose($fp);
         ?>
+      </div>
     </li>
-    <li>Song Metadata Database:
-      <?php
+    <!-- Metadata Database -->
+    <li>
+      <div id="statusSongDatabase">
+        <?php
         $host = '169.254.131.220'; 
           $port = 3306; 
           $waitTimeoutInSeconds = 3; 
@@ -125,6 +78,23 @@
           } 
           fclose($fp);
       ?>
+      </div>
+    </li>
+    <!-- Webserver FTP -->
+    <li>
+      <div id="statusWebserverFTP">
+        <?php
+          $host = 'localhost'; 
+            $port = 21; 
+            $waitTimeoutInSeconds = 3; 
+            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
+               echo ("<div style='color:#7CFC00'> ONLINE </div>");
+            } else {
+               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
+            } 
+            fclose($fp);
+        ?>
+      </div>
     </li>
   </ul>
 </body>

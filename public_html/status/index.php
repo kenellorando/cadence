@@ -71,8 +71,52 @@
         $host = 'localhost'; 
           $port = 2083; 
           $waitTimeoutInSeconds = 2; 
-          if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
-             echo ("<div style='color:#7CFC00'> ONLINE </div>");
+          if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){ 
+            
+             $servername = "localhost";
+        // Query has permission only to select
+        $username = "kenellor_query";
+        $password = "query1";
+
+        // Create connection
+        $con = new mysqli($servername, $username, $password);
+
+        // Check connection
+        if ($con->connect_error) {
+          // die("Failed " . $con->connect_error);
+          echo("<div style ='color:#FF6347'> ONLINE  (QUERYING FAILED) </div>");
+        } else {
+          echo ("<div style='color:#7CFC00'> ONLINE </div>");
+        }
+            } else {
+               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
+          } 
+          fclose($fp);
+      ?>
+      </div>
+      <!-- Tests the database with a wrong password -->
+      <div id="statusSongDatabaseTEST">
+        <?php
+        $host = 'localhost'; 
+          $port = 2083; 
+          $waitTimeoutInSeconds = 2; 
+          if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){ 
+            
+             $servername = "localhost";
+        // Query has permission only to select
+        $username = "kenellor_query";
+        $password = "query11";
+
+        // Create connection
+        $con = new mysqli($servername, $username, $password);
+
+        // Check connection
+        if ($con->connect_error) {
+          // die("Failed " . $con->connect_error);
+          echo("<div style ='color:#FF6347'> ONLINE  (QUERYING FAILED) </div>");
+        } else {
+          echo ("<div style='color:#7CFC00'> ONLINE </div>");
+        }
             } else {
                echo ("<div style ='color:#cc0000'> OFFLINE </div>");
           } 

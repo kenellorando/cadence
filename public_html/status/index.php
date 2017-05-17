@@ -18,10 +18,6 @@
 
   <!-- Normalization CSS -->
   <link rel="stylesheet" href="/css/normalize.css">
-  <!-- BASE CSS -->
-  <link rel="stylesheet" id="base-css" href="/css/themes/base.css">
-  <!-- Status CSS -->
-  <link rel="stylesheet" href="/css/status/status.css">
 
   <!-- jQuery Google CDN -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>

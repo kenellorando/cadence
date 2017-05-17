@@ -18,21 +18,16 @@
 
   <!-- Normalization CSS -->
   <link rel="stylesheet" href="/css/normalize.css">
-  <!-- BASE CSS -->
+  <!-- Radio Base CSS -->
   <link rel="stylesheet" id="base-css" href="/css/themes/base.css">
-  <!-- Selected Style CSS -->
+  <!-- Selected style CSS -->
   <link rel="stylesheet" id="selected-css" href="">
-
-  <!-- Volume Control CSS -->
-  <link href="/css/volume-bar.css" rel="stylesheet">
-  <!-- Dropdown CSS -->
-  <link href="/css/dropdown.css" rel="stylesheet">
 
   <!-- jQuery Google CDN -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <!-- Theme changes after base -->
+  <!-- Theme Changer -->
   <script src="/js/theme-changer.js"></script>
-  <!-- Player buttons, now playing info, service status, toggle functions -->
+  <!-- Radio-page script -->
   <script src="/js/radio-page.js"></script>
 </head>
 
@@ -63,7 +58,6 @@
         </li>
         <li>
           <!-- VOLUME -->
-          <!-- The volume bar will glitch at first without value="100" because the default volume is always at 100 on load -->
           <input type="range" id="volume" value="1" min="0" max="1" step=".01" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)">
         </li>
       </ul>

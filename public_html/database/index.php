@@ -22,6 +22,9 @@
 </head>
 
 <body>
+  <h1>Cadence Database</h1>
+
+  <h2>Webserver Database Accessing Test: </h2>
   <?php
 
     /* Attempt MySQL server connection. Assuming you are running MySQL server with default setting (user 'root' with no password) */
@@ -62,39 +65,7 @@
     /* Close connection */
     mysqli_close($link);
     ?>
-    <div id="content">
-      <div class="content-left">
-        <p>Connection to database: </p>
-        <?php
-        $servername = "localhost";
-        // Query has permission only to select
-        $username = "kenellor_query";
-        $password = "query_pass";
-
-        // Create connection
-        $con = new mysqli($servername, $username, $password);
-
-        // Check connection
-        if ($con->connect_error) {
-            die("Failed " . $con->connect_error);
-        } else {
-          echo "Success";
-        }
-      ?>
-      </div>
-      <div class="content-right">
-        <form action="">
-          <p>Search query: </p>
-          <input type="text" name="search" />
-          <input type="submit" value="Search" />
-        </form>
-
-        <?php
-        
-      ?>
-
-      </div>
-    </div>
+    <hr/>
     <footer></footer>
 </body>
 

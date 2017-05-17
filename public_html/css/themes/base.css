@@ -39,7 +39,6 @@ body {
 }
 
 main {
-  transform: translateX(0, 0);
   transition: transform 1s;
 }
 

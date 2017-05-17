@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="" />
 
-  <title>Cadence Radio</title>
+  <title>Cadence Database</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
   <!-- OLD FONT: Permenant Marker

@@ -46,7 +46,6 @@
       echo "$date_time";
       ?> (UTC-6)
     </div>
-    <div>Local Time: <span id="clock"></span></div>
   </div>
 
   <!-- Primary Stream -->
@@ -111,6 +110,7 @@
   </div>
 
   <hr/>
+  
 </body>
 
 </html>

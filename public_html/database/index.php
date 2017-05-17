@@ -17,12 +17,6 @@
 
   <!-- Normalization CSS -->
   <link rel="stylesheet" href="/css/normalize.css">
-  <!-- BASE CSS -->
-  <link rel="stylesheet" href="/css/themes/base.css">
-  <!-- Page theme -->
-  <!--
-  <link rel="stylesheet" href="/css/themes/your-name.css">
-  -->
   <!-- jQuery Google CDN -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 </head>
@@ -30,88 +24,44 @@
 <body>
   <?php
 
-    /* Attempt MySQL server connection. Assuming you are running MySQL
-
-    server with default setting (user 'root' with no password) */
+    /* Attempt MySQL server connection. Assuming you are running MySQL server with default setting (user 'root' with no password) */
 
     $link = mysqli_connect("localhost", "kenellor_query", "query1", "kenellor_cadence");
 
-     
 
-    // Check connection
-
+    /* Check connection */
     if($link === false){
-
         die("ERROR: Could not connect. " . mysqli_connect_error());
-
     }
-
      
-
-    // Attempt select query execution
-
+    /* Attempt select query execution */
     $sql = "SELECT * FROM music";
-
     if($result = mysqli_query($link, $sql)){
-
         if(mysqli_num_rows($result) > 0){
-
             echo "<table>";
-
                 echo "<tr>";
-
-                    echo "<th>id</th>";
-
                     echo "<th>song_id</th>";
-
                     echo "<th>song_title</th>";
-
                     echo "<th>song_path</th>";
-
                 echo "</tr>";
-
             while($row = mysqli_fetch_array($result)){
-
                 echo "<tr>";
-
                     echo "<td>" . $row['song_id'] . "</td>";
-
                     echo "<td>" . $row['song_title'] . "</td>";
-
                     echo "<td>" . $row['song_path'] . "</td>";
-
                 echo "</tr>";
-
             }
-
             echo "</table>";
-
-            // Free result set
-
             mysqli_free_result($result);
-
         } else{
-
             echo "No records matching your query were found.";
-
         }
-
     } else{
-
         echo "ERROR: Could not able to execute $sql. " . mysqli_error($link);
-
     }
-
-     
-
-    // Close connection
-
+    /* Close connection */
     mysqli_close($link);
-
     ?>
-
-
-
     <div id="content">
       <div class="content-left">
         <p>Connection to database: </p>

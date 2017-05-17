@@ -66,7 +66,6 @@
     mysqli_close($link);
     ?>
     <hr/>
-    <footer></footer>
 </body>
 
 </html>

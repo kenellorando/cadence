@@ -73,12 +73,13 @@ function radioTitle() {
     dataType: 'jsonp',
     success: function (json) {
       // do not mix up id with the "title" for the page heading
-      $('#song_title').text(json['/cadence1']['song_title']);
       $('#artist_name').text(json['/cadence1']['artist_name']);
-      $('#listeners').text(json['/cadence1']['listeners']);
+      $('#song_title').text(json['/cadence1']['song_title']);
     },
     error: function (e) {
       console.log(e.message);
+      document.getElementById("artist_name").innerHTML = "<span style='color: red;'>Unable to locate track data. <br/> <a href='#statusTable'>Check Server Status?</a></span>";
+      document.getElementById("song_title").innerHTML = "";
     }
   });
 }

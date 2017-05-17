@@ -1,0 +1,27 @@
+html {
+  font-family: 'PT Sans', sans-serif;
+  background-size: cover;
+  
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+h1 {
+  font-family: 'Rock Salt', cursive;
+  font-size: 2.5em;
+  text-align: center;
+  line-height: 2em;
+  margin: 0;
+}
+
+.subtitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5em;
+  text-align: center;
+  margin: 0;
+  padding-bottom: 1.5em;
+}
+
+body {
+  padding: 1em;
+}

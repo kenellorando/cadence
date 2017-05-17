@@ -1,5 +1,22 @@
-// There are TWO server addresses on this page
-//
+// Loads up the statuses from the /status/index.php page onto the radio page
+jQuery(function ($) {
+  $('#statusMusicStream').load('/status/index.php #statusMusicStream');
+  $('#statusSongDatabase').load('/status/index.php #statusSongDatabase');
+  $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
+});
+
+// Toggle show/hide on the changelog
+function toggleChangelog() {
+  var old = document.getElementById("old");
+
+  if (old.style.display === 'block') {
+    old.style.display = 'none';
+    document.getElementById("oldToggle").innerHTML = "Show Full History";
+  } else {
+    old.style.display = 'block';
+    document.getElementById("oldToggle").innerHTML = "Hide Full History";
+  }
+}
 
 // I'll put all the default onload stuff in here
 function defaultPlayer() {
@@ -14,7 +31,7 @@ function defaultPlayer() {
 function playerToggle() {
   var stream = document.getElementById("stream");
   var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
-  
+
   if (stream.paused) {
     // Loads up the real stream again if mobile
     if (mobile) {
@@ -37,7 +54,7 @@ function playerToggle() {
 function volumeToggle(vol) {
   var volume = document.getElementById("stream");
   volume.volume = vol;
-  
+
   // Sets the new set volume into localstorage
   localStorage.setItem('volumeKey', vol);
 }

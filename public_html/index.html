@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-  
+
   <!-- Normalization CSS -->
   <link rel="stylesheet" href="/css/normalize.css">
   <!-- BASE CSS -->
@@ -30,12 +30,10 @@
 
   <!-- jQuery Google CDN -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <!-- Player buttons functionality and now playing live info-->
-  <script src="/js/player.js"></script>
   <!-- Theme changes after base -->
   <script src="/js/theme-changer.js"></script>
-  <!-- Service status, show/hide function -->
-  <script src="/js/content.js"></script>
+  <!-- Player buttons, now playing info, service status, toggle functions -->
+  <script src="/js/radio-page.js"></script>
 </head>
 
 
@@ -140,7 +138,7 @@
           <li>4/9: New Server OS + New domain name!</li>
           <li>3/29: User set volume is now cached</li>
           <li>3/26: Stream toggle no longer resets theme or volume + user picked themes are now cached + Cyberpunk Bartender updated</li>
-          <h4><a id="oldToggle" onclick="show()">Show Full History</a></h4>
+          <h4><a id="oldToggle" onclick="toggleChangelog()">Show Full History</a></h4>
           <div id="old">
             <li>3/25: Live display of artist and track make Cadence DMCA compliant</li>
             <li>3/24: Database populator tool completed</li>

@@ -23,11 +23,17 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <!-- Clock -->
   <script src="/js/clock.js"></script>
+
+  <script type="text/javascript">
+    var streamSource = $streamSource;
+    console.log(streamSource);
+
+  </script>
 </head>
 
 
 <body onload="clock();">
-  <h1>Cadence Radio Status</h1>
+  <h1>Cadence Status</h1>
   <!-- Clock -->
   <div id="heading-time">
     <div>Data as of Server Time:
@@ -43,11 +49,10 @@
     <div>Local Time: <span id="clock"></span></div>
   </div>
 
-  <ul>
-    <!-- Primary Stream -->
-    <li>
-      <div id="statusMusicStream">
-        <?php
+  <!-- Primary Stream -->
+  <p>Music Stream Server: </p>
+  <div id="statusMusicStream">
+    <?php
           $host = '169.254.131.220'; 
             $port = 8000; 
             $waitTimeoutInSeconds = 2; 
@@ -58,12 +63,11 @@
             } 
             fclose($fp);
         ?>
-      </div>
-    </li>
-    <!-- Metadata Database -->
-    <li>
-      <div id="statusSongDatabase">
-        <?php
+  </div>
+  <p>Metadata Database: </p>
+  <!-- Metadata Database -->
+  <div id="statusSongDatabase">
+    <?php
         $host = 'localhost'; 
           $port = 2083; 
           $waitTimeoutInSeconds = 2; 
@@ -89,12 +93,11 @@
           } 
           fclose($fp);
       ?>
-      </div>
-    </li>
-    <!-- Webserver FTP -->
-    <li>
-      <div id="statusWebserverFTP">
-        <?php
+  </div>
+  <!-- Webserver FTP -->
+  <p>Webserver FTP: </p>
+  <div id="statusWebserverFTP">
+    <?php
           $host = 'localhost'; 
             $port = 21; 
             $waitTimeoutInSeconds = 2; 
@@ -105,9 +108,9 @@
             } 
             fclose($fp);
         ?>
-      </div>
-    </li>
-  </ul>
+  </div>
+
+  <hr/>
 </body>
 
 </html>

@@ -18,22 +18,20 @@
 
   <!-- Normalization CSS -->
   <link rel="stylesheet" href="/css/normalize.css">
+  <!-- Subpage CSS -->
+  <link rel="stylesheet" href="/css/themes/base-subpage.css">
 
   <!-- jQuery Google CDN -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <!-- Clock -->
-  <script src="/js/clock.js"></script>
-
-  <script type="text/javascript">
-    var streamSource = $streamSource;
-    console.log(streamSource);
-
-  </script>
 </head>
 
 
 <body onload="clock();">
-  <h1>Cadence Status</h1>
+  <div class="heading">
+    <h1><a href="http://cadence.kenellorando.com">CADENCE</a></h1>
+    <p class="subtitle">Service Status</p>
+  </div>
+
   <!-- Clock -->
   <div id="heading-time">
     <div>Data as of Server Time:
@@ -52,7 +50,7 @@
   <p>Music Stream Server: </p>
   <div id="statusMusicStream">
     <?php
-          $host = '169.254.131.220'; 
+          $host = '67.162.19.220'; 
             $port = 8000; 
             $waitTimeoutInSeconds = 2; 
             if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
@@ -110,7 +108,7 @@
   </div>
 
   <hr/>
-  
+
 </body>
 
 </html>

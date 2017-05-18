@@ -29,6 +29,39 @@ body {
   padding: 1em;
 }
 
+/* Link colors ************************/
+
+
+/* unvisited link */
+h1 a {
+  text-decoration: none;
+}
+
+h1 a:link {
+  color: #FFFFFF;
+}
+
+
+/* visited link */
+
+h1 a:visited {
+  color: #FFFFFF;
+}
+
+
+/* mouse over link */
+
+h1 a:hover {
+  color: darkcyan;
+}
+
+
+/* selected link */
+
+h1 a:active {
+  color: darkcyan;
+}
+
 
 /* Media queries *********************/
 

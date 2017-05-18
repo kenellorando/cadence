@@ -50,7 +50,7 @@
   <p>Music Stream Server: </p>
   <div id="statusMusicStream">
     <?php
-          $host = '67.162.19.220'; 
+          $host = '169.254.131.220'; 
             $port = 8000; 
             $waitTimeoutInSeconds = 2; 
             if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   

@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="" />
+  <meta name="description" content="Cadence Radio - An open source, commercial-free radio by Ken Ellorando " />
+  <meta name="keywords" content="Cadence, Radio, Cadence Radio, CadenceRadio, free radio, open source radio, github, Ken Ellorando radio" />
 
   <title>Cadence Database</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
@@ -17,12 +18,19 @@
 
   <!-- Normalization CSS -->
   <link rel="stylesheet" href="/css/normalize.css">
+  <!-- Subpage CSS -->
+  <link rel="stylesheet" href="/css/themes/base-subpage.css">
+
   <!-- jQuery Google CDN -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 </head>
 
 <body>
-  <h1>Cadence Database</h1>
+  <div class="heading">
+    <h1><a href="http://cadence.kenellorando.com">CADENCE</a></h1>
+    <p class="subtitle">Database</p>
+  </div>
+
 
   <h2>Webserver Database Accessing Test: </h2>
   <?php

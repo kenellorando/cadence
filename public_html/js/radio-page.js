@@ -35,7 +35,7 @@ function playerToggle() {
   if (stream.paused) {
     // Loads up the real stream again if mobile
     if (mobile) {
-      stream.src = "http://169.254.131.220:8000/cadence1";
+      stream.src = "http://73.45.232.200:8000/cadence1";
     }
     stream.load();
     stream.play();
@@ -62,7 +62,7 @@ function volumeToggle(vol) {
 // GETS and displays currently playing info
 function radioTitle() {
   // Located on Testament's stream client 'web' folder
-  var url = 'http://169.254.131.220:8000/now-playing.xsl';
+  var url = 'http://73.45.232.200:8000/now-playing.xsl';
 
   $.ajax({
     type: 'GET',

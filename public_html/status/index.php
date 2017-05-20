@@ -50,16 +50,15 @@
   <p>Music Stream Server: </p>
   <div id="statusMusicStream">
     <?php
-          $host = '169.254.131.220'; 
-            $port = 8000; 
-            $waitTimeoutInSeconds = 2; 
-            if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
-               echo ("<div style='color:#7CFC00'> ONLINE </div>");
-            } else {
-               echo ("<div style ='color:#cc0000'> OFFLINE </div>");
-            } 
-            fclose($fp);
-        ?>
+    $fp = fsockopen('127.0.0.1', 25, $errno, $errstr, 5);
+if (!$fp) {
+    echo ("<div style ='color:#cc0000'> OFFLINE </div>");
+} else {
+    echo ("<div style='color:#7CFC00'> ONLINE </div>");
+    fclose($fp);
+}
+?>
+
   </div>
   <p>Metadata Database: </p>
   <!-- Metadata Database -->

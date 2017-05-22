@@ -32,6 +32,19 @@
     <p class="subtitle">Service Status</p>
   </div>
 
+  <!-- Music Stream -->
+  <div id='statusMusicStream'>
+    <?php
+       $fp = fsockopen("udp://73.45.232.200", 8000, $errno, $errstr);
+       if (!$fp) {
+            echo ("<div style ='color:#cc0000'> OFFLINE </div>");
+       } else {
+         echo ("<div style='color:#7CFC00'> ONLINE </div>");
+         $fp2 = fsockopen("udp://73.45.232.200", 8000, $errno, $errstr);
+       }
+     ?>
+  </div>
+
   <!-- Clock -->
   <div id="heading-time">
     <div>Data as of Server Time:

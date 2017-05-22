@@ -21,6 +21,12 @@ html {
   /*dont know if these will help. need to revisit android chrome later */
   height: 110%;
   min-height: 110%;
+  /* Keeps the horizonal scroll bar from appearing during theme transition */
+  max-width: 100%;
+  overflow-x: hidden;
+  transition: background-image .25s ease;
+  padding: 0;
+  margin: 0;
 }
 
 body {
@@ -28,15 +34,22 @@ body {
   opacity: .8;
   /*Opacity of background itself */
   background-color: rgba(0, 0, 0, 0.7);
+  padding: 0;
+  margin: 0;
+}
+
+main {
+  transition: transform 1s;
 }
 
 section {
-  padding-bottom: .56em;
+  padding: 1.11em;
+  padding-bottom: 0;
 }
 
 p {
   font-size: 1.1em;
-  line-height: 1.2em;
+  line-height: 1.3em;
 }
 
 
@@ -52,6 +65,11 @@ p {
   text-align: center;
   padding: 1.1em .23em 0em .23em;
   margin-top: 0;
+}
+
+#title,
+#subtitle {
+  transition: .25s ease;
 }
 
 #subtitle {
@@ -87,9 +105,7 @@ p {
   position: relative;
 }
 
-#artist_name {
-  
-}
+#artist_name {}
 
 #song_title {
   font-size: 1.66em;
@@ -138,12 +154,37 @@ p {
 /* Bottom content under player */
 
 #content {
-  padding: .86em;
-  padding-bottom: 1.5em;
+  clear: both;
+  /* In case I move the main stuff to the side */
+  padding: 2em 0em;
 }
 
-.content-left {
-  
+.announcement {
+  line-height: 1.3em;
+}
+
+.content-left {}
+
+
+/* Status checker */
+
+#statusTable {
+  font-family: 'Roboto', sans-serif;
+  /*display: none;*/
+  font-size: 1.1em;
+  background-color: rgba(0, 0, 0, .2);
+}
+
+td {
+  text-align: left;
+  width: 100%;
+  padding-top: .25em;
+  padding-bottom: .25em;
+}
+
+td .check {
+  color: mediumpurple;
+  text-align: right;
 }
 
 .content-right {
@@ -153,6 +194,32 @@ p {
 
 #content li {
   margin-bottom: .4em;
+}
+
+
+/* Refresh status button */
+
+#refreshStatus {
+  color: cyan;
+}
+
+#refreshStatus:hover {
+  color: darkcyan;
+}
+
+
+/* Changelog old */
+
+#old {
+  display: none;
+}
+
+#oldToggle {
+  color: cyan;
+}
+
+#oldToggle:hover {
+  color: darkcyan;
 }
 
 footer {
@@ -210,15 +277,17 @@ a:active {
   display: none;
 }
 
+
 /* Media queries *********************/
 
 @media (min-width: 37em) {
   html {
-    font-size: 1.1em;
-    margin: 2em 5em 2em 5em;
+    font-size: 1em;
+    /*margin: 2em 5em 2em 5em;*/
   }
   body {
-    margin-bottom: 2em;
+    /*margin-bottom: 2em;*/
+    padding: 2em 5em;
   }
   #title {
     font-size: 3.6em;
@@ -229,15 +298,20 @@ a:active {
   #volume {
     width: 50%;
   }
+  .announcement {
+    width: 85%;
+  }
+  #statusTable {
+    padding: .3em 1.2em;
+  }
 }
 
 @media (min-width: 64em) {
   html {
-    font-size: 1.1em;
-    padding: 2em 0em 2em 0em;
-    margin: 0em 5em 2em 5em;
+    font-size: 1em;
+    /*padding: 2em 0em 2em 0em;
+    margin: 0em 5em 2em 5em;*/
   }
-
   .content-left {
     padding-bottom: 1em;
     float: left;
@@ -255,7 +329,8 @@ a:active {
     border-width: 0px 0px 0px 0px;
   }
   #content {
-    padding: 2em;
+    padding: 2em 2em 2em 2em;
+    clear: both;
   }
   #nowPlaying {
     margin-bottom: 0em;
@@ -271,3 +346,214 @@ a:active {
 }
 
 
+/* Vertical */
+
+@media (min-height: 43em) {
+  html {
+    font-size: 1.1em;
+  }
+  main {
+    font-size: 1.3em;
+    padding-top: 2em;
+    padding-bottom: 5em;
+  }
+}
+
+
+/* Tallest and widest screens */
+
+@media (min-height: 43em) and (min-width: 85em) {
+  body {
+    padding-left: 13em;
+    padding-right: 12em;
+  }
+}
+
+
+/* DROPDOWN MENUS *******************************************************************/
+
+
+/* **********************************************************************************/
+
+
+/* Style The Dropdown Button */
+
+.dropbtn {
+  background-color: #0f0f0f;
+  color: #FFFFFF;
+  color: white;
+  padding: .56em 1em;
+  border: none;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: .9em;
+  font-weight: 300;
+}
+
+
+/* The container <div> - needed to position the dropdown content */
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  background-color: #0f0f0f;
+}
+
+
+/* Dropdown Content (Hidden by Default) */
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #0f0f0f;
+  color: red;
+  z-index: 1;
+}
+
+
+/* Links inside the dropdown */
+
+.dropdown-content button {
+  font-family: 'Roboto', sans-serif;
+  font-size: .9em;
+  font-weight: 300;
+  border: 1px;
+  display: block;
+  background-color: #0f0f0f;
+  color: white;
+  padding: .56em 0em;
+  width: 100%;
+}
+
+
+/* Change color of dropdown links on hover */
+
+.dropdown-content a:hover {
+  background-color: #0f0f0f;
+  color: #FFFFFF;
+}
+
+
+/* Show the dropdown menu on hover */
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+
+.dropdown:hover .dropbtn {
+  background-color: #0f0f0f;
+  color: #FFFFFF;
+}
+
+
+/* VOLUME BAR ***********************************************************************/
+
+
+/* **********************************************************************************/
+
+
+/* made on http://www.cssportal.com/style-input-range/ 
+future reference: replace animation with transition */
+
+input[type=range] {
+  -webkit-appearance: none;
+  margin: 10px 0;
+  width: 100%;
+}
+
+input[type=range]:focus {
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0px 0px 1px #000000;
+  background: #FFFFFF;
+  border-radius: 0px;
+  border: 1px solid #000000;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 0px 0px 3px #000000;
+  border: 1px solid #000000;
+  height: 21px;
+  width: 13px;
+  border-radius: 50px;
+  background: #FFFFFF;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -9px;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #FFFFFF;
+}
+
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0px 0px 1px #000000;
+  background: #FFFFFF;
+  border-radius: 0px;
+  border: 1px solid #000000;
+}
+
+input[type=range]::-moz-range-thumb {
+  box-shadow: 0px 0px 3px #000000;
+  border: 1px solid #000000;
+  height: 21px;
+  width: 13px;
+  border-radius: 50px;
+  background: #FFFFFF;
+  cursor: pointer;
+}
+
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+input[type=range]::-ms-fill-lower {
+  background: #FFFFFF;
+  border: 1px solid #000000;
+  border-radius: 0px;
+  box-shadow: 0px 0px 1px #000000;
+}
+
+input[type=range]::-ms-fill-upper {
+  background: #FFFFFF;
+  border: 1px solid #000000;
+  border-radius: 0px;
+  box-shadow: 0px 0px 1px #000000;
+}
+
+input[type=range]::-ms-thumb {
+  box-shadow: 0px 0px 3px #000000;
+  border: 1px solid #000000;
+  height: 21px;
+  width: 13px;
+  border-radius: 50px;
+  background: #FFFFFF;
+  cursor: pointer;
+}
+
+input[type=range]:focus::-ms-fill-lower {
+  background: #FFFFFF;
+}
+
+input[type=range]:focus::-ms-fill-upper {
+  background: #FFFFFF;
+}

@@ -1,0 +1,86 @@
+/*
+@import url('https://fonts.googleapis.com/css?family=VT323');
+@import url('https://fonts.googleapis.com/css?family=Share+Tech+Mono');
+*/
+
+html {
+  color: #f0f0f0;
+  background-image: url(/media/cyberpunk-bartender4.gif);
+}
+
+body {
+  /*Opacity of content within body*/
+  opacity: 1;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.all {
+  background-color: rgba(0, 0, 0, .1);
+}
+
+#title {
+  color: deeppink;
+  text-shadow: 1px 1px 65px red;
+}
+
+#title span {
+  animation: blinker 2s ease-in infinite;
+}
+
+
+/* Subtle blink to go with the glow */
+
+@keyframes blinker {
+  0% {
+    opacity: 0.1;
+  }
+  2% {
+    opacity: 0.1;
+  }
+  4% {
+    opacity: 1;
+  }
+  19% {
+    opacity: 1;
+  }
+  21% {
+    opacity: 0.1;
+  }
+  23% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  83% {
+    opacity: 0.4;
+  }
+  87% {
+    opacity: 1;
+  }
+}
+
+#subtitle {
+  color: #f0f0f0;
+}
+
+#playerToggle {
+  border-color: cyan;
+  color: cyan;
+  box-shadow: 1px 1px 65px cyan;
+}
+
+
+/* In case you ever want to use this font again
+@font-face {
+  font-family: "vcr";
+  src: url('../fonts/vcr.ttf');
+}
+
+#subtitle {
+  color: #f0f0f0;
+  font-family: "vcr";
+  text-transform: uppercase;
+}
+*/

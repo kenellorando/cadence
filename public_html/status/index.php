@@ -32,19 +32,6 @@
     <p class="subtitle">Service Status</p>
   </div>
 
-  <!-- Music Stream -->
-  <div id='statusMusicStream'>
-    <?php
-       $fp = fsockopen("udp://73.45.232.200", 8000, $errno, $errstr);
-       if (!$fp) {
-            echo ("<div style ='color:#cc0000'> OFFLINE </div>");
-       } else {
-         echo ("<div style='color:#7CFC00'> ONLINE </div>");
-         $fp2 = fsockopen("udp://73.45.232.200", 8000, $errno, $errstr);
-       }
-     ?>
-  </div>
-
   <!-- Clock -->
   <div id="heading-time">
     <div>Data as of Server Time:
@@ -59,8 +46,22 @@
     </div>
   </div>
 
-  <p>Metadata Database: </p>
+  
+  <!-- Music Server -->
+  <p>Music Server Stream Port: </p>
+  <div id='statusMusicStream'>
+    <?php
+       $fp = fsockopen("udp://73.45.232.200", 8000, $errno, $errstr);
+       if (!$fp) {
+            echo ("<div style ='color:#cc0000'> OFFLINE </div>");
+       } else {
+         echo ("<div style='color:#7CFC00'> ONLINE </div>");
+       }
+     ?>
+  </div>
+
   <!-- Metadata Database -->
+  <p>Metadata Database: </p>
   <div id="statusSongDatabase">
     <?php
         $host = 'localhost'; 
@@ -89,6 +90,7 @@
           fclose($fp);
       ?>
   </div>
+
   <!-- Webserver FTP -->
   <p>Webserver FTP: </p>
   <div id="statusWebserverFTP">
@@ -104,9 +106,7 @@
             fclose($fp);
         ?>
   </div>
-
-  <hr/>
-
+  
 </body>
 
 </html>

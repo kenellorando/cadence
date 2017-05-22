@@ -103,6 +103,12 @@
         <h2>Service Status: </h2>
         <table id="statusTable" style="display: block">
           <tr>
+            <td>Music Server</td>
+            <td>
+              <div class="check" id="statusMusicStream">Checking...</div>
+            </td>
+          </tr>
+          <tr>
             <td>Metadata Database</td>
             <td>
               <div class="check" id="statusSongDatabase">Checking...</div>
@@ -115,7 +121,11 @@
             </td>
           </tr>
         </table>
+
+        <h4><a id="refreshStatus" onclick="refreshStatus()">Refresh Status</a></h4>
       </section>
+
+
       <section>
         <h2>Changelog:</h2>
         <ul>
@@ -123,12 +133,15 @@
           <li>5/14: Cyberpunk theme changes from a day/night version based on client time (10PM-8AM). </li>
           <li>5/12: Database populator tool rewritten in Python</li>
           <li>4/29: Transitions for theme switching added + Two new themes: Mayberry &amp; Electromaster + Sizing correction for all screen sizes</li>
-          <li>4/9: New Server OS + New domain name!</li>
-          <li>3/29: User set volume is now cached</li>
-          <li>3/26: Stream toggle no longer resets theme or volume + user picked themes are now cached + Cyberpunk Bartender updated</li>
+        </ul>
 
-          <h4><a id="oldToggle" onclick="toggleChangelog()">Show Full History</a></h4>
-          <div id="old">
+        <h4><a id="oldToggle" onclick="toggleChangelog()">Show Full History</a></h4>
+
+        <div id="old">
+          <ul>
+            <li>4/9: New Server OS + New domain name!</li>
+            <li>3/29: User set volume is now cached</li>
+            <li>3/26: Stream toggle no longer resets theme or volume + user picked themes are now cached + Cyberpunk Bartender updated</li>
             <li>3/25: Live display of artist and track make Cadence DMCA compliant</li>
             <li>3/24: Database populator tool completed</li>
             <li>3/22: Stream/source moved to dedicated server</li>
@@ -137,8 +150,9 @@
             <li>3/1: Front-end prototype design</li>
             <li>2/28: Auto streaming (until the IP expires)</li>
             <li>2/26: Streaming client and stream source</li>
-          </div>
-        </ul>
+          </ul>
+        </div>
+
       </section>
     </div>
 

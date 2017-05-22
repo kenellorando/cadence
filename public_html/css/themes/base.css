@@ -197,6 +197,17 @@ td .check {
 }
 
 
+/* Refresh status button */
+
+#refreshStatus {
+  color: cyan;
+}
+
+#refreshStatus:hover {
+  color: darkcyan;
+}
+
+
 /* Changelog old */
 
 #old {

@@ -1,3 +1,9 @@
+// Helper function: Does the work of setting theme color for all meta tags
+function setThemeColor(color) {
+    document.getElementById("chrome-color").content=color;
+    document.getElementById("ie-color").content=color;
+}
+
 function selectChicagoEvening() {
   document.getElementById("selected-css").href = "/css/themes/chicago-evening.css";
   document.getElementById("title").innerHTML = "CADENCE";

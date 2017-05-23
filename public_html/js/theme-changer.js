@@ -9,7 +9,7 @@ function selectChicagoEvening() {
   document.getElementById("title").innerHTML = "CADENCE";
   document.getElementById("subtitle").innerHTML = "A Rhythmic Experience";
 
-  setThemeColor("#D4AF37");
+  setThemeColor("#D4AF37"); // A dull metallic gold
 
   localStorage.setItem('themeKey', 'chicagoEvening');
 }
@@ -24,10 +24,10 @@ function selectCyberpunkBartender() {
   // 8:00:00 PM - 9:59:59 AM
   if (currentHour >= 8 && currentHour < 22) {
     document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender.css";
-    setThemeColor("#FF1493");
+    setThemeColor("#FF1493"); // Deeppink (title color)
   } else {
     document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender-night.css";
-    setThemeColor("#B30E67");
+    setThemeColor("#B30E67"); // Deeppink, with Value (HSV) set to 70 (from 100)
   }
 
   localStorage.setItem('themeKey', 'cyberpunkBartender');
@@ -38,7 +38,7 @@ function selectMayberry() {
   document.getElementById("title").innerHTML = "CADENCE";
   document.getElementById("subtitle").innerHTML = "A Rhythmic Ξxperience";
 
-  setThemeColor("#000000");
+  setThemeColor("#000000"); // Black
 
   localStorage.setItem('themeKey', 'mayberry');
 }
@@ -48,7 +48,7 @@ function selectElectromaster() {
   document.getElementById("title").innerHTML = "ケイデンス";
   document.getElementById("subtitle").innerHTML = "A Certain Scientific Radio";
 
-  setThemeColor("#09C1FF");
+  setThemeColor("#09C1FF"); // A certain scientific light blue
 
   localStorage.setItem('themeKey', 'electromaster');
 }

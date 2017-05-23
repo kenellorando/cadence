@@ -9,7 +9,7 @@ function selectChicagoEvening() {
   document.getElementById("title").innerHTML = "CADENCE";
   document.getElementById("subtitle").innerHTML = "A Rhythmic Experience";
 
-  setThemeColor("#D4AF37"); // A dull metallic gold
+  setThemeColor("#1D2951"); // A dark navy
 
   localStorage.setItem('themeKey', 'chicagoEvening');
 }

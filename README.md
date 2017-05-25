@@ -13,3 +13,7 @@ Once the database is completed, the final main feature will be a song request bo
 ### User Testers
 * Michael Folk
 * Jakob Frank
+
+## Todo
+* Repopulate database with current server tracks.
+* Copy database from music server to web server.

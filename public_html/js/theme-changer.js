@@ -24,10 +24,10 @@ function selectCyberpunkBartender() {
   // 8:00:00 PM - 9:59:59 AM
   if (currentHour >= 8 && currentHour < 22) {
     document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender.css";
-    setThemeColor("#FF1493"); // Deeppink (title color)
+    setThemeColor("#B30E67"); // Deeppink, with Value (HSV) set to 70 (from 100)
   } else {
     document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender-night.css";
-    setThemeColor("#B30E67"); // Deeppink, with Value (HSV) set to 70 (from 100)
+    setThemeColor("#1D2951"); // A dark navy
   }
 
   localStorage.setItem('themeKey', 'cyberpunkBartender');

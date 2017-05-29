@@ -1,16 +1,23 @@
+/*
 @import url('https://fonts.googleapis.com/css?family=VT323');
 @import url('https://fonts.googleapis.com/css?family=Share+Tech+Mono');
+*/
+
 html {
   color: #f0f0f0;
   background-image: url(/media/cyberpunk-bartender2.gif);
+  background-position: -32em;
 }
 
 body {
+  /*Opacity of content within body*/
   opacity: 1;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .all {
-  background-color: rgba(0, 0, 0, .6);
+  background-color: rgba(0, 0, 0, .1);
 }
 
 #title {
@@ -63,6 +70,13 @@ body {
   border-color: cyan;
   color: cyan;
   box-shadow: 1px 1px 65px cyan;
+}
+
+/* Resets background position to center */
+@media (min-width: 30em) {
+  html {
+    background-position: center;
+  }
 }
 
 

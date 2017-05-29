@@ -6,6 +6,7 @@
 html {
   color: #f0f0f0;
   background-image: url(/media/cyberpunk-bartender2.gif);
+  background-position: -32em;
 }
 
 body {
@@ -69,6 +70,13 @@ body {
   border-color: cyan;
   color: cyan;
   box-shadow: 1px 1px 65px cyan;
+}
+
+/* Resets background position to center */
+@media (min-width: 30em) {
+  html {
+    background-position: center;
+  }
 }
 
 

@@ -50,3 +50,7 @@ commit.
 
 If you deploy a mirror of Cadence, this changelog should be kept up-to-date, and 
 so the generator should be run every time new commits are added.
+
+## Todo
+* Repopulate database with current server tracks.
+* Copy database from music server to web server.

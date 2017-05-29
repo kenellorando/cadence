@@ -15,7 +15,7 @@ Once the database is completed, the final main feature will be a song request bo
 * Jakob Frank
 
 ## Contributing
-To contribute to Cadence Radio, first install [Git LFS](https://git-lfs.github.com/), as our Space Station theme uses files hosted on LFS.
+To contribute to Cadence Radio, first install [Git LFS](https://git-lfs.github.com/), as the now-removed Space Station theme used files hosted on LFS, and we may use LFS again in the future.
 
 As `git clone` only permits serial file download, LFS suggests disabling LFS for the clone operation and then pulling the files separately, as this can be done in parallel. The commands suggested are (taken from the [LFS Tutorial](https://github.com/git-lfs/git-lfs/wiki/Tutorial)):
 

@@ -459,6 +459,8 @@ a:active {
 future reference: replace animation with transition */
 
 input[type=range] {
+  appearance: none;
+  -moz-appearance: none;
   -webkit-appearance: none;
   margin: 10px 0;
   width: 100%;

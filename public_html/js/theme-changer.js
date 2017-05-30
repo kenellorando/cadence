@@ -1,7 +1,7 @@
 // Helper function: Does the work of setting theme color for all meta tags
 function setThemeColor(color) {
-    document.getElementById("chrome-color").content=color;
-    document.getElementById("ie-color").content=color;
+  document.getElementById("chrome-color").content = color;
+  document.getElementById("ie-color").content = color;
 }
 
 function selectChicagoEvening() {
@@ -53,6 +53,16 @@ function selectElectromaster() {
   localStorage.setItem('themeKey', 'electromaster');
 }
 
+function selectStarGuardian() {
+  document.getElementById("selected-css").href = "/css/themes/star-guardian.css";
+  document.getElementById("title").innerHTML = "<span id='ke'>ケ</span><span id='i'>イ</span><span id='de'>デ</span><span id ='n'>ン</span><span id='su'>ス</span>";
+  document.getElementById("subtitle").innerHTML = "A Stellar Experience";
+
+  setThemeColor("#09C1FF"); // A certain scientific light blue
+
+  localStorage.setItem('themeKey', 'starGuardian');
+}
+
 // This is run onload. To change the default theme, (for users that have not yet picked one) change the statement for null
 function defaultTheme() {
   var theme = localStorage.getItem('themeKey');
@@ -64,12 +74,14 @@ function defaultTheme() {
     selectMayberry();
   } else if (theme === "electromaster") {
     selectElectromaster();
+  } else if (theme === "starGuardian") {
+    selectStarGuardian();
   } else if (theme === null) {
     selectChicagoEvening();
   }
 }
 
 // Reselects for time-based themes at a set interval
-window.setInterval(function(){
+window.setInterval(function () {
   defaultTheme();
 }, 1000);

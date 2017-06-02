@@ -93,6 +93,8 @@ function defaultTheme() {
     selectElectromaster();
   } else if (theme === "starGuardian") {
     selectStarGuardian();
+  } else if (theme === "lightMage") {
+    selectLightMage();
   } else if (theme === null) {
     selectChicagoEvening();
   }

@@ -58,9 +58,26 @@ function selectStarGuardian() {
   document.getElementById("title").innerHTML = "<span id='ke'>ケ</span><span id='i'>イ</span><span id='de'>デ</span><span id ='n'>ン</span><span id='su'>ス</span>";
   document.getElementById("subtitle").innerHTML = "A Stellar Experience";
 
-  setThemeColor("#09C1FF"); // A certain scientific light blue
+  setThemeColor("#ecb1e9"); // Lux pink
 
   localStorage.setItem('themeKey', 'starGuardian');
+}
+
+function selectLightMage() {
+  document.getElementById("selected-css").href = "/css/themes/light-mage.css";
+  document.getElementById("title").innerHTML = "CADENCE";
+  document.getElementById("subtitle").innerHTML = "Just An Ordinary Radio";
+  localStorage.setItem('themeKey', 'lightMage');
+
+  setThemeColor("#FFFFFF"); // white
+
+  var video = document.getElementById("video-source");
+
+  // Loads the video source
+  if (video.src != "/media/lux1.mp4") {
+    video.src = "/media/lux1.mp4";
+    video.parentElement.load(); // The parent element of video is the div "fullscreen-bg"
+  }
 }
 
 // This is run onload. To change the default theme, (for users that have not yet picked one) change the statement for null

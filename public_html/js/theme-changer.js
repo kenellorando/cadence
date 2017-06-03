@@ -73,9 +73,12 @@ function selectLightMage() {
 
   var video = document.getElementById("video-source");
 
+  // Quick and dirty fix to get absolute URL to fix the stuttering background
+  var filename=document.location+"/media/lux1.mp4";
+  
   // Loads the video source
-  if (video.src != "/media/lux1.mp4") {
-    video.src = "/media/lux1.mp4";
+  if (video.src != filename) {
+    video.src = filename;
     video.parentElement.load(); // The parent element of video is the div "fullscreen-bg"
   }
 }

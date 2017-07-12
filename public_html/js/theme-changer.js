@@ -74,8 +74,8 @@ function selectLightMage() {
   var video = document.getElementById("video-source");
 
   // Quick and dirty fix to get absolute URL to fix the stuttering background
-  var filename=document.location+"/media/lux1.mp4";
-  
+  var filename = document.location + "/media/lux1.mp4";
+
   // Loads the video source
   if (video.src != filename) {
     video.src = filename;

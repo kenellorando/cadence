@@ -5,16 +5,6 @@ jQuery(function ($) {
   $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
 });
 
-// The refresh button
-function refreshStatus() {
-  document.getElementById("statusMusicStream").innerHTML = "Checking...";
-  document.getElementById("statusSongDatabase").innerHTML = "Checking...";
-  document.getElementById("statusWebserverFTP").innerHTML = "Checking...";
-  $('#statusMusicStream').load('/status/index.php #statusMusicStream');
-  $('#statusSongDatabase').load('/status/index.php #statusSongDatabase');
-  $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
-}
-
 // Toggle show/hide on the changelog
 function toggleChangelog() {
   var old = document.getElementById("old");

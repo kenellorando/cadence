@@ -1,12 +1,8 @@
-@import url('https://fonts.googleapis.com/css?family=Forum');
 @import url('https://fonts.googleapis.com/css?family=Bellefair');
-
 html {
   background-image: url(/media/2b3-desaturated.jpg);
   background-position: right;
   opacity: 1;
-  
-  
 }
 
 body {
@@ -14,59 +10,48 @@ body {
   opacity: 1;
   /*Opacity of background itself */
   background: rgba(0, 0, 0, .4);
-  
 }
 
 #player {
-  font-family: 'Forum', cursive;
   font-family: 'Bellefair', serif;
   font-style: normal;
 }
 
 #title {
   font-family: 'Bellefair', serif;
-  
-  font-weight: 300;
-  transform: scale(1.4, 1.5) translateY(0em);
+  font-weight: 500;
+  transform: scale(1.4, 1.6) translateY(-.1em);
 }
 
 #subtitle {
-  font-family: 'Bellefair', serif;
-  font-style: italic;
+  font-size: 1.6em;
 }
 
-#volumeLabel {
-  font-family: 'Bellefair', serif;
-  font-style: normal;
-}
-
-.dropbtn {
-  font-family: 'Bellefair', serif;
-  font-style: normal;
-}
-
+#subtitle,
+#volumeLabel,
+.dropbtn,
 .dropdown-content button {
   font-family: 'Bellefair', serif;
-  font-style: normal;
+  font-style: italic;
 }
 
 
 /* Link colors ************************/
 
 a:link {
-  color: deepskyblue;
+  color: lightgrey;
 }
 
 a:visited {
-  color: deepskyblue;
+  color: lightgrey;
 }
 
 a:hover {
-  color: darkblue;
+  color: grey;
 }
 
 a:active {
-  color: darkblue;
+  color: lightgrey;
 }
 
 @media (min-width: 37em) {

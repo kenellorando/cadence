@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css?family=Forum');
+@import url('https://fonts.googleapis.com/css?family=Bellefair');
+
+html {
+  background-image: url(/media/2b3-desaturated.jpg);
+  background-position: right;
+  opacity: 1;
+  
+  
+}
+
+body {
+  /*Opacity of content within body*/
+  opacity: 1;
+  /*Opacity of background itself */
+  background: rgba(0, 0, 0, .4);
+  
+}
+
+#player {
+  font-family: 'Forum', cursive;
+  font-family: 'Bellefair', serif;
+  font-style: normal;
+}
+
+#title {
+  font-family: 'Bellefair', serif;
+  
+  font-weight: 300;
+  transform: scale(1.4, 1.5) translateY(0em);
+}
+
+#subtitle {
+  font-family: 'Bellefair', serif;
+  font-style: italic;
+}
+
+#volumeLabel {
+  font-family: 'Bellefair', serif;
+  font-style: normal;
+}
+
+.dropbtn {
+  font-family: 'Bellefair', serif;
+  font-style: normal;
+}
+
+.dropdown-content button {
+  font-family: 'Bellefair', serif;
+  font-style: normal;
+}
+
+
+/* Link colors ************************/
+
+a:link {
+  color: deepskyblue;
+}
+
+a:visited {
+  color: deepskyblue;
+}
+
+a:hover {
+  color: darkblue;
+}
+
+a:active {
+  color: darkblue;
+}
+
+@media (min-width: 37em) {
+  html {
+    padding: 0;
+    margin: 0;
+  }
+  body {
+    padding: 2em 5em;
+    margin: 0;
+  }
+}
+
+@media (min-width: 64em) {
+  main {
+    transform: translateX(-20%);
+    transition: transform 1s;
+  }
+}

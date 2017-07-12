@@ -83,6 +83,16 @@ function selectLightMage() {
   }
 }
 
+function selectYorha() {
+  document.getElementById("selected-css").href = "/css/themes/yorha.css";
+  document.getElementById("title").innerHTML = "CADENCE";
+  document.getElementById("subtitle").innerHTML = "For The Glory of Mankind";
+
+  setThemeColor("#000000"); // Black
+
+  localStorage.setItem('themeKey', 'yorha');
+}
+
 // This is run onload. To change the default theme, (for users that have not yet picked one) change the statement for null
 function defaultTheme() {
   var theme = localStorage.getItem('themeKey');
@@ -98,6 +108,8 @@ function defaultTheme() {
     selectStarGuardian();
   } else if (theme === "lightMage") {
     selectLightMage();
+  } else if (theme === "yorha") {
+    selectYorha();
   } else if (theme === null) {
     selectChicagoEvening();
   }

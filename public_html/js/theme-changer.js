@@ -1,3 +1,4 @@
+"use strict";
 // Helper function: Does the work of setting theme color for all meta tags
 function setThemeColor(color) {
   document.getElementById("chrome-color").content = color;
@@ -9,7 +10,7 @@ function themeChanger(themeName) {
   var changeTo = {};
 
   // CHICAGO EVENING ******************
-  if (themeName == "chicagoEvening") {
+  if (themeName === "chicagoEvening") {
     changeTo = {
       css: "/css/themes/chicago-evening.css",
       title: "CADENCE",
@@ -20,7 +21,7 @@ function themeChanger(themeName) {
   }
 
   // CYBERPUNK *************************
-  else if (themeName == "cyberpunkBartender") {
+  else if (themeName === "cyberpunkBartender") {
     var currentHour = new Date().getHours();
     // IF condition states the daytime hours
     // 8:00:00 PM - 9:59:59 AM
@@ -44,7 +45,7 @@ function themeChanger(themeName) {
   }
 
   // MAYBERRY ***************************
-  else if (themeName == "mayberry") {
+  else if (themeName === "mayberry") {
     changeTo = {
       css: "/css/themes/mayberry.css",
       title: "CADENCE",
@@ -55,7 +56,7 @@ function themeChanger(themeName) {
   }
 
   // ELECTROMASTER **********************
-  else if (themeName == "electromaster") {
+  else if (themeName === "electromaster") {
     changeTo = {
       css: "/css/themes/electromaster.css",
       title: "ケイデンス",
@@ -66,7 +67,7 @@ function themeChanger(themeName) {
   }
 
   // STAR GUARDIAN *******************
-  else if (themeName == "starGuardian") {
+  else if (themeName === "starGuardian") {
     changeTo = {
       css: "/css/themes/star-guardian.css",
       title: "<span id='ke'>ケ</span><span id='i'>イ</span><span id='de'>デ</span><span id ='n'>ン</span><span id='su'>ス</span>",
@@ -77,7 +78,7 @@ function themeChanger(themeName) {
   }
 
   // LIGHT MAGE ***********************
-  else if (themeName == "lightMage") {
+  else if (themeName === "lightMage") {
     changeTo = {
       css: "/css/themes/light-mage.css",
       title: "CADENCE",
@@ -90,14 +91,14 @@ function themeChanger(themeName) {
     // Quick and dirty fix to get absolute URL to fix the stuttering background
     var filename = document.location + "/media/lux1.mp4";
     // Loads the video source
-    if (video.src != filename) {
+    if (video.src !== filename) {
       video.src = filename;
       video.parentElement.load(); // The parent element of video is the div "fullscreen-bg"
     }
   }
 
   // YORHA ******************************
-  else if (themeName == "yorha") {
+  else if (themeName === "yorha") {
     changeTo = {
       css: "/css/themes/yorha.css",
       title: "CADENCE",
@@ -118,7 +119,7 @@ function themeChanger(themeName) {
 // This is run onload. To change the default theme, (for users that have not yet picked one) change the statement for null
 function defaultTheme() {
   var theme = localStorage.getItem('themeKey');
-  if (theme == null) {
+  if (theme === null) {
     themeChanger("chicagoEvening");
   } else {
     themeChanger(theme);

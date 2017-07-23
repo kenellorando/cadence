@@ -4,7 +4,14 @@ function setThemeColor(color) {
   document.getElementById("ie-color").content = color;
 }
 
-// 
+$(document).ready(function () {
+  $('.themeChoice').on('click', function () {
+    var themeChoice = $(this).attr('id');
+    themeChanger(themeChoice);
+  });
+});
+
+
 function themeChanger(themeName) {
   var changeTo = {};
 

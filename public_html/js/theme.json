@@ -1,3 +1,11 @@
+/*
+Special functions:
+  Night-time special theme
+    set "hasNightMode" to true for both versions
+  Video playing theme
+    set "videoPath" to path to the video to be played
+*/
+
 var theme = {
   "chicagoEvening": {
     "cssPath": "/css/themes/chicago-evening.css",
@@ -35,6 +43,7 @@ var theme = {
     "themeKey": "starGuardian"
   },
   "lightMage": {
+    "videoPath": "/media/lux1.mp4",
     "cssPath": "/css/themes/light-mage.css",
     "title": "CADENCE",
     "subtitle": "Just An Ordinary Radio",
@@ -42,7 +51,7 @@ var theme = {
     "themeKey": "lightMage"
   },
   "cyberpunkBartender": {
-    "nightExists": true,
+    "hasNightMode": true,
     "cssPath": "/css/themes/cyberpunk-bartender.css",
     "title": "CADENCE",
     "subtitle": "A Retro Cyberpunk Jukebox",
@@ -50,7 +59,7 @@ var theme = {
     "themeKey": "cyberpunkBartender"
   },
   "cyberpunkBartenderNight": {
-    "nightExists": true,
+    "hasNightMode": true,
     "cssPath": "/css/themes/cyberpunk-bartender-night.css",
     "title": "CADENCE",
     "subtitle": "A Retro Cyberpunk Jukebox",

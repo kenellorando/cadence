@@ -4,6 +4,17 @@ function setThemeColor(color) {
   document.getElementById("ie-color").content = color;
 }
 
+// Function that starts playing the video for video themes
+function setVideo(themeObj) {
+  var video = document.getElementById("video-source");
+  var filename = document.location + themeObj.videoPath;
+  // Loads the video source
+  if (video.src !== filename) {
+    video.src = filename;
+    video.parentElement.load(); // The parent element of video is the div "fullscreen-bg"
+  }
+}
+
 // Handles clicks 
 $(document).ready(function () {
   $('.themeChoice').on('click', function () {
@@ -12,6 +23,7 @@ $(document).ready(function () {
   });
 });
 
+// The main theme setter function
 function themeChanger(themeName) {
   // Returns the specific theme as a single object
   var themeObj = theme[themeName];
@@ -26,6 +38,10 @@ function themeChanger(themeName) {
     document.getElementById("subtitle").innerHTML = themeObjNight.subtitle;
     setThemeColor(themeObjNight.themeColor);
     localStorage.setItem('themeKey', themeObjNight.themeKey);
+    // If the nightmode is a video theme
+    if (themeObjNight.videoPath) {
+      setVideo(themeObjNight);
+    }
   }
   // Otherwise, no nightmode to fall back on
   else {
@@ -34,52 +50,12 @@ function themeChanger(themeName) {
     document.getElementById("subtitle").innerHTML = themeObj.subtitle;
     setThemeColor(themeObj.themeColor);
     localStorage.setItem('themeKey', themeObj.themeKey);
-  }
-
-
-
-
-  /* SPECIAL FUNCTIONS
-  
-  // CYBERPUNK *************************
-  if (themeName === "cyberpunkBartender") {
-    var currentHour = new Date().getHours();
-    // IF condition states the daytime hours
-    // 8:00:00 PM - 9:59:59 AM
-    if (currentHour >= 8 && currentHour < 22) {
-      changeTo = {
-        css: "/css/themes/cyberpunk-bartender.css",
-        title: "CADENCE",
-        subtitle: "A Retro Cyberpunk Jukebox",
-        themeColor: "#B30E67", // Hot pink
-        themeKey: "cyberpunkBartender"
-      };
-    } else {
-      changeTo = {
-        css: "/css/themes/cyberpunk-bartender-night.css",
-        title: "CADENCE",
-        subtitle: "A Retro Cyberpunk Jukebox",
-        themeColor: "#1D2951", // Navy
-        themeKey: "cyberpunkBartender"
-      };
+    if (themeObj.videoPath) {
+      setVideo(themeObj);
     }
   }
-
-  // LIGHT MAGE ***********************
-  if (themeName == "lightMage") {
-    var video = document.getElementById("video-source");
-    // Quick and dirty fix to get absolute URL to fix the stuttering background
-    var filename = document.location + "/media/lux1.mp4";
-    // Loads the video source
-    if (video.src !== filename) {
-      video.src = filename;
-      video.parentElement.load(); // The parent element of video is the div "fullscreen-bg"
-    }
-  }
-  
-  */
-
 }
+
 
 // This is run onload. To change the default theme, (for users that have not yet picked one) change the statement for null
 function defaultTheme() {

@@ -15,15 +15,32 @@ $(document).ready(function () {
 function themeChanger(themeName) {
   // Returns the specific theme as a single object
   var themeObj = theme[themeName];
-  console.log(themeObj);
+  var currentHour = new Date().getHours();
 
-  document.getElementById("selected-css").href = themeObj.cssPath;
-  document.getElementById("title").innerHTML = themeObj.title;
-  document.getElementById("subtitle").innerHTML = themeObj.subtitle;
-  setThemeColor(themeObj.themeColor);
-  localStorage.setItem('themeKey', themeObj.themeKey);
+  // If a nightmode exists and it is nighttime
+  if (themeObj.hasNightMode == true && (currentHour < 8 || currentHour > 22)) {
+    themeNameNight = themeName + "Night";
+    var themeObjNight = theme[themeNameNight];
+    document.getElementById("selected-css").href = themeObjNight.cssPath;
+    document.getElementById("title").innerHTML = themeObjNight.title;
+    document.getElementById("subtitle").innerHTML = themeObjNight.subtitle;
+    setThemeColor(themeObjNight.themeColor);
+    localStorage.setItem('themeKey', themeObjNight.themeKey);
+  }
+  // Otherwise, no nightmode to fall back on
+  else {
+    document.getElementById("selected-css").href = themeObj.cssPath;
+    document.getElementById("title").innerHTML = themeObj.title;
+    document.getElementById("subtitle").innerHTML = themeObj.subtitle;
+    setThemeColor(themeObj.themeColor);
+    localStorage.setItem('themeKey', themeObj.themeKey);
+  }
 
 
+
+
+  /* SPECIAL FUNCTIONS
+  
   // CYBERPUNK *************************
   if (themeName === "cyberpunkBartender") {
     var currentHour = new Date().getHours();
@@ -49,15 +66,7 @@ function themeChanger(themeName) {
   }
 
   // LIGHT MAGE ***********************
-  else if (themeName === "lightMage") {
-    changeTo = {
-      css: "/css/themes/light-mage.css",
-      title: "CADENCE",
-      subtitle: "Just An Ordinary Radio",
-      themeColor: "#FFFFFF", // White
-      themeKey: "lightMage"
-    };
-
+  if (themeName == "lightMage") {
     var video = document.getElementById("video-source");
     // Quick and dirty fix to get absolute URL to fix the stuttering background
     var filename = document.location + "/media/lux1.mp4";
@@ -67,6 +76,9 @@ function themeChanger(themeName) {
       video.parentElement.load(); // The parent element of video is the div "fullscreen-bg"
     }
   }
+  
+  */
+
 }
 
 // This is run onload. To change the default theme, (for users that have not yet picked one) change the statement for null

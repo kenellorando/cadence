@@ -40,5 +40,21 @@ var theme = {
     "subtitle": "Just An Ordinary Radio",
     "themeColor": "#FFFFFF", // White
     "themeKey": "lightMage"
+  },
+  "cyberpunkBartender": {
+    "nightExists": true,
+    "cssPath": "/css/themes/cyberpunk-bartender.css",
+    "title": "CADENCE",
+    "subtitle": "A Retro Cyberpunk Jukebox",
+    "themeColor": "#B30E67", // Hot pink
+    "themeKey": "cyberpunkBartender"
+  },
+  "cyberpunkBartenderNight": {
+    "nightExists": true,
+    "cssPath": "/css/themes/cyberpunk-bartender-night.css",
+    "title": "CADENCE",
+    "subtitle": "A Retro Cyberpunk Jukebox",
+    "themeColor": "#1D2951", // Navy
+    "themeKey": "cyberpunkBartender"
   }
 }

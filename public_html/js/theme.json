@@ -35,7 +35,7 @@ var theme = {
     "title": "ケイデンス",
     "subtitle": "A Certain Scientific Radio",
     "themeColor": "#09C1FF", 
-    "themeColorRead": "#09C1FF A certain scientific light blue "
+    "themeColorRead": "#09C1FF A certain scientific light blue",
     "themeKey": "electromaster"
   },
   "starGuardian": {

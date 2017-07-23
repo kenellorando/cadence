@@ -1,0 +1,44 @@
+var theme = {
+  "chicagoEvening": {
+    "cssPath": "/css/themes/chicago-evening.css",
+    "title": "CADENCE",
+    "subtitle": "A Rhythmic Experience",
+    "themeColor": "#1d2951", // dark navy
+    "themeKey": "chicagoEvening"
+  },
+  "yorha": {
+    "cssPath": "/css/themes/yorha.css",
+    "title": "CADENCE",
+    "subtitle": "For The Glory of Mankind",
+    "themeColor": "#000000", // Black
+    "themeKey": "yorha"
+  },
+  "mayberry": {
+    "cssPath": "/css/themes/mayberry.css",
+    "title": "CADENCE",
+    "subtitle": "A Rhythmic Ξxperience",
+    "themeColor": "#000000", // Black
+    "themeKey": "mayberry"
+  },
+  "electromaster": {
+    "cssPath": "/css/themes/electromaster.css",
+    "title": "ケイデンス",
+    "subtitle": "A Certain Scientific Radio",
+    "themeColor": "#09C1FF", // A certain scientific light blue
+    "themeKey": "electromaster"
+  },
+  "starGuardian": {
+    "cssPath": "/css/themes/star-guardian.css",
+    "title": "<span id='ke'>ケ</span><span id='i'>イ</span><span id='de'>デ</span><span id ='n'>ン</span><span id='su'>ス</span>",
+    "subtitle": "A Stellar Experience",
+    "themeColor": "#ecb1e9", // Lux pink
+    "themeKey": "starGuardian"
+  },
+  "lightMage": {
+    "cssPath": "/css/themes/light-mage.css",
+    "title": "CADENCE",
+    "subtitle": "Just An Ordinary Radio",
+    "themeColor": "#FFFFFF", // White
+    "themeKey": "lightMage"
+  }
+}

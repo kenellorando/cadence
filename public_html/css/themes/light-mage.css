@@ -38,6 +38,17 @@ button {
   background-color: white;
 }
 
+.dropbtn,
+.dropdown-content
+.dropdown-content button {
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, .4);
+}
+
+#statusTable {
+  background-color: rgba(0, 0, 0, .35);
+}
+
 
 /* Link colors */
 

@@ -6,22 +6,43 @@ function selectChicagoEvening() {
   localStorage.setItem('themeKey', 'chicagoEvening');
 }
 
-function selectCyberpunkBartender() {
-  cancelSwitcher();
+// Handles clicks
+$(document).ready(function () {
+  $('.themeChoice').on('click', function () {
+    var themeChoice = $(this).attr('id');
+    themeChanger(themeChoice);
+  });
+});
 
-  document.getElementById("title").innerHTML = "CADEN<span>C</span>E";
-  document.getElementById("subtitle").innerHTML = "A Retro Cyberpunk Jukebox";
-
+function themeChanger(themeName) {
   var currentHour = new Date().getHours();
 
-  // IF condition states the daytime hours
-  // 8:00:00 PM - 9:59:59 AM
-  if (currentHour >= 8 && currentHour < 22) {
-    document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender.css";
-    cyberpunkNight=true;
-  } else {
-    document.getElementById("selected-css").href = "/css/themes/cyberpunk-bartender-night.css";
-    cyberpunkNight=false;
+  // If a nightmode exists and it is nighttime
+  if (themeObj.hasNightMode == true && (currentHour < 8 || currentHour > 22)) {
+    cyberpunkNight = true; // Inform the cyberpunk switcher that its nighttime
+    themeNameNight = themeName + "Night";
+    var themeObjNight = theme[themeNameNight];
+    document.getElementById("selected-css").href = themeObjNight.cssPath;
+    document.getElementById("title").innerHTML = themeObjNight.title;
+    document.getElementById("subtitle").innerHTML = themeObjNight.subtitle;
+    setThemeColor(themeObjNight.themeColor);
+    localStorage.setItem('themeKey', themeObjNight.themeKey);
+    // If the nightmode is a video theme
+    if (themeObjNight.videoPath) {
+      setVideo(themeObjNight);
+    }
+  }
+  // Otherwise, no nightmode to fall back on
+  else {
+    cyberpunkNight = false; // Inform the cyberpunk switcher that its daytime. Or, that the current theme doesn't support nightmode, which means it doesn't matter.
+    document.getElementById("selected-css").href = themeObj.cssPath;
+    document.getElementById("title").innerHTML = themeObj.title;
+    document.getElementById("subtitle").innerHTML = themeObj.subtitle;
+    setThemeColor(themeObj.themeColor);
+    localStorage.setItem('themeKey', themeObj.themeKey);
+    if (themeObj.videoPath) {
+      setVideo(themeObj);
+    }
   }
 
   localStorage.setItem('themeKey', 'cyberpunkBartender');

@@ -1,22 +1,17 @@
-// Loads up the statuses from the /status/index.php page onto the radio page automatically
-jQuery(function ($) {
-  $('#statusMusicStream').load('/status/index.php #statusMusicStream');
-  $('#statusSongDatabase').load('/status/index.php #statusSongDatabase');
-  $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
-});
+/* 
+Organization of radio-page JS
+-----------------------------
+-Retrieve set volume from localstorage
+-Retrieve service status from the status subpage
 
-// Toggle show/hide on the changelog
-function toggleChangelog() {
-  var old = document.getElementById("old");
+-Radio now playing artist/track info
+  -Update info at an interval function
 
-  if (old.style.display === 'block') {
-    old.style.display = 'none';
-    document.getElementById("oldToggle").innerHTML = "Show Full History";
-  } else {
-    old.style.display = 'block';
-    document.getElementById("oldToggle").innerHTML = "Hide Full History";
-  }
-}
+-Radio play/pause button
+-Volume setter
+
+-Changelog show/hide button
+*/
 
 // I'll put all the default onload stuff in here
 function defaultPlayer() {
@@ -27,37 +22,12 @@ function defaultPlayer() {
   volume.volume = vol;
 }
 
-// When you hit the play button
-function playerToggle() {
-  var stream = document.getElementById("stream");
-  var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
-
-  if (stream.paused) {
-    // Loads up the real stream again if mobile
-    if (mobile) {
-      stream.src = "http://73.45.232.200:8000/cadence1";
-    }
-    stream.load();
-    stream.play();
-    document.getElementById("playerToggle").innerHTML = "❚❚";
-  } else {
-    // Loads up nothing if mobile
-    if (mobile) {
-      stream.src = "";
-    }
-    stream.load();
-    document.getElementById("playerToggle").innerHTML = "►";
-  }
-}
-
-// When you change the volume
-function volumeToggle(vol) {
-  var volume = document.getElementById("stream");
-  volume.volume = vol;
-
-  // Sets the new set volume into localstorage
-  localStorage.setItem('volumeKey', vol);
-}
+// Loads up the statuses from the /status/index.php page onto the radio page automatically
+jQuery(function ($) {
+  $('#statusMusicStream').load('/status/index.php #statusMusicStream');
+  $('#statusSongDatabase').load('/status/index.php #statusSongDatabase');
+  $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
+});
 
 // GETS and displays currently playing info
 function radioTitle() {
@@ -84,6 +54,7 @@ function radioTitle() {
   });
 }
 
+// Update now playing info at an interval
 $(document).ready(function () {
   setTimeout(function () {
     radioTitle();
@@ -92,3 +63,50 @@ $(document).ready(function () {
     radioTitle();
   }, 10000);
 });
+
+// Play/pause button
+$(document).ready(function () {
+  $("#playerToggle").on("click", function () {
+    var stream = document.getElementById("stream");
+    var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+
+    if (stream.paused) {
+      // Loads up the real stream again if mobile
+      if (mobile) {
+        stream.src = "http://73.45.232.200:8000/cadence1";
+      }
+      stream.load();
+      stream.play();
+      document.getElementById("playerToggle").innerHTML = "❚❚";
+    } else {
+      // Loads up nothing if mobile
+      if (mobile) {
+        stream.src = "";
+      }
+      stream.load();
+      document.getElementById("playerToggle").innerHTML = "►";
+    }
+  })
+});
+
+// When you change the volume
+function volumeToggle(vol) {
+  var volume = document.getElementById("stream");
+  volume.volume = vol;
+
+  // Sets the new set volume into localstorage
+  localStorage.setItem('volumeKey', vol);
+}
+
+// Toggle show/hide on the changelog
+function toggleChangelog() {
+  var old = document.getElementById("old");
+
+  if (old.style.display === 'block') {
+    old.style.display = 'none';
+    document.getElementById("oldToggle").innerHTML = "Show Full History";
+  } else {
+    old.style.display = 'block';
+    document.getElementById("oldToggle").innerHTML = "Hide Full History";
+  }
+}

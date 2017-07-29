@@ -16,11 +16,6 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
 
-  <!-- Normalization CSS -->
-  <link rel="stylesheet" href="/css/normalize.css">
-  <!-- Subpage CSS -->
-  <link rel="stylesheet" href="/css/themes/base-subpage.css">
-
   <!-- jQuery Google CDN -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 </head>

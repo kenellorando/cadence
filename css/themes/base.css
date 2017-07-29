@@ -247,7 +247,7 @@ footer {
 }
 
 
-/* Don't know what this is for, honestly. See issue #59*/
+/* Prevents the the video showing at the bottom on switch from video theme to non-video theme*/
 
 .fullscreen-bg {
   display: none;

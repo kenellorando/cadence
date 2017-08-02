@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Cadence Radio - An open source, commercial-free radio by Ken Ellorando " />
+  <meta name="description" content="Ken Ellorando's personal online radio" />
   <meta name="keywords" content="Cadence, Radio, Cadence Radio, CadenceRadio, free radio, open source radio, github, Ken Ellorando radio" />
 
   <!-- Meta-tags for theme colors, etc -->
@@ -16,16 +16,13 @@
   <title>Cadence Radio</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
-  <!-- OLD FONT: Permenant Marker
-	Heading: Rock Salt; Subtitle: Roboto 300i; All else: PT Sans -->
+  <!-- Heading: Rock Salt; Subtitle: Roboto 300i; All else: PT Sans -->
   <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
 
-  <!-- Normalization CSS -->
-  <link rel="stylesheet" href="/css/normalize.css">
-  <!-- Radio Base CSS -->
-  <link rel="stylesheet" id="base-css" href="/css/themes/base.css">
+  <!-- Import base, norm, modules CSS -->
+  <link rel="stylesheet" href="/css/master-import.css">
   <!-- Selected style CSS -->
   <link rel="stylesheet" id="selected-css" href=".">
 
@@ -59,7 +56,7 @@
       <ul id="playerButtonList">
         <li>
           <!-- ON/OFF -->
-          <button type="button" id="playerToggle" onclick="playerToggle()">►</button>
+          <button type="button" id="playerToggle">►</button>
         </li>
         <li id="volumeLabel">
           <label for="volume">Volume</label>

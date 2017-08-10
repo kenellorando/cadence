@@ -18,8 +18,8 @@ var theme = {
   "yorha": {
     "cssPath": "/css/themes/yorha.css",
     "title": "CADENCE",
-    "subtitle": "For The Glory of Mankind",
-    "themeColor": "#000000", 
+    "subtitle": "A Rhythmic [E]xperience",
+    "themeColor": "#000000",
     "themeColorRead": "#000000 black",
     "themeKey": "yorha"
   },
@@ -34,7 +34,7 @@ var theme = {
     "cssPath": "/css/themes/electromaster.css",
     "title": "ケイデンス",
     "subtitle": "A Certain Scientific Radio",
-    "themeColor": "#09C1FF", 
+    "themeColor": "#09C1FF",
     "themeColorRead": "#09C1FF A certain scientific light blue",
     "themeKey": "electromaster"
   },
@@ -42,7 +42,7 @@ var theme = {
     "cssPath": "/css/themes/star-guardian.css",
     "title": "<span id='ke'>ケ</span><span id='i'>イ</span><span id='de'>デ</span><span id ='n'>ン</span><span id='su'>ス</span>",
     "subtitle": "A Stellar Experience",
-    "themeColor": "#ecb1e9", 
+    "themeColor": "#ecb1e9",
     "themeColorRead": "#ecb1e9 Lux pink",
     "themeKey": "starGuardian"
   },
@@ -60,7 +60,7 @@ var theme = {
     "cssPath": "/css/themes/cyberpunk-bartender.css",
     "title": "CADENCE",
     "subtitle": "A Retro Cyberpunk Jukebox",
-    "themeColor": "#B30E67", 
+    "themeColor": "#B30E67",
     "themeColorRead": "#B30E67 hot pink",
     "themeKey": "cyberpunkBartender"
   },
@@ -69,7 +69,7 @@ var theme = {
     "cssPath": "/css/themes/cyberpunk-bartender-night.css",
     "title": "CADENCE",
     "subtitle": "A Retro Cyberpunk Jukebox",
-    "themeColor": "#1D2951", 
+    "themeColor": "#1D2951",
     "themeColorRead": "#1D2951 navy",
     "themeKey": "cyberpunkBartender"
   }

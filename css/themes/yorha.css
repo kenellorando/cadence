@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Bellefair');
 html {
-  background-image: url(/media/2b3-desaturated.jpg);
+  background-image: url(/media/2b-mobile1-desaturated.jpg);
   background-position: right;
   opacity: 1;
 }
@@ -54,14 +54,17 @@ a:active {
   color: lightgrey;
 }
 
+#oldToggle {
+  color: lightgrey;
+}
+
+#oldToggle:hover {
+  color: grey;
+}
+
 @media (min-width: 37em) {
   html {
-    padding: 0;
-    margin: 0;
-  }
-  body {
-    padding: 2em 5em;
-    margin: 0;
+    background-image: url(/media/2b3-desaturated.jpg);
   }
 }
 

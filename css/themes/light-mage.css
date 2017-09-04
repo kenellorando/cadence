@@ -1,0 +1,113 @@
+html {
+  /* For video failure */
+  background-image: url(/media/lux1.jpg);
+}
+
+body {
+  /*Opacity of content within body*/
+  opacity: 1;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0);
+}
+
+main {
+  text-shadow: -1px 1px 20px white;
+}
+
+#title {
+  text-shadow: -3px 5px 60px white;
+}
+
+#playerToggle {
+  /*Opacity of content within body*/
+  opacity: 1;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: -1px 1px 50px white;
+  box-shadow: -1px 1px 50px white;
+}
+
+.dropdown {
+  /*Opacity of content within body*/
+  opacity: .7;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0);
+}
+
+button {
+  background-color: white;
+}
+
+.dropbtn,
+.dropdown-content
+.dropdown-content button {
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, .4);
+}
+
+#statusTable {
+  background-color: rgba(0, 0, 0, .35);
+}
+
+
+/* Link colors */
+
+a:link {
+  color: pink;
+}
+
+a:visited {
+  color: pink;
+}
+
+a:hover {
+  color: hotpink;
+}
+
+
+/* Refresh status and changelog toggle buttons*/
+
+#refreshStatus,
+#oldToggle {
+  color: pink;
+}
+
+#refreshStatus:hover,
+#oldToggle:hover {
+  color: hotpink;
+}
+
+
+/* BACKGROUND VIDEO ===================*/
+
+div.fullscreen-bg {
+  display: inline-block;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: -100;
+}
+
+.fullscreen-bg-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: auto;
+  min-width: 100%;
+  min-height: 100%;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+@media (min-width: 64em) {
+  main {
+    transform: translateX(-23%);
+    transition: transform 1s;
+  }
+}

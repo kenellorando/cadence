@@ -167,6 +167,7 @@ footer {
   border-color: #FFFFFF;
   border-style: outset;
   width: 6em;
+  cursor: pointer;
 }
 
 #playerToggle:active {
@@ -238,6 +239,7 @@ footer {
 
 #oldToggle {
   color: cyan;
+  cursor: pointer;
 }
 
 #oldToggle:hover {

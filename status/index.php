@@ -46,7 +46,7 @@
   <p>Music Server Stream Port: </p>
   <div id='statusMusicStream'>
     <?php
-       $fp = fsockopen("udp://198.37.24.81", 8000, $errno, $errstr);
+       $fp = fsockopen("udp://198.37.25.185", 8000, $errno, $errstr);
        if (!$fp) {
             echo ("<div style ='color:#cc0000'> OFFLINE </div>");
        } else {

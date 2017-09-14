@@ -1,0 +1,19 @@
+{
+  "name": "cadence",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kenellorando/cadence.git"
+  },
+  "author": "kenellorando@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kenellorando/cadence/issues"
+  },
+  "homepage": "https://github.com/kenellorando/cadence#readme"
+}

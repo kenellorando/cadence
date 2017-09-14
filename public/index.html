@@ -79,7 +79,7 @@
           <button type="button" class="themeChoice" id="chicagoEvening">Chicago Evening</button>
           <button type="button" class="themeChoice" id="cyberpunkBartender">Cyberpunk Bartender</button>
           <button type="button" class="themeChoice" id="lightMage">Light Mage</button>
-          
+
           <!--
           <button type="button" class="themeChoice" id="electromaster">Electromaster</button>
 		      
@@ -113,31 +113,6 @@
     </div>
 
     <div class="content-right">
-      <section>
-        <h2>Service Status: </h2>
-        <table id="statusTable" style="display: block">
-          <tr>
-            <td>Music Server</td>
-            <td>
-              <div class="check" id="statusMusicStream">Checking...</div>
-            </td>
-          </tr>
-          <tr>
-            <td>Metadata Database</td>
-            <td>
-              <div class="check" id="statusSongDatabase">Checking...</div>
-            </td>
-          </tr>
-          <tr>
-            <td>Web Server FTP</td>
-            <td>
-              <div class="check" id="statusWebserverFTP">Checking...</div>
-            </td>
-          </tr>
-        </table>
-      </section>
-
-
       <section id="changelog">
         <h2>Changelog:</h2>
         <ul>
@@ -151,16 +126,16 @@
           <li>5/12: Database populator tool rewritten in Python</li>
           <li>4/29: Transitions for theme switching added + Two new themes: Mayberry &amp; Electromaster + Sizing correction for all screen sizes</li>
           <li>4/9: New Server OS + New domain name!</li>
+          <li>3/29: User set volume is now cached</li>
+          <li>3/26: Stream toggle no longer resets theme or volume + user picked themes are now cached + Cyberpunk Bartender updated</li>
+          <li>3/25: Live display of artist and track make Cadence DMCA compliant</li>
+          <li>3/24: Database populator tool completed</li>
+          <li>3/22: Stream/source moved to dedicated server</li>
         </ul>
 
         <h4><a id="oldToggle" onclick="toggleChangelog()">Show Full History</a></h4>
         <div id="old">
           <ul>
-            <li>3/29: User set volume is now cached</li>
-            <li>3/26: Stream toggle no longer resets theme or volume + user picked themes are now cached + Cyberpunk Bartender updated</li>
-            <li>3/25: Live display of artist and track make Cadence DMCA compliant</li>
-            <li>3/24: Database populator tool completed</li>
-            <li>3/22: Stream/source moved to dedicated server</li>
             <li>3/3: Changable themes (new theme: Cyberpunk Bartender) + fixed Android Chrome background sizing bug</li>
             <li>3/2: Custom stream/volume controls + pause desynchronization fixed (unless stream ends)</li>
             <li>3/1: Front-end prototype design</li>

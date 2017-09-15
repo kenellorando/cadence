@@ -5,6 +5,20 @@ var express = require('express'),
 app = express(),
 path = require('path');
 
+
+
+
+app.get('/', function(req, res) {
+  console.log("Data:" + req.query['song']);
+})
+
+
+
+
+
+
+
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 var server = app.listen(PORT, IP);

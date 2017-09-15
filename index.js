@@ -8,8 +8,8 @@ path = require('path');
 
 
 
-app.get('/', function(req, res) {
-  console.log("Data:" + req.query['song']);
+app.post('/', function(req, res) {
+  console.log("wow");
 })
 
 

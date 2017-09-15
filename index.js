@@ -8,12 +8,10 @@ path = require('path');
 
 
 
-app.post('/', function(req, res) {
-  console.log("wow");
-})
-
-
-
+app.post('./test', function(req, res) {
+  var input = req.body.song;
+  console.log("Received" + input);
+});
 
 
 

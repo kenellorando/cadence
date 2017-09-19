@@ -1,14 +1,12 @@
+/**
+ * ARIA's Frontend Functionality
+ */
 $(document).ready(function() {
-    // Prevent page reloading on search
     $('#searchButton').click(function(e) {
-        e.preventDefault();
 
+        // Create a key 'search' to send in JSON
         var data = {};
         data.search = $('#searchInput').val();
-        
-        // Set a key to 
-        console.log(data.search); // railgun
-        console.log(data);
 
         $.ajax({
             type: 'POST',

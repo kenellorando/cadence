@@ -2,7 +2,6 @@
 Organization of radio-page JS
 -----------------------------
 -Retrieve set volume from localstorage
--Retrieve service status from the status subpage
 
 -Radio now playing artist/track info
   -Update info at an interval function
@@ -13,20 +12,12 @@ Organization of radio-page JS
 -Changelog show/hide button
 */
 
-// I'll put all the default onload stuff in here
-function defaultPlayer() {
+$(document).ready(function() {
   // Selects either the localstorage volume or a default value
   var vol = localStorage.getItem('volumeKey') || 0.77;
   document.getElementById("volume").value = vol;
   var volume = document.getElementById("stream");
   volume.volume = vol;
-}
-
-// Loads up the statuses from the /status/index.php page onto the radio page automatically
-jQuery(function ($) {
-  $('#statusMusicStream').load('/status/index.php #statusMusicStream');
-  $('#statusSongDatabase').load('/status/index.php #statusSongDatabase');
-  $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
 });
 
 // GETS and displays currently playing info

@@ -64,9 +64,10 @@ $(document).ready(function defaultTheme() {
   } else {
     themeChanger(theme);
   }
+
+  // Reselects for time-based themes at a set interval
+  window.setInterval(function () {
+    defaultTheme();
+  }, 10000);
 });
 
-// Reselects for time-based themes at a set interval
-window.setInterval(function () {
-  defaultTheme();
-}, 10000);

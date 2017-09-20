@@ -10,7 +10,7 @@ $(document).ready(function () {
 
     $.ajax({
       type: 'POST',
-      url: 'http://cadenceradio.com/search',
+      url: 'http://localhost:8080/search',
       dataType: 'application/json',
       data: data,
     });

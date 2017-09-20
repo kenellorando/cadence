@@ -56,18 +56,18 @@ function themeChanger(themeName) {
   }
 }
 
-// To change the default theme, (for users that have not yet picked one) change the statement for null
-$(document).ready(function defaultTheme() {
+
+// This is run onload. To change the default theme, (for users that have not yet picked one) change the statement for null
+function defaultTheme() {
   var theme = localStorage.getItem('themeKey');
   if (theme === null) {
     themeChanger("chicagoEvening");
   } else {
     themeChanger(theme);
   }
+}
 
-  // Reselects for time-based themes at a set interval
-  window.setInterval(function () {
-    defaultTheme();
-  }, 10000);
-});
-
+// Reselects for time-based themes at a set interval
+window.setInterval(function () {
+  defaultTheme();
+}, 10000);

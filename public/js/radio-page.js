@@ -22,13 +22,6 @@ function defaultPlayer() {
   volume.volume = vol;
 }
 
-// Loads up the statuses from the /status/index.php page onto the radio page automatically
-jQuery(function ($) {
-  $('#statusMusicStream').load('/status/index.php #statusMusicStream');
-  $('#statusSongDatabase').load('/status/index.php #statusSongDatabase');
-  $('#statusWebserverFTP').load('/status/index.php #statusWebserverFTP');
-});
-
 // GETS and displays currently playing info
 function radioTitle() {
   // Located on Testament's stream client 'web' folder

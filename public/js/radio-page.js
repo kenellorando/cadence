@@ -48,7 +48,7 @@ function radioTitle() {
     },
     error: function (e) {
       console.log(e.message);
-      document.getElementById("artist_name").innerHTML = "<span style='color: red;'>Unable to load track data. <br/> <a href='#statusTable'>Check Service Status?</a></span>";
+      document.getElementById("artist_name").innerHTML = "<span style='color: red;'>Unable to load track data. <br/> :(</span>";
       document.getElementById("song_title").innerHTML = "";
     }
   });

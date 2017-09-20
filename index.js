@@ -1,5 +1,5 @@
 const PORT = 8080;
-const IP = 'localhost';
+const IP = '198.37.25.185';
 
 var express = require('express');
 var path = require('path');

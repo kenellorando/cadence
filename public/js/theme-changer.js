@@ -57,7 +57,7 @@ function themeChanger(themeName) {
 }
 
 // To change the default theme, (for users that have not yet picked one) change the statement for null
-$(document).ready(function() {
+$(document).ready(function defaultTheme() {
   var theme = localStorage.getItem('themeKey');
   if (theme === null) {
     themeChanger("chicagoEvening");

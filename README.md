@@ -1,4 +1,4 @@
-# Cadence Radio [cadence.kenellorando.com](http://cadenceradio.com/)
+# Cadence Radio [http://cadenceradio.com](http://cadenceradio.com/)
 ## About
 Cadence is an online radio heavily inspired by [R/a/dio](http://r-a-d.io/). Originally started in February 2017, the project is my first endeavour to practice a full range of IT-skills. Development continues today with a focus on back-end technology.
 
@@ -9,7 +9,7 @@ The server typically plays all the genres of music I like, a mix of classic rock
 ## Features
 * A 24/7 audio livestream
 * Automatically updating song info display
-* Three permanent live-background themes plus more seasonally rotating ones!
+* Over six gorgeous themes in seasonal rotation
 
 ## Technical Contributors
 * [Ryan Hodin](https://github.com/za419)

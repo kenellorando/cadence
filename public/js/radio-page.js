@@ -60,8 +60,7 @@ $(document).ready(function () {
 // Play/pause button
 $(document).ready(function () {
   document.getElementById("playerToggle").addEventListener('click', function(){
-    alert("event listener fire");
-    // Play/pause button
+  // Play/pause button
   var stream = document.getElementById("stream");
   var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 

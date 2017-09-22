@@ -59,28 +59,31 @@ $(document).ready(function () {
 
 // Play/pause button
 $(document).ready(function () {
-  $("#playerToggle").on("click", function () {
-    var stream = document.getElementById("stream");
-    var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+  document.getElementById("playerToggle").addEventListener('click', function(){
+    alert("event listener fire");
+    // Play/pause button
+  var stream = document.getElementById("stream");
+  var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 
-    if (stream.paused) {
-      // Loads up the real stream again if mobile
-      if (mobile) {
-        stream.src = "http://cadenceradio.com:8000/cadence1";
-      }
-      stream.load();
-      stream.play();
-      document.getElementById("playerToggle").innerHTML = "❚❚";
-    } else {
-      // Loads up nothing if mobile
-      if (mobile) {
-        stream.src = "";
-      }
-      stream.load();
-      document.getElementById("playerToggle").innerHTML = "►";
+  if (stream.paused) {
+    // Loads up the real stream again if mobile
+    if (mobile) {
+      stream.src = "http://cadenceradio.com:8000/cadence1";
     }
-  })
+    stream.load();
+    stream.play();
+    document.getElementById("playerToggle").innerHTML = "❚❚";
+  } else {
+    // Loads up nothing if mobile
+    if (mobile) {
+      stream.src = "";
+    }
+    stream.load();
+    document.getElementById("playerToggle").innerHTML = "►";
+  }
+}, true)
 });
+
 
 // When you change the volume
 function volumeToggle(vol) {

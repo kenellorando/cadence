@@ -1,6 +1,6 @@
 $(document).ready(function () {
   // Get the localstorage volume or set to 77%
-  setVolume();
+  defaultVolume();
 
   // Play/pause button
   document.getElementById("playerToggle").addEventListener('click', function(){
@@ -18,13 +18,12 @@ $(document).ready(function () {
 
 
 // Selects either the localstorage volume or a default value
-function setVolume() {
+function defaultVolume() {
   var vol = localStorage.getItem('volumeKey') || 0.77;
   document.getElementById("volume").value = vol;
   var volume = document.getElementById("stream");
   volume.volume = vol;
 }
-
 // The play/pause button
 function streamToggle() {
   var stream = document.getElementById("stream");
@@ -46,7 +45,6 @@ function streamToggle() {
     document.getElementById("playerToggle").innerHTML = "►";
   }
 }
-
 // Displays currently playing song by AJAX GET
 function nowPlaying() {
   // Located on Testament's stream client 'web' folder
@@ -71,10 +69,8 @@ function nowPlaying() {
     }
   });
 }
-
-
 // When you change the volume
-function volumeToggle(vol) {
+function setVolume(vol) {
   var volume = document.getElementById("stream");
   volume.volume = vol;
 

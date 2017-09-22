@@ -1,27 +1,3 @@
-/* 
-Organization of radio-page JS
------------------------------
--Retrieve set volume from localstorage
--Retrieve service status from the status subpage
-
--Radio now playing artist/track info
-  -Update info at an interval function
-
--Radio play/pause button
--Volume setter
-
--Changelog show/hide button
-*/
-
-// I'll put all the default onload stuff in here
-function defaultPlayer() {
-  // Selects either the localstorage volume or a default value
-  var vol = localStorage.getItem('volumeKey') || 0.77;
-  document.getElementById("volume").value = vol;
-  var volume = document.getElementById("stream");
-  volume.volume = vol;
-}
-
 // GETS and displays currently playing info
 function radioTitle() {
   // Located on Testament's stream client 'web' folder
@@ -49,6 +25,19 @@ function radioTitle() {
 
 // Update now playing info at an interval
 $(document).ready(function () {
+  
+});
+
+$(document).ready(function () {
+  // Get the localstorage volume or set to 77%
+  setVolume();
+
+  // Play/pause button
+  document.getElementById("playerToggle").addEventListener('click', function(){
+    streamToggle();
+  });
+
+  // Refresh radio title at an interval
   setTimeout(function () {
     radioTitle();
   }, 0);
@@ -57,14 +46,17 @@ $(document).ready(function () {
   }, 10000);
 });
 
-// Play/pause button
-$(document).ready(function () {
-  document.getElementById("playerToggle").addEventListener('click', function(){
-    alert("event listener fire");
-    // Play/pause button
+function setVolume() {
+  // Selects either the localstorage volume or a default value
+  var vol = localStorage.getItem('volumeKey') || 0.77;
+  document.getElementById("volume").value = vol;
+  var volume = document.getElementById("stream");
+  volume.volume = vol;
+}
+
+function streamToggle() {
   var stream = document.getElementById("stream");
   var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
-
   if (stream.paused) {
     // Loads up the real stream again if mobile
     if (mobile) {
@@ -81,8 +73,7 @@ $(document).ready(function () {
     stream.load();
     document.getElementById("playerToggle").innerHTML = "►";
   }
-}, true)
-});
+}
 
 
 // When you change the volume

@@ -1,12 +1,13 @@
 html {
   /* For video failure */
-  background-image: url(/media/lux2.jpg);
-  background-position: -550px;
+  background-image: url(/media/lux2b.jpg);
+  background-position: right;
   background-size: cover;
 }
 
 
 /* Hide the video on mobile */
+
 .fullscreen-bg {
   visibility: hidden;
 }
@@ -112,22 +113,28 @@ div.fullscreen-bg {
   transform: translate(-50%, -50%);
 }
 
+
+/* Change fallback image and display video */
+
 @media (min-width: 64em) {
+  html {
+    background-position: center;
+  }
+  body {
+    /*Opacity of content within body*/
+    opacity: 1;
+    /*Opacity of background itself */
+    background-color: rgba(0, 0, 0, 0.11);
+  }
+  section {
+    background-color: rgba(0, 0, 0, .20);
+  }
+  .fullscreen-bg {
+    visibility: visible;
+  }
+  /* Move the player out of the way of Lux's beauty */
   main {
     transform: translateX(-23%);
     transition: transform 1s;
   }
-}
-
-
-/* Change fallback image and display video */
-
-@media (min-width: 31em) {
-  html {
-    background-image: url(/media/lux1.jpg);
-    background-position: 0;
-  }
-  .fullscreen-bg {
-    visibility: visible;
-  }  
 }

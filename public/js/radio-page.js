@@ -35,9 +35,16 @@ function radioTitle() {
     contentType: "application/json",
     dataType: 'jsonp',
     success: function (json) {
-      // do not mix up id with the "title" for the page heading
-      $('#artist_name').text(json['/cadence1']['artist_name']);
-      $('#song_title').text(json['/cadence1']['song_title']);
+      // Grab and trim song data
+      var nowPlayingArtist = json['/cadence1']['artist_name'].trim();
+      var nowPlayingSong = json['/cadence1']['song_title'].trim();
+      
+      // Player box
+      $('#artist_name').text(nowPlayingArtist);
+      $('#song_title').text(nowPlayingSong);
+      
+      // Title
+      window.document.title =  "CR♥ | " + nowPlayingArtist + " - " + nowPlayingSong;
     },
     error: function (e) {
       console.log(e.message);

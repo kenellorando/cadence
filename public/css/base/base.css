@@ -57,7 +57,6 @@ main {
 
 section {
   padding: 1.11em;
-  padding-bottom: 0;
 }
 
 p {
@@ -197,7 +196,9 @@ footer {
 
 /* On the left side **************/
 
-.content-left {}
+.content-left {
+  padding-right: 1em;
+}
 
 .announcement {
   line-height: 1.3em;

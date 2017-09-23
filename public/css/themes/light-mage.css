@@ -1,13 +1,21 @@
 html {
   /* For video failure */
-  background-image: url(/media/lux1.jpg);
+  background-image: url(/media/lux2.jpg);
+  background-position: -550px;
+  background-size: cover;
+}
+
+
+/* Hide the video on mobile */
+.fullscreen-bg {
+  display: none;
 }
 
 body {
   /*Opacity of content within body*/
   opacity: 1;
   /*Opacity of background itself */
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 main {
@@ -39,8 +47,7 @@ button {
 }
 
 .dropbtn,
-.dropdown-content
-.dropdown-content button {
+.dropdown-content .dropdown-content button {
   /*Opacity of background itself */
   background-color: rgba(0, 0, 0, .4);
 }
@@ -110,4 +117,17 @@ div.fullscreen-bg {
     transform: translateX(-23%);
     transition: transform 1s;
   }
+}
+
+
+/* Change fallback image and display video */
+
+@media (min-width: 31em) {
+  html {
+    background-image: url(/media/lux1.jpg);
+    background-position: 0;
+  }
+  .fullscreen-bg {
+    display: block;
+  }  
 }

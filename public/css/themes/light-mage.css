@@ -8,14 +8,14 @@ html {
 
 /* Hide the video on mobile */
 .fullscreen-bg {
-  display: none;
+  visibility: hidden;
 }
 
 body {
   /*Opacity of content within body*/
   opacity: 1;
   /*Opacity of background itself */
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.33);
 }
 
 main {
@@ -128,6 +128,6 @@ div.fullscreen-bg {
     background-position: 0;
   }
   .fullscreen-bg {
-    display: block;
+    visibility: visible;
   }  
 }

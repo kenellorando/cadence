@@ -2,6 +2,7 @@ const PORT = 8080;
 const IP = '198.37.25.185';
 const DB_PORT = 27017;
 const DB_IP = 'localhost';
+const DB_NAME = 'cadence';
 
 var express = require('express');
 var path = require('path');
@@ -20,7 +21,7 @@ app.use(bodyParser.urlencoded({
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Database connect
-MongoClient.connect('http://' + DB_IP + ":" + DB_PORT, function(err, database) {
+MongoClient.connect('http://' + DB_IP + ":" + DB_PORT + "/" + DB_NAME, function (err, database) {
   if (err) {
     return console.log(err);
   }

@@ -21,14 +21,13 @@ app.use(bodyParser.urlencoded({
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Database connect
-MongoClient.connect('http://' + DB_IP + ":" + DB_PORT + "/" + DB_NAME, function (err, database) {
+MongoClient.connect('mongodb://' + DB_IP + ":" + DB_PORT + "/" + DB_NAME, function (err, database) {
   if (err) {
     return console.log(err);
   }
 
   console.log("Connection established to database.");
 });
-
 
 // Search, directed from aria.js AJAX
 app.post('/search', function (req, res) {

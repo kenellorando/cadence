@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Database connect
-MongoClient.connect('http://' + DB_IP + ":" + DB_PORT, (err, database) => {
+MongoClient.connect('http://' + DB_IP + ":" + DB_PORT, function(err, database) {
   if (err) {
     return console.log(err);
   }

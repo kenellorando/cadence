@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/kenellorando/cadence/issues"
   },
-  "homepage": "https://github.com/kenellorando/cadence#readme"
+  "homepage": "https://github.com/kenellorando/cadence#readme",
+  "dependencies": {
+    "mongodb": "^2.2.31"
+  }
 }

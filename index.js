@@ -1,8 +1,6 @@
 const PORT = 8080;
 const IP = '198.37.25.185';
-const DB_PORT = 27017;
-const DB_IP = 'localhost';
-const DB_NAME = 'cadence';
+const DB_URL = 'mongodb://localhost:27017/cadence'
 
 var express = require('express');
 var path = require('path');
@@ -20,22 +18,26 @@ app.use(bodyParser.urlencoded({
 // Point to publicly served files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Database connect
-MongoClient.connect('mongodb://' + DB_IP + ":" + DB_PORT + "/" + DB_NAME, function (err, database) {
-  if (err) {
-    return console.log(err);
-  }
 
-  console.log("Connection established to database.");
-});
 
 // Search, directed from aria.js AJAX
 app.post('/search', function (req, res) {
   console.log("Received: " + JSON.stringify(req.body));
   // Web Server Console:
   // Received: {"search":"railgun"}
+  console.log(req.body.search);
 
-  // TODO: Use req data here
+  // Database connect
+  MongoClient.connect(DB_URL, function (err, db) {
+    if (err) {
+      return console.log(err);
+    }
+
+    // TODO: Search DB
+
+    console.log("Connection established to database.");
+    db.close();
+  });
 
   res.send("OK from ARIA!");
   res.end();

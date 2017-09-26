@@ -1,7 +1,7 @@
 const PORT = 8080;
 const IP = '198.37.25.185';
 const DB_URL = 'mongodb://localhost:27017/cadence';
-const MUSIC_DIR = '/home/ken/Music';
+const MUSIC_DIR = '/home/ken/Music/db_test';
 
 
 var express = require('express');
@@ -61,7 +61,6 @@ MongoClient.connect(DB_URL, function (err, db) {
               // Create a song object
               var songInfoString = '{ "title":"' + metadata.title + '", "artist":"' + metadata.artist + '", "album":"' + metadata.album + '", "path":"' + file + '"}';
               var songInfoObject = JSON.parse(songInfoString);
-              console.log(songInfoObject);
  
               // Insert the object to the database
               db.collection("music").insertOne(songInfoObject, function (err, res) {
@@ -92,7 +91,6 @@ MongoClient.connect(DB_URL, function (err, db) {
       throw error;
     }
   });
-  db.close();
 });
 
 

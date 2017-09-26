@@ -70,7 +70,6 @@ MongoClient.connect(DB_URL, function (err, db) {
                 }
                 console.log("Inserting data:");
                 console.log(songInfoObject);
-                db.close();
               })
             });
             next();

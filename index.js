@@ -1,7 +1,7 @@
 const PORT = 8080;
-const IP = 'localhost';
+const IP = '198.37.25.185';
 const DB_URL = 'mongodb://localhost:27017/cadence';
-const MUSIC_DIR = './test';
+const MUSIC_DIR = '/home/ken/Music';
 
 
 var express = require('express');
@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({
 
 // Point to publicly served files
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Connect to database. Populate.
 MongoClient.connect(DB_URL, function (err, db) {
@@ -58,11 +59,6 @@ MongoClient.connect(DB_URL, function (err, db) {
               if (err) {
                 throw err;
               }
-              /*
-              // Create a song object
-              var songInfoString = '{ "title":"' + metadata.title + '", "artist":"' + metadata.artist + '", "album":"' + metadata.album + '", "path":"' + file + '"}';
-              var songInfoObject = JSON.parse(songInfoString);
-              */
               // Insert the object to the database
               db.collection("music").update({
                 path: file
@@ -75,9 +71,6 @@ MongoClient.connect(DB_URL, function (err, db) {
               }, {
                 upsert: true
               })
-              if (err) {
-                throw err;
-              }
             })
           };
           next();
@@ -100,7 +93,7 @@ MongoClient.connect(DB_URL, function (err, db) {
     }
   });
 
-  
+  console.log("Database updated.");
 });
 
 

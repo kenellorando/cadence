@@ -55,10 +55,15 @@ MongoClient.connect(DB_URL, function (err, db) {
               if (err) {
                 throw err;
               }
-              console.log(metadata);
+              //console.log(metadata);
+              var songInfo = '{ "title":"' + metadata.title + '", "artist":"' + metadata.artist + '", "album":"' + metadata.album + '", "path":"' + file + '"}';
+              console.log(typeof(songInfo));
+              var songInfoObject = JSON.parse(songInfo);
+              console.log(typeof(songInfoObject));
+              //console.log(songInfo);
             });
 
-            console.log(file);
+            //console.log(file);
             next();
           }
         });

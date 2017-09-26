@@ -1,14 +1,11 @@
 const PORT = 8080;
 const IP = '198.37.25.185';
-const DB_URL = 'mongodb://localhost:27017/cadence';
-const MUSIC_DIR = '/home/ken/Music/db_test';
-
+const DB_URL = 'mongodb://localhost:27017/cadence'
 
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
-var mm = require('musicmetadata');
 
 var app = express();
 
@@ -21,77 +18,6 @@ app.use(bodyParser.urlencoded({
 // Point to publicly served files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Connect to database. Populate.
-MongoClient.connect(DB_URL, function (err, db) {
-  if (err) {
-    return console.log(err);
-  }
-
-  // Create a music collection.
-  db.createCollection("music", function (err, res) {
-    if (err) {
-      throw err;
-    }
-  })
-
-  // Walk the directory
-  var fs = require('fs');
-  var walk = function (dir, done) {
-    fs.readdir(dir, function (error, list) {
-      if (error) {
-        return done(error);
-      }
-      var i = 0;
-      (function next() {
-        var file = list[i++];
-        if (!file) {
-          return done(null);
-        }
-        file = dir + '/' + file;
-        fs.stat(file, function (error, stat) {
-          if (stat && stat.isDirectory()) {
-            walk(file, function (error) {
-              next();
-            });
-          } else {
-            var parser = mm(fs.createReadStream(file), function (err, metadata) {
-              if (err) {
-                throw err;
-              }
-              // Create a song object
-              var songInfoString = '{ "title":"' + metadata.title + '", "artist":"' + metadata.artist + '", "album":"' + metadata.album + '", "path":"' + file + '"}';
-              var songInfoObject = JSON.parse(songInfoString);
- 
-              // Insert the object to the database
-              db.collection("music").insertOne(songInfoObject, function (err, res) {
-                if (err) {
-                  throw err;
-                }
-                console.log("Inserting data:");
-                console.log(songInfoObject);
-              })
-            });
-            next();
-          }
-        });
-      })();
-    });
-  };
-
-  // optional command line params
-  //      source for walk path
-  process.argv.forEach(function (val, index, array) {
-    if (val.indexOf('source') !== -1) {
-      MUSIC_DIR = val.split('=')[1];
-    }
-  });
-
-  walk(MUSIC_DIR, function (error) {
-    if (error) {
-      throw error;
-    }
-  });
-});
 
 
 // Search, directed from aria.js AJAX
@@ -101,7 +27,7 @@ app.post('/search', function (req, res) {
   // Received: {"search":"railgun"}
   console.log(req.body.search);
 
-  // Database search
+  // Database connect
   MongoClient.connect(DB_URL, function (err, db) {
     if (err) {
       return console.log(err);

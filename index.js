@@ -1,11 +1,13 @@
 const PORT = 8080;
-const IP = '198.37.25.185';
+const IP = 'localhost';
 const DB_URL = 'mongodb://localhost:27017/cadence'
 
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
+
+var mm = require('musicmetadata');
 
 var app = express();
 
@@ -26,6 +28,7 @@ MongoClient.connect(DB_URL, function (err, db) {
 
   var fs = require('fs');
   var walkPath = '/home/ken/Music';
+  var walkPath = './test';
 
   var walk = function (dir, done) {
     fs.readdir(dir, function (error, list) {
@@ -48,7 +51,13 @@ MongoClient.connect(DB_URL, function (err, db) {
               next();
             });
           } else {
-            // do stuff to file here
+            var parser = mm(fs.createReadStream(file), function (err, metadata) {
+              if (err) {
+                throw err;
+              }
+              console.log(metadata);
+            });
+
             console.log(file);
             next();
           }

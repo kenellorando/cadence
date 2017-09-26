@@ -57,7 +57,7 @@ MongoClient.connect(DB_URL, function (err, db) {
           } else {
             var parser = mm(fs.createReadStream(file), function (err, metadata) {
               if (err) {
-                throw err;
+                next();
               }
               // Insert the object to the database
               db.collection("music").update({

@@ -1,12 +1,13 @@
 const PORT = 8080;
-const IP = 'localhost';
-const DB_URL = 'mongodb://localhost:27017/cadence'
+const IP = '198.37.25.185';
+const DB_URL = 'mongodb://localhost:27017/cadence';
+const MUSIC_DIR = '/home/ken/Music';
+
 
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
-
 var mm = require('musicmetadata');
 
 var app = express();
@@ -26,24 +27,26 @@ MongoClient.connect(DB_URL, function (err, db) {
     return console.log(err);
   }
 
-  var fs = require('fs');
-  var walkPath = '/home/ken/Music';
-  var walkPath = './test';
+  // Create a music collection.
+  db.createCollection("music", function (err, res) {
+    if (err) {
+      throw err;
+    }
+  })
 
+  // Walk the directory
+  var fs = require('fs');
   var walk = function (dir, done) {
     fs.readdir(dir, function (error, list) {
       if (error) {
         return done(error);
       }
-
       var i = 0;
       (function next() {
         var file = list[i++];
-
         if (!file) {
           return done(null);
         }
-
         file = dir + '/' + file;
         fs.stat(file, function (error, stat) {
           if (stat && stat.isDirectory()) {
@@ -55,15 +58,21 @@ MongoClient.connect(DB_URL, function (err, db) {
               if (err) {
                 throw err;
               }
-              //console.log(metadata);
-              var songInfo = '{ "title":"' + metadata.title + '", "artist":"' + metadata.artist + '", "album":"' + metadata.album + '", "path":"' + file + '"}';
-              console.log(typeof(songInfo));
-              var songInfoObject = JSON.parse(songInfo);
-              console.log(typeof(songInfoObject));
-              //console.log(songInfo);
+              // Create a song object
+              var songInfoString = '{ "title":"' + metadata.title + '", "artist":"' + metadata.artist + '", "album":"' + metadata.album + '", "path":"' + file + '"}';
+              var songInfoObject = JSON.parse(songInfoString);
+              console.log(songInfoObject);
+ 
+              // Insert the object to the database
+              db.collection("music").insertOne(songInfoObject, function (err, res) {
+                if (err) {
+                  throw err;
+                }
+                console.log("Inserting data:");
+                console.log(songInfoObject);
+                db.close();
+              })
             });
-
-            //console.log(file);
             next();
           }
         });
@@ -75,25 +84,15 @@ MongoClient.connect(DB_URL, function (err, db) {
   //      source for walk path
   process.argv.forEach(function (val, index, array) {
     if (val.indexOf('source') !== -1) {
-      walkPath = val.split('=')[1];
+      MUSIC_DIR = val.split('=')[1];
     }
   });
 
-  console.log('-------------------------------------------------------------');
-  console.log('processing...');
-  console.log('-------------------------------------------------------------');
-
-  walk(walkPath, function (error) {
+  walk(MUSIC_DIR, function (error) {
     if (error) {
       throw error;
-    } else {
-      console.log('-------------------------------------------------------------');
-      console.log('finished.');
-      console.log('-------------------------------------------------------------');
     }
   });
-
-  console.log("Database up to date.");
   db.close();
 });
 

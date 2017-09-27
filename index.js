@@ -119,7 +119,7 @@ app.post('/search', function (req, res) {
       return console.log(err);
     }
 
-    db.collection("music").find({$text:req.body})
+    db.collection("music").runCommand("text", req.body);
 
     db.close();
   });

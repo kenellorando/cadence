@@ -110,9 +110,11 @@ app.post('/search', function (req, res) {
       return console.log(err);
     }
 
-    // TODO: Search DB
+    db.collection("music").find(req.body.search).toArray(function(err,results){
+      console.log("FOUND");
+      console.log(results);
+    })
 
-    console.log("Connection established to database.");
     db.close();
   });
 

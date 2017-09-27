@@ -109,15 +109,10 @@ app.post('/search', function (req, res) {
       return console.log(err);
     }
 
-    db.collection("music").find({
-      $or: [{
-        "title":req.body.search
-      },{
-        "artist":req.body.search
-      },{
-        "album":req.body.search
-      }]
-    });
+    var queryString = '{$or: [{"title":"req.body.search"},{"artist":"req.body.search"},{"album":"req.body.search"}]}';
+    var queryObject = JSON.parse(queryString);
+
+    db.collection("music").find(queryObject);
 
     db.close();
   });

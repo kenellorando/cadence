@@ -102,11 +102,6 @@ app.post('/search', function (req, res) {
   console.log("Received: " + JSON.stringify(req.body));
   // Web Server Console:
   // Received: {"search":"railgun"}
-  var query = {
-    title: req.body.search,
-    artist: req.body.search,
-    album: req.body.search
-  };
 
   // Database search
   MongoClient.connect(DB_URL, function (err, db) {
@@ -114,10 +109,16 @@ app.post('/search', function (req, res) {
       return console.log(err);
     }
 
-    db.collection("music").find(query).toArray(function(err,results){
-      console.log("FOUND");
-      console.log(results);
-    })
+    var query={};
+    query.title = req.body.search;
+    query.artist = req.body.search;
+    query.album - req.body.search;
+
+    db.collection("music").find(query, function (err, docs) {
+      console.log("Found:");
+      console.log(docs);
+      
+    });
 
     db.close();
   });

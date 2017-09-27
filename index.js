@@ -110,7 +110,7 @@ app.post('/search', function (req, res) {
       return console.log(err);
     }
 
-    db.collection("music").find(req.body.search).toArray(function(err,results){
+    db.collection("music").find(req.body).toArray(function(err,results){
       console.log("FOUND");
       console.log(results);
     })

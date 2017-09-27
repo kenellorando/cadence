@@ -102,7 +102,11 @@ app.post('/search', function (req, res) {
   console.log("Received: " + JSON.stringify(req.body));
   // Web Server Console:
   // Received: {"search":"railgun"}
-  console.log(req.body.search);
+  var query = {
+    title: req.body.search,
+    artist: req.body.search,
+    album: req.body.search
+  };
 
   // Database search
   MongoClient.connect(DB_URL, function (err, db) {
@@ -110,7 +114,7 @@ app.post('/search', function (req, res) {
       return console.log(err);
     }
 
-    db.collection("music").find(req.body).toArray(function(err,results){
+    db.collection("music").find(query).toArray(function(err,results){
       console.log("FOUND");
       console.log(results);
     })

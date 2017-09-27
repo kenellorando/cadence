@@ -98,8 +98,10 @@ MongoClient.connect(DB_URL, function (err, db) {
 
   // Drop old indexes
   db.collection("music").dropIndexes();
+  // Enable text search
+  db.adminCommand({setParameter:true,textSearchEnabled:true});
   // Set search index
-  db.collection("music").ensureIndex( {title:"text", artist:"text"})
+  db.collection("music").ensureIndex( {title:"text"})
 
   console.log("Database updated.");
 });
@@ -117,7 +119,7 @@ app.post('/search', function (req, res) {
       return console.log(err);
     }
 
-    db.collection("music").runCommand( "text", req.body)
+    db.collection("music").find({$text:req.body})
 
     db.close();
   });

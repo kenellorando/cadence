@@ -28,7 +28,10 @@ MongoClient.connect(DB_URL, function (err, db) {
     return console.log(err);
   }
 
-  // Create a music collection.
+  // Drop the music collection
+  db.collection("music").drop();
+
+  // Rebuild the music collection.
   db.createCollection("music", function (err, res) {
     if (err) {
       throw err;
@@ -93,6 +96,11 @@ MongoClient.connect(DB_URL, function (err, db) {
     }
   });
 
+  // Drop old indexes
+  db.collection("music").dropIndexes();
+  // Set search index
+  db.collection("music").ensureIndex( {title:"text", artist:"text"})
+
   console.log("Database updated.");
 });
 
@@ -109,10 +117,8 @@ app.post('/search', function (req, res) {
       return console.log(err);
     }
 
-    var queryString = '{$or: [{"title":"req.body.search"},{"artist":"req.body.search"},{"album":"req.body.search"}]}';
-    var queryObject = JSON.parse(queryString);
-
-    db.collection("music").find(queryObject);
+    db.collection("music").find({
+    });
 
     db.close();
   });

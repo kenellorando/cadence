@@ -22,19 +22,14 @@ $(document).ready(function () {
           data.forEach(function(song){
             console.log("RESULT " + i)
             console.log("Title:" + song.title);
-            console.log("Artist(s)" + song.artist);
-            console.log("Album" + song.album);
+            console.log("Artist(s): " + song.artist);
+            console.log("Album: " + song.album);
             i++;
             console.log("=================")
           })
         } else {
           console.log("No results found. :(");
         }
-        
-        /*
-        console.log(data[0]);
-        console.log(data[0].title);
-        */
       },
       error: function() {
         console.log("Failure");

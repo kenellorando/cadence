@@ -13,9 +13,14 @@ $(document).ready(function () {
       url: 'http://cadenceradio.com/search',
       dataType: 'application/json',
       data: data,
+      dataType: "json",
       success: function(data) {
         console.log("Success");
         alert("success");
+      },
+      error: function() {
+        console.log("Failure");
+        alert("failure");
       }
     });
   });

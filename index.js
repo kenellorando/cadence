@@ -99,9 +99,9 @@ MongoClient.connect(DB_URL, function (err, db) {
   // Drop old indexes
   db.collection("music").dropIndexes();
   // Enable text searching
-  db.executeDbAdminCommand({setParameter: 1, textSearchEnabled: true})
+  db.executeDbAdminCommand({setParameter: 1, textSearchEnabled: true});
   // Set search index
-  db.collection("music").ensureIndex( {title:"text"})
+  db.ensureIndex("music", {title: "text"});
 
   console.log("Database updated.");
 });

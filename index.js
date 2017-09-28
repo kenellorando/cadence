@@ -29,12 +29,13 @@ MongoClient.connect(DB_URL, function (err, db) {
   }
 
   // Drop the music collection
-  db.collection("music").drop();
+  // db.collection("music").drop();
 
   // Rebuild the music collection.
   db.createCollection("music", function (err, res) {
     if (err) {
-      throw err;
+      db.collection("music").drop();
+      db.createCollection("music");
     }
   })
 

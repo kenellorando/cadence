@@ -16,7 +16,8 @@ $(document).ready(function () {
       dataType: "json",
       success: function(data) {
         console.log("Success");
-        alert("success");
+        console.log(data[0]);
+        console.log(data[0].title);
       },
       error: function() {
         console.log("Failure");

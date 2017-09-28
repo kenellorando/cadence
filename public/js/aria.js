@@ -14,7 +14,10 @@ $(document).ready(function () {
       dataType: 'application/json',
       data: data,
       success: function(results) {
-        console.log(results)
+        console.log("Success");
+        console.log(results);
+        alert("success");
+        alert(results);
       }
     });
   });

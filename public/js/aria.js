@@ -16,19 +16,19 @@ $(document).ready(function () {
       dataType: "json",
       success: function(data) {
         console.log("Success");
-        console.log("============")
+        console.log("=================")
         let i=1;
         if (data.length !== 0) {
           data.forEach(function(song){
             console.log("RESULT " + i)
-            console.log(song.title);
-            console.log(song.artist);
-            console.log(song.album);
+            console.log("Title:" + song.title);
+            console.log("Artist(s)" + song.artist);
+            console.log("Album" + song.album);
             i++;
-            console.log("============")
+            console.log("=================")
           })
         } else {
-          console.log("No results found.");
+          console.log("No results found. :(");
         }
         
         /*

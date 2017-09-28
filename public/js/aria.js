@@ -12,7 +12,10 @@ $(document).ready(function () {
       type: 'POST',
       url: 'http://cadenceradio.com/search',
       dataType: 'application/json',
-      data: data
+      data: data,
+      success: function(results) {
+        console.log(results)
+      }
     });
   });
 })

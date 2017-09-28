@@ -143,7 +143,6 @@ app.post('/search', function (req, res) {
     });
     db.close();
   });
-  res.end();
 });
 
 var server = app.listen(PORT, IP);

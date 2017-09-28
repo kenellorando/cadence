@@ -16,15 +16,21 @@ $(document).ready(function () {
       dataType: "json",
       success: function(data) {
         console.log("Success");
+        console.log("============")
         let i=1;
-        data.forEach(function(song){
-          console.log("RESULT " + i)
-          console.log(song.title);
-          console.log(song.artist);
-          console.log(song.album);
-          i++;
-          console.log("============")
-        })
+        if (data.length !== 0) {
+          data.forEach(function(song){
+            console.log("RESULT " + i)
+            console.log(song.title);
+            console.log(song.artist);
+            console.log(song.album);
+            i++;
+            console.log("============")
+          })
+        } else {
+          console.log("No results found.");
+        }
+        
         /*
         console.log(data[0]);
         console.log(data[0].title);

@@ -1,5 +1,5 @@
 /**
- * ARIA's Frontend Functionality
+ * ARIA's Async Engine
  */
 $(document).ready(function () {
   $('#searchButton').click(function (e) {
@@ -16,12 +16,21 @@ $(document).ready(function () {
       dataType: "json",
       success: function(data) {
         console.log("Success");
+        data.forEach(function(song){
+          let i=1;
+          console.log("RESULT " + i)
+          console.log(song.title);
+          console.log(song.artist);
+          console.log(song.album);
+          i++;
+        })
+        /*
         console.log(data[0]);
         console.log(data[0].title);
+        */
       },
       error: function() {
         console.log("Failure");
-        alert("failure");
       }
     });
   });

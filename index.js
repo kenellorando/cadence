@@ -139,7 +139,7 @@ app.post('/search', function (req, res) {
     }).toArray(function (err, result) {
       if (err) throw err;
       console.log(result);
-      res.send(result);
+      res.json(result);
       return result;
     });
     db.close();

@@ -67,7 +67,7 @@ MongoClient.connect(DB_URL, function (err, db) {
                 path: file
               }, {
                 $set: {
-                  'title': metadata.title,
+                  "title": metadata.title,
                   "artist": metadata.artist,
                   "album": metadata.album
                 }
@@ -113,13 +113,23 @@ app.post('/search', function (req, res) {
   // Web Server Console:
   // Received: {"search":"railgun"}
 
+var query = req.body;
   // Database search
   MongoClient.connect(DB_URL, function (err, db) {
     if (err) {
       return console.log(err);
     }
+	console.log(typeof(req.body));
+	var query = {
+		$or:[{"title":req.body.search},{"artist":req.body.search},{"album":req.body.search}]
+};
 
-    db.collection("music").runCommand("text", req.body);
+	console.log(query);	    
+	db.collection("music").find(query).toArray(function(err, result){
+		if (err) throw err;
+		console.log(result);
+			
+	});
 
     db.close();
   });

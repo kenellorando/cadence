@@ -140,6 +140,7 @@ app.post('/search', function (req, res) {
       if (err) throw err;
       console.log(result);
       res.send(result);
+      return result;
     });
     db.close();
   });

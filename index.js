@@ -38,6 +38,11 @@ MongoClient.connect(DB_URL, function (err, db) {
       db.collection("music").drop();
       db.createCollection("music");
 
+      /*
+      Currently, these do not fire from here 
+      and must be typed manually through 
+      the database console
+
       // Drop old indexes
       db.collection("music").dropIndexes();
       // Enable text searching
@@ -51,6 +56,7 @@ MongoClient.connect(DB_URL, function (err, db) {
         artist: "text",
         album: "text"
       });
+      */
     }
   })
 
@@ -119,10 +125,7 @@ MongoClient.connect(DB_URL, function (err, db) {
 // Search, directed from aria.js AJAX
 app.post('/search', function (req, res) {
   console.log("Received: " + JSON.stringify(req.body));
-  // Web Server Console:
-  // Received: {"search":"railgun"}
 
-  var query = req.body;
   // Database search
   MongoClient.connect(DB_URL, function (err, db) {
     if (err) {
@@ -136,13 +139,12 @@ app.post('/search', function (req, res) {
     }).toArray(function (err, result) {
       if (err) throw err;
       console.log(result);
-
     });
 
-    db.close();
+    db.close(result);
   });
 
-  res.send("OK from ARIA!");
+  res.send(result)
   res.end();
 });
 

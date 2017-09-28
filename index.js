@@ -139,12 +139,12 @@ app.post('/search', function (req, res) {
     }).toArray(function (err, result) {
       if (err) throw err;
       console.log(result);
+      res.status(200).json(data);
     });
 
     db.close(result);
   });
-
-  res.send(result)
+  res.send("OK from ARIA!");
   res.end();
 });
 

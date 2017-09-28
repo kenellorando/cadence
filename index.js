@@ -34,8 +34,23 @@ MongoClient.connect(DB_URL, function (err, db) {
   // Rebuild the music collection.
   db.createCollection("music", function (err, res) {
     if (err) {
+      // Drop and recreate
       db.collection("music").drop();
       db.createCollection("music");
+
+      // Drop old indexes
+      db.collection("music").dropIndexes();
+      // Enable text searching
+      db.executeDbAdminCommand({
+        setParameter: 1,
+        textSearchEnabled: true
+      });
+      // Set search index
+      db.collection("music").createIndex({
+        title: "text",
+        artist: "text",
+        album: "text"
+      });
     }
   })
 
@@ -95,20 +110,6 @@ MongoClient.connect(DB_URL, function (err, db) {
     if (error) {
       throw error;
     }
-  });
-
-  // Drop old indexes
-  db.collection("music").dropIndexes();
-  // Enable text searching
-  db.executeDbAdminCommand({
-    setParameter: 1,
-    textSearchEnabled: true
-  });
-  // Set search index
-  db.collection("music").createIndex({
-    title: "text",
-    artist: "text",
-    album: "text"
   });
 
   console.log("Database updated.");

@@ -16,13 +16,14 @@ $(document).ready(function () {
       dataType: "json",
       success: function(data) {
         console.log("Success");
+        let i=1;
         data.forEach(function(song){
-          let i=1;
           console.log("RESULT " + i)
           console.log(song.title);
           console.log(song.artist);
           console.log(song.album);
           i++;
+          console.log("============")
         })
         /*
         console.log(data[0]);

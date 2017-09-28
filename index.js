@@ -99,9 +99,16 @@ MongoClient.connect(DB_URL, function (err, db) {
   // Drop old indexes
   db.collection("music").dropIndexes();
   // Enable text searching
-  db.executeDbAdminCommand({setParameter: 1, textSearchEnabled: true});
+  db.executeDbAdminCommand({
+    setParameter: 1,
+    textSearchEnabled: true
+  });
   // Set search index
-  db.ensureIndex("music", {title: "text"});
+  db.collection("music").createIndex({
+    title: "text",
+    artist: "text",
+    album: "text"
+  });
 
   console.log("Database updated.");
 });
@@ -113,23 +120,22 @@ app.post('/search', function (req, res) {
   // Web Server Console:
   // Received: {"search":"railgun"}
 
-var query = req.body;
+  var query = req.body;
   // Database search
   MongoClient.connect(DB_URL, function (err, db) {
     if (err) {
       return console.log(err);
     }
-	console.log(typeof(req.body));
-	var query = {
-		$or:[{"title":req.body.search},{"artist":req.body.search},{"album":req.body.search}]
-};
 
-	console.log(query);	    
-	db.collection("music").find(query).toArray(function(err, result){
-		if (err) throw err;
-		console.log(result);
-			
-	});
+    db.collection("music").find({
+      $text: {
+        $search: req.body.search
+      }
+    }).toArray(function (err, result) {
+      if (err) throw err;
+      console.log(result);
+
+    });
 
     db.close();
   });

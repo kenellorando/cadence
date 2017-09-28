@@ -21,7 +21,7 @@ $(document).ready(function () {
         if (data.length !== 0) {
           data.forEach(function(song){
             console.log("RESULT " + i)
-            console.log("Title:" + song.title);
+            console.log("Title: " + song.title);
             console.log("Artist(s): " + song.artist);
             console.log("Album: " + song.album);
             i++;

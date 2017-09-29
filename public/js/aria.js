@@ -41,9 +41,9 @@ $(document).ready(function () {
             var songAlbumData = document.createElement("td");
 
             // Set the data
-            songTitleData.html(song.title);
-            songArtistData.html(song.artist);
-            songAlbumData.html(song.album);
+            songTitleData.innerHTML(song.title);
+            songArtistData.innerHTML(song.artist);
+            songAlbumData.innerHTML(song.album);
             // Append to the row
             tableRow.appendChild(songTitleData);
             tableRow.appendChild(songArtistData);
@@ -57,7 +57,7 @@ $(document).ready(function () {
         }
 
         // Put table into results html
-        document.getElementById("results").appendChild(table);
+        document.getElementById("results").innerHTML(table);
 
       },
       error: function () {

@@ -144,7 +144,7 @@ footer {
 /* Search info, song title, and artist name */
 
 #results {
-  visibility: hidden;
+  display: none;
 }
 
 #results .result {}

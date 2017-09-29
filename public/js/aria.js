@@ -18,10 +18,10 @@ $(document).ready(function () {
         console.log("Success");
         console.log("=================")
         let i=1;
+        var results=document.getElementById("results");
         if (data.length !== 0) {
           // Display results data
-          var results=document.getElementById("results");
-          results.visibility="visible";
+          results.display="block";
           // Remove all current results
           while (results.firstChild) {
               results.remove(results.firstChild);
@@ -61,6 +61,8 @@ $(document).ready(function () {
           })
         } else {
           console.log("No results found. :(");
+          // Hide results div
+          results.display="none"
         }
       },
       error: function() {

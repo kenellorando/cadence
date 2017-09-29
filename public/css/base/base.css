@@ -18,7 +18,7 @@ Organization of base.css:
   - Desktop width
   - Desktop height
   - Very wide and tall screens
-    
+
 
 /* BASE ELEMENTS *******************************************************/
 
@@ -138,6 +138,31 @@ footer {
 #song_title {
   font-size: 1.66em;
   padding-bottom: .76em;
+}
+
+
+/* Search info, song title, and artist name */
+
+#results {
+  display: none;
+}
+
+#results .result {
+  border: 3px outset white;
+  border-radius: 2px;
+  margin: 3px;
+  margin-bottom: 8px;
+}
+
+#results .result .artist_name {}
+
+#results .result .album_title {}
+
+#results .result .song_title {}
+
+#searchFailure {
+  color: red;
+  visibility: hidden;
 }
 
 

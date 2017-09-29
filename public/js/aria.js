@@ -22,7 +22,7 @@ $(document).ready(function () {
         var results=document.getElementById("results");
         if (data.length !== 0) {
           // Display results data
-          results.display="block";
+          results.style.display="block";
           // Remove all current results
           while (results.firstChild) {
               results.remove(results.firstChild);
@@ -63,7 +63,7 @@ $(document).ready(function () {
         } else {
           console.log("No results found. :(");
           // Hide results div
-          results.display="none"
+          results.style.display="none"
         }
       },
       error: function() {

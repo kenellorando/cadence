@@ -20,7 +20,7 @@ $(document).ready(function () {
         let i = 1;
 
         // Create the container table
-        var table = document.createElement("table");
+        var table = "<table>";
 
         if (data.length !== 0) {
           data.forEach(function (song) {
@@ -31,31 +31,13 @@ $(document).ready(function () {
             i++;
             console.log("=================")
 
-            var resultsDiv = document.getElementById('results');
-
-            // Row for this song
-            var tableRow = document.createElement("tr");
-
-            var songTitleData = document.createElement("td");
-            var songArtistData = document.createElement("td");
-            var songAlbumData = document.createElement("td");
-
-            // Set the data
-            songTitleData.innerHTML = song.title;
-            songArtistData.innerHTML = song.artist;
-            songAlbumData.innerHTML = song.album;
-            // Append to the row
-            tableRow.appendChild(songTitleData);
-            tableRow.appendChild(songArtistData);
-            tableRow.appendChild(songAlbumData);
-
-            // Put row into table
-            table.appendChild(tableRow);
+            table += "<tr><td>" + song.title + "</td><td>" + song.artist + "</td><td>" + song.album + "</td></tr>";
           })
         } else {
           console.log("No results found. :(");
         }
 
+        table += "</table>";
         // Put table into results html
         document.getElementById("results").innerHTML = table;
 

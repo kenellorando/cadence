@@ -192,20 +192,21 @@ footer {
 
 #searchResults {
   background-color: rgba(0, 0, 0, .35);
+  table-layout: fixed;
 }
 
 
 /* Title column */
 
 #dataTitle {
-  min-width: 35%;
+  width: 40%;
 }
 
 
 /* Title column */
 
 #dataArtist {
-  min-width: 35%;
+  width: 35%;
 }
 
 
@@ -213,6 +214,7 @@ footer {
 
 #requestButton {
   font-family: 'Roboto', sans-serif;
+  width: 25%;
 }
 
 #content {

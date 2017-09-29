@@ -41,14 +41,14 @@ $(document).ready(function () {
             var songAlbumData = document.createElement("td");
 
             // Set the data
-            songTitleData.innerHTML(song.title);
-            songArtistData.innerHTML(song.artist);
-            songAlbumData.innerHTML(song.album);
+            songTitleData.innerHTML = song.title;
+            songArtistData.innerHTML = song.artist;
+            songAlbumData.innerHTML = song.album;
             // Append to the row
             tableRow.appendChild(songTitleData);
             tableRow.appendChild(songArtistData);
             tableRow.appendChild(songAlbumData);
-            
+
             // Put row into table
             table.appendChild(tableRow);
           })
@@ -57,7 +57,7 @@ $(document).ready(function () {
         }
 
         // Put table into results html
-        document.getElementById("results").innerHTML(table);
+        document.getElementById("results").innerHTML = table;
 
       },
       error: function () {

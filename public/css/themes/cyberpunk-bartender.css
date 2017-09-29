@@ -72,7 +72,41 @@ body {
   box-shadow: 1px 1px 65px cyan;
 }
 
+
+/* Link colors */
+
+a {
+  text-shadow: 2px 2px 20px cyan;
+}
+
+a:link {
+  color: cyan;
+}
+
+a:visited {
+  color: cyan;
+}
+
+a:hover {
+  color: deepskyblue;
+}
+
+
+/* Refresh status and changelog toggle buttons*/
+
+#refreshStatus,
+#oldToggle {
+  color: cyan;
+}
+
+#refreshStatus:hover,
+#oldToggle:hover {
+  color: deepskyblue;
+}
+
+
 /* Resets background position to center */
+
 @media (min-width: 30em) {
   html {
     background-position: center;

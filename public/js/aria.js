@@ -65,7 +65,7 @@ $(document).ready(function () {
         }
 
         // Put table into results html
-        document.getElementById("results").appendChild(table);
+        document.getElementById("results").innerHTML(table);
 
       },
       error: function () {

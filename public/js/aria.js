@@ -20,7 +20,7 @@ $(document).ready(function () {
         let i = 1;
 
         // Create the container table
-        var table = "<table>";
+        var table = "<table id = 'searchResults'>";
 
         if (data.length !== 0) {
           data.forEach(function (song) {
@@ -31,7 +31,7 @@ $(document).ready(function () {
             i++;
             console.log("=================")
 
-            table += "<tr><td>" + song.title + "</td><td>" + song.artist + "</td><td><button>REQUEST</button></td></tr>";
+            table += "<tr><td id='dataTitle'>" + song.title + "</td><td id='dataArtist'>" + song.artist + "</td><td id='requestData'><button id='requestButton'>REQUEST (COMING SOON)</button></td></tr>";
           })
         } else {
           console.log("No results found. :(");

@@ -160,6 +160,11 @@ footer {
 
 #results .result .song_title {}
 
+#searchFailure {
+  color: red;
+  visibility: hidden;
+}
+
 
 /* start of all buttons in the player */
 

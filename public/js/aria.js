@@ -15,6 +15,7 @@ $(document).ready(function () {
       data: data,
       dataType: "json",
       success: function(data) {
+        document.getElementById("searchFailure").visibility="hidden";
         console.log("Success");
         console.log("=================")
         let i=1;
@@ -67,6 +68,7 @@ $(document).ready(function () {
       },
       error: function() {
         console.log("Failure");
+        document.getElementById("searchFailure").visibility="visible";
       }
     });
   });

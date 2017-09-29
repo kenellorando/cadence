@@ -147,9 +147,9 @@ footer {
   visibility: hidden;
 }
 
-#returned_artist_name {}
+#results .result .returned_artist_name {}
 
-#returned_song_title {}
+#results .result .returned_song_title {}
 
 
 /* start of all buttons in the player */

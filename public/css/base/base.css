@@ -18,7 +18,7 @@ Organization of base.css:
   - Desktop width
   - Desktop height
   - Very wide and tall screens
-    
+
 
 /* BASE ELEMENTS *******************************************************/
 
@@ -147,9 +147,13 @@ footer {
   visibility: hidden;
 }
 
-#results .result .returned_artist_name {}
+#results .result {}
 
-#results .result .returned_song_title {}
+#results .result .artist_name {}
+
+#results .result .album_title {}
+
+#results .result .song_title {}
 
 
 /* start of all buttons in the player */

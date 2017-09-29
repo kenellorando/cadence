@@ -19,13 +19,45 @@ $(document).ready(function () {
         console.log("=================")
         let i=1;
         if (data.length !== 0) {
+          // Display results data
+          var results=document.getElementById("results");
+          results.visibility="visible";
+          // Remove all current results
+          while (results.firstChild) {
+              results.remove(results.firstChild);
+          }
+
           data.forEach(function(song){
+            // For each result, first log data
             console.log("RESULT " + i)
             console.log("Title: " + song.title);
             console.log("Artist(s): " + song.artist);
             console.log("Album: " + song.album);
             i++;
             console.log("=================")
+
+            // Now add a result element to the results div
+            var result=document.createElement("div");
+            result.class="result";
+
+            var artist=document.createElement("div");
+            artist.class="artist_name";
+
+            var album=document.createElement("div");
+            album.class="album_title";
+
+            var title=document.createElement("div");
+            title.class="song_title";
+
+            artist.innerHTML=song.artist;
+            album.innerHTML=song.album;
+            title.innerHTML=song.title;
+
+            result.appendChild(artist);
+            result.appendChild(album);
+            result.appendChild(title);
+
+            results.appendChild(result);
           })
         } else {
           console.log("No results found. :(");

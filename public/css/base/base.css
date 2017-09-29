@@ -192,23 +192,31 @@ footer {
 
 #searchResults {
   background-color: rgba(0, 0, 0, .20);
+  padding: 2em 0em;
 }
 
 
 /* Title column */
 
-#dataTitle {}
+#dataTitle {
+}
 
 
-/* Title column */
+/* Artist column */
 
-#dataArtist {}
+#dataArtist {
+}
 
 
-/* Title column */
+/* Request column */
+#dataRequest {
+}
+
+/* Request button */
 
 #requestButton {
   font-family: 'PT Sans', sans-serif;
+  color: blue;
 }
 
 #content {

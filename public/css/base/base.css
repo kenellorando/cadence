@@ -150,6 +150,8 @@ footer {
 #results .result {
   border: 3px outset white;
   border-radius: 2px;
+  margin: 3px;
+  margin-bottom: 8px;
 }
 
 #results .result .artist_name {}

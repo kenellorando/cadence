@@ -57,7 +57,6 @@ main {
 
 section {
   padding: 1.11em;
-  padding-bottom: 0;
 }
 
 p {
@@ -197,7 +196,9 @@ footer {
 
 /* On the left side **************/
 
-.content-left {}
+.content-left {
+  padding-right: 1em;
+}
 
 .announcement {
   line-height: 1.3em;
@@ -238,12 +239,12 @@ footer {
 }
 
 #oldToggle {
-  color: cyan;
+  color: orange;
   cursor: pointer;
 }
 
 #oldToggle:hover {
-  color: darkcyan;
+  color: orangered;
 }
 
 
@@ -260,28 +261,28 @@ footer {
 /* unvisited link */
 
 a:link {
-  color: cyan;
+  color: orange;
 }
 
 
 /* visited link */
 
 a:visited {
-  color: cyan;
+  color: orange;
 }
 
 
 /* mouse over link */
 
 a:hover {
-  color: darkcyan;
+  color: orangered;
 }
 
 
 /* selected link */
 
 a:active {
-  color: darkcyan;
+  color: orangered;
 }
 
 

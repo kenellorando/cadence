@@ -72,6 +72,37 @@ body {
   box-shadow: 1px 1px 65px cyan;
 }
 
+/* Link colors */
+
+a {
+  text-shadow: 2px 2px 20px red;
+}
+
+a:link {
+  color: hotpink;
+}
+
+a:visited {
+  color: hotpink;
+}
+
+a:hover {
+  color: deeppink;
+}
+
+
+/* Refresh status and changelog toggle buttons*/
+
+#refreshStatus,
+#oldToggle {
+  color: hotpink;
+}
+
+#refreshStatus:hover,
+#oldToggle:hover {
+  color: deeppink;
+}
+
 
 /* Resets background position to center */
 

@@ -191,30 +191,24 @@ footer {
 /* Result table */
 
 #searchResults {
-  background-color: rgba(0, 0, 0, .35);
-  table-layout: fixed;
+  background-color: rgba(0, 0, 0, .20);
 }
 
 
 /* Title column */
 
-#dataTitle {
-  width: 40%;
-}
+#dataTitle {}
 
 
 /* Title column */
 
-#dataArtist {
-  width: 35%;
-}
+#dataArtist {}
 
 
 /* Title column */
 
 #requestButton {
   font-family: 'Roboto', sans-serif;
-  width: 25%;
 }
 
 #content {

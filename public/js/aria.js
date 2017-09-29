@@ -31,7 +31,7 @@ $(document).ready(function () {
             i++;
             console.log("=================")
 
-            table += "<tr><td id='dataTitle'>" + song.title + "</td><td id='dataArtist'>" + song.artist + "</td><td id='requestData'><button id='requestButton'>REQUEST</button></td></tr>";
+            table += "<tr><td id='dataTitle'>" + song.title + "</td><td id='dataArtist'>" + song.artist + "</td><td id='dataRequest'><button id='requestButton'>REQUEST</button></td></tr>";
           })
         } else {
           console.log("No results found. :(");

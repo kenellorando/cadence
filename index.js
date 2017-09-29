@@ -73,6 +73,23 @@ MongoClient.connect(DB_URL, function (err, db) {
         if (!file) {
           return done(null);
         }
+        
+        var extensions = [ // All recognized music extensions
+            ".mp3",
+            ".m4a",
+            ".flac",
+            ".ogg"
+        ];
+        var music=false;
+        for (var i=0; i<extensions.length; ++i) {
+            if (file.endsWith(extensions[i])) {
+                music=true;
+                break;
+            }
+        }
+        if (music)
+            return next();
+        
         file = dir + '/' + file;
         fs.stat(file, function (error, stat) {
           if (stat && stat.isDirectory()) {

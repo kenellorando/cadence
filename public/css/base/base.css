@@ -187,6 +187,34 @@ footer {
 
 /* EVERYTHING UNDER MAIN PLAYER **************************************************** */
 
+
+/* Result table */
+
+#searchResults {
+  background-color: rgba(0, 0, 0, .35);
+}
+
+
+/* Title column */
+
+#dataTitle {
+  width: 30%;
+}
+
+
+/* Title column */
+
+#dataArtist {
+  width: 30%;
+}
+
+
+/* Title column */
+
+#requestButton {
+  font-family: 'Roboto', sans-serif;
+}
+
 #content {
   clear: both;
   /* In case I move the main stuff to the side */

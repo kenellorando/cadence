@@ -64,6 +64,7 @@ $(document).ready(function () {
           results.style.display="none"
         }
 
+        table += "</table>";
         // Put table into results html
         document.getElementById("results").innerHTML = table;
 

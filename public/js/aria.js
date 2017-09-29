@@ -24,9 +24,7 @@ $(document).ready(function () {
           // Display results data
           results.style.display="block";
           // Remove all current results
-          while (results.firstChild) {
-              results.remove(results.firstChild);
-          }
+          results.innerHTML="";
 
           data.forEach(function(song){
             // For each result, first log data

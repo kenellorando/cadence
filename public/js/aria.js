@@ -37,16 +37,16 @@ $(document).ready(function () {
 
             // Now add a result element to the results div
             var result=document.createElement("div");
-            result.class="result";
+            result.className="result";
 
             var artist=document.createElement("div");
-            artist.class="artist_name";
+            artist.className="artist_name";
 
             var album=document.createElement("div");
-            album.class="album_title";
+            album.className="album_title";
 
             var title=document.createElement("div");
-            title.class="song_title";
+            title.className="song_title";
 
             artist.innerHTML=song.artist;
             album.innerHTML=song.album;

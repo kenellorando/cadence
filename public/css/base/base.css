@@ -192,19 +192,27 @@ footer {
 
 #searchResults {
   background-color: rgba(0, 0, 0, .20);
-  padding: 2em 0em;
+  padding: 0em 1.11em;
+}
+
+#searchResults th {
+  text-align: left;
+  border-bottom: 1px solid;
+  font-size: 1.1em;
 }
 
 
 /* Title column */
 
 #dataTitle {
+  width: 40%;
 }
 
 
 /* Artist column */
 
 #dataArtist {
+  
 }
 
 
@@ -216,7 +224,6 @@ footer {
 
 #requestButton {
   font-family: 'PT Sans', sans-serif;
-  color: blue;
 }
 
 #content {

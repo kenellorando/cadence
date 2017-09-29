@@ -198,14 +198,14 @@ footer {
 /* Title column */
 
 #dataTitle {
-  width: 30%;
+  min-width: 35%;
 }
 
 
 /* Title column */
 
 #dataArtist {
-  width: 30%;
+  min-width: 35%;
 }
 
 

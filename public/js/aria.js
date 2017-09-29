@@ -23,6 +23,8 @@ $(document).ready(function () {
         var table = "<table id = 'searchResults'>";
 
         if (data.length !== 0) {
+          table += "<tr><th>Title</th><th>Artist</th><th>Availability</th></tr>"
+          
           data.forEach(function (song) {
             console.log("RESULT " + i)
             console.log("Title: " + song.title);

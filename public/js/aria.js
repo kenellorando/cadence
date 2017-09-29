@@ -63,8 +63,12 @@ $(document).ready(function () {
           // Hide results div
           results.style.display="none"
         }
+
+        // Put table into results html
+        document.getElementById("results").appendChild(table);
+
       },
-      error: function() {
+      error: function () {
         console.log("Failure");
         document.getElementById("searchFailure").style.visibility="visible";
       }

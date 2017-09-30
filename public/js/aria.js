@@ -49,7 +49,7 @@ $(document).ready(function () {
     });
   });
 
-  $('.requestButton').click(function (e) {
+  $('.requestButton').on('click', function (e) {
     alert("request button clicked");
   });
 });

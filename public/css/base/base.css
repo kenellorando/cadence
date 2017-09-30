@@ -209,19 +209,19 @@ footer {
 
 /* Title column */
 
-#dataTitle {
+.dataTitle {
   width: 70%;
 }
 
 
 /* Artist column */
 
-#dataArtist {}
+.dataArtist {}
 
 
 /* Request column */
 
-#dataRequest {
+.dataRequest {
   width: 10%;
 }
 

@@ -72,10 +72,7 @@
 
       <div>
         <p style="margin:0">Cadence/ARIA Development Build </p>
-        <p style="margin:0 0 30px 0;">Alpha 0.2.0</p>
-      </div>
-      <div id="results">
-    
+        <p style="margin:0 0 30px 0;">Beta 0.9.0</p>
       </div>
 
       <!-- Theme selector -->
@@ -96,9 +93,37 @@
     </div>
   </main>
 
-  <div>
-    <input id="searchInput" type="text" placeholder="Search">
-    <button id="searchButton">Search Button</button>
+  <div id="search">
+    <input id="searchInput" type="text" placeholder="Search for a song or artist!">
+    <button id="searchButton">Search</button>
+  </div>
+  
+  <div id="results">
+    
+      <!-- hardcoded for styling tests
+    <table id='searchResults'>
+      <tr>
+        <th>Title</th>
+        <th>Artist</th>
+        <th>Availability</th>
+      </tr>
+      <tr>
+        <td id='dataTitle'>Song Name</td>
+        <td id='dataArtist'>Song Artist</td>
+        <td id='dataRequest'><button id='requestButton'>REQUEST</button></td>
+      </tr>
+      <tr>
+        <td id='dataTitle'>Song Name</td>
+        <td id='dataArtist'>Song Artist</td>
+        <td id='dataRequest'><button id='requestButton'>REQUEST</button></td>
+      </tr>
+      <tr>
+        <td id='dataTitle'>Song Name</td>
+        <td id='dataArtist'>Song Artist</td>
+        <td id='dataRequest'><button id='requestButton'>REQUEST</button></td>
+      </tr>
+    </table>
+    -->
   </div>
 
   <div id="content">
@@ -137,6 +162,7 @@
       <section id="changelog">
         <h2>Changelog:</h2>
         <ul>
+          <li>9/30: Song requests!!!</li>
           <li>9/28: Database returning search results</li>
           <li>9/13: Aria build deployed to <i>cadenceradio.com</i></li>
           <li>9/12: Switched back-end stream source client</li>

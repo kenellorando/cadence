@@ -3,12 +3,12 @@ const IP = '198.37.25.185';
 const DB_URL = 'mongodb://localhost:27017/cadence';
 const MUSIC_DIR = '/home/ken/Music';
 
-
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var mm = require('musicmetadata');
+var Telnet = require('telnet-client');
 
 var app = express();
 
@@ -21,15 +21,11 @@ app.use(bodyParser.urlencoded({
 // Point to publicly served files
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 // Connect to database. Populate.
 MongoClient.connect(DB_URL, function (err, db) {
   if (err) {
     return console.log(err);
   }
-
-  // Drop the music collection
-  // db.collection("music").drop();
 
   // Rebuild the music collection.
   db.createCollection("music", function (err, res) {
@@ -39,8 +35,8 @@ MongoClient.connect(DB_URL, function (err, db) {
       db.createCollection("music");
 
       /*
-      Currently, these do not fire from here 
-      and must be typed manually through 
+      Currently, these do not fire from here
+      and must be typed manually through
       the database console
 
       // Drop old indexes
@@ -73,6 +69,23 @@ MongoClient.connect(DB_URL, function (err, db) {
         if (!file) {
           return done(null);
         }
+
+        var extensions = [ // All recognized music extensions
+            ".mp3",
+            ".m4a",
+            ".flac",
+            ".ogg"
+        ];
+        var music=false;
+        for (var i=0; i<extensions.length; ++i) {
+            if (file.endsWith(extensions[i])) {
+                music=true;
+                break;
+            }
+        }
+        if (music)
+            return next();
+
         file = dir + '/' + file;
         fs.stat(file, function (error, stat) {
           if (stat && stat.isDirectory()) {
@@ -119,12 +132,13 @@ MongoClient.connect(DB_URL, function (err, db) {
   });
 
   console.log("Database updated.");
+  console.log("Webserver started.")
 });
 
 
 // Search, directed from aria.js AJAX
 app.post('/search', function (req, res) {
-  console.log("Received: " + JSON.stringify(req.body));
+  console.log("Search received: " + JSON.stringify(req.body));
 
   // Database search
   MongoClient.connect(DB_URL, function (err, db) {
@@ -143,6 +157,44 @@ app.post('/search', function (req, res) {
     });
     db.close();
   });
+});
+
+// Request, directed from aria.js AJAX
+app.post('/request', function (req, res) {
+  // Drop the double quotes
+  var requestPathQuotes = JSON.stringify(req.body.path);
+  var requestPath = requestPathQuotes.replace(/\"/g, "");
+
+  console.log("Attempting to push request: " + requestPath);
+
+  var connection = new Telnet()
+
+  var params = {
+    host: 'localhost',
+    port: 1234,
+    shellPrompt: '',
+    timeout: 5000,
+    // removeEcho: 4
+  }
+
+  connection.on('connect', function () {
+    // Push the request to the source client
+    connection.send('request.push ' + requestPath, function (err, response) {
+      console.log("Request pushed, source client response: ")
+      console.log(response);
+      connection.end();
+    })
+  })
+
+  connection.on('timeout', function () {
+    connection.end()
+  })
+
+  connection.on('close', function () {})
+
+  connection.connect(params)
+
+  res.send("ARIA: Request received.");
 });
 
 var server = app.listen(PORT, IP);

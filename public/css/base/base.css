@@ -187,6 +187,51 @@ footer {
 
 /* EVERYTHING UNDER MAIN PLAYER **************************************************** */
 
+#search {
+  text-align: center;
+  padding: 0 0 1.5em 0;
+}
+
+
+/* Result table */
+
+#searchResults {
+  background-color: rgba(0, 0, 0, .20);
+  padding: 1.11em;
+}
+
+#searchResults th {
+  text-align: left;
+  border-bottom: 1px solid;
+  font-size: 1.1em;
+}
+
+
+/* Title column */
+
+.dataTitle {
+  width: 70%;
+}
+
+
+/* Artist column */
+
+.dataArtist {}
+
+
+/* Request column */
+
+.dataRequest {
+  width: 10%;
+}
+
+
+/* Request button */
+
+.requestButton {
+  font-family: 'PT Sans', sans-serif;
+}
+
 #content {
   clear: both;
   /* In case I move the main stuff to the side */
@@ -306,11 +351,11 @@ a:active {
   #volume {
     width: 50%;
   }
+  #searchResults {
+    margin: 0em 1.11em;
+  }
   .announcement {
     width: 85%;
-  }
-  #statusTable {
-    padding: .3em 1.2em;
   }
 }
 
@@ -319,6 +364,18 @@ a:active {
     font-size: 1em;
     /*padding: 2em 0em 2em 0em;
     margin: 0em 5em 2em 5em;*/
+  }
+  #nowPlaying {
+    margin-bottom: 0em;
+  }
+  #volume {
+    width: 25%;
+  }
+  #searchResults {
+    margin: 0em 25%;
+  }
+  .dataTitle {
+    width: 55%
   }
   .content-left {
     padding-bottom: 1em;
@@ -339,12 +396,6 @@ a:active {
   #content {
     padding: 2em 2em 2em 2em;
     clear: both;
-  }
-  #nowPlaying {
-    margin-bottom: 0em;
-  }
-  #volume {
-    width: 25%;
   }
   footer {
     margin: auto;

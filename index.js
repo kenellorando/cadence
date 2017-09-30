@@ -145,4 +145,27 @@ app.post('/search', function (req, res) {
   });
 });
 
+// Search, directed from aria.js AJAX
+app.post('/search', function (req, res) {
+  console.log("Received: " + JSON.stringify(req.body));
+
+  // Database search
+  MongoClient.connect(DB_URL, function (err, db) {
+    if (err) {
+      return console.log(err);
+    }
+
+    db.collection("music").find({
+      $text: {
+        $search: req.body.search
+      }
+    }).toArray(function (err, result) {
+      if (err) throw err;
+      console.log(result);
+      res.send(result);
+    });
+    db.close();
+  });
+});
+
 var server = app.listen(PORT, IP);

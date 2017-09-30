@@ -151,22 +151,33 @@ app.post('/request', function (req, res) {
   console.log("Received: " + JSON.stringify(req.body));
   console.log("Requested: " + JSON.stringify(req.body.path));
 
-  async function run() {
-    let connection = new Telnet();
-    let params = {
-      host: '127.0.0.1',
-      port: 1234,
-      shellPrompt: 'help',
-      timeout: 1500
-    };
+  var connection = new Telnet()
 
-    await connection.connect(params);
-    let res = await connection.exec('uptime');
-    console.log('async result:', res);
+  var params = {
+    host: '127.0.0.1',
+    port: 1234,
+    shellPrompt: 'help',
+    timeout: 1500,
+    // removeEcho: 4
   }
 
-  run();
+  connection.on('ready', function (prompt) {
+    connection.exec(cmd, function (err, response) {
+      console.log(response)
+    })
+  })
 
+  connection.on('timeout', function () {
+    console.log('socket timeout!')
+    connection.end()
+  })
+
+  connection.on('close', function () {
+    console.log('connection closed')
+  })
+
+  connection.connect(params)
+  
   res.send("OK from ARIA!");
 });
 

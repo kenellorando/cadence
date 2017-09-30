@@ -162,7 +162,7 @@ app.post('/request', function (req, res) {
   }
 
   connection.on('connect', function () {
-    connection.send('hello', function (err, response) {
+    connection.send('help', function (err, response) {
       console.log(response);
       connection.end();
     })

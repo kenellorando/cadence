@@ -49,7 +49,8 @@ $(document).ready(function () {
     });
   });
 
-  $('.requestButton').on('click', function (e) {
+  // 
+  $(document).on('click', '.requestButton', function (e) {
     alert("request button clicked");
   });
 });

@@ -228,7 +228,7 @@ footer {
 
 /* Request button */
 
-#requestButton {
+.requestButton {
   font-family: 'PT Sans', sans-serif;
 }
 

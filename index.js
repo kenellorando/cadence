@@ -162,7 +162,7 @@ app.post('/request', function (req, res) {
   }
 
   connection.on('connect', function () {
-    connection.send('help', function (err, response) {
+    connection.send('request.push ' + JSON.stringify(req.body.path), function (err, response) {
       console.log(response);
       connection.end();
     })

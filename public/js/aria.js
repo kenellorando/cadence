@@ -2,6 +2,7 @@
  * ARIA's Async Engine
  */
 $(document).ready(function () {
+  // Search button
   $('#searchButton').click(function (e) {
     // Create a key 'search' to send in JSON
     var data = {};
@@ -49,8 +50,24 @@ $(document).ready(function () {
     });
   });
 
-  // 
+  // Request buttons
   $(document).on('click', '.requestButton', function (e) {
-    alert(this.dataset.path);
+    console.log(this.dataset.path);
+    // /home/ken/Music/fripSide/01. only my railgun.mp3
+
+    var path = this.dataset.path;
+
+    $.ajax({
+      type: 'POST',
+      url: 'http://cadenceradio.com/request',
+      data: path,
+      success: function (result) {
+        console.log("Success");
+        console.log(result);
+      },
+      error: function () {
+        console.log("Failure");
+      }
+    });
   });
 });

@@ -374,7 +374,7 @@ a:active {
   #searchResults {
     margin: 0em 25%;
   }
-  #dataTitle {
+  .dataTitle {
     width: 55%
   }
   .content-left {

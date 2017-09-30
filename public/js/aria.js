@@ -1,6 +1,7 @@
 /**
  * ARIA's Async Engine
  */
+
 $(document).ready(function () {
   // Search button
   $('#searchButton').click(function (e) {
@@ -15,7 +16,7 @@ $(document).ready(function () {
       data: data,
       dataType: "json",
       success: function (data) {
-        console.log("Success");
+        console.log("Database query completed.");
         console.log("=================");
         let i = 1;
 
@@ -42,7 +43,6 @@ $(document).ready(function () {
         table += "</table>";
         // Put table into results html
         document.getElementById("results").innerHTML = table;
-
       },
       error: function () {
         console.log("Failure");
@@ -52,8 +52,7 @@ $(document).ready(function () {
 
   // Request buttons
   $(document).on('click', '.requestButton', function (e) {
-    console.log(this.dataset.path);
-    // /home/ken/Music/fripSide/01. only my railgun.mp3
+    // console.log(this.dataset.path); // /home/ken/Music/fripSide/01. only my railgun.mp3
     
     var data = {};
     data.path = this.dataset.path;

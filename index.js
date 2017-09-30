@@ -151,6 +151,12 @@ app.post('/request', function (req, res) {
   console.log("Received: " + JSON.stringify(req.body));
   console.log("Requested: " + JSON.stringify(req.body.path));
 
+  // Drop the double quotes
+  var requestPathQuotes = JSON.stringify(req.body.path);
+  var requestPath = requestPathQuotes.replace(/\"/g, "");
+
+  console.log(requestPath);
+
   var connection = new Telnet()
 
   var params = {
@@ -162,7 +168,7 @@ app.post('/request', function (req, res) {
   }
 
   connection.on('connect', function () {
-    connection.send('request.push ' + JSON.stringify(req.body.path), function (err, response) {
+    connection.send('request.push', function (err, response) {
       console.log(response);
       connection.end();
     })

@@ -168,7 +168,8 @@ app.post('/request', function (req, res) {
   }
 
   connection.on('connect', function () {
-    connection.send('request.push', function (err, response) {
+    // Push the request to the source client
+    connection.send('request.push ' + requestPath, function (err, response) {
       console.log(response);
       connection.end();
     })

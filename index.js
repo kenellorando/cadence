@@ -9,6 +9,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var mm = require('musicmetadata');
+var Telnet = require('telnet-client');
 
 var app = express();
 
@@ -149,6 +150,23 @@ app.post('/search', function (req, res) {
 app.post('/request', function (req, res) {
   console.log("Received: " + JSON.stringify(req.body));
   console.log("Requested: " + JSON.stringify(req.body.path));
+
+  async function run() {
+    let connection = new Telnet();
+    let params = {
+      host: '127.0.0.1',
+      port: 1234,
+      shellPrompt: 'help',
+      timeout: 1500
+    };
+
+    await connection.connect(params);
+    let res = await connection.exec('uptime');
+    console.log('async result:', res);
+  }
+
+  run();
+
   res.send("OK from ARIA!");
 });
 

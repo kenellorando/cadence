@@ -51,6 +51,6 @@ $(document).ready(function () {
 
   // 
   $(document).on('click', '.requestButton', function (e) {
-    alert("request button clicked");
+    alert(this.dataset.path);
   });
 });

@@ -50,7 +50,6 @@ $(document).ready(function () {
   });
 
   $('.requestButton').click(function (e) {
-    console.log("Request button clicked!");
-    console.log("The path of this song is: '"+ this.dataset.path +"'");
+    alert("request button clicked");
   });
 });

@@ -147,7 +147,8 @@ app.post('/search', function (req, res) {
 
 // Request, directed from aria.js AJAX
 app.post('/request', function (req, res) {
-  console.log("Received: " + JSON.stringify(req.body.path));
+  console.log("Received: " + JSON.stringify(req.body));
+  console.log("Requested: " + JSON.stringify(req.body.path));
   res.send("OK from ARIA!");
 });
 

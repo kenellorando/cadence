@@ -54,13 +54,14 @@ $(document).ready(function () {
   $(document).on('click', '.requestButton', function (e) {
     console.log(this.dataset.path);
     // /home/ken/Music/fripSide/01. only my railgun.mp3
-
-    var path = this.dataset.path;
+    
+    var data = {};
+    data.path = this.dataset.path;
 
     $.ajax({
       type: 'POST',
       url: 'http://cadenceradio.com/request',
-      data: path,
+      data: data,
       success: function (result) {
         console.log("Success");
         console.log(result);

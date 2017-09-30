@@ -156,12 +156,13 @@ app.post('/request', function (req, res) {
   var params = {
     host: 'localhost',
     port: 1234,
-    shellPrompt: '/ # test',
+    shellPrompt: '/ # ',
     timeout: 5000,
     // removeEcho: 4
   }
 
   connection.on('ready', function (prompt) {
+    var cmd = "test";
     connection.exec(cmd, function (err, response) {
       console.log(response)
     })

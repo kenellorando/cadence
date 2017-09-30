@@ -51,7 +51,6 @@ $(document).ready(function () {
   });
 
   $('#searchButton').click(function (e) {
-
     // Create a key 'search' to send in JSON
     var data = {};
     data.search = $('#searchInput').val();
@@ -81,7 +80,7 @@ $(document).ready(function () {
             i++;
             console.log("=================");
 
-            table += "<tr><td id='dataTitle'>" + song.title + "</td><td id='dataArtist'>" + song.artist + "</td><td id='dataRequest'><button id='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
+            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
           })
         } else {
           console.log("No results found. :(");
@@ -96,5 +95,9 @@ $(document).ready(function () {
         console.log("Failure");
       }
     });
+  });
+
+  $('#searchButton').click(function (e) {
+
   });
 });

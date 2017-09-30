@@ -154,10 +154,10 @@ app.post('/request', function (req, res) {
   var connection = new Telnet()
 
   var params = {
-    host: '127.0.0.1',
+    host: 'localhost',
     port: 1234,
-    shellPrompt: 'help',
-    timeout: 1500,
+    shellPrompt: '/ #',
+    timeout: 5000,
     // removeEcho: 4
   }
 
@@ -177,7 +177,7 @@ app.post('/request', function (req, res) {
   })
 
   connection.connect(params)
-  
+
   res.send("OK from ARIA!");
 });
 

@@ -79,7 +79,7 @@ $(document).ready(function () {
             console.log("Album: " + song.album);
             i++;
             console.log("=================");
-
+ 
             table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
           })
         } else {
@@ -97,7 +97,8 @@ $(document).ready(function () {
     });
   });
 
-  $('#searchButton').click(function (e) {
-
+  $('.requestButton').click(function (e) {
+    console.log("Request button clicked!");
+    console.log("The path of this song is: '"+ this.dataset.path +"'");
   });
 });

@@ -162,9 +162,8 @@ app.post('/request', function (req, res) {
   }
 
   connection.on('ready', function (prompt) {
-    connection.exec('test1');
-    connection.exec(cmd, function (err, response) {
-      connection.exec('test2');
+    var cmd = "testcmd";
+    connection.send(cmd, function (err, response) {
       console.log(response);
     })
   })

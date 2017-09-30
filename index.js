@@ -156,7 +156,7 @@ app.post('/request', function (req, res) {
   var params = {
     host: 'localhost',
     port: 1234,
-    shellPrompt: '/ #',
+    shellPrompt: '/ # test',
     timeout: 5000,
     // removeEcho: 4
   }

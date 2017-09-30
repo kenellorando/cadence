@@ -1,0 +1,429 @@
+/*
+Organization of base.css:
+-------------------------
+-Base elements (non class/id) such as html, section, footer
+-Individual elements of the top main player
+  - Frontpage "CADENCE" title and subtitle
+  - Currently playing song and artist
+  - Play/pause button, volume slider
+-Content of everything else under the main player
+  - "Left side" elements
+    - Announcements
+  - "Right side"
+    - Status table elements
+    - Changelog list elements, as well as the show/hide toggle
+  -Anchor tag interaction (a:hover, a:active etc)
+-Media queries
+  - Tablet width
+  - Desktop width
+  - Desktop height
+  - Very wide and tall screens
+    
+
+/* BASE ELEMENTS *******************************************************/
+
+html {
+  font-size: 1em;
+  background-color: #000000;
+  color: #FFFFFF;
+  font-family: 'PT Sans', sans-serif;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  /*dont know if these will help. need to revisit android chrome later */
+  height: 110%;
+  min-height: 110%;
+  /* Keeps the horizonal scroll bar from appearing during theme transition */
+  max-width: 100%;
+  overflow-x: hidden;
+  transition: background-image .25s ease;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  /*Opacity of content within body*/
+  opacity: .8;
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 0;
+  margin: 0;
+}
+
+main {
+  transition: transform 1s;
+}
+
+section {
+  padding: 1.11em;
+}
+
+p {
+  font-size: 1.1em;
+  line-height: 1.3em;
+}
+
+td {
+  text-align: left;
+  width: 100%;
+  padding-top: .25em;
+  padding-bottom: .25em;
+}
+
+footer {
+  clear: both;
+  line-height: 1.4em;
+  padding: 1em;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+}
+
+
+/* EVERYTHING IN MAIN PLAYER ********************************************************/
+
+
+/* TITLE ************** */
+
+#title {
+  font-family: 'Rock Salt', cursive;
+  font-size: 3em;
+  line-height: .65;
+  text-align: center;
+  padding: 1.1em .23em 0em .23em;
+  margin-top: 0;
+}
+
+#title,
+#subtitle {
+  transition: .25s ease;
+}
+
+#subtitle {
+  text-align: center;
+  padding: 0em 0em .23em 0em;
+  font-size: 1.2em;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+}
+
+
+/* In the player */
+
+#player {
+  text-align: center;
+  width: 100%;
+  padding: 0.56em 0em 1.56em 0em;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+}
+
+
+/* Now playing info, song title and artist name */
+
+#nowPlaying {
+  font-size: 1.2em;
+  padding: 0em 0em 0em 0em;
+  min-height: 4em;
+}
+
+#nowPlaying span {
+  display: block;
+  position: relative;
+}
+
+#artist_name {}
+
+#song_title {
+  font-size: 1.66em;
+  padding-bottom: .76em;
+}
+
+
+/* start of all buttons in the player */
+
+#playerButtonList {
+  list-style: none;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+#playerToggle,
+#volume {
+  display: inline-block;
+}
+
+#playerToggle {
+  font-size: 1.2em;
+  margin-bottom: 1.23em;
+  padding: .56em 1.56em .56em 1.56em;
+  background-color: #0f0f0f;
+  color: #FFFFFF;
+  border-radius: 10%;
+  border-width: 3px;
+  border-color: #FFFFFF;
+  border-style: outset;
+  width: 6em;
+  cursor: pointer;
+}
+
+#playerToggle:active {
+  transform: translateY(1px);
+  border-style: inset;
+}
+
+#volumeLabel {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+}
+
+#volume {
+  width: 75%;
+  margin-bottom: 2em;
+}
+
+
+/* EVERYTHING UNDER MAIN PLAYER **************************************************** */
+
+#search {
+  text-align: center;
+  padding: 0 0 1.5em 0;
+}
+
+
+/* Result table */
+
+#searchResults {
+  background-color: rgba(0, 0, 0, .20);
+  padding: 1.11em;
+}
+
+#searchResults th {
+  text-align: left;
+  border-bottom: 1px solid;
+  font-size: 1.1em;
+}
+
+
+/* Title column */
+
+.dataTitle {
+  width: 70%;
+}
+
+
+/* Artist column */
+
+.dataArtist {}
+
+
+/* Request column */
+
+.dataRequest {
+  width: 10%;
+}
+
+
+/* Request button */
+
+.requestButton {
+  font-family: 'PT Sans', sans-serif;
+}
+
+#content {
+  clear: both;
+  /* In case I move the main stuff to the side */
+  padding: 2em 0em;
+}
+
+
+/* On the left side **************/
+
+.content-left {
+  padding-right: 1em;
+}
+
+.announcement {
+  line-height: 1.3em;
+}
+
+
+/* On the right side *************/
+
+.content-right {}
+
+
+/* Status checker */
+
+#statusTable {
+  font-family: 'Roboto', sans-serif;
+  /*display: none;*/
+  font-size: 1.1em;
+  background-color: rgba(0, 0, 0, .2);
+}
+
+.check {
+  color: mediumpurple;
+  text-align: right;
+}
+
+
+/* Changelog general*/
+
+#changelog li {
+  margin-bottom: .4em;
+}
+
+
+/* Changelog old */
+
+#old {
+  display: none;
+}
+
+#oldToggle {
+  color: orange;
+  cursor: pointer;
+}
+
+#oldToggle:hover {
+  color: orangered;
+}
+
+
+/* Prevents the the video showing at the bottom on switch from video theme to non-video theme*/
+
+.fullscreen-bg {
+  display: none;
+}
+
+
+/* Link colors ************************/
+
+
+/* unvisited link */
+
+a:link {
+  color: orange;
+}
+
+
+/* visited link */
+
+a:visited {
+  color: orange;
+}
+
+
+/* mouse over link */
+
+a:hover {
+  color: orangered;
+}
+
+
+/* selected link */
+
+a:active {
+  color: orangered;
+}
+
+
+/* MEDIA QUERIES ************************************************************************/
+
+@media (min-width: 37em) {
+  html {
+    font-size: 1em;
+    /*margin: 2em 5em 2em 5em;*/
+  }
+  body {
+    /*margin-bottom: 2em;*/
+    padding: 2em 5em;
+  }
+  #title {
+    font-size: 3.6em;
+  }
+  #subtitle {
+    font-size: 1.44em;
+  }
+  #volume {
+    width: 50%;
+  }
+  #searchResults {
+    margin: 0em 1.11em;
+  }
+  .announcement {
+    width: 85%;
+  }
+}
+
+@media (min-width: 64em) {
+  html {
+    font-size: 1em;
+    /*padding: 2em 0em 2em 0em;
+    margin: 0em 5em 2em 5em;*/
+  }
+  #nowPlaying {
+    margin-bottom: 0em;
+  }
+  #volume {
+    width: 25%;
+  }
+  #searchResults {
+    margin: 0em 25%;
+  }
+  .dataTitle {
+    width: 55%
+  }
+  .content-left {
+    padding-bottom: 1em;
+    float: left;
+    width: 50%;
+    border-style: solid;
+    border-width: 0px 2px 0px 0px;
+  }
+  .content-left p {
+    padding-right: 2em;
+  }
+  .content-right {
+    float: right;
+    width: 47%;
+    border-style: solid;
+    border-width: 0px 0px 0px 0px;
+  }
+  #content {
+    padding: 2em 2em 2em 2em;
+    clear: both;
+  }
+  footer {
+    margin: auto;
+    padding-top: 3em;
+    width: 60%;
+  }
+}
+
+
+/* Vertical */
+
+@media (min-height: 43em) {
+  html {
+    font-size: 1.1em;
+  }
+  main {
+    font-size: 1.3em;
+    padding-top: 2em;
+    padding-bottom: 5em;
+  }
+}
+
+
+/* Tallest and widest screens */
+
+@media (min-height: 43em) and (min-width: 85em) {
+  body {
+    padding-left: 13em;
+    padding-right: 12em;
+  }
+}

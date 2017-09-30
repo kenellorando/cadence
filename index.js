@@ -161,10 +161,10 @@ app.post('/request', function (req, res) {
     // removeEcho: 4
   }
 
-  connection.on('ready', function (prompt) {
-    var cmd = "testcmd";
-    connection.send(cmd, function (err, response) {
+  connection.on('connect', function () {
+    connection.send('hello', function (err, response) {
       console.log(response);
+      connection.end();
     })
   })
 

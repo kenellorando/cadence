@@ -1,19 +1,16 @@
-# Cadence Radio [Listen Here](http://cadenceradio.com/)
-## Background
-Cadence is an online radio heavily inspired by 4chan/8ch's [R/a/dio](http://r-a-d.io/). The project is my first endeavour to practice a full-range of IT-skills. It currently utilizes technologies in front-end design with HTML and CSS, site scripting with JavaScript, and some networking and server management with both Windows Server 2016 and Debian. 
+# Cadence Radio [http://cadenceradio.com](http://cadenceradio.com/)
+## About
+Cadence is an online radio heavily inspired by [R/a/dio](http://r-a-d.io/). Originally started in February 2017, the project is my first endeavour to practice a full range of IT-skills. Development continues today with a focus on back-end technology.
 
-Currently, back-end work for a queryable music database, to handle music metadata, is now being built with PHP and SQL (MySQL). The database is populated using a [populator tool](https://github.com/kenellorando/cadence-database-populator) programmed in Python.
+The server typically plays all the genres of music I like, a mix of classic rock, synthpop, and metal. I occasionally override the server and play a certain genre, artist, or the same song on an endless loop.
 
-Once the database is completed, the final main feature will be a song request bot.
+**Cadence Radio is a DMCA compliant, non-commercial webcast made for educational purposes.**
 
-## Acknowledgements
-### Technical Assistance
-* [Ryan Hodin](https://github.com/za419) (HTML, CSS, JS)
-* [Bobby Ton](https://github.com/bobbyt1997) (Java)
-### User Testers
-* Michael Folk
-* Jakob Frank
+## Features
+* A 24/7 audio livestream
+* Automatically updating song info display
+* Over six gorgeous themes in seasonal rotation
 
-## Todo
-* Repopulate database with current server tracks.
-* Copy database from music server to web server.
+## Technical Contributors
+* [Ryan Hodin](https://github.com/za419)
+* [Bobby Ton](https://github.com/bobbyt1997)

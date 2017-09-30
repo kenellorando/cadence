@@ -3,8 +3,10 @@ const IP = '198.37.25.185';
 const DB_URL = 'mongodb://localhost:27017/cadence';
 const MUSIC_DIR = '/home/ken/Music';
 
-var express = require('express');
 var path = require('path');
+var fs = require('fs');
+
+var express = require('express');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var mm = require('musicmetadata');
@@ -57,7 +59,6 @@ MongoClient.connect(DB_URL, function (err, db) {
   })
 
   // Walk the directory
-  var fs = require('fs');
   var walk = function (dir, done) {
     fs.readdir(dir, function (error, list) {
       if (error) {

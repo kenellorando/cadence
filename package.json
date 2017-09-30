@@ -1,7 +1,7 @@
 {
   "name": "cadence",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.9.0",
+  "description": "Cadence is an online radio heavily inspired by [R/a/dio](http://r-a-d.io/). Originally started in February 2017, the project is my first endeavour to practice a full range of IT-skills. Development continues today with a focus on back-end technology.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,6 +17,12 @@
   },
   "homepage": "https://github.com/kenellorando/cadence#readme",
   "dependencies": {
-    "mongodb": "^2.2.31"
-  }
+    "express": "latest",
+    "mongodb": "^2.2.31",
+    "body-parser": "latest",
+    "musicmetadata": "latest",
+    "telnet-client": "latest"
+  },
+  "devDependencies": {},
+  "keywords": []
 }

@@ -187,6 +187,16 @@ footer {
 
 /* EVERYTHING UNDER MAIN PLAYER **************************************************** */
 
+
+/* Messages from the server */
+
+#ariaSays {
+  font-size: 1.3em;
+}
+
+
+/* Search div */
+
 #search {
   text-align: center;
   padding: 0 0 1.5em 0;
@@ -196,7 +206,6 @@ footer {
 /* Result table */
 
 #searchResults {
-  background-color: rgba(0, 0, 0, .20);
   padding: 1.11em;
 }
 

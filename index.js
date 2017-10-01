@@ -90,7 +90,7 @@ MongoClient.connect(DB_URL, function (err, db) {
         var music = false;
         for (var i = 0; i < extensions.length; ++i) {
           if (file.endsWith(extensions[i])) {
-            music = true;
+            //music = true;
             break;
           }
         }

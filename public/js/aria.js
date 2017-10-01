@@ -64,15 +64,11 @@ $(document).ready(function () {
     var data = {};
     data.path = this.dataset.path;
 
+    // so when you click a working button, change it to red and disable it
+
     // Disable the request buttons for a certain amount of time
-    $(".requestButton").prop('disabled', true);
     $(".requestButton").css('border', '1px darkred solid');
-    
-    // Return after five minutes
-    setTimeout(function () {
-      $(".requestButton").prop('disabled', false);
-      $(".requestButton").css('border', '1px forestgreen solid');
-    }, 1000 * 60 * 5);
+    $(".requestButton").prop('disabled', true);
 
     $.ajax({
       type: 'POST',
@@ -81,10 +77,19 @@ $(document).ready(function () {
       success: function (result) {
         console.log(result);
         ariaSays.innerHTML = result;
+        // After five minutes, return functionality to the button and change to green
+        setTimeout(function () {
+          $(".requestButton").prop('disabled', false);
+          $(".requestButton").css('border', '1px forestgreen solid');
+        }, 1000 * 60 * 5);
       },
       error: function (result) {
         console.log(result.responseText);
         ariaSays.innerHTML = result.responseText;
+        setTimeout(function () {
+          $(".requestButton").prop('disabled', false);
+          $(".requestButton").css('border', '1px forestgreen solid');
+        }, 1000 * 60 * 5);
       }
     });
   });

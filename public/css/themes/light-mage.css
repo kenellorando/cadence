@@ -53,8 +53,8 @@ button {
   background-color: rgba(0, 0, 0, .4);
 }
 
-/* Search table */
-#searchResults {
+/* Everything belonging to Aria: messages, search box, results tables */
+#aria {
   background-color: rgba(0, 0, 0, .20);
 }
 

@@ -81,7 +81,8 @@ MongoClient.connect(DB_URL, function (err, db) {
           return done(null);
         }
 
-        /*
+        file = dir + '/' + file;
+        
         var extensions = [ // All recognized music extensions
           ".mp3",
           ".m4a",
@@ -98,8 +99,10 @@ MongoClient.connect(DB_URL, function (err, db) {
         if (music)
           return next();
 
-          */
-        file = dir + '/' + file;
+        
+
+        
+        
         fs.stat(file, function (error, stat) {
           if (stat && stat.isDirectory()) {
             walk(file, function (error) {

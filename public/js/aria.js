@@ -44,8 +44,9 @@ $(document).ready(function () {
         // Put table into results html
         document.getElementById("results").innerHTML = table;
       },
-      error: function () {
+      error: function (xhr) {
         console.log("Failure");
+        console.log(xhr.status);
       }
     });
   });

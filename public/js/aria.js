@@ -19,27 +19,29 @@ $(document).ready(function () {
       dataType: "json",
       success: function (data) {
         console.log("Database query completed.");
-        console.log("=================");
+        // console.log("=================");
         let i = 1;
 
         // Create the container table
         var table = "<table id = 'searchResults'>";
 
         if (data.length !== 0) {
+          console.log("Cadence: Search completed. " + i + " results found.")
           table += "<tr><th>Title</th><th>Artist</th><th>Availability</th></tr>"
 
           data.forEach(function (song) {
+            /*
             console.log("RESULT " + i)
             console.log("Title: " + song.title);
             console.log("Artist(s): " + song.artist);
             console.log("Album: " + song.album);
             i++;
             console.log("=================");
-
+            */
             table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
           })
         } else {
-          console.log("No results found. :(");
+          console.log("Cadence: Search completed.  0 results found. :(");
         }
 
         table += "</table>";
@@ -47,7 +49,7 @@ $(document).ready(function () {
         document.getElementById("results").innerHTML = table;
       },
       error: function () {
-        console.log("Failure");
+        console.log("Cadence: Error. Could not execute search.");
       }
     });
   });
@@ -61,21 +63,15 @@ $(document).ready(function () {
 
     var thisReqButton = this;
     
-
     $.ajax({
       type: 'POST',
       url: 'http://cadenceradio.com/request',
       data: data,
       success: function (result) {
         console.log(result);
-        thisReqButton.disabled = true;
-        thisReqButton.innerHTML = "Requested!";
-        ariaSays.innerHTML = "Song requested!";
       },
       error: function (result) {
-        thisReqButton.disabled = true;
-        console.log(result);
-        ariaSays.innerHTML = "Couldn't request. :(";
+        console.log(result.responseText);
       }
     });
   });

@@ -45,7 +45,7 @@ $(document).ready(function () {
             console.log("=================");
             */
             var songPath = song.path;
-            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + songPath.replace(/"/g, '\\"'); + "'>REQUEST</button></td></tr>";
+            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + songPath.replace(/'/g, "\\'"); + "'>REQUEST</button></td></tr>";
           })
         } else {
           console.log("CADENCE: Database query completed.  0 results found. :(");

@@ -64,13 +64,14 @@ $(document).ready(function () {
     var data = {};
     data.path = this.dataset.path;
 
+
     // Disable the request buttons for a certain amount of time
     $(".requestButton").prop('disabled', true);
     setTimeout(function() {
       $(".requestButton").prop('disabled', false);
-    }, 5000);
+    }, 1000*60*5);
     
-    
+
     $.ajax({
       type: 'POST',
       url: 'http://cadenceradio.com/request',
@@ -81,7 +82,7 @@ $(document).ready(function () {
       },
       error: function (result) {
         console.log(result.responseText);
-        ariaSays.innerHTML = result;
+        ariaSays.innerHTML = result.responseText;
       }
     });
   });

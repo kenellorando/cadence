@@ -65,10 +65,9 @@ $(document).ready(function () {
     data.path = this.dataset.path;
 
     // Disable the request buttons for a certain amount of time
-    var reqButtons = document.getElementsByClassName('requestButton');
-    reqButtons.disabled = true;
+    $(".requestButton").prop('disabled', true);
     setTimeout(function() {
-      reqButtons.disabled = false;
+      $(".requestButton").prop('disabled', false);
     }, 5000);
     
     

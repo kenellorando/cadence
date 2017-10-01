@@ -18,6 +18,9 @@ $(document).ready(function () {
     var data = {};
     data.search = $('#searchInput').val();
 
+    // If there was a nothing found message placed before, remove it
+    $("#nothingFound").remove();
+
     $.ajax({
       type: 'POST',
       url: 'http://cadenceradio.com/search',
@@ -28,10 +31,8 @@ $(document).ready(function () {
         // console.log("=================");
         let i = 1;
 
-        // Create the container table
-        var table = "<table id = 'searchResults'>";
-
         if (data.length !== 0) {
+          var table = "<table id = 'searchResults'>";
           console.log("CADENCE: Database query completed. " + data.length + " result(s) found.")
           table += "<tr><th>Title</th><th>Artist</th><th>Availability</th></tr>"
 
@@ -44,16 +45,18 @@ $(document).ready(function () {
             i++;
             console.log("=================");
             */
-            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
+            // Append one row per song
+            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";   
           })
+
+          table += "</table>";
+          // Put table into results html
+          document.getElementById("results").innerHTML = table;
         } else {
           console.log("CADENCE: Database query completed.  0 results found. :(");
-          table += "<div style='padding-top: 2em'>Nothing found for search '"+$('#searchInput').val()+"' :(</div>";
+          var nothingFound = "<div id='nothingFound' style='padding-top: 2em'>Nothing found for search '"+$('#searchInput').val()+"' :(</div>";
+          $("#aria").append(nothingFound);
         }
-
-        table += "</table>";
-        // Put table into results html
-        document.getElementById("results").innerHTML = table;
       },
       error: function () {
         console.log("CADENCE: Error. Could not execute search.");

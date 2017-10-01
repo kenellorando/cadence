@@ -2,7 +2,7 @@
 
 .dropbtn {
   background-color: #0f0f0f;
-  color: #FFFFFF;
+  color: #fdfdfd;
   color: white;
   padding: .56em 1em;
   border: none;
@@ -52,7 +52,7 @@
 
 .dropdown-content a:hover {
   background-color: #0f0f0f;
-  color: #FFFFFF;
+  color: #fdfdfd;
 }
 
 
@@ -67,5 +67,5 @@
 
 .dropdown:hover .dropbtn {
   background-color: #0f0f0f;
-  color: #FFFFFF;
+  color: #fdfdfd;
 }

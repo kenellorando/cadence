@@ -90,5 +90,13 @@ var theme = {
     "themeColor": "#000000",
     "themeColorRead": "#000000 black",
     "themeKey": "minimalist"
+  },
+  "minimalistDark": {
+    "cssPath": "/css/themes/minimalist-night.css",
+    "title": "CADENCE",
+    "subtitle": "An Elegant Experience",
+    "themeColor": "#000000",
+    "themeColorRead": "#000000 black",
+    "themeKey": "minimalist"
   }
 }

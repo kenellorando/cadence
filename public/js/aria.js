@@ -3,6 +3,7 @@
  */
 
 $(document).ready(function () {
+  // Place responses from the server into this
   var ariaSays = document.getElementById("ariaSays");
 
   // Search button
@@ -26,7 +27,7 @@ $(document).ready(function () {
         var table = "<table id = 'searchResults'>";
 
         if (data.length !== 0) {
-          console.log("Cadence: Search completed. " + i + " results found.")
+          console.log("Cadence: Search completed. " + i + " result(s) found.")
           table += "<tr><th>Title</th><th>Artist</th><th>Availability</th></tr>"
 
           data.forEach(function (song) {
@@ -41,7 +42,7 @@ $(document).ready(function () {
             table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
           })
         } else {
-          console.log("Cadence: Search completed.  0 results found. :(");
+          console.log("CADENCE: Search completed.  0 results found. :(");
         }
 
         table += "</table>";
@@ -49,10 +50,12 @@ $(document).ready(function () {
         document.getElementById("results").innerHTML = table;
       },
       error: function () {
-        console.log("Cadence: Error. Could not execute search.");
+        console.log("CADENCE: Error. Could not execute search.");
       }
     });
   });
+
+
 
   // Request buttons
   $(document).on('click', '.requestButton', function (e) {
@@ -61,7 +64,13 @@ $(document).ready(function () {
     var data = {};
     data.path = this.dataset.path;
 
-    var thisReqButton = this;
+    // Disable the request buttons for a certain amount of time
+    var reqButtons = document.getElementsByClassName('requestButton');
+    reqButtons.disabled = true;
+    setTimeout(function() {
+      reqButtons.disabled = false;
+    }, 5000);
+    
     
     $.ajax({
       type: 'POST',
@@ -69,9 +78,11 @@ $(document).ready(function () {
       data: data,
       success: function (result) {
         console.log(result);
+        ariaSays.innerHTML = result;
       },
       error: function (result) {
         console.log(result.responseText);
+        ariaSays.innerHTML = result;
       }
     });
   });

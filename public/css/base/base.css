@@ -186,6 +186,8 @@ footer {
 
 
 /* EVERYTHING UNDER MAIN PLAYER **************************************************** */
+
+
 /* For aria's css, see css/modules/aria.css */
 
 #content {
@@ -337,21 +339,17 @@ a:active {
   .dataTitle {
     width: 55%
   }
-  .content-left {
-    padding-bottom: 1em;
-    float: left;
-    width: 50%;
-    border-style: solid;
-    border-width: 0px 2px 0px 0px;
+  #content {
+    column-count: 2;
+    column-gap: 4em;
+    column-rule-style: solid;
+  }
+  .content-right {
+    /* Prevents breaking across the column */
+    display: inline-block;
   }
   .content-left p {
     padding-right: 2em;
-  }
-  .content-right {
-    float: right;
-    width: 47%;
-    border-style: solid;
-    border-width: 0px 0px 0px 0px;
   }
   #content {
     padding: 2em 2em 2em 2em;

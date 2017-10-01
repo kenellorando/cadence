@@ -6,7 +6,13 @@ $(document).ready(function () {
   // Place responses from the server into this
   var ariaSays = document.getElementById("ariaSays");
 
-  // Search button
+  // Text field, hit 'enter'
+  $("#searchInput").keyup(function (event) {
+    if (event.keyCode == 13) {
+      $("#searchButton").click();
+    }
+  });
+  // Clicking the search button
   $('#searchButton').click(function (e) {
     // Create a key 'search' to send in JSON
     var data = {};

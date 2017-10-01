@@ -1,15 +1,16 @@
 /* Everything belonging to Aria: messages, search box, results tables */
 
 #aria {
+  text-align: center;
   margin: 0em .6em;
-  padding-top: 1em;
+  padding: 1em 0 3em 0;
 }
 
 
 /* Search div */
 
 #search {
-  text-align: center;
+  
   padding: 0 0 1.5em 0;
 }
 
@@ -22,13 +23,15 @@
   border: 1px deepskyblue solid;
   color: #fdfdfd;
   padding: .2em .6em;
+  cursor: pointer;
 }
 
 
 /* Messages from the server */
 
 #ariaSays {
-  font-size: 1.1em;
+  font-size: 1.35em;
+  font-family: 'VT323', monospace;
 }
 
 

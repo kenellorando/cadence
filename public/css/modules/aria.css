@@ -13,11 +13,11 @@
   padding: 0 0 1.5em 0;
 }
 
-#search input {
+#searchInput {
   width: 13em;
 }
 
-#search button {
+#searchButton {
   background-color: rgba(0, 0, 0, .3);
   border: 1px deepskyblue solid;
   color: #fdfdfd;

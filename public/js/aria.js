@@ -69,6 +69,7 @@ $(document).ready(function () {
 
     var data = {};
     data.path = this.dataset.path;
+    console.log(data.path);
 
     // so when you click a working button, change it to red and disable it
 

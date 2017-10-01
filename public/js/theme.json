@@ -77,8 +77,8 @@ var theme = {
     "cssPath": "/css/themes/minimalist.css",
     "title": "CADENCE",
     "subtitle": "A Simple Experience",
-    "themeColor": "#000000",
-    "themeColorRead": "#000000 black",
+    "themeColor": "#FAF4EA",
+    "themeColorRead": "#FAF4EA desaturated old paper",
     "themeKey": "minimalist"
   }
 }

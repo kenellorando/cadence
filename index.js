@@ -11,8 +11,20 @@ var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var mm = require('musicmetadata');
 var Telnet = require('telnet-client');
+var RateLimit = require('express-rate-limit')
 
 var app = express();
+
+// Rate Limiter
+var requestLimiter = new RateLimit({
+  windowMs: 10*60*1000, // Ten minutes
+  delayAfter: 1, // begin slowing down responses after the first request 
+  delayMs: 3*1000, // slow down subsequent responses by 3 seconds per request 
+  max: 2, // start blocking after 2 requests 
+  message: "Request limit reached."
+});
+
+
 
 
 // Parse incoming data
@@ -161,7 +173,7 @@ app.post('/search', function (req, res) {
 });
 
 // Request, directed from aria.js AJAX
-app.post('/request', function (req, res) {
+app.post('/request', requestLimiter, function (req, res) {
   // Drop the double quotes
   var requestPathQuotes = JSON.stringify(req.body.path);
   var requestPath = requestPathQuotes.replace(/\"/g, "");

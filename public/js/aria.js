@@ -44,8 +44,7 @@ $(document).ready(function () {
             i++;
             console.log("=================");
             */
-            var songPath = song.path.replace(/'/g, "\'");
-            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + songPath + "'>REQUEST</button></td></tr>";
+            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
           })
         } else {
           console.log("CADENCE: Database query completed.  0 results found. :(");

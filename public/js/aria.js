@@ -18,8 +18,9 @@ $(document).ready(function () {
     var data = {};
     data.search = $('#searchInput').val();
 
-    // If there was a nothing found message placed before, remove it
-    $("#nothingFound").remove();
+    // If there was a search result placed before, remove it
+    $("#nothingFound").hide('fast', function(){ $("#nothingFound").remove(); });
+    $("#searchResults").hide('fast', function(){ $("#searchResults").remove(); });
 
     $.ajax({
       type: 'POST',

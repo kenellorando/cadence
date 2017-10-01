@@ -72,5 +72,13 @@ var theme = {
     "themeColor": "#1D2951",
     "themeColorRead": "#1D2951 navy",
     "themeKey": "cyberpunkBartender"
+  },
+  "minimalist": {
+    "cssPath": "/css/themes/minimalist.css",
+    "title": "CADENCE",
+    "subtitle": "A Simple Experience",
+    "themeColor": "#000000",
+    "themeColorRead": "#000000 black",
+    "themeKey": "minimalist"
   }
 }

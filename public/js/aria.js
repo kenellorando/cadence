@@ -27,7 +27,7 @@ $(document).ready(function () {
         var table = "<table id = 'searchResults'>";
 
         if (data.length !== 0) {
-          console.log("Cadence: Search completed. " + i + " result(s) found.")
+          console.log("CADENCE: Search completed. " + i + " result(s) found.")
           table += "<tr><th>Title</th><th>Artist</th><th>Availability</th></tr>"
 
           data.forEach(function (song) {
@@ -64,13 +64,11 @@ $(document).ready(function () {
     var data = {};
     data.path = this.dataset.path;
 
-
     // Disable the request buttons for a certain amount of time
     $(".requestButton").prop('disabled', true);
-    setTimeout(function() {
+    setTimeout(function () {
       $(".requestButton").prop('disabled', false);
-    }, 1000*60*5);
-    
+    }, 1000 * 60 * 5);
 
     $.ajax({
       type: 'POST',

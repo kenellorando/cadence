@@ -2,14 +2,7 @@
 
 #aria {
   margin: 0em .6em;
-  padding: 1em;
-}
-
-
-/* Messages from the server */
-
-#ariaSays {
-  font-size: 1.2em;
+  padding-top: 1em;
 }
 
 
@@ -20,17 +13,24 @@
   padding: 0 0 1.5em 0;
 }
 
-#search input {}
+#search input {
+  width: 13em;
+}
 
 #search button {
-  background-color: #0f0f0f;
-  font-family: 'Roboto', sans-serif;
-  font-size: 1.3em;
-  font-weight: 300;
+  background-color: rgba(0, 0, 0, .3);
+  border: 1px deepskyblue solid;
   color: #fdfdfd;
-  padding: .3em .6em;
-  border: solid #fdfdfd 1px;
+  padding: .2em .6em;
 }
+
+
+/* Messages from the server */
+
+#ariaSays {
+  font-size: 1.1em;
+}
+
 
 /* Result table */
 
@@ -67,5 +67,8 @@
 /* Request button */
 
 .requestButton {
-  font-family: 'PT Sans', sans-serif;
+  background-color: rgba(0, 0, 0, .3);
+  border: 1px forestgreen solid;
+  color: #fdfdfd;
+  padding: .4em .6em;
 }

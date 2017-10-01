@@ -33,7 +33,7 @@ $(document).ready(function () {
             console.log("Album: " + song.album);
             i++;
             console.log("=================");
- 
+
             table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
           })
         } else {
@@ -44,9 +44,8 @@ $(document).ready(function () {
         // Put table into results html
         document.getElementById("results").innerHTML = table;
       },
-      error: function (xhr) {
+      error: function () {
         console.log("Failure");
-        console.log(xhr.status);
       }
     });
   });
@@ -54,7 +53,7 @@ $(document).ready(function () {
   // Request buttons
   $(document).on('click', '.requestButton', function (e) {
     // console.log(this.dataset.path); // /home/ken/Music/fripSide/01. only my railgun.mp3
-    
+
     var data = {};
     data.path = this.dataset.path;
 
@@ -65,9 +64,12 @@ $(document).ready(function () {
       success: function (result) {
         console.log("Success");
         console.log(result);
+        this.disabled = true;
       },
-      error: function () {
+      error: function (xhr) {
         console.log("Failure");
+        console.log(xhr.status);
+        this.disabled = true;
       }
     });
   });

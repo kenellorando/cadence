@@ -17,14 +17,12 @@ var app = express();
 
 // Rate Limiter
 var requestLimiter = new RateLimit({
-  windowMs: 10*60*1000, // Ten minutes
+  windowMs: 5 * 60 * 1000, // Five minutes
   delayAfter: 1, // begin slowing down responses after the first request 
-  delayMs: 3*1000, // slow down subsequent responses by 3 seconds per request 
+  delayMs: 3 * 1000, // slow down subsequent responses by 3 seconds per request 
   max: 2, // start blocking after 2 requests 
-  message: "Request limit reached."
+  message: "ARIA: Request limit reached."
 });
-
-
 
 
 // Parse incoming data
@@ -84,20 +82,20 @@ MongoClient.connect(DB_URL, function (err, db) {
         }
 
         var extensions = [ // All recognized music extensions
-            ".mp3",
-            ".m4a",
-            ".flac",
-            ".ogg"
+          ".mp3",
+          ".m4a",
+          ".flac",
+          ".ogg"
         ];
-        var music=false;
-        for (var i=0; i<extensions.length; ++i) {
-            if (file.endsWith(extensions[i])) {
-                music=true;
-                break;
-            }
+        var music = false;
+        for (var i = 0; i < extensions.length; ++i) {
+          if (file.endsWith(extensions[i])) {
+            music = true;
+            break;
+          }
         }
         if (music)
-            return next();
+          return next();
 
         file = dir + '/' + file;
         fs.stat(file, function (error, stat) {
@@ -178,7 +176,6 @@ app.post('/request', requestLimiter, function (req, res) {
   var requestPathQuotes = JSON.stringify(req.body.path);
   var requestPath = requestPathQuotes.replace(/\"/g, "");
 
-  console.log("Attempting to push request: " + requestPath);
 
   var connection = new Telnet()
 
@@ -190,7 +187,10 @@ app.post('/request', requestLimiter, function (req, res) {
     // removeEcho: 4
   }
 
+  // request.push /path/to/song.mp3
   connection.on('connect', function () {
+    console.log("Attempting to push request: " + requestPath);
+    
     // Push the request to the source client
     connection.send('request.push ' + requestPath, function (err, response) {
       console.log("Request pushed, source client response: ")

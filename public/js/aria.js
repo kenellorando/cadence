@@ -57,20 +57,27 @@ $(document).ready(function () {
     var data = {};
     data.path = this.dataset.path;
 
+    var thisReqButton = this;
+
     $.ajax({
       type: 'POST',
       url: 'http://cadenceradio.com/request',
       data: data,
       success: function (result) {
-        console.log("Success");
         console.log(result);
-        this.disabled = true;
+        thisReqButton.disabled = true;
+        thisReqButton.innerHTML = "Requested!";
       },
-      error: function (xhr) {
-        console.log("Failure");
+      error: function (result, xhr) {
         console.log(xhr.status);
-        this.disabled = true;
+        console.log(result);
+        if (xhr.status == 429) {
+          console.log("429 Response Log");
+        }
       }
     });
+
+
+
   });
 });

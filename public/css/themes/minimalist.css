@@ -62,10 +62,3 @@ a:active {
 #oldToggle:hover {
   color: #585858;
 }
-
-@media (min-width: 64em) {
-  main {
-    transform: translateX(-20%);
-    transition: transform 1s;
-  }
-}

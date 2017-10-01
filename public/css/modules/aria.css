@@ -2,15 +2,13 @@
 
 #aria {
   text-align: center;
-  margin: 0em .6em;
-  padding: 1em 0 3em 0;
+  padding: 1em .6em 3em .6em;
 }
 
 
 /* Search div */
 
 #search {
-  
   padding: 0 0 1.5em 0;
 }
 

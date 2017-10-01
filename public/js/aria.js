@@ -25,7 +25,7 @@ $(document).ready(function () {
       data: data,
       dataType: "json",
       success: function (data) {
-        console.log("Database query completed.");
+        console.log("CADENCE: Database query completed.");
         // console.log("=================");
         let i = 1;
 
@@ -33,7 +33,7 @@ $(document).ready(function () {
         var table = "<table id = 'searchResults'>";
 
         if (data.length !== 0) {
-          console.log("CADENCE: Search completed. " + i + " result(s) found.")
+          console.log("CADENCE: Search completed. " + data.length + " result(s) found.")
           table += "<tr><th>Title</th><th>Artist</th><th>Availability</th></tr>"
 
           data.forEach(function (song) {

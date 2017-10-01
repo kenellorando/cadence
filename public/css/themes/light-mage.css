@@ -53,11 +53,6 @@ button {
   background-color: rgba(0, 0, 0, .4);
 }
 
-/* Everything belonging to Aria: messages, search box, results tables */
-#aria {
-  background-color: rgba(0, 0, 0, .20);
-}
-
 #statusTable {
   background-color: rgba(0, 0, 0, .35);
 }
@@ -132,6 +127,10 @@ div.fullscreen-bg {
     background-color: rgba(0, 0, 0, 0.11);
   }
   section {
+    background-color: rgba(0, 0, 0, .20);
+  }
+  /* Everything belonging to Aria: messages, search box, results tables */
+  #aria {
     background-color: rgba(0, 0, 0, .20);
   }
   .fullscreen-bg {

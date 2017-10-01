@@ -112,11 +112,6 @@ MongoClient.connect(DB_URL, function (err, db) {
 
   // Drop old indexes
   db.collection("music").dropIndexes();
-  // Enable text searching
-  db.executeDbAdminCommand({
-    setParameter: 1,
-    textSearchEnabled: true
-  });
   // Set search index
   db.collection("music").createIndex({
     title: "text",

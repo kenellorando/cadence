@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css?family=Bellefair');
+html {
+  background-color: #FAF4EA;
+  opacity: 1;
+}
+
+body {
+  /*Opacity of content within body*/
+  opacity: 1;
+  /*Opacity of background itself */
+  background: rgba(0, 0, 0, 0);
+  /* Dark color for text */
+  color:black;
+}
+
+#player {
+  font-family: 'Bellefair', serif;
+  font-style: normal;
+}
+
+#title {
+  font-family: 'Bellefair', serif;
+  font-weight: 500;
+  transform: scale(1.4, 1.6) translateY(-.1em);
+}
+
+#subtitle {
+  font-size: 1.6em;
+}
+
+#subtitle,
+#volumeLabel,
+.dropbtn,
+.dropdown-content button {
+  font-family: 'Bellefair', serif;
+  font-style: italic;
+}
+
+
+/* Link colors ************************/
+
+a:link {
+  color: #585858;
+}
+
+a:visited {
+  color: #585858;
+}
+
+a:hover {
+  color: darkgrey;
+}
+
+a:active {
+  color: #585858;
+}
+
+#oldToggle {
+  color: #585858;
+}
+
+#oldToggle:hover {
+  color: #585858;
+}
+
+@media (min-width: 64em) {
+  main {
+    transform: translateX(-20%);
+    transition: transform 1s;
+  }
+}

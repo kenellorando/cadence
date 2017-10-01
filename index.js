@@ -96,7 +96,7 @@ MongoClient.connect(DB_URL, function (err, db) {
             break;
           }
         }
-        if (music)
+        if (!(music))
           return next();
 
         

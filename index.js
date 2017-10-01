@@ -21,7 +21,7 @@ var requestLimiter = new RateLimit({
   delayAfter: 1, // begin slowing down responses after the first request 
   delayMs: 3 * 1000, // slow down subsequent responses by 3 seconds per request 
   max: 2, // start blocking after 2 requests 
-  message: "ARIA: Request limit reached."
+  message: "ARIA: Request rejected, please wait ten minutes."
 });
 
 
@@ -94,7 +94,7 @@ MongoClient.connect(DB_URL, function (err, db) {
             break;
           }
         }
-        if (music)
+        if (!(music))
           return next();
 
         file = dir + '/' + file;

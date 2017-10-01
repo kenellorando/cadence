@@ -3,6 +3,8 @@
  */
 
 $(document).ready(function () {
+  var ariaSays = document.getElementById("ariaSays");
+
   // Search button
   $('#searchButton').click(function (e) {
     // Create a key 'search' to send in JSON
@@ -58,6 +60,7 @@ $(document).ready(function () {
     data.path = this.dataset.path;
 
     var thisReqButton = this;
+    
 
     $.ajax({
       type: 'POST',
@@ -67,16 +70,13 @@ $(document).ready(function () {
         console.log(result);
         thisReqButton.disabled = true;
         thisReqButton.innerHTML = "Requested!";
+        ariaSays.innerHTML = "Song requested!";
       },
-      error: function (xhr) {
-        console.log(xhr.status);
-        if (xhr.status == 429) {
-          console.log("429 Response Log");
-        }
+      error: function (result) {
+        thisReqButton.disabled = true;
+        console.log(result);
+        ariaSays.innerHTML = "Couldn't request. :(";
       }
     });
-
-
-
   });
 });

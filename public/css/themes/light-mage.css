@@ -53,6 +53,11 @@ button {
   background-color: rgba(0, 0, 0, .4);
 }
 
+/* Search table */
+#searchResults {
+  background-color: rgba(0, 0, 0, .20);
+}
+
 #statusTable {
   background-color: rgba(0, 0, 0, .35);
 }

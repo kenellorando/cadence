@@ -45,10 +45,28 @@ MongoClient.connect(DB_URL, function (err, db) {
       // Drop and recreate
       db.collection("music").drop();
       db.createCollection("music");
+
+      /*
+      Currently, these do not fire from here
+      and must be typed manually through
+      the database console
+
+      // Drop old indexes
+      db.collection("music").dropIndexes();
+      // Enable text searching
+      db.executeDbAdminCommand({
+        setParameter: 1,
+        textSearchEnabled: true
+      });
+      // Set search index
+      db.collection("music").createIndex({
+        title: "text",
+        artist: "text",
+        album: "text"
+      });
+      */
     }
   })
-
-
 
   // Walk the directory
   var walk = function (dir, done) {
@@ -109,15 +127,6 @@ MongoClient.connect(DB_URL, function (err, db) {
       })();
     });
   };
-
-  // Drop old indexes
-  db.collection("music").dropIndexes();
-  // Set search index
-  db.collection("music").createIndex({
-    title: "text",
-    artist: "text",
-    album: "text"
-  });
 
   // optional command line params
   //      source for walk path

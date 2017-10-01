@@ -97,6 +97,6 @@ var theme = {
     "subtitle": "An Elegant Experience",
     "themeColor": "#000000",
     "themeColorRead": "#000000 black",
-    "themeKey": "minimalist"
+    "themeKey": "minimalistDark"
   }
 }

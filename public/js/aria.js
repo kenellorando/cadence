@@ -48,7 +48,7 @@ $(document).ready(function () {
           })
         } else {
           console.log("CADENCE: Database query completed.  0 results found. :(");
-          table += "Nothing found :(";
+          table += "<div>Nothing found for search '"+$('#searchInput').val()+"' :(</div>";
         }
 
         table += "</table>";

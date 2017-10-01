@@ -68,9 +68,8 @@ $(document).ready(function () {
         thisReqButton.disabled = true;
         thisReqButton.innerHTML = "Requested!";
       },
-      error: function (result, xhr) {
+      error: function (xhr) {
         console.log(xhr.status);
-        console.log(result);
         if (xhr.status == 429) {
           console.log("429 Response Log");
         }

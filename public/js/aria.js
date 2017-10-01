@@ -66,8 +66,12 @@ $(document).ready(function () {
 
     // Disable the request buttons for a certain amount of time
     $(".requestButton").prop('disabled', true);
+    $(".requestButton").css('border', '1px darkred solid');
+    
+    // Return after five minutes
     setTimeout(function () {
       $(".requestButton").prop('disabled', false);
+      $(".requestButton").css('border', '1px forestgreen solid');
     }, 1000 * 60 * 5);
 
     $.ajax({

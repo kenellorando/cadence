@@ -21,7 +21,7 @@ var requestLimiter = new RateLimit({
   delayAfter: 1, // begin slowing down responses after the first request 
   delayMs: 3 * 1000, // slow down subsequent responses by 3 seconds per request 
   max: 1, // start blocking after 1 request 
-  message: "ARIA: Request rejected, please wait five minutes."
+  message: "ARIA: Request rejected, you must wait five minutes between requests."
 });
 
 
@@ -212,7 +212,7 @@ app.post('/request', requestLimiter, function (req, res) {
 
   connection.connect(params)
 
-  res.send("ARIA: Request received.");
+  res.send("ARIA: Request received!");
 });
 
 var server = app.listen(PORT, IP);

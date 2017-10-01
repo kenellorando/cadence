@@ -25,7 +25,6 @@ $(document).ready(function () {
       data: data,
       dataType: "json",
       success: function (data) {
-        console.log("CADENCE: Database query completed.");
         // console.log("=================");
         let i = 1;
 
@@ -33,7 +32,7 @@ $(document).ready(function () {
         var table = "<table id = 'searchResults'>";
 
         if (data.length !== 0) {
-          console.log("CADENCE: Search completed. " + data.length + " result(s) found.")
+          console.log("CADENCE: Database query completed. " + data.length + " result(s) found.")
           table += "<tr><th>Title</th><th>Artist</th><th>Availability</th></tr>"
 
           data.forEach(function (song) {
@@ -48,7 +47,8 @@ $(document).ready(function () {
             table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
           })
         } else {
-          console.log("CADENCE: Search completed.  0 results found. :(");
+          console.log("CADENCE: Database query completed.  0 results found. :(");
+          table += "Nothing found :(";
         }
 
         table += "</table>";

@@ -44,7 +44,7 @@ $(document).ready(function () {
             i++;
             console.log("=================");
             */
-            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
+            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path.replace(/"/g, '\\"'); + "'>REQUEST</button></td></tr>";
           })
         } else {
           console.log("CADENCE: Database query completed.  0 results found. :(");
@@ -69,7 +69,6 @@ $(document).ready(function () {
 
     var data = {};
     data.path = this.dataset.path;
-    console.log(data.path);
 
     // so when you click a working button, change it to red and disable it
 

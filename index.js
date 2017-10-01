@@ -15,13 +15,13 @@ var RateLimit = require('express-rate-limit')
 
 var app = express();
 
-// Rate Limiter
+// Rate Limiter: 1 request per five minutes
 var requestLimiter = new RateLimit({
   windowMs: 5 * 60 * 1000, // Five minutes
   delayAfter: 1, // begin slowing down responses after the first request 
   delayMs: 3 * 1000, // slow down subsequent responses by 3 seconds per request 
-  max: 2, // start blocking after 2 requests 
-  message: "ARIA: Request rejected, please wait ten minutes."
+  max: 1, // start blocking after 1 request 
+  message: "ARIA: Request rejected, please wait five minutes."
 });
 
 
@@ -189,13 +189,16 @@ app.post('/request', requestLimiter, function (req, res) {
 
   // request.push /path/to/song.mp3
   connection.on('connect', function () {
+    console.log("=============================");
     console.log("Attempting to push request: " + requestPath);
-    
+    console.log("=============================");
     // Push the request to the source client
     connection.send('request.push ' + requestPath, function (err, response) {
-      console.log("Request pushed, source client response: ")
+      console.log("Request pushed, source client response: ");
+      console.log("=============================");
       console.log(response);
       connection.end();
+      console.log("=============================");
     })
   })
 

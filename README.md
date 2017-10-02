@@ -14,3 +14,4 @@ The server typically plays all the genres of music I like, a mix of classic rock
 ## Technical Contributors
 * [Ryan Hodin](https://github.com/za419)
 * [Bobby Ton](https://github.com/bobbyt1997)
+* [Michael Farrell](#)

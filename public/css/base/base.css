@@ -25,7 +25,7 @@ Organization of base.css:
 html {
   font-size: 1em;
   background-color: #000000;
-  color: #FFFFFF;
+  color: #fdfdfd;
   font-family: 'PT Sans', sans-serif;
   background-size: cover;
   background-repeat: no-repeat;
@@ -187,50 +187,8 @@ footer {
 
 /* EVERYTHING UNDER MAIN PLAYER **************************************************** */
 
-#search {
-  text-align: center;
-  padding: 0 0 1.5em 0;
-}
 
-
-/* Result table */
-
-#searchResults {
-  background-color: rgba(0, 0, 0, .20);
-  padding: 1.11em;
-}
-
-#searchResults th {
-  text-align: left;
-  border-bottom: 1px solid;
-  font-size: 1.1em;
-}
-
-
-/* Title column */
-
-.dataTitle {
-  width: 70%;
-}
-
-
-/* Artist column */
-
-.dataArtist {}
-
-
-/* Request column */
-
-.dataRequest {
-  width: 10%;
-}
-
-
-/* Request button */
-
-.requestButton {
-  font-family: 'PT Sans', sans-serif;
-}
+/* For aria's css, see css/modules/aria.css */
 
 #content {
   clear: both;
@@ -242,7 +200,6 @@ footer {
 /* On the left side **************/
 
 .content-left {
-  padding-right: 1em;
 }
 
 .announcement {
@@ -371,27 +328,27 @@ a:active {
   #volume {
     width: 25%;
   }
+  /* Everything belonging to Aria: messages, search box, results tables */
+  #aria {
+    margin: 0em 2em;
+  }
   #searchResults {
     margin: 0em 25%;
   }
   .dataTitle {
     width: 55%
   }
-  .content-left {
-    padding-bottom: 1em;
-    float: left;
-    width: 50%;
-    border-style: solid;
-    border-width: 0px 2px 0px 0px;
+  #content {
+    column-count: 2;
+    column-gap: 4em;
+    column-rule-style: solid;
+  }
+  .content-right {
+    /* Prevents breaking across the column */
+    display: inline-block;
   }
   .content-left p {
     padding-right: 2em;
-  }
-  .content-right {
-    float: right;
-    width: 47%;
-    border-style: solid;
-    border-width: 0px 0px 0px 0px;
   }
   #content {
     padding: 2em 2em 2em 2em;

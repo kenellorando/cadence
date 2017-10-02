@@ -129,6 +129,10 @@ div.fullscreen-bg {
   section {
     background-color: rgba(0, 0, 0, .20);
   }
+  /* Everything belonging to Aria: messages, search box, results tables */
+  #aria {
+    background-color: rgba(0, 0, 0, .20);
+  }
   .fullscreen-bg {
     visibility: visible;
   }

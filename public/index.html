@@ -5,8 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Ken Ellorando's personal online radio" />
-  <meta name="keywords" content="Cadence, Radio, Cadence Radio, CadenceRadio, free radio, open source radio, github, Ken Ellorando radio"
-  />
+  <meta name="keywords" content="Cadence, Radio, Cadence Radio, CadenceRadio, free radio, open source radio, github, Ken Ellorando radio" />
 
   <!-- Meta-tags for theme colors, etc -->
   <!-- Chrome mobile's navigation bar -->
@@ -21,6 +20,7 @@
   <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet"> 
 
   <!-- Import base, norm, modules CSS -->
   <link rel="stylesheet" type="text/css" href="/css/master-import.css">
@@ -71,8 +71,8 @@
       </ul>
 
       <div>
-        <p style="margin:0">Cadence/ARIA Development Build </p>
-        <p style="margin:0 0 30px 0;">Beta 0.9.0</p>
+        <p style="margin:0">Cadence/ARIA Development Build</p>
+        <p style="margin:0 0 30px 0;">Beta 0.9.1</p>
       </div>
 
       <!-- Theme selector -->
@@ -93,14 +93,19 @@
     </div>
   </main>
 
-  <div id="search">
-    <input id="searchInput" type="text" placeholder="Search for a song or artist!">
-    <button id="searchButton">Search</button>
-  </div>
-  
-  <div id="results">
-    
-      <!-- hardcoded for styling tests
+  <div id="aria">
+    <h2>Song Requests</h2>
+    <div id="search">
+      <input id="searchInput" type="text" placeholder="Search for a song or artist!">
+      <button id="searchButton">Search</button>
+    </div>
+
+    <div style="text-align: center">
+      <span id="ariaSays">ARIA: Ask me to play something! You can request one song every five minutes!</span>
+    </div>
+
+    <div id="results">
+      <!-- hardcoded for styling tests 
     <table id='searchResults'>
       <tr>
         <th>Title</th>
@@ -110,20 +115,21 @@
       <tr>
         <td id='dataTitle'>Song Name</td>
         <td id='dataArtist'>Song Artist</td>
-        <td id='dataRequest'><button id='requestButton'>REQUEST</button></td>
+        <td id='dataRequest'><button class='requestButton'>Request</button></td>
       </tr>
       <tr>
         <td id='dataTitle'>Song Name</td>
         <td id='dataArtist'>Song Artist</td>
-        <td id='dataRequest'><button id='requestButton'>REQUEST</button></td>
+        <td id='dataRequest'><button class='requestButton'>Request</button></td>
       </tr>
       <tr>
         <td id='dataTitle'>Song Name</td>
         <td id='dataArtist'>Song Artist</td>
-        <td id='dataRequest'><button id='requestButton'>REQUEST</button></td>
+        <td id='dataRequest'><button class='requestButton'>Request</button></td>
       </tr>
     </table>
     -->
+    </div>
   </div>
 
   <div id="content">
@@ -131,14 +137,9 @@
       <section>
         <h2>Announcements</h2>
         <h3 class="announcement">9/19: Announcing Cadence/ARIA</h3>
-        <p>The <i>Asynchronous Request Intermediary Application</i>, or ARIA, is the project name of the next major step in
-          Cadence's development. Though the majority of changes up to now have been front-end design, Aria is a completely
-          new back-end addition.</p>
-        <p>This is all new territory for me, so while development will certainly be slow, it's my way of finally getting around
-          to learning the technologies I've been wanting to. Aria is "Cadence 2.0".</p>
-        <p>Aria's planned changes include a complete server OS and webserver change, as well as an upgrade to stream source
-          software. A song database, one of the original features of Cadence (though never fully implemented), will be making
-          a return as well. If things seem to work up to this point, a song request application will tie everything together.</p>
+        <p>The <i>Asynchronous Request Intermediary Application</i>, or ARIA, is the project name of the next major step in Cadence's development. Though the majority of changes up to now have been front-end design, Aria is a completely new back-end addition.</p>
+        <p>This is all new territory for me, so while development will certainly be slow, it's my way of finally getting around to learning the technologies I've been wanting to. Aria is "Cadence 2.0".</p>
+        <p>Aria's planned changes include a complete server OS and webserver change, as well as an upgrade to stream source software. A song database, one of the original features of Cadence (though never fully implemented), will be making a return as well. If things seem to work up to this point, a song request application will tie everything together.</p>
         <p>View the Aria Branch on <a href="https://github.com/kenellorando/cadence/tree/aria">GitHub</a>.</p>
       </section>
     </div>
@@ -146,12 +147,9 @@
     <div class="content-right">
       <section>
         <h2>About Cadence:</h2>
-        <p>Cadence is an online radio heavily inspired by <a href="http://r-a-d.io/">R/a/dio</a>. Originally started in February
-          2017, the project is my first endeavour to practice a full range of IT-skills. Development continues today with
-          a focus on back-end technology.</p>
+        <p>Cadence is an online radio heavily inspired by <a href="http://r-a-d.io/">R/a/dio</a>. Originally started in February 2017, the project is my first endeavour to practice a full range of IT-skills. Development continues today with a focus on back-end technology.</p>
 
-        <p>The server typically plays all the genres of music I like, a mix of classic rock, synthpop, and metal. I occasionally
-          override the server and play a certain genre, artist, or the same song on an endless loop.</p>
+        <p>The server typically plays all the genres of music I like, a mix of classic rock, synthpop, and metal. I occasionally override the server and play a certain genre, artist, or the same song on an endless loop.</p>
 
         <p>If you're interested in seeing this project's development, nearly everything is available on GitHub:
           <a href="https://github.com/kenellorando/cadence">source</a>/<a href="https://github.com/kenellorando/cadence/issues">issues</a>.</p>
@@ -178,12 +176,10 @@
             <li>5/15: New status checker displays live-info of services</li>
             <li>5/14: Cyberpunk theme changes from a day/night version based on client time (10PM-8AM). </li>
             <li>5/12: Database populator tool rewritten in Python</li>
-            <li>4/29: Transitions for theme switching added + Two new themes: Mayberry &amp; Electromaster + Sizing correction
-              for all screen sizes</li>
+            <li>4/29: Transitions for theme switching added + Two new themes: Mayberry &amp; Electromaster + Sizing correction for all screen sizes</li>
             <li>4/9: New Server OS + New domain name!</li>
             <li>3/29: User set volume is now cached</li>
-            <li>3/26: Stream toggle no longer resets theme or volume + user picked themes are now cached + Cyberpunk Bartender
-              updated
+            <li>3/26: Stream toggle no longer resets theme or volume + user picked themes are now cached + Cyberpunk Bartender updated
             </li>
             <li>3/25: Live display of artist and track make Cadence DMCA compliant</li>
             <li>3/24: Database populator tool completed</li>

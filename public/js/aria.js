@@ -18,6 +18,11 @@ $(document).ready(function () {
     var data = {};
     data.search = $('#searchInput').val();
 
+
+    var input = $('#searchInput').val();
+    // Encode < and >, for error when placed back into error message
+    input = input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
     $.ajax({
       type: 'POST',
       url: 'http://cadenceradio.com/search',
@@ -48,7 +53,7 @@ $(document).ready(function () {
           })
         } else {
           console.log("CADENCE: Database query completed.  0 results found. :(");
-          table += "<div style='padding-top: 2em'>Nothing found for search '"+$('#searchInput').val()+"' :(</div>";
+          table += "<div style='padding-top: 2em'>Nothing found for search '"+input+"' :(</div>";
         }
 
         table += "</table>";

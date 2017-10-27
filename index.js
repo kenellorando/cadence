@@ -1,16 +1,28 @@
 const PORT = 8080;
-const IP = '198.37.25.185';
+const IP = '198.37.25.198';
 const DB_URL = 'mongodb://localhost:27017/cadence';
-const MUSIC_DIR = '/home/ken/Music';
+const MUSIC_DIR = '/music';
+
+var path = require('path');
+var fs = require('fs');
 
 var express = require('express');
-var path = require('path');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var mm = require('musicmetadata');
 var Telnet = require('telnet-client');
+var RateLimit = require('express-rate-limit')
 
 var app = express();
+
+// Rate Limiter: 1 request per five minutes
+var requestLimiter = new RateLimit({
+  windowMs: 5 * 60 * 1000, // Five minutes
+  delayAfter: 1, // begin slowing down responses after the first request 
+  delayMs: 3 * 1000, // slow down subsequent responses by 3 seconds per request 
+  max: 1, // start blocking after 1 request 
+  message: "ARIA: Request rejected, you must wait five minutes between requests."
+});
 
 
 // Parse incoming data
@@ -35,8 +47,8 @@ MongoClient.connect(DB_URL, function (err, db) {
       db.createCollection("music");
 
       /*
-      Currently, these do not fire from here 
-      and must be typed manually through 
+      Currently, these do not fire from here
+      and must be typed manually through
       the database console
 
       // Drop old indexes
@@ -57,7 +69,6 @@ MongoClient.connect(DB_URL, function (err, db) {
   })
 
   // Walk the directory
-  var fs = require('fs');
   var walk = function (dir, done) {
     fs.readdir(dir, function (error, list) {
       if (error) {
@@ -69,6 +80,25 @@ MongoClient.connect(DB_URL, function (err, db) {
         if (!file) {
           return done(null);
         }
+
+        /*
+        var extensions = [ // All recognized music extensions
+          ".mp3",
+          ".m4a",
+          ".flac",
+          ".ogg"
+        ];
+        var music = false;
+        for (var i = 0; i < extensions.length; ++i) {
+          if (file.endsWith(extensions[i])) {
+            music = true;
+            break;
+          }
+        }
+        if (!(music))
+          return next();
+        */
+
         file = dir + '/' + file;
         fs.stat(file, function (error, stat) {
           if (stat && stat.isDirectory()) {
@@ -143,12 +173,11 @@ app.post('/search', function (req, res) {
 });
 
 // Request, directed from aria.js AJAX
-app.post('/request', function (req, res) {
+app.post('/request', requestLimiter, function (req, res) {
   // Drop the double quotes
   var requestPathQuotes = JSON.stringify(req.body.path);
   var requestPath = requestPathQuotes.replace(/\"/g, "");
 
-  console.log("Attempting to push request: " + requestPath);
 
   var connection = new Telnet()
 
@@ -160,12 +189,18 @@ app.post('/request', function (req, res) {
     // removeEcho: 4
   }
 
+  // request.push /path/to/song.mp3
   connection.on('connect', function () {
+    console.log("=============================");
+    console.log("Attempting to push request: " + requestPath);
+    console.log("=============================");
     // Push the request to the source client
     connection.send('request.push ' + requestPath, function (err, response) {
-      console.log("Request pushed, source client response: ")
+      console.log("Request pushed, source client response: ");
+      console.log("=============================");
       console.log(response);
       connection.end();
+      console.log("=============================");
     })
   })
 
@@ -177,7 +212,7 @@ app.post('/request', function (req, res) {
 
   connection.connect(params)
 
-  res.send("ARIA: Request received.");
+  res.send("ARIA: Request received!");
 });
 
 var server = app.listen(PORT, IP);

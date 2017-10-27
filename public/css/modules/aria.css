@@ -1,0 +1,75 @@
+/* Everything belonging to Aria: messages, search box, results tables */
+
+#aria {
+  text-align: center;
+  padding: 1em .6em 3em .6em;
+}
+
+
+/* Search div */
+
+#search {
+  padding: 0 0 1.5em 0;
+}
+
+#searchInput {
+  width: 13em;
+}
+
+#searchButton {
+  background-color: rgba(0, 0, 0, .3);
+  border: 1px deepskyblue solid;
+  color: #fdfdfd;
+  padding: .2em .6em;
+  cursor: pointer;
+}
+
+
+/* Messages from the server */
+
+#ariaSays {
+  font-size: 1.35em;
+  font-family: 'VT323', monospace;
+}
+
+
+/* Result table */
+
+#results table {
+  padding: 1.11em;
+}
+
+#results table th {
+  text-align: left;
+  border-bottom: 1px solid;
+  font-size: 1.1em;
+}
+
+
+/* Title column */
+
+.dataTitle {
+  width: 70%;
+}
+
+
+/* Artist column */
+
+.dataArtist {}
+
+
+/* Request column */
+
+.dataRequest {
+  width: 10%;
+}
+
+
+/* Request button */
+
+.requestButton {
+  background-color: rgba(0, 0, 0, .3);
+  border: 1px forestgreen solid;
+  color: #fdfdfd;
+  padding: .4em .6em;
+}

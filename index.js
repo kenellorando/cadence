@@ -151,6 +151,9 @@ MongoClient.connect(DB_URL, function (err, db) {
 
 // Search, directed from aria.js AJAX
 app.post('/search', function (req, res) {
+  if (!req.body) {
+      return console.log("No body provided");
+  }
   console.log("Search received: " + JSON.stringify(req.body));
 
   // Database search
@@ -178,6 +181,9 @@ app.post('/search', function (req, res) {
 // Request, directed from aria.js AJAX
 app.post('/request', requestLimiter, function (req, res) {
   // Drop the double quotes
+  if (!req.body.path) {
+      return console.log("No request given.");
+  }
   var requestPathQuotes = JSON.stringify(req.body.path);
   var requestPath = requestPathQuotes.replace(/\"/g, "");
 

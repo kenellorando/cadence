@@ -11,6 +11,8 @@ The server typically plays all the genres of music I like, a mix of classic rock
 * Automatically updating song info display
 * Over six gorgeous themes in seasonal rotation
 
-## Technical Contributors
-* [Ryan Hodin](https://github.com/za419)
-* [Bobby Ton](https://github.com/bobbyt1997)
+## Contributors
+* [Ryan Hodin](https://github.com/za419) (Programming, Design, Media)
+* [Bobby Ton](https://github.com/bobbyt1997) (Design)
+* [Jakob Frank](https://github.com/jakobfrank) (Media)
+* Michael Farrell (Security)

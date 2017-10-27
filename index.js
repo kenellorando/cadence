@@ -159,6 +159,9 @@ app.post('/search', function (req, res) {
       return console.log(err);
     }
 
+    if (!req.body.search) {
+        return console.log("No search specified");
+    }
     db.collection("music").find({
       $text: {
         $search: req.body.search

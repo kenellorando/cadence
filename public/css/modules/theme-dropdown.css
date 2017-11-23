@@ -35,11 +35,7 @@
   color: red;
   z-index: 1;
 
-  transition: .5 all ease;
-  -webkit-transition: .5s all ease;
-  -moz-transition: .5s all ease;
-  -o-transition: .5s all ease;
-  -ms-transition: .5s all ease;
+  transition: .2s all ease;
 }
 
 
@@ -56,11 +52,7 @@
   padding: .56em 0em;
   width: 100%;
 
-  transition: .5 all ease;
-  -webkit-transition: .5s all ease;
-  -moz-transition: .5s all ease;
-  -o-transition: .5s all ease;
-  -ms-transition: .5s all ease;
+  transition: .2s all ease;
 }
 
 

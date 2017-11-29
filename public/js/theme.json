@@ -72,5 +72,31 @@ var theme = {
     "themeColor": "#1D2951",
     "themeColorRead": "#1D2951 navy",
     "themeKey": "cyberpunkBartender"
+  },
+  "minimalist": {
+    "hasNightMode": true,
+    "cssPath": "/css/themes/minimalist.css",
+    "title": "CADENCE",
+    "subtitle": "A Simple Experience",
+    "themeColor": "#FAF4EA",
+    "themeColorRead": "#FAF4EA desaturated old paper",
+    "themeKey": "minimalist"
+  },
+  "minimalistNight": {
+    "hasNightMode": true,
+    "cssPath": "/css/themes/minimalist-night.css",
+    "title": "CADENCE",
+    "subtitle": "A Simple Experience",
+    "themeColor": "#000000",
+    "themeColorRead": "#000000 black",
+    "themeKey": "minimalist"
+  },
+  "minimalistDark": {
+    "cssPath": "/css/themes/minimalist-night.css",
+    "title": "CADENCE",
+    "subtitle": "An Elegant Experience",
+    "themeColor": "#000000",
+    "themeColorRead": "#000000 black",
+    "themeKey": "minimalistDark"
   }
 }

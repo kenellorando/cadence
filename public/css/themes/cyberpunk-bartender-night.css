@@ -29,6 +29,15 @@ body {
   animation: blinker 2s ease-in infinite;
 }
 
+#subtitle {
+  text-transform: uppercase;
+}
+
+#subtitle, #nowPlaying, #volumeLabel, #version, .dropbtn, .dropdown-content button {
+  font-family: 'VT323', monospace;
+  font-style: italic;
+}
+
 
 /* Subtle blink to go with the glow */
 

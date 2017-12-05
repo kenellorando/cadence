@@ -13,7 +13,7 @@ body {
   /*Opacity of content within body*/
   opacity: 1;
   /*Opacity of background itself */
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 .all {
@@ -29,6 +29,12 @@ body {
   animation: blinker 2s ease-in infinite;
 }
 
+#subtitle, #nowPlaying, #volumeLabel, #version, .dropbtn,
+.dropdown-content button {
+  font-family: 'VT323', monospace;
+  font-style: italic;
+  text-transform: uppercase;
+}
 
 /* Subtle blink to go with the glow */
 
@@ -64,7 +70,9 @@ body {
 
 #subtitle {
   color: #f0f0f0;
+
 }
+
 
 #playerToggle {
   border-color: cyan;

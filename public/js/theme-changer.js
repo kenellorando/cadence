@@ -44,17 +44,31 @@ function themeChanger(themeName) {
       if (themeObjNight.videoPath) {
         setVideo(themeObjNight);
       }
+      
+      // Schedule a theme reset shortly after daytime
+      var time=new Date();
+      var target=new Object();
+      Object.assign(target,time);
+      target.setHours(9);
+      target.setMinutes(0);
+      target.setSeconds(1); // Offset by one second just in case
+      // Offset the day if its after 8 [since we can't be here if its not nighttime]
+      if (time.getHours()>20) {
+          target.setDate(target.getDate()+1);
+      }
+      var diff=target-time; // Milliseconds
+      setTimeout(defaultTheme, diff); // Schedule a theme default for one second after 9 AM
     }
     // Else, schedule a theme reset shortly after nighttime
     else {
-        var time=new Date();
-        var target=new Object();
-        Object.assign(target,time);
-        target.setHours(23);
-        target.setMinutes(0);
-        target.setSeconds(1); // Offset by one second just in case
-        var diff=target-time; // Milliseconds
-        setTimeout(defaultTheme, diff); // Schedule a theme default for one second after 11 PM
+      var time=new Date();
+      var target=new Object();
+      Object.assign(target,time);
+      target.setHours(23);
+      target.setMinutes(0);
+      target.setSeconds(1); // Offset by one second just in case
+      var diff=target-time; // Milliseconds
+      setTimeout(defaultTheme, diff); // Schedule a theme default for one second after 11 PM
     }
   }
   // Otherwise, no nightmode to fall back on

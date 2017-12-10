@@ -5,7 +5,7 @@
 
 html {
   color: #f0f0f0;
-  background-image: url(/media/cyberpunk-bartender4.gif);
+  background-image: url("https://i.imgur.com/iXOt37W.gif");
   background-position: -39em;
 }
 
@@ -27,6 +27,12 @@ body {
 
 #title span {
   animation: blinker 2s ease-in infinite;
+}
+
+#subtitle, #nowPlaying, #volumeLabel, #version, .dropbtn, .dropdown-content button {
+  font-family: 'VT323', monospace;
+  font-style: italic;
+  text-transform: uppercase;
 }
 
 

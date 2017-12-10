@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Bellefair');
 html {
-  background-image: url("https://i.imgur.com/qXLKYp5.jpg");
-  background-position: right;
+  background-color: #FAF4EA;
   opacity: 1;
 }
 
@@ -9,7 +8,9 @@ body {
   /*Opacity of content within body*/
   opacity: 1;
   /*Opacity of background itself */
-  background: rgba(0, 0, 0, .4);
+  background: rgba(0, 0, 0, 0);
+  /* Dark color for text */
+  color:black;
 }
 
 #player {
@@ -39,38 +40,25 @@ body {
 /* Link colors ************************/
 
 a:link {
-  color: lightgrey;
+  color: #585858;
 }
 
 a:visited {
-  color: lightgrey;
+  color: #585858;
 }
 
 a:hover {
-  color: grey;
+  color: darkgrey;
 }
 
 a:active {
-  color: lightgrey;
+  color: #585858;
 }
 
 #oldToggle {
-  color: lightgrey;
+  color: #585858;
 }
 
 #oldToggle:hover {
-  color: grey;
-}
-
-@media (min-width: 37em) {
-  html {
-    background-image: url("https://i.imgur.com/UtkSjdK.jpg");
-  }
-}
-
-@media (min-width: 64em) {
-  main {
-    transform: translateX(-20%);
-    transition: transform 1s;
-  }
+  color: darkgrey;
 }

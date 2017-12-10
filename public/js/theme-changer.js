@@ -29,18 +29,32 @@ function themeChanger(themeName) {
   var themeObj = theme[themeName];
   var currentHour = new Date().getHours();
 
-  // If a nightmode exists and it is nighttime
-  if (themeObj.hasNightMode == true && (currentHour < 8 || currentHour > 22)) {
-    themeNameNight = themeName + "Night";
-    var themeObjNight = theme[themeNameNight];
-    document.getElementById("selected-css").href = themeObjNight.cssPath;
-    document.getElementById("title").innerHTML = themeObjNight.title;
-    document.getElementById("subtitle").innerHTML = themeObjNight.subtitle;
-    setThemeColor(themeObjNight.themeColor);
-    localStorage.setItem('themeKey', themeObjNight.themeKey);
-    // If the nightmode is a video theme
-    if (themeObjNight.videoPath) {
-      setVideo(themeObjNight);
+  // If a nightmode exists
+  if (themeObj.hasNightMode == true) {
+    // If it is nighttime
+    if (currentHour < 8 || currentHour > 22)) {
+      themeNameNight = themeName + "Night";
+      var themeObjNight = theme[themeNameNight];
+      document.getElementById("selected-css").href = themeObjNight.cssPath;
+      document.getElementById("title").innerHTML = themeObjNight.title;
+      document.getElementById("subtitle").innerHTML = themeObjNight.subtitle;
+      setThemeColor(themeObjNight.themeColor);
+      localStorage.setItem('themeKey', themeObjNight.themeKey);
+      // If the nightmode is a video theme
+      if (themeObjNight.videoPath) {
+        setVideo(themeObjNight);
+      }
+    }
+    // Else, schedule a theme reset shortly after nighttime
+    else {
+        var time=new Date();
+        var target=new Object();
+        Object.assign(target,time);
+        target.setHours(23);
+        target.setMinutes(0);
+        target.setSeconds(1); // Offset by one second just in case
+        var diff=target-time; // Milliseconds
+        setTimeout(defaultTheme, diff); // Schedule a theme default for one second after 11 PM
     }
   }
   // Otherwise, no nightmode to fall back on
@@ -66,8 +80,3 @@ function defaultTheme() {
     themeChanger(theme);
   }
 }
-
-// Reselects for time-based themes at a set interval
-window.setInterval(function () {
-  defaultTheme();
-}, 10000);

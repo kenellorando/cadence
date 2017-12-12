@@ -1,0 +1,8 @@
+/* Request button */
+
+.requestButton {
+  background-color: rgba(0, 0, 0, .3);
+  border: 1px forestgreen solid;
+  color: #fdfdfd;
+  padding: .4em .6em;
+}

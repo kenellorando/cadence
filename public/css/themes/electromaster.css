@@ -1,0 +1,47 @@
+/*
+@import url(//fonts.googleapis.com/earlyaccess/sawarabimincho.css);
+*/
+
+
+/*
+Downloaded from https://www.axfc.net/u/link.pl?dr=10287785395764&file=3679198.dat 
+*/
+
+@font-face {
+  font-family: chikara-dzuyoku-b;
+  src: url(/css/fonts/851CHIKARA-DZUYOKU_kanaB.ttf);
+}
+
+html {
+  background-image: url("https://i.imgur.com/iEX9E09.jpg");
+  background-position: -60px;
+}
+
+body {
+  /*Opacity of content within body*/
+  opacity: 1;
+  /*Opacity of background itself */
+  background: rgba(0, 0, 0, .5);
+}
+
+#title {
+  /*
+  font-family: 'Sawarabi Mincho', serif;
+  */
+  font-family: 'chikara-dzuyoku-b', serif;
+  font-style: italic;
+  font-weight: 400;
+  transform: scale(1.5, 1.7) translateY(-.2em);
+}
+
+@media (min-width: 37em) {
+  html {
+    background-position: left;
+    padding: 0;
+    margin: 0;
+  }
+  body {
+    padding: 2em 5em;
+    margin: 0;
+  }
+}

@@ -47,7 +47,7 @@ function themeChanger(themeName) {
       
       // Schedule a theme reset shortly after daytime
       var time=new Date();
-      var target=new Object();
+      var target=new Date();
       Object.assign(target,time);
       target.setHours(9);
       target.setMinutes(0);

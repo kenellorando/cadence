@@ -62,7 +62,7 @@ function themeChanger(themeName) {
     // Else, schedule a theme reset shortly after nighttime
     else {
       var time=new Date();
-      var target=new Object();
+      var target=new Date();
       Object.assign(target,time);
       target.setHours(23);
       target.setMinutes(0);

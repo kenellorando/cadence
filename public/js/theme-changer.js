@@ -32,7 +32,7 @@ function themeChanger(themeName) {
   // If a nightmode exists
   if (themeObj.hasNightMode == true) {
     // If it is nighttime
-    if (currentHour < 8 || currentHour > 22)) {
+    if (currentHour < 8 || currentHour > 22) {
       themeNameNight = themeName + "Night";
       var themeObjNight = theme[themeNameNight];
       document.getElementById("selected-css").href = themeObjNight.cssPath;

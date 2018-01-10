@@ -15,6 +15,8 @@ body {
 #title {
   font-family: 'chikara-dzuyoku-b', serif;
   font-style: italic;
+  font-weight: 400;
+  transform: scale(1.5, 1.7) translateY(-.2em);
 }
 
 #subtitle {

@@ -98,5 +98,13 @@ var theme = {
     "themeColor": "#000000",
     "themeColorRead": "#000000 black",
     "themeKey": "minimalistDark"
+  },
+  "tokyoNight": {
+    "cssPath": "/css/themes/tokyo-night.css",
+    "title": "ケイデンス",
+    "subtitle": "リズミカルな経験",
+    "themeColor": "#0e1428",
+    "themeColorRead": "#0e1428 even darker navy",
+    "themeKey": "tokyoNight"
   }
 }

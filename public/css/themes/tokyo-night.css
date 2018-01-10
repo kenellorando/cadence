@@ -1,3 +1,8 @@
+@font-face {
+  font-family: chikara-dzuyoku-b;
+  src: url(/css/fonts/851CHIKARA-DZUYOKU_kanaB.ttf);
+}
+
 html {
   background-image: url("https://i.imgur.com/WBXk3bs.gif");
 }
@@ -5,4 +10,13 @@ html {
 body {
   /*Opacity of background itself */
   background-color: rgba(0, 0, 0, 0.75);
+}
+
+#title {
+  font-family: 'chikara-dzuyoku-b', serif;
+  font-style: italic;
+}
+
+#subtitle {
+  font-family: 'chikara-dzuyoku-b', serif;
 }

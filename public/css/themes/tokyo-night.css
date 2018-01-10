@@ -1,0 +1,8 @@
+html {
+  background-image: url("https://i.imgur.com/WBXk3bs.gif");
+}
+
+body {
+  /*Opacity of background itself */
+  background-color: rgba(0, 0, 0, 0.75);
+}

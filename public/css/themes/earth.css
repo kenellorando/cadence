@@ -13,9 +13,11 @@ body {
   /*Opacity of content within body*/
   opacity: 1;
   /*Opacity of background itself */
-  background: rgba(0, 0, 0, 0);
+  background: rgba(0, 0, 0, 0.1);
   /* Dark color for text */
   color:white;
+  /* Text shadow to enhance readability */
+  text-shadow: 4px 4px 15px #000, 2px 2px 2px #000;
 }
 
 #player {

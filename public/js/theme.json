@@ -4,6 +4,8 @@ Special functions:
     set "hasNightMode" to true for both versions
   Video playing theme
     set "videoPath" to path to the video to be played
+  Desktop-only theme
+    set "blockMobile" to true to prevent theme from being loaded on mobile
 */
 
 var theme = {

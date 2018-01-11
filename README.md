@@ -8,7 +8,7 @@ The server typically plays all the genres of music I like, mostly a mix of class
 
 ## Discord Bot
 Add Cadence Radio to your Discord server! Created by [Ryan Hodin](https://github.com/za419)
-* [Add to server](https://discordapp.com/oauth2/authorize?client_id=372999377569972224&scope=bot&permissions=1) 
+* [Add to server](https://discordapp.com/oauth2/authorize?client_id=372999377569972224&scope=bot&permissions=1)
 * [Source](https://github.com/za419/CadenceBot)
 
 ## Features

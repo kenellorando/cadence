@@ -1,13 +1,25 @@
-# Cadence Radio (http://www.kenellorando.com)
-## Background
-Cadence is an online radio heavily inspired by 4chan/8ch's [R/a/dio](http://r-a-d.io/). The project is my first endeavour to practice a full-range of IT-skills. It currently utilizes technologies in front-end design with HTML and CSS, site scripting with JavaScript, and some networking and server management using Windows Server 2016. Back-end work for a music database is also currently being built using the MySQL RDBMS. The database is filled with thousands of non-redundant entries of music metadata using a populator tool I programmed in Java.
+# Cadence Radio ♥ [http://cadenceradio.com](http://cadenceradio.com/)
+## About
+Cadence is an online radio heavily inspired by [R/a/dio](http://r-a-d.io/). Originally started in February 2017, the project is my first endeavour to practice a full range of IT-skills including front-end design, web programming, databases, and Linux server management. Development continues today with a focus on back-end technology.
 
-Future plans for the radio include a front-end database query feature (PHP) and an advanced back-end request bot (C#).
+The server typically plays all the genres of music I like, mostly a mix of classic rock, synthpop, and metal. I occasionally override the server and play a certain genre, artist, or the same song on an endless loop.
 
-## Acknowledgements
-### Technical Assistance
-* [Ryan Hodin](https://github.com/za419) (HTML, CSS, JS)
-* [Bobby Ton](https://github.com/bobbyt1997) (Java)
-### User Testers
-* Michael Folk
-* Jakob Frank
+**Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.**
+
+## Discord Bot
+Add Cadence Radio to your Discord server! Created by [Ryan Hodin](https://github.com/za419)
+* [Add to server](https://discordapp.com/oauth2/authorize?client_id=372999377569972224&scope=bot&permissions=1) 
+* [Source](https://github.com/za419/CadenceBot)
+
+## Features
+* A 24/7 audio livestream
+* Song requests
+* Automatically updating song info display
+* Over six gorgeous themes in seasonal rotation
+
+## Contributors
+* [Ryan Hodin](https://github.com/za419) (Programming, Design, Media)
+* [Bobby Ton](https://github.com/bobbyt1997) (Design)
+* [Jakob Frank](https://github.com/jakobfrank) (Media)
+* Michael Farrell (Security)
+* Mike Folk (QA)

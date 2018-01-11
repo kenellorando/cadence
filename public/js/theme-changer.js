@@ -32,7 +32,8 @@ function themeChanger(themeName) {
   // If the theme is blocked on mobile, and we're on mobile, default to chicagoEvening
   // Uses the same mobile check as Ken and I used back in the beginning, which is still used for pause
   if (themeObj.blockMobile && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-      themeObj=theme['chicagoEvening'];
+      var name=themeObj.mobileTheme || 'chicagoEvening';
+      themeObj=theme[name];
   }
 
   // If a nightmode exists

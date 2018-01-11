@@ -6,6 +6,8 @@ Special functions:
     set "videoPath" to path to the video to be played
   Desktop-only theme
     set "blockMobile" to true to prevent theme from being loaded on mobile
+    set "mobileTheme" to the themeKey of a theme to switch to on mobile.
+      If this is not set, "chicagoEvening" will be used instead.
 */
 
 var theme = {

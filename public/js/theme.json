@@ -110,5 +110,13 @@ var theme = {
     "themeColor": "#000000",
     "themeColorRead": "#000000 black",
     "themeKey": "spaceStation"
+  },
+  "earth": {
+    "cssPath": "/css/themes/earth.css",
+    "title": "CADENCE",
+    "subtitle": "A Cosmic Experience",
+    "themeColor": "#000000",
+    "themeColorRead": "#000000 black",
+    "themeKey": "earth"
   }
 }

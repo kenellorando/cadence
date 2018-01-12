@@ -102,7 +102,7 @@ var theme = {
   "tokyoNight": {
     "cssPath": "/css/themes/tokyo-night.css",
     "title": "ケイデンス",
-    "subtitle": "リズミカルな経験",
+    "subtitle": "リズミカルな体験",
     "themeColor": "#0e1428",
     "themeColorRead": "#0e1428 even darker navy",
     "themeKey": "tokyoNight"

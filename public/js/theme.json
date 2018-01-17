@@ -99,6 +99,14 @@ var theme = {
     "themeColorRead": "#000000 black",
     "themeKey": "minimalistDark"
   },
+  "tokyoNight": {
+    "cssPath": "/css/themes/tokyo-night.css",
+    "title": "ケイデンス",
+    "subtitle": "リズミカルな体験",
+    "themeColor": "#0e1428",
+    "themeColorRead": "#0e1428 even darker navy",
+    "themeKey": "tokyoNight"
+  },
   "hawaiianSunset": {
     "cssPath": "/css/themes/hawaiian-sunset.css",
     "title": "CADENCE",

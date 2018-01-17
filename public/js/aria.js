@@ -49,7 +49,7 @@ $(document).ready(function () {
             i++;
             console.log("=================");
             */
-            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
+            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + escape(song.path) + "'>REQUEST</button></td></tr>";
           })
         } else {
           console.log("CADENCE: Database query completed.  0 results found. :(");
@@ -73,7 +73,7 @@ $(document).ready(function () {
     // console.log(this.dataset.path); // /home/ken/Music/fripSide/01. only my railgun.mp3
 
     var data = {};
-    data.path = this.dataset.path;
+    data.path = unescape(this.dataset.path);
 
     // so when you click a working button, change it to red and disable it
 

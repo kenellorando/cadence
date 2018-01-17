@@ -18,9 +18,9 @@ var app = express();
 // Rate Limiter: 1 request per five minutes
 var requestLimiter = new RateLimit({
   windowMs: 5 * 60 * 1000, // Five minutes
-  delayAfter: 1, // begin slowing down responses after the first request 
-  delayMs: 3 * 1000, // slow down subsequent responses by 3 seconds per request 
-  max: 1, // start blocking after 1 request 
+  delayAfter: 1, // begin slowing down responses after the first request
+  delayMs: 3 * 1000, // slow down subsequent responses by 3 seconds per request
+  max: 1, // start blocking after 1 request
   message: "ARIA: Request rejected, you must wait five minutes between requests."
 });
 
@@ -81,24 +81,6 @@ MongoClient.connect(DB_URL, function (err, db) {
           return done(null);
         }
 
-        /*
-        var extensions = [ // All recognized music extensions
-          ".mp3",
-          ".m4a",
-          ".flac",
-          ".ogg"
-        ];
-        var music = false;
-        for (var i = 0; i < extensions.length; ++i) {
-          if (file.endsWith(extensions[i])) {
-            music = true;
-            break;
-          }
-        }
-        if (!(music))
-          return next();
-        */
-
         file = dir + '/' + file;
         fs.stat(file, function (error, stat) {
           if (stat && stat.isDirectory()) {
@@ -106,6 +88,22 @@ MongoClient.connect(DB_URL, function (err, db) {
               next();
             });
           } else {
+            var extensions = [ // All recognized music extensions
+                  ".mp3",
+                  ".m4a",
+                  ".flac",
+                  ".ogg"
+                ];
+            var music = false;
+            for (var i = 0; i < extensions.length; ++i) {
+              if (file.endsWith(extensions[i])) {
+                music = true;
+                break;
+              }
+            }
+            if (!music)
+              return next();
+
             var parser = mm(fs.createReadStream(file), function (err, metadata) {
               if (err) {
                 next();

@@ -297,7 +297,7 @@ a:active {
   }
   body {
     /*margin-bottom: 2em;*/
-    padding: 2em 5em;
+    padding: 1.5em 5em;
   }
   #title {
     font-size: 3.6em;
@@ -370,7 +370,7 @@ a:active {
   }
   main {
     font-size: 1.3em;
-    padding-top: 2em;
+    padding-top: 1em;
     padding-bottom: 5em;
   }
 }

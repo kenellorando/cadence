@@ -90,6 +90,16 @@ $(document).ready(function () {
 }, true)
 });
 
+// Focus to the request area
+$(document).ready(function () {
+  document.getElementById("playerRequest").addEventListener('click', function(){
+    $('html, body').animate({
+      scrollTop: $("#aria").offset().top
+    }, 1500);
+    $('input[name=searchInput]').focus();
+  })
+});
+
 
 // When you change the volume
 function volumeToggle(vol) {

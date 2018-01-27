@@ -49,7 +49,7 @@ $(document).ready(function () {
             i++;
             console.log("=================");
             */
-            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + song.path + "'>REQUEST</button></td></tr>";
+            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + escape(song.path) + "'>REQUEST</button></td></tr>";
           })
         } else {
           console.log("CADENCE: Database query completed.  0 results found. :(");
@@ -73,13 +73,15 @@ $(document).ready(function () {
     // console.log(this.dataset.path); // /home/ken/Music/fripSide/01. only my railgun.mp3
 
     var data = {};
-    data.path = this.dataset.path;
+    data.path = unescape(this.dataset.path);
 
     // so when you click a working button, change it to red and disable it
 
     // Disable the request buttons for a certain amount of time
-    $(".requestButton").css('border', '1px darkred solid');
     $(".requestButton").prop('disabled', true);
+
+    // Switch the request button styles so they appear red for the same amount of time
+    document.getElementById('aria-request-button').href=document.location.origin+"/css/modules/aria/request-button-disabled.css";
 
     $.ajax({
       type: 'POST',
@@ -91,7 +93,7 @@ $(document).ready(function () {
         // After five minutes, return functionality to the button and change to green
         setTimeout(function () {
           $(".requestButton").prop('disabled', false);
-          $(".requestButton").css('border', '1px forestgreen solid');
+          document.getElementById('aria-request-button').href=document.location.origin+"/css/modules/aria/request-button.css";
         }, 1000 * 60 * 5);
       },
       error: function (result) {
@@ -99,7 +101,7 @@ $(document).ready(function () {
         ariaSays.innerHTML = result.responseText;
         setTimeout(function () {
           $(".requestButton").prop('disabled', false);
-          $(".requestButton").css('border', '1px forestgreen solid');
+          document.getElementById('aria-request-button').href=document.location.origin+"/css/modules/aria/request-button.css";
         }, 1000 * 60 * 5);
       }
     });

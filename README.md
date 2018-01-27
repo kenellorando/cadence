@@ -8,7 +8,7 @@ The server typically plays all the genres of music I like, mostly a mix of class
 
 ## Discord Bot
 Add Cadence Radio to your Discord server! Created by [Ryan Hodin](https://github.com/za419)
-* [Add to server](https://discordapp.com/oauth2/authorize?client_id=372999377569972224&scope=bot&permissions=1) 
+* [Add to server](https://discordapp.com/oauth2/authorize?client_id=372999377569972224&scope=bot&permissions=1)
 * [Source](https://github.com/za419/CadenceBot)
 
 ## Features
@@ -25,7 +25,7 @@ Add Cadence Radio to your Discord server! Created by [Ryan Hodin](https://github
 * Mike Folk (QA)
 
 ## Contributing
-To contribute to Cadence Radio, first install [Git LFS](https://git-lfs.github.com/), as the now-removed Space Station theme used files hosted on LFS, and we may use LFS again in the future.
+To contribute to Cadence Radio, first install [Git LFS](https://git-lfs.github.com/), as our Space Station theme uses files hosted on LFS.
 
 As `git clone` only permits serial file download, LFS suggests disabling LFS for the clone operation and then pulling the files separately, as this can be done in parallel. The commands suggested are (taken from the [LFS Tutorial](https://github.com/git-lfs/git-lfs/wiki/Tutorial)):
 

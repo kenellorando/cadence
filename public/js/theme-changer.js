@@ -15,7 +15,7 @@ function setVideo(themeObj) {
   }
 }
 
-// Handles clicks 
+// Handles clicks
 $(document).ready(function () {
   $('.themeChoice').on('click', function () {
     var themeChoice = $(this).attr('id');
@@ -29,18 +29,62 @@ function themeChanger(themeName) {
   var themeObj = theme[themeName];
   var currentHour = new Date().getHours();
 
-  // If a nightmode exists and it is nighttime
-  if (themeObj.hasNightMode == true && (currentHour < 8 || currentHour > 22)) {
-    themeNameNight = themeName + "Night";
-    var themeObjNight = theme[themeNameNight];
-    document.getElementById("selected-css").href = themeObjNight.cssPath;
-    document.getElementById("title").innerHTML = themeObjNight.title;
-    document.getElementById("subtitle").innerHTML = themeObjNight.subtitle;
-    setThemeColor(themeObjNight.themeColor);
-    localStorage.setItem('themeKey', themeObjNight.themeKey);
-    // If the nightmode is a video theme
-    if (themeObjNight.videoPath) {
-      setVideo(themeObjNight);
+  // If the theme is blocked on mobile, and we're on mobile, default to chicagoEvening
+  // Uses the same mobile check as Ken and I used back in the beginning, which is still used for pause
+  if (themeObj.blockMobile && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+      var name=themeObj.mobileTheme || 'chicagoEvening';
+      themeObj=theme[name];
+  }
+
+  // If a nightmode exists
+  if (themeObj.hasNightMode == true) {
+    // If it is nighttime
+    if (currentHour < 8 || currentHour > 22) {
+      themeNameNight = themeName + "Night";
+      var themeObjNight = theme[themeNameNight];
+      document.getElementById("selected-css").href = themeObjNight.cssPath;
+      document.getElementById("title").innerHTML = themeObjNight.title;
+      document.getElementById("subtitle").innerHTML = themeObjNight.subtitle;
+      setThemeColor(themeObjNight.themeColor);
+      localStorage.setItem('themeKey', themeObjNight.themeKey);
+      // If the nightmode is a video theme
+      if (themeObjNight.videoPath) {
+        setVideo(themeObjNight);
+      }
+
+      // Schedule a theme reset shortly after daytime
+      var time=new Date();
+      var target=new Date();
+      Object.assign(target,time);
+      target.setHours(9);
+      target.setMinutes(0);
+      target.setSeconds(1); // Offset by one second just in case
+      // Offset the day if its after 8 [since we can't be here if its not nighttime]
+      if (time.getHours()>20) {
+          target.setDate(target.getDate()+1);
+      }
+      var diff=target-time; // Milliseconds
+      setTimeout(defaultTheme, diff); // Schedule a theme default for one second after 9 AM
+    }
+    // Else, set daytime and schedule a theme reset shortly after nighttime
+    else {
+      document.getElementById("selected-css").href = themeObj.cssPath;
+      document.getElementById("title").innerHTML = themeObj.title;
+      document.getElementById("subtitle").innerHTML = themeObj.subtitle;
+      setThemeColor(themeObj.themeColor);
+      localStorage.setItem('themeKey', themeObj.themeKey);
+      if (themeObj.videoPath) {
+        setVideo(themeObj);
+      }
+
+      var time=new Date();
+      var target=new Date();
+      Object.assign(target,time);
+      target.setHours(23);
+      target.setMinutes(0);
+      target.setSeconds(1); // Offset by one second just in case
+      var diff=target-time; // Milliseconds
+      setTimeout(defaultTheme, diff); // Schedule a theme default for one second after 11 PM
     }
   }
   // Otherwise, no nightmode to fall back on
@@ -66,8 +110,3 @@ function defaultTheme() {
     themeChanger(theme);
   }
 }
-
-// Reselects for time-based themes at a set interval
-window.setInterval(function () {
-  defaultTheme();
-}, 10000);

@@ -25,6 +25,8 @@
 
   <!-- Import base, norm, modules CSS -->
   <link rel="stylesheet" type="text/css" href="/css/master-import.css">
+  <!-- ARIA request button CSS (not in import so the script can switch back and forth) -->
+  <link rel="stylesheet" type="text/css" id="aria-request-button" href="/css/modules/aria/request-button.css">
   <!-- Selected style CSS -->
   <link rel="stylesheet" type="text/css" id="selected-css" href=".">
 
@@ -73,7 +75,7 @@
 
       <div id="version">
         <p style="margin:0">Cadence/ARIA Development Build</p>
-        <p style="margin:0 0 30px 0;">Beta 0.9.2</p>
+        <p style="margin:0 0 30px 0;">Beta 0.9.3</p>
       </div>
 
       <!-- Theme selector -->
@@ -82,25 +84,33 @@
         <div class="dropdown-content">
           <button type="button" class="themeChoice" id="chicagoEvening">Chicago Evening</button>
           <button type="button" class="themeChoice" id="cyberpunkBartender">Cyberpunk Bartender</button>
-          
+
+          <button type="button" class="themeChoice" id="spaceStation">Space Station</button>
           <button type="button" class="themeChoice" id="yorha">YoRHa</button>
-          <!--
           <button type="button" class="themeChoice" id="minimalist">Minimalist</button>
+          <button type="button" class="themeChoice" id="minimalistDark">Minimalist Dark</button>
+          <button type="button" class="themeChoice" id="tokyoNight">Tokyo Night</button>
+
+          <!--
+          <button type="button" class="themeChoice" id="earth">Earth</button>
+          <button type="button" class="themeChoice" id="minimalist">Minimalist</button>
+          <button type="button" class="themeChoice" id="hawaiianSunset">Hawaiian Sunset</button>
           <button type="button" class="themeChoice" id="electromaster">Electromaster</button>
           <button type="button" class="themeChoice" id="lightMage">Light Mage</button>
           <button type="button" class="themeChoice" id="mayberry">Mayberry</button>
           <button type="button" class="themeChoice" id="starGuardian">Star Guardian</button>
-          <button type="button" class="themeChoice" id="minimalistDark">Minimalist Dark</button>
+          
           -->
         </div>
       </div>
+      <button class="dropbtn" id="playerRequest">Request a Song</button>
     </div>
   </main>
 
   <div id="aria">
     <h2>Song Requests</h2>
     <div id="search">
-      <input id="searchInput" type="text" placeholder="Search for a song or artist!">
+      <input name="searchInput" id="searchInput" type="text" placeholder="Search for a song or artist!">
       <button id="searchButton">Search</button>
     </div>
 
@@ -115,33 +125,6 @@
   <div id="content">
     <div class="content-left">
       <section>
-        <h2>Announcements</h2>
-        <h3 class="announcement">11/29: Music Update</h3>
-        <p>Here are the newest additions to the music library:</p>
-        <ul>
-          <li>Frank Sinatra - I've Got You Under My Skin</li>
-          <li>Garoad (VA-11 HALL-A: Cyberpunk Bartender Action) - Nighttime Maneuvers</li>
-          <li>Garoad (VA-11 HALL-A: Cyberpunk Bartender Action) - Welcome to VA-11 HALL-A (Remix)</li>
-          <li>Purity Ring - Begin Again</li>
-          <li>SQUARE ENIX (Nier: Automata) - Alien Manifestation</li>
-          <li>SQUARE ENIX (Nier: Automata) - City Ruins - Shade</li>
-          <li>SQUARE ENIX (Nier: Automata) - Weight of the World/The End of YoRHa</li>
-          <li>Tantrum Desire - Reach VIP </li>
-          <li>Tears For Fears - Advice for the Young at Heart</li>
-          <li>Tears For Fears - Mad World</li>
-          <li>Tears For Fears - Pale Shelter</li>
-          <li>Tears For Fears - Sowing the Seeds of Love</li>
-          <li>Yugo Kanno (PSYCHO-PASS) - PSYCHO-PASS</li>
-          <li>Yugo Kanno (PSYCHO-PASS) - Dominator</li>
-        </ul>
-
-        <h3 class="announcement">11/18: Firefox 57.0 Playback Issues</h3>
-        <p>Please be aware that Firefox 57.0 "Quantum" <a href="https://github.com/kenellorando/cadence/issues/81">does not properly playback</a>          Cadence's stream past the first song. I recommend rolling back to <a href="https://support.mozilla.org/en-US/kb/install-older-version-of-firefox">56.2</a>          until Mozilla addresses stream support.</p>
-      </section>
-    </div>
-
-    <div class="content-right">
-      <section>
         <h2>About Cadence:</h2>
         <p>Cadence is an online radio whose creation was inspired by the anime-themed <a href="http://r-a-d.io/">R/a/dio</a>.
           Originally started as an <a href="http://cadenceradio.com/original">experiment</a> in February 2017, the project
@@ -155,10 +138,19 @@
 
         <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
       </section>
+    </div>
 
+    <div class="content-right">
+      <section>
+        <h2>Announcements</h2>
+
+        <h3 class="announcement">11/18: Firefox 57.0 Playback Issues</h3>
+        <p>Please be aware that Firefox 57.0 "Quantum" <a href="https://github.com/kenellorando/cadence/issues/81">does not properly playback</a>          Cadence's stream past the first song. I recommend rolling back to <a href="https://support.mozilla.org/en-US/kb/install-older-version-of-firefox">56.2</a>          until Mozilla addresses stream support.</p>
+      </section>
       <section id="changelog">
         <h2>Changelog:</h2>
         <ul>
+          <li>1/12: New theme: Tokyo Night</li>
           <li>11/28: New theme: Minimalist</li>
           <li>9/30: Song requests!!!</li>
           <li>9/28: Database returning search results</li>

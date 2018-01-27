@@ -5,7 +5,7 @@ html {
   background-attachment: fixed;
   background-position: center center;
   background-repeat: no-repeat;
-  background-size: contain;
+  background-size: cover;
   opacity: 1;
 }
 

@@ -4,6 +4,12 @@ Special functions:
     set "hasNightMode" to true for both versions
   Video playing theme
     set "videoPath" to path to the video to be played
+  Desktop-only theme
+    set "blockMobile" to true to prevent theme from being loaded on mobile
+    set "mobileTheme" to the themeKey of a theme to switch to on mobile.
+      If this is not set, "chicagoEvening" will be used instead.
+      The theme this is set to will be used regardless of setting blockMobile.
+      That is, it it your responsibility to make sure the mobile theme supports mobile.
 */
 
 var theme = {
@@ -98,6 +104,25 @@ var theme = {
     "themeColor": "#000000",
     "themeColorRead": "#000000 black",
     "themeKey": "minimalistDark"
+  },
+  "spaceStation": {
+    "videoPath": "/media/iss.mp4",
+    "blockMobile": true,
+    "mobileTheme": "earth",
+    "cssPath": "/css/themes/space-station.css",
+    "title": "CADENCE",
+    "subtitle": "A Space Odyssey",
+    "themeColor": "#000000",
+    "themeColorRead": "#000000 black",
+    "themeKey": "spaceStation"
+  },
+  "earth": {
+    "cssPath": "/css/themes/earth.css",
+    "title": "CADENCE",
+    "subtitle": "A Cosmic Experience",
+    "themeColor": "#000000",
+    "themeColorRead": "#000000 black",
+    "themeKey": "earth"
   },
   "tokyoNight": {
     "cssPath": "/css/themes/tokyo-night.css",

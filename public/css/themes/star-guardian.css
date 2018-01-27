@@ -5,6 +5,7 @@
 
 html {
   background-image: url("https://i.imgur.com/eS82fO8.png");
+  background-size: cover;
   text-shadow: 2px 2px 20px black;
 }
 

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Permanent+Marker');
+
 html {
   background-image: url("https://i.imgur.com/uyI1tXF.jpg");
 }
@@ -5,4 +7,13 @@ html {
 body {
   /*Opacity of background itself */
   background-color: rgba(0, 0, 0, 0.75);
+}
+
+#title {
+	font-family: 'Permanent Marker', cursive;
+	font-size: 2.5em;
+	line-height: .9em;
+	text-align: center;
+	padding: .56em .23em .23em .23em;
+	background-color: #0f0f0f;
 }

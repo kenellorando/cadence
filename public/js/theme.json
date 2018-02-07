@@ -139,5 +139,13 @@ var theme = {
     "themeColor": "#677A8B",
     "themeColorRead": "#677A8B dark sky blue",
     "themeKey": "hawaiianSunset"
+  },
+  "legacy": {
+    "cssPath": "/css/themes/legacy-chicago-evening.css",
+    "title": "RADIO",
+    "subtitle": "A Nostalgic Experience",
+    "themeColor": "#E4D9A3",
+    "themeColorRead": "#E4D9A3 a pale yellow",
+    "themeKey": "legacy"
   }
 }

@@ -82,13 +82,3 @@
   background-color: #0f0f0f;
   color: #FFFFFF;
 }
-
-#ISS-warning {
-  display: none;
-  background-color:inherit;
-  position: absolute;
-  left: 100%;
-  top: 96px;
-  font-size: .75em;
-  width: 120px;
-}

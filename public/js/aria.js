@@ -27,6 +27,7 @@ $(document).ready(function () {
       type: 'POST',
       url: 'http://cadenceradio.com/search',
       dataType: 'application/json',
+      crossDomain: true,
       data: data,
       dataType: "json",
       success: function (data) {

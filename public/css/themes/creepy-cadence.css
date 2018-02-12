@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css?family=Bellefair');
+html {
+  background-color: black;
+  opacity: 1;
+}
+
+body {
+  /*Opacity of content within body*/
+  opacity: 1;
+  /*Opacity of background itself */
+  background: rgba(0, 0, 0, 0);
+  /* Dark color for text */
+  color:white;
+  text-transform: uppercase;
+}
+
+#player {
+  font-family: 'Bellefair', serif;
+  font-style: normal;
+}
+
+#positioner {
+  position: relative;
+  width: auto;
+  height: auto;
+  display: inline-block;
+}
+
+#title{
+  font-family: 'Bellefair', serif;
+  text-transform: lowercase;
+  font-weight: 500;
+  transform: scale(1.4, 1.6);
+  margin-top: -2em;
+}
+
+#hiddentitle, #titlecontainer, #titlewithakay {
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-duration: 50s;
+  animation-timing-function: steps(10000, left);
+}
+
+#hiddentitle {
+  animation-name: hiddentitleglitch;
+}
+
+#titlewithakay {
+  animation-name: karenglitch;
+}
+
+#titlecontainer {
+  animation-name: titleglitch;
+}
+
+#hiddentitle, #titlewithakay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+#title span {
+  text-transform: lowercase;
+  animation-play-state: running;
+  animation-timing-function: steps(100, left);
+  animation-iteration-count: infinite;
+  animation-name: glitch;
+}
+
+#titlecontainer span:nth-of-type(1), #hiddentitle span:nth-of-type(1), #titlewithakay span:nth-of-type(1) {
+  animation-duration: 10s;
+}
+
+#titlecontainer span:nth-of-type(2), #hiddentitle span:nth-of-type(2), #titlewithakay span:nth-of-type(2) {
+  animation-duration: 3s;
+}
+
+#titlecontainer span:nth-of-type(3), #hiddentitle span:nth-of-type(3), #titlewithakay span:nth-of-type(3) {
+  animation-duration: 13s;
+}
+
+#titlecontainer span:nth-of-type(4), #hiddentitle span:nth-of-type(4), #titlewithakay span:nth-of-type(4){
+  animation-duration: 7s;
+}
+
+#titlecontainer span:nth-of-type(5), #hiddentitle span:nth-of-type(5), #titlewithakay span:nth-of-type(5) {
+  animation-duration: 23s;
+}
+
+#titlecontainer span:nth-of-type(6), #hiddentitle span:nth-of-type(6), #titlewithakay span:nth-of-type(6) {
+  animation-duration: 37s;
+}
+
+#titlecontainer span:nth-of-type(7), #hiddentitle span:nth-of-type(7), #titlewithakay span:nth-of-type(7) {
+  animation-duration: 11s;
+}
+
+@keyframes glitch {
+  0% {
+    text-transform: lowercase;
+  }
+  94% {
+    text-transform: lowercase;
+  }
+  95% {
+    text-transform: uppercase;
+  }
+  99% {
+    text-transform: uppercase;
+  }
+  100% {
+    text-transform: lowercase;
+  }
+}
+
+@keyframes hiddentitleglitch {
+  0% {
+    opacity: 0;
+  }
+  71.39% {
+    opacity: 0;
+  }
+  71.4% {
+    opacity: 1;
+  }
+  83.99% {
+    opacity: 1;
+  }
+  84% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes karenglitch {
+  0% {
+    opacity: 0;
+  }
+  96.99% {
+    opacity: 0;
+  }
+  97% {
+    opacity: 1;
+  }
+  99.99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes titleglitch {
+  0% {
+    opacity: 1;
+  }
+  71.39% {
+    opacity: 1;
+  }
+  71.4% {
+    opacity: 0;
+  }
+  83.99% {
+    opacity: 0;
+  }
+  84% {
+    opacity: 1;
+  }
+  96.99% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 0;
+  }
+  99.99% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#subtitle {
+  font-size: 1.6em;
+}
+
+#subtitle,
+#volumeLabel,
+.dropbtn,
+.dropdown-content button {
+  font-family: 'Bellefair', serif;
+  font-style: italic;
+}
+
+
+/* Link colors ************************/
+
+a:link {
+  color: lightgrey;
+}
+
+a:visited {
+  color: lightgrey;
+}
+
+a:hover {
+  color: grey;
+}
+
+a:active {
+  color: lightgrey;
+}
+
+#oldToggle {
+  color: lightgrey;
+}
+
+#oldToggle:hover {
+  color: grey;
+}

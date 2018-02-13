@@ -295,6 +295,15 @@ body {
   90% {
     opacity: 1;
   }
+  94.99% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0;
+  }
+  99.99% {
+    opacity: 0;
+  }
   100% {
     opacity: 1;
   }

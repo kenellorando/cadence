@@ -215,16 +215,16 @@ body {
     opacity: 0;
   }
   79.99% {
-    opacity: 1;
-  }
-  80% {
     opacity: 0;
   }
+  80% {
+    opacity: 1;
+  }
   89.99% {
-    opacity: 0
+    opacity: 1;
   }
   90% {
-    opacity: 1;
+    opacity: 0;
   }
   100% {
     opacity: 0;

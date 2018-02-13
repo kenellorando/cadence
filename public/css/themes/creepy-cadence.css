@@ -184,6 +184,15 @@ body {
   50% {
     opacity: 0;
   }
+  98.49% {
+    opacity: 0;
+  }
+  98.5% {
+    opacity: 1;
+  }
+  99.99% {
+    opacity: 1;
+  }
   100% {
     opacity: 0;
   }

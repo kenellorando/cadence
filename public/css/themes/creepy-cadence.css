@@ -206,6 +206,27 @@ body {
   }
 }
 
+@keyframes sortedglitch {
+  0% {
+    opacity: 0;
+  }
+  79.99% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  89.99% {
+    opacity: 0
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes titleglitch {
   0% {
     opacity: 1;

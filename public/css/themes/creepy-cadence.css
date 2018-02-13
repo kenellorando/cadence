@@ -178,6 +178,27 @@ body {
   }
 }
 
+@keyframes deathglitch {
+  0% {
+    opacity: 0;
+  }
+  65.99% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 1;
+  }
+  69.99% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes titleglitch {
   0% {
     opacity: 1;

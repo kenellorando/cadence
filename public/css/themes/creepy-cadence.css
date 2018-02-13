@@ -218,6 +218,18 @@ body {
   50% {
     opacity: 1;
   }
+  65.99% {
+    opacity: 1;
+  }
+  66% {
+    opacity: 0;
+  }
+  69.99% {
+    opacity: 0;
+  }
+  70% {
+    opacity: 1;
+  }
   100% {
     opacity: 1;
   }

@@ -34,11 +34,18 @@ body {
   margin-top: -2em;
 }
 
-#hiddentitle, #titlecontainer, #titlewithakay, #deadtitle {
+#positioner>h1 {
   animation-play-state: running;
   animation-iteration-count: infinite;
   animation-duration: 50s;
   animation-timing-function: steps(10000, left);
+}
+
+#positioner>h1:not(#titlecontainer) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
 }
 
 #hiddentitle {
@@ -55,13 +62,6 @@ body {
 
 #deadtitle {
   animation-name: deadglitch;
-}
-
-#hiddentitle, #titlewithakay, #deadtitle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
 }
 
 #title span {

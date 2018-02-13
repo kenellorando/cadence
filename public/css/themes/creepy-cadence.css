@@ -37,7 +37,7 @@ body {
 #positioner>h1 {
   animation-play-state: running;
   animation-iteration-count: infinite;
-  animation-duration: 50s;
+  animation-duration: 100s;
   animation-timing-function: steps(10000, left);
 }
 
@@ -122,16 +122,16 @@ body {
   0% {
     opacity: 0;
   }
-  16.99% {
+  8.49% {
     opacity: 0;
   }
-  17% {
+  8.5% {
     opacity: 1;
   }
-  21.99% {
+  10.99% {
     opacity: 1;
   }
-  22% {
+  11% {
     opacity: 0;
   }
   100% {
@@ -143,16 +143,16 @@ body {
   0% {
     opacity: 0;
   }
-  71.39% {
+  35.49% {
     opacity: 0;
   }
-  71.4% {
+  35.5% {
     opacity: 1;
   }
-  83.99% {
+  41.99% {
     opacity: 1;
   }
-  84% {
+  42% {
     opacity: 0;
   }
   100% {
@@ -164,13 +164,13 @@ body {
   0% {
     opacity: 0;
   }
-  96.99% {
+  48.49% {
     opacity: 0;
   }
-  97% {
+  48.5% {
     opacity: 1;
   }
-  99.99% {
+  49.99% {
     opacity: 1;
   }
   100% {
@@ -182,38 +182,41 @@ body {
   0% {
     opacity: 1;
   }
-  16.99% {
+  8.49% {
     opacity: 1;
   }
-  17% {
+  8.5% {
     opacity: 0;
   }
-  21.99% {
+  10.99% {
     opacity: 0;
   }
-  22% {
+  11% {
     opacity: 1;
   }
-  71.39% {
+  35.49% {
     opacity: 1;
   }
-  71.4% {
+  35.5% {
     opacity: 0;
   }
-  83.99% {
+  41.99% {
     opacity: 0;
   }
-  84% {
+  42% {
     opacity: 1;
   }
-  96.99% {
+  48.49% {
     opacity: 1;
   }
-  97% {
+  48.5% {
     opacity: 0;
   }
-  99.99% {
+  49.99% {
     opacity: 0;
+  }
+  50% {
+    opacity: 1;
   }
   100% {
     opacity: 1;

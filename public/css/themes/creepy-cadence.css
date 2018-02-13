@@ -68,6 +68,10 @@ body {
   animation-name: deathglitch;
 }
 
+#sortedtitle {
+  animation-name: sortedglitch;
+}
+
 #title span {
   text-transform: lowercase;
   animation-play-state: running;

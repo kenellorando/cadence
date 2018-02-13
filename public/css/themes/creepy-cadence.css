@@ -64,6 +64,10 @@ body {
   animation-name: deadglitch;
 }
 
+#titledeath {
+  animation-name: deathglitch;
+}
+
 #title span {
   text-transform: lowercase;
   animation-play-state: running;

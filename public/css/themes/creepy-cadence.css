@@ -177,6 +177,9 @@ body {
   49.99% {
     opacity: 1;
   }
+  50% {
+    opacity: 0;
+  }
   100% {
     opacity: 0;
   }
@@ -253,6 +256,18 @@ body {
     opacity: 0;
   }
   70% {
+    opacity: 1;
+  }
+  79.99% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  89.99% {
+    opacity: 0
+  }
+  90% {
     opacity: 1;
   }
   100% {

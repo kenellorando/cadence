@@ -151,7 +151,7 @@ var theme = {
   "creepyCadence": {
     "cssPath": "/css/themes/creepy-cadence.css",
     "title": "<div id='positioner'><h1 id='titlecontainer'><span>c</span><span>a</span><span>d</span><span>e</span><span>n</span><span>c</span><span>e</span></h1><h1 id='hiddentitle'><span>c</span><span>a</span><span>e</span><span>n</span><span>c</span><span>d</span><span>e</span></h1><h1 id='titlewithakay'><span>k</span><span>a</span><span>d</span><span>e</span><span>n</span><span>c</span><span>e</span></h1><h1 id='deadtitle'><span>c</span><span>a</span><span>d</span><span>a</span><span>v</span><span>e</span><span>r</span></h1><h1 id='titledeath'><span>c</span><span>a</span><span>d</span><span>e</span><span>a</span><span>t</span><span>h</span></h1><h1 id='sortedtitle'><span>a</span><span>c</span><span>c</span><span>d</span><span>e</span><span>e</span><span>n</span></h1><h1 id='phonetictitle'><span>k</span><span>ay</span><span>d</span><span>e</span><span>n</span><span>s</span><span>e</span></h1></div>",
-    "subtitle": "A Surreal Experience",
+    "subtitle": "A <span>Fun</span> Experience",
     "themeColor": "#000000",
     "themeColorRead": "#000000 black",
     "themeKey": "creepyCadence"

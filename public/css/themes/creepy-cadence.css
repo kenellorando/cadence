@@ -34,11 +34,19 @@ body {
   margin-top: -2em;
 }
 
+#subtitle span {
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-duration: 100s;
+  animation-timing-function: steps(10000, start);
+  animation-name: subtitleglitch;
+}
+
 #positioner>h1 {
   animation-play-state: running;
   animation-iteration-count: infinite;
   animation-duration: 100s;
-  animation-timing-function: steps(10000, left);
+  animation-timing-function: steps(10000, start);
 }
 
 #positioner>h1:not(#titlecontainer) {
@@ -79,7 +87,7 @@ body {
 #title span {
   text-transform: lowercase;
   animation-play-state: running;
-  animation-timing-function: steps(100, left);
+  animation-timing-function: steps(100, start);
   animation-iteration-count: infinite;
   animation-name: glitch;
 }
@@ -127,6 +135,27 @@ body {
   }
   100% {
     text-transform: lowercase;
+  }
+}
+
+@keyframes subtitleglitch {
+  0% {
+    color: white;
+  }
+  76.99% {
+    color: white;
+  }
+  77% {
+    color: red;
+  }
+  77.99% {
+    color: red;
+  }
+  78% {
+    color: white;
+  }
+  100% {
+    color: white;
   }
 }
 

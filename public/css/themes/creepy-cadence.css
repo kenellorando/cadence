@@ -34,7 +34,7 @@ body {
   margin-top: -2em;
 }
 
-#hiddentitle, #titlecontainer, #titlewithakay {
+#hiddentitle, #titlecontainer, #titlewithakay, #deadtitle {
   animation-play-state: running;
   animation-iteration-count: infinite;
   animation-duration: 50s;
@@ -53,7 +53,11 @@ body {
   animation-name: titleglitch;
 }
 
-#hiddentitle, #titlewithakay {
+#deadtitle {
+  animation-name: deadglitch;
+}
+
+#hiddentitle, #titlewithakay, #deadtitle {
   position: absolute;
   top: 0;
   left: 0;
@@ -68,31 +72,31 @@ body {
   animation-name: glitch;
 }
 
-#titlecontainer span:nth-of-type(1), #hiddentitle span:nth-of-type(1), #titlewithakay span:nth-of-type(1) {
+#title span:nth-of-type(1) {
   animation-duration: 10s;
 }
 
-#titlecontainer span:nth-of-type(2), #hiddentitle span:nth-of-type(2), #titlewithakay span:nth-of-type(2) {
+#title span:nth-of-type(2) {
   animation-duration: 3s;
 }
 
-#titlecontainer span:nth-of-type(3), #hiddentitle span:nth-of-type(3), #titlewithakay span:nth-of-type(3) {
+#title span:nth-of-type(3) {
   animation-duration: 13s;
 }
 
-#titlecontainer span:nth-of-type(4), #hiddentitle span:nth-of-type(4), #titlewithakay span:nth-of-type(4){
+#title span:nth-of-type(4) {
   animation-duration: 7s;
 }
 
-#titlecontainer span:nth-of-type(5), #hiddentitle span:nth-of-type(5), #titlewithakay span:nth-of-type(5) {
+#title span:nth-of-type(5) {
   animation-duration: 23s;
 }
 
-#titlecontainer span:nth-of-type(6), #hiddentitle span:nth-of-type(6), #titlewithakay span:nth-of-type(6) {
+#title span:nth-of-type(6) {
   animation-duration: 37s;
 }
 
-#titlecontainer span:nth-of-type(7), #hiddentitle span:nth-of-type(7), #titlewithakay span:nth-of-type(7) {
+#title span:nth-of-type(7) {
   animation-duration: 11s;
 }
 
@@ -111,6 +115,27 @@ body {
   }
   100% {
     text-transform: lowercase;
+  }
+}
+
+@keyframes deadglitch {
+  0% {
+    opacity: 0;
+  }
+  16.99% {
+    opacity: 0;
+  }
+  17% {
+    opacity: 1;
+  }
+  21.99% {
+    opacity: 1;
+  }
+  22% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
   }
 }
 
@@ -155,6 +180,18 @@ body {
 
 @keyframes titleglitch {
   0% {
+    opacity: 1;
+  }
+  16.99% {
+    opacity: 1;
+  }
+  17% {
+    opacity: 0;
+  }
+  21.99% {
+    opacity: 0;
+  }
+  22% {
     opacity: 1;
   }
   71.39% {

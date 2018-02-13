@@ -231,6 +231,27 @@ body {
   }
 }
 
+@keyframes phoneticglitch {
+  0% {
+    opacity: 0;
+  }
+  94.99% {
+    opacity: 0;
+  }
+  95% {
+    opacity: 1;
+  }
+  98.49% {
+    opacity: 1;
+  }
+  98.5% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes titleglitch {
   0% {
     opacity: 1;

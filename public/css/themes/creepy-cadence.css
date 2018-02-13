@@ -72,6 +72,10 @@ body {
   animation-name: sortedglitch;
 }
 
+#phonetictitle {
+  animation-name: phoneticglitch;
+}
+
 #title span {
   text-transform: lowercase;
   animation-play-state: running;

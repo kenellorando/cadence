@@ -3,6 +3,9 @@
 
 html {
   background-color: black;
+  background-image: url(https://i.imgur.com/g5k4dB0.jpg);
+  background-size: cover;
+  background-position: top;
   opacity: 1;
 }
 
@@ -10,7 +13,7 @@ body {
   /*Opacity of content within body*/
   opacity: 1;
   /*Opacity of background itself */
-  background: rgba(0, 0, 0, 0);
+  background: rgba(0, 0, 0, 0.2);
   /* Dark color for text */
   color:white;
   text-transform: uppercase;

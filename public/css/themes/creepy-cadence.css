@@ -36,8 +36,8 @@ body {
   text-transform: lowercase;
   font-weight: 500;
   transform: scale(1.4, 1.6);
-  margin-top: -2.5em;
-  margin-bottom: -.6em;
+  padding-top: 0;
+  margin-top: -1em;
 }
 
 #subtitle span {
@@ -434,4 +434,15 @@ a:active {
 
 #oldToggle:hover {
   color: grey;
+}
+
+@media (max-height: 50em) {
+  #title {
+    margin-top: -1.2em;
+    margin-bottom: -.3em;
+  }
+
+  #positioner h1 {
+    margin-bottom: .4em;
+  }
 }

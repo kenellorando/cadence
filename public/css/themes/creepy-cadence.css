@@ -36,8 +36,8 @@ body {
   text-transform: lowercase;
   font-weight: 500;
   transform: scale(1.4, 1.6);
-  padding-top: .4em;
-  margin-top: -1.4em;
+  padding-top: 0em;
+  margin-top: -1em;
 }
 
 #subtitle span {
@@ -450,5 +450,6 @@ a:active {
 @media (max-width: 63em) {
   #title {
     transform: scale(1, 1.2);
+    padding-top: .5em;
   }
 }

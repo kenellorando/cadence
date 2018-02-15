@@ -36,7 +36,8 @@ body {
   text-transform: lowercase;
   font-weight: 500;
   transform: scale(1.4, 1.6);
-  margin-top: -2em;
+  margin-top: -2.5em;
+  margin-bottom: -.6em;
 }
 
 #subtitle span {

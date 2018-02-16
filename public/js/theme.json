@@ -155,5 +155,13 @@ var theme = {
     "themeColor": "#000000",
     "themeColorRead": "#000000 black",
     "themeKey": "creepyCadence"
+  }, 
+  "yourName": {
+    "cssPath": "/css/themes/your-name.css",
+    "title": "CADENCE",
+    "subtitle": "A Name To Remember",
+    "themeColor": "#FFFFFF",
+    "themColorRead": "undecided",
+    "themeKey": "yourName"
   }
 }

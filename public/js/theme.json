@@ -157,6 +157,7 @@ var theme = {
     "themeKey": "creepyCadence"
   }, 
   "yourName": {
+    "videoPath": "/media/comet_tiamat.mp4",
     "cssPath": "/css/themes/your-name.css",
     "title": "CADENCE",
     "subtitle": "A Name To Remember",

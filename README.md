@@ -1,6 +1,6 @@
 # Cadence Radio ♥ [http://cadenceradio.com](http://cadenceradio.com/)
 ## About
-Cadence is an online radio heavily inspired by [R/a/dio](http://r-a-d.io/). Originally started in February 2017, the project is my first endeavour to practice a full range of IT-skills including front-end design, web programming, databases, and Linux server management. Development continues today with a focus on back-end technology.
+Cadence is an online radio heavily inspired by [R/a/dio](http://r-a-d.io/). Originally started in February 2017, the project was my first endeavour to practice a full range of IT-skills including front-end design, back-end programming, databases, Linux server management, and cybersecurity. Cadence is served on a Node.js webserver interacting with a Mongo music database, both configured around a Liquidsoap/Icecast stream server. 
 
 The server typically plays all the genres of music I like, mostly a mix of classic rock, synthpop, and metal. I occasionally override the server and play a certain genre, artist, or the same song on an endless loop.
 
@@ -14,8 +14,7 @@ Add Cadence Radio to your Discord server! Created by [Ryan Hodin](https://github
 ## Features
 * A 24/7 audio livestream
 * Song requests
-* Automatically updating song info display
-* Over six gorgeous themes in seasonal rotation
+* Over a dozen gorgeous themes in seasonal rotation
 
 ## Contributors
 * [Ryan Hodin](https://github.com/za419) (Programming, Design, Media)
@@ -23,6 +22,9 @@ Add Cadence Radio to your Discord server! Created by [Ryan Hodin](https://github
 * [Jakob Frank](https://github.com/jakobfrank) (Media)
 * Michael Farrell (Security)
 * Mike Folk (QA)
+* Zheng Guo (Translations)
+* Karen Santos (Design)
+* Kelvin Chang (Design)
 
 ## Contributing
 To contribute to Cadence Radio, first install [Git LFS](https://git-lfs.github.com/), as our Space Station theme uses files hosted on LFS.

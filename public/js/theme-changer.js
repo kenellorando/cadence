@@ -28,14 +28,14 @@ var callback = new CallbackInterface(null);
 // The main theme setter function
 function themeChanger(themeName) {
   // Returns the specific theme as a single object
-  var themeObj = theme[themeName];
+  var themeObj = Object.assign({}, theme[themeName]);
   var currentHour = new Date().getHours();
 
-  var t=themeObj
+  var t=themeObj;
 
   // Copy of callback to be called in posthooks
-  var call=Object.assign({}, callback)
-  Object.setPrototypeOf(call, callback.constructor.prototype)
+  var call=Object.assign({}, callback);
+  Object.setPrototypeOf(call, callback.constructor.prototype);
 
   do {
       // If the theme is blocked on mobile, and we're on mobile, default to chicagoEvening
@@ -45,31 +45,31 @@ function themeChanger(themeName) {
           themeObj=theme[name];
       }
       else {
-          themeObj=t
+          themeObj=t;
       }
 
       // Setup the theme's callback
-      themeObj.callback = themeObj.callback || LoggingCallback
-      themeObj.callback = new themeObj.callback.prototype.constructor(themeObj)
-  } while (t=themeObj.callback.preLoad(callback.theme))
+      themeObj.callback = themeObj.callback || LoggingCallback;
+      themeObj.callback = new themeObj.callback.prototype.constructor(themeObj);
+  } while (t=themeObj.callback.preLoad(callback.theme));
 
-  callback.preUnload(themeObj)
+  callback.preUnload(themeObj);
 
   // If a nightmode exists
   if (themeObj.hasNightMode == true) {
     // If it is nighttime
     if (currentHour < 8 || currentHour > 22) {
-      themeObj.callback.nightmodeSwitch()
+      themeObj.callback.nightmodeSwitch();
       themeNameNight = themeName + "Night";
       var themeObjNight;
-      t = theme[themeNameNight];
-      themeObj.callback.preUnload(t)
-      themeObj.callback.postUnload()
+      t = Object.assign({}, theme[themeNameNight]);
+      themeObj.callback.preUnload(t);
+      themeObj.callback.postUnload();
       do {
-          themeObjNight = t
-          themeObjNight.callback = themeObjNight.callback || LoggingCallback
-          themeObjNight.callback = new themeObjNight.callback.prototype.constructor(themeObjNight)
-      } while (t=themeObjNight.callback.preLoad(callback.theme))
+          themeObjNight = t;
+          themeObjNight.callback = themeObjNight.callback || LoggingCallback;
+          themeObjNight.callback = new themeObjNight.callback.prototype.constructor(themeObjNight);
+      } while (t=themeObjNight.callback.preLoad(callback.theme));
       document.getElementById("selected-css").href = themeObjNight.cssPath;
       document.getElementById("title").innerHTML = themeObjNight.title;
       document.getElementById("subtitle").innerHTML = themeObjNight.subtitle;
@@ -93,17 +93,17 @@ function themeChanger(themeName) {
       }
       var diff=target-time; // Milliseconds
       setTimeout(function() {
-          themeObjNight.callback.daymodeSwitch()
-          defaultTheme
+          themeObjNight.callback.daymodeSwitch();
+          defaultTheme();
       }, diff); // Schedule a theme default for one second after 9 AM
 
       // Call the post hooks as soon as the thread becomes idle
       setTimeout(function() {
-          call.postUnload()
-          themeObjNight.callback.postLoad()
+          call.postUnload();
+          themeObjNight.callback.postLoad();
       }, 0)
 
-      callback=themeObjNight.callback
+      callback=themeObjNight.callback;
       return
     }
     // Else, set daytime and schedule a theme reset shortly after nighttime
@@ -141,11 +141,11 @@ function themeChanger(themeName) {
 
   // Call the post hooks as soon as the thread becomes idle
   setTimeout(function() {
-      call.postUnload()
-      themeObj.callback.postLoad()
-  }, 0)
+      call.postUnload();
+      themeObj.callback.postLoad();
+  }, 0);
 
-  callback=themeObj.callback
+  callback=themeObj.callback;
 }
 
 

@@ -17,7 +17,7 @@ function LoggingCallback(theme) {
 registerCallback(LoggingCallback)
 
 LoggingCallback.prototype.preLoad=function(currentTheme) {
-    console.log("Ready to switch from "+currentTheme.themeKey+" to "+this.theme.themeKey)
+    console.log("Ready to switch from "+(currentTheme!=null ? currentTheme.themeKey : "nothing")+" to "+this.theme.themeKey)
     return false
 }
 

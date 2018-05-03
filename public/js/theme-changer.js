@@ -46,7 +46,7 @@ function themeChanger(themeName) {
 
       // Setup the theme's callback
       themeObj.callback = themeObj.callback || LoggingCallback
-      themeObj.callback = new themeObj.callback.constructor(themeObj)
+      themeObj.callback = new themeObj.callback.prototype.constructor(themeObj)
   } while (t=themeObj.callback.preLoad(callback.theme))
 
   callback.preUnload(themeObj)
@@ -64,7 +64,7 @@ function themeChanger(themeName) {
       do {
           themeObjNight = t
           themeObjNight.callback = themeObjNight.callback || LoggingCallback
-          themeObjNight.callback = new themeObjNight.callback.constructor(themeObjNight)
+          themeObjNight.callback = new themeObjNight.callback.prototype.constructor(themeObjNight)
       } while (t=themeObjNight.callback.preLoad(callback.theme))
       document.getElementById("selected-css").href = themeObjNight.cssPath;
       document.getElementById("title").innerHTML = themeObjNight.title;

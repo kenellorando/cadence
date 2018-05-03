@@ -60,11 +60,11 @@ function themeChanger(themeName) {
     // If it is nighttime
     if (currentHour < 8 || currentHour > 22) {
       themeObj.callback.nightmodeSwitch()
-      themeObj.callback.preUnload()
-      themeObj.callback.postUnload()
       themeNameNight = themeName + "Night";
       var themeObjNight;
       t = theme[themeNameNight];
+      themeObj.callback.preUnload(t)
+      themeObj.callback.postUnload()
       do {
           themeObjNight = t
           themeObjNight.callback = themeObjNight.callback || LoggingCallback

@@ -23,7 +23,7 @@ function CallbackInterface(theme) {
 // The return value for this function is checked:
 //   If the return value is falsy, then the theme switch will occur.
 //   If the return value is truthy, then it must be a valid theme object, indicating the theme to load instead.
-// The single parameter to this function is the currently loaded theme object.
+// The single parameter to this function is the currently loaded theme object (may be null).
 CallbackInterface.prototype.preLoad=function (currentTheme) {
     return false; // By default, theme load is permitted.
 }

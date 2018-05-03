@@ -37,9 +37,6 @@ main {
 }
 
 .dropdown {
-  /*Opacity of content within body*/
-  opacity: .7;
-  /*Opacity of background itself */
   background-color: rgba(0, 0, 0, 0);
 }
 
@@ -50,7 +47,7 @@ button {
 .dropbtn,
 .dropdown-content .dropdown-content button {
   /*Opacity of background itself */
-  background-color: rgba(0, 0, 0, .4);
+  background-color: rgba(0, 0, 0, .2);
 }
 
 #statusTable {

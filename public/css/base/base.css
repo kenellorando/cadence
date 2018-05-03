@@ -343,7 +343,7 @@ a:active {
     column-gap: 4em;
     column-rule-style: solid;
   }
-  .content-left, .content-right {
+  .content-right {
     /* Prevents breaking across the column */
     display: inline-block;
   }

@@ -6,7 +6,6 @@
 .dropbtn {
   background-color: #0f0f0f;
   color: #FFFFFF;
-  color: white;
   padding: .56em 1em;
   border: none;
   cursor: pointer;
@@ -28,8 +27,7 @@
 /* Dropdown Content (Hidden by Default) */
 
 .dropdown-content {
-  display: block;
-  opacity: 0;
+  display: none;
   position: absolute;
   background-color: #0f0f0f;
   color: red;
@@ -67,7 +65,7 @@
 /* Show the dropdown menu on hover */
 
 .dropdown:hover .dropdown-content {
-  opacity: 1;
+  display: block;
 }
 
 .dropdown-content button:hover {

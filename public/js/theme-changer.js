@@ -33,6 +33,10 @@ function themeChanger(themeName) {
 
   var t=themeObj
 
+  // Copy of callback to be called in posthooks
+  var call=Object.assign({}, callback)
+  Object.setPrototypeOf(call, callback.constructor.prototype)
+
   do {
       // If the theme is blocked on mobile, and we're on mobile, default to chicagoEvening
       // Uses the same mobile check as Ken and I used back in the beginning, which is still used for pause
@@ -95,7 +99,7 @@ function themeChanger(themeName) {
 
       // Call the post hooks as soon as the thread becomes idle
       setTimeout(function() {
-          callback.postUnload()
+          call.postUnload()
           themeObjNight.callback.postLoad()
       }, 0)
 
@@ -137,7 +141,7 @@ function themeChanger(themeName) {
 
   // Call the post hooks as soon as the thread becomes idle
   setTimeout(function() {
-      callback.postUnload()
+      call.postUnload()
       themeObj.callback.postLoad()
   }, 0)
 

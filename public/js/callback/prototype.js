@@ -1,4 +1,5 @@
 // This file contains the specification for the parent 'skeleton' of the theme callback system.
+// It should be loaded before callbacks.js.
 
 // CallbackInterface constructor
 // Takes the theme object to which this callback instance is attached

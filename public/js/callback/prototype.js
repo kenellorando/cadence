@@ -15,7 +15,7 @@
 // Either way, the callback will be some object which implements the same interface as CallbackInterface -
 //   For simplicity, callback types should inherit from this class.
 function CallbackInterface(theme) {
-    self.theme=theme
+    this.theme=theme
 }
 
 // Called when the theme is about to be loaded

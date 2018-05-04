@@ -68,6 +68,7 @@ var theme = {
   "cyberpunkBartender": {
     "hasNightMode": true,
     "cssPath": "/css/themes/cyberpunk-bartender.css",
+    "callback": CyberpunkCallback,
     "title": "CADENCE",
     "subtitle": "A Retro Cyberpunk Jukebox",
     "themeColor": "#B30E67",

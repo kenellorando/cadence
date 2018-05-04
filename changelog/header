@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="" />
+
+  <title>Cadence Radio Changelog</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+  <!-- OLD FONT: Permenant Marker
+	Heading: Rock Salt; Subtitle: Roboto 300; All else: PT Sans -->
+  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+
+  <!-- Normalization CSS -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <!-- BASE CSS -->
+  <link rel="stylesheet" href="css/themes/base.css">
+  <!-- Selected Style CSS -->
+  <link rel="stylesheet" id="selected-css" href="">
+  <!-- Changelog CSS -->
+  <link rel="stylesheet" href="/css/changelog.css">
+
+  <!-- jQuery Google CDN -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <!-- Theme changes after base -->
+  <script src="js/theme-changer.js"></script>
+</head>
+
+<body onload="defaultTheme()">
+  <h1 id="title">CADEN<span>C</span>E</h1>
+  <p id="subtitle">A Rhythmic Experience</p>
+  <div id="changelog-container">

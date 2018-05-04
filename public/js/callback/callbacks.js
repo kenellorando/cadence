@@ -119,3 +119,5 @@ CyberpunkCallback.prototype.preUnload=function() {
     // Before unloading, cancel pending switches
     this.cancelSwitcher()
 }
+
+// Note that we don't implement all six callbacks. We inherit default behavior from CallbackInterface thanks to the magic of registerCallback

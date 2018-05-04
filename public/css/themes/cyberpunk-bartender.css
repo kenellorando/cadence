@@ -5,8 +5,21 @@
 
 html {
   color: #f0f0f0;
-  background-image: url(/media/cyberpunk-bartender2.gif);
   background-color: black;
+  background-position: -32em;
+}
+
+/* Handles the fade animation for the switcher */
+html.transition {
+  background-image: none !important;
+
+  animation: fade 3s ease-in 1;
+}
+
+/* Defines the fade animation keyframes */
+@keyframes fade {
+  0% { background-color: white;  }
+  100% { background-color: black; }
 }
 
 /* Handles the fade animation for the switcher */
@@ -50,7 +63,7 @@ body {
 }
 
 /* Subtle blink to go with the glow */
-
+/* Disabled for now
 @keyframes blinker {
   0% {
     opacity: 0.1;
@@ -79,7 +92,7 @@ body {
   87% {
     opacity: 1;
   }
-}
+} */
 
 #subtitle {
   color: #f0f0f0;

@@ -48,6 +48,8 @@ function CyberpunkCallback(theme) {
 
     this.cancel=-1
     this.lastIndex=-1
+
+    this.ended=false
 }
 
 registerCallback(CyberpunkCallback)
@@ -59,6 +61,9 @@ CyberpunkCallback.prototype.cancelSwitcher=function () {
 }
 
 CyberpunkCallback.prototype.backgroundSwitcher=function () {
+    if (this.ended)
+        return
+
     var html = document.getElementsByTagName("html")[0];
     html.classList.remove("transition"); // Cancel any waiting transition
 
@@ -93,13 +98,16 @@ CyberpunkCallback.prototype.backgroundSwitcher=function () {
 
     // And queue the fade animation to play after our chosen time
     callback=this // Preserve this for the fader
-    
+
     this.cancel = setTimeout(function () {
         callback.fadeFromWhite.call(callback)
     }, time);
 }
 
 CyberpunkCallback.prototype.fadeFromWhite=function() {
+    if (this.ended)
+        return
+
     var html = document.getElementsByTagName("html")[0];
 
     // Adding this class runs the animation
@@ -107,7 +115,7 @@ CyberpunkCallback.prototype.fadeFromWhite=function() {
 
     // Choose a new background in 3 seconds, after the animation ends
     callback=this // Preserve this for the switcher
-    
+
     this.cancel = setTimeout(function () {
         callback.backgroundSwitcher.call(callback)
     }, 3000);
@@ -122,6 +130,10 @@ CyberpunkCallback.prototype.postLoad=function () {
 CyberpunkCallback.prototype.preUnload=function() {
     // Before unloading, cancel pending switches
     this.cancelSwitcher()
+
+    // And, just in case, flag that we're done so no further switches occur
+    // (Included because of an old, potentially unfixed, bug where switches would escape the cancel)
+    this.ended=true
 }
 
 // Note that we don't implement all six callbacks. We inherit default behavior from CallbackInterface thanks to the magic of registerCallback

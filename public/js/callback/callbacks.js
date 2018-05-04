@@ -96,7 +96,7 @@ CyberpunkCallback.prototype.backgroundSwitcher=function () {
     
     this.cancel = setTimeout(function () {
         callback.fadeFromWhite.call(callback)
-    }, 3000);
+    }, time);
 }
 
 CyberpunkCallback.prototype.fadeFromWhite=function() {

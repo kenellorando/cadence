@@ -59,10 +59,6 @@ CyberpunkCallback.prototype.cancelSwitcher=function () {
 }
 
 CyberpunkCallback.prototype.backgroundSwitcher=function () {
-    // If we're in night-mode, do not perform any transition
-    if (cyberpunkNight)
-        return;
-
     var html = document.getElementsByTagName("html")[0];
     html.classList.remove("transition"); // Cancel any waiting transition
 

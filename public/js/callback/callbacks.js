@@ -92,7 +92,11 @@ CyberpunkCallback.prototype.backgroundSwitcher=function () {
     html.style.backgroundImage = "url("+url+")";
 
     // And queue the fade animation to play after our chosen time
-    this.cancel = setTimeout(this.fadeFromWhite, time);
+    callback=this // Preserve this for the fader
+    
+    this.cancel = setTimeout(function () {
+        callback.fadeFromWhite.call(callback)
+    }, 3000);
 }
 
 CyberpunkCallback.prototype.fadeFromWhite=function() {
@@ -102,7 +106,11 @@ CyberpunkCallback.prototype.fadeFromWhite=function() {
     html.classList.add("transition");
 
     // Choose a new background in 3 seconds, after the animation ends
-    this.cancel = setTimeout(this.backgroundSwitcher, 3000);
+    callback=this // Preserve this for the switcher
+    
+    this.cancel = setTimeout(function () {
+        callback.backgroundSwitcher.call(callback)
+    }, 3000);
 }
 
 // Callbacks

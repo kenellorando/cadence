@@ -52,6 +52,7 @@ function CyberpunkCallback(theme) {
 
 registerCallback(CyberpunkCallback)
 
+// Helper functions
 CyberpunkCallback.prototype.cancelSwitcher=function () {
     clearTimeout(this.cancel);
     document.getElementsByTagName("html")[0].style.backgroundImage = "";
@@ -106,4 +107,15 @@ CyberpunkCallback.prototype.fadeFromWhite=function() {
 
     // Choose a new background in 3 seconds, after the animation ends
     this.cancel = setTimeout(this.backgroundSwitcher, 3000);
+}
+
+// Callbacks
+CyberpunkCallback.prototype.postLoad=function () {
+    // On load, start the switching by fading in from white
+    this.fadeFromWhite()
+}
+
+CyberpunkCallback.prototype.preUnload=function() {
+    // Before unloading, cancel pending switches
+    this.cancelSwitcher()
 }

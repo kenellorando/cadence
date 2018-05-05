@@ -76,3 +76,15 @@ body {
 #searchButton, .requestButton {
   background-color: rgba(0, 0, 0, 0.2)
 }
+
+@media (max-width: 63em) {
+  #title {
+    transform: scale(1.2, 1.2);
+    font-size: 50pt;
+    padding-top: 1.2em;
+  }
+
+  #subtitle {
+    font-size: 1.5em;
+  }
+}

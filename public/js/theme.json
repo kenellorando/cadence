@@ -164,5 +164,13 @@ var theme = {
     "themeColor": "#FFFFFF",
     "themeColorRead": "undecided",
     "themeKey": "yourName"
+  },
+  "sanFrancisco": {
+    "cssPath": "/css/themes/san-francisco.css",
+    "title": "CADENCE",
+    "subtitle": "A Unique Experience",
+    "themeColor": "#2F253C",
+    "themeColorRead": "#2F253C dark purple",
+    "themeKey": "sanFrancisco"
   }
 }

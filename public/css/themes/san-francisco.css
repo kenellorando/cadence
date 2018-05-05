@@ -26,3 +26,10 @@ body {
 #volume {
   opacity: 0.8
 }
+
+/* Style the column separator to have some transparency */
+#content {
+  column-rule-color: rgba(255, 255, 255, 0.75);
+  -webkit-column-rule-color: rgba(255, 255, 255, 0.75);
+  -moz-column-rule-color: rgba(255, 255, 255, 0.75);
+}

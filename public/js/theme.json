@@ -172,5 +172,13 @@ var theme = {
     "themeColor": "#2F253C",
     "themeColorRead": "#2F253C dark purple",
     "themeKey": "sanFrancisco"
+  },
+  "nebula": {
+    "cssPath": "/css/themes/nebula.css",
+    "title": "CADENCE",
+    "subtitle": "An  Experience",
+    "themeColor": "#221B2B",
+    "themeColorRead": "#221B2B a very dark purple",
+    "themeKey": "nebula"
   }
 }

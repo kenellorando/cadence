@@ -162,7 +162,7 @@ var theme = {
     "title": "CADENCE",
     "subtitle": "A Name To Remember",
     "themeColor": "#FFFFFF",
-    "themeColorRead": "undecided",
+    "themeColorRead": "#FFFFFF white",
     "themeKey": "yourName"
   },
   "sanFrancisco": {

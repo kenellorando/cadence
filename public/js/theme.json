@@ -162,7 +162,15 @@ var theme = {
     "title": "CADENCE",
     "subtitle": "A Name To Remember",
     "themeColor": "#FFFFFF",
-    "themColorRead": "undecided",
+    "themeColorRead": "#FFFFFF white",
     "themeKey": "yourName"
+  },
+  "sanFrancisco": {
+    "cssPath": "/css/themes/san-francisco.css",
+    "title": "CADENCE",
+    "subtitle": "A Foggy Experience",
+    "themeColor": "#2F253C",
+    "themeColorRead": "#2F253C dark purple",
+    "themeKey": "sanFrancisco"
   }
 }

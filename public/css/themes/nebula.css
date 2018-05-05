@@ -10,7 +10,7 @@ body {
   text-shadow: 0px 0px 1px black;
 }
 
-/* Restore some transparency to the play button's background, and the dropdowns */
+/* Increase transparency wherever we can afford it */
 #playerToggle {
   background-color: rgba(5, 5, 5, 0.5) /* A bit darker, and much less opaque, than base */
 }
@@ -33,19 +33,16 @@ body {
   background-color: rgba(5, 5, 5, 0.8)
 }
 
-/* Make the volume bar partly transparent */
 #volume {
   opacity: 0.8
 }
 
-/* Style the column separator to have some transparency */
 #content {
   column-rule-color: rgba(255, 255, 255, 0.75);
   -webkit-column-rule-color: rgba(255, 255, 255, 0.75);
   -moz-column-rule-color: rgba(255, 255, 255, 0.75);
 }
 
-/* Increase transparency of ARIA button backgrounds */
 #searchButton, .requestButton {
   background-color: rgba(0, 0, 0, 0.2)
 }

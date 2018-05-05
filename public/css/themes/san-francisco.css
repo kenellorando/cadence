@@ -7,7 +7,7 @@ body {
   /*Opacity of background itself */
   background-color: rgba(0, 0, 0, 0.5);
   /* Opacity of body content */
-  opacity: 0.95
+  opacity: 0.95;
 
   /*
    * Text shadows

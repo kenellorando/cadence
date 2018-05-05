@@ -5,5 +5,7 @@ html {
 
 body {
   /*Opacity of background itself */
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Opacity of body content */
+  opacity: 0.95
 }

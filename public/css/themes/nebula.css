@@ -9,3 +9,39 @@ body {
   /* Slight text shadowing, to make sure everything looks good */
   text-shadow: 0px 0px 1px black;
 }
+
+/* Restore some transparency to the play button's background, and the dropdowns */
+#playerToggle, .dropdown, #playerRequest {
+  background-color: rgba(5, 5, 5, 0.3) /* A bit darker, and much less opaque, than base */
+}
+
+/* Needed to maintain consistency between dropdowns */
+#theme-button {
+  background-color: rgba(0,0,0,0)
+}
+
+.dropdown:hover .dropbtn, .dropdown:hover .dropdown-content {
+  background-color: rgba(15, 15, 15, 0.5) !important; /* Bad practice, but only way this works */
+  opacity: 0.9
+}
+
+#playerRequest:hover {
+  background-color: rgba(5, 5, 5, 0.4)
+}
+
+/* Make the volume bar partly transparent */
+#volume {
+  opacity: 0.8
+}
+
+/* Style the column separator to have some transparency */
+#content {
+  column-rule-color: rgba(255, 255, 255, 0.75);
+  -webkit-column-rule-color: rgba(255, 255, 255, 0.75);
+  -moz-column-rule-color: rgba(255, 255, 255, 0.75);
+}
+
+/* Increase transparency of ARIA button backgrounds */
+#searchButton, .requestButton {
+  background-color: rgba(0, 0, 0, 0.1)
+}

@@ -11,8 +11,12 @@ body {
 }
 
 /* Restore some transparency to the play button's background, and the dropdowns */
-#playerToggle, .dropdown, #playerRequest {
-  background-color: rgba(5, 5, 5, 0.3) /* A bit darker, and much less opaque, than base */
+#playerToggle {
+  background-color: rgba(5, 5, 5, 0.5) /* A bit darker, and much less opaque, than base */
+}
+
+.dropdown, #playerRequest {
+  background-color: rgba(5, 5, 5, 0.7)
 }
 
 /* Needed to maintain consistency between dropdowns */
@@ -21,12 +25,12 @@ body {
 }
 
 .dropdown:hover .dropbtn, .dropdown:hover .dropdown-content {
-  background-color: rgba(15, 15, 15, 0.5) !important; /* Bad practice, but only way this works */
+  background-color: rgba(15, 15, 15, 0.9) !important; /* Bad practice, but only way this works */
   opacity: 0.9
 }
 
 #playerRequest:hover {
-  background-color: rgba(5, 5, 5, 0.4)
+  background-color: rgba(5, 5, 5, 0.8)
 }
 
 /* Make the volume bar partly transparent */
@@ -43,5 +47,5 @@ body {
 
 /* Increase transparency of ARIA button backgrounds */
 #searchButton, .requestButton {
-  background-color: rgba(0, 0, 0, 0.1)
+  background-color: rgba(0, 0, 0, 0.2)
 }

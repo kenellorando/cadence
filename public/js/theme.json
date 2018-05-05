@@ -176,7 +176,7 @@ var theme = {
   "nebula": {
     "cssPath": "/css/themes/nebula.css",
     "title": "CADENCE",
-    "subtitle": "An  Experience",
+    "subtitle": "A Spectacular Experience",
     "themeColor": "#221B2B",
     "themeColorRead": "#221B2B a very dark purple",
     "themeKey": "nebula"

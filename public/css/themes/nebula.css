@@ -17,6 +17,7 @@ body {
 }
 
 #title {
+  font-family: 'Cormorant Garamond', serif;
   font-size: 64pt;
   transform: scale(1.5, 1.3);
   margin-top: -60px;

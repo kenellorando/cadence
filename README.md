@@ -19,7 +19,6 @@ Add Cadence Radio to your Discord server! Created by [Ryan Hodin](https://github
 ## Contributors
 * [Ryan Hodin](https://github.com/za419) (Programming, Design, Media)
 * [Bobby Ton](https://github.com/bobbyt1997) (Design)
-* [Jakob Frank](https://github.com/jakobfrank) (Media)
 * Michael Farrell (Security)
 * Mike Folk (QA)
 * Zheng Guo (Translations)

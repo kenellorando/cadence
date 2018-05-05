@@ -21,3 +21,8 @@ body {
 #playerToggle {
   background-color: rgba(5, 5, 5, 0.7) /* A bit darker, and much less opaque, than base */
 }
+
+/* Make the volume bar partly transparent */
+#volume {
+  opacity: 0.8
+}

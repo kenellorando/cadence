@@ -161,8 +161,8 @@ var theme = {
     "cssPath": "/css/themes/your-name.css",
     "title": "CADENCE",
     "subtitle": "A Name To Remember",
-    "themeColor": "#FFFFFF",
-    "themeColorRead": "#FFFFFF white",
+    "themeColor": "#00AAAA",
+    "themColorRead": "#00AAAA A light-ish blue",
     "themeKey": "yourName"
   },
   "sanFrancisco": {

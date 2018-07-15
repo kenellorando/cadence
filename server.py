@@ -276,3 +276,48 @@ class Connection:
     # For compatibility with select
     def fileno(self):
         return self.conn.fileno()
+
+# List of open connections
+openconn = []
+
+# Infinite loop for connection service
+while True:
+    # List of sockets we're waiting to read from
+    # (we do block on writes... But we don't want to wait on reads.)
+    r = []
+    # Add all waiting connections
+    for conn in openconn:
+        r.append(Connection(conn))
+    # And also the incoming connection accept socket
+    r.append(Connection(sock, True))
+
+    # Now, select sockets to read from
+    readable, u1, u2 = select.select(r, [], [])
+
+    # And process all those sockets
+    for read in readable:
+        # For the accept socket, accept the connection and add it to the list
+        if read.isAccept:
+            openconn.append(read.conn.accept()[0])
+        else:
+            # Fetch the HTTP request waiting on read
+            request = waitingRequest(read.conn)
+            # Lines of the HTTP request (needed to read the header)
+            lines = request.split("\r\n")
+
+            # The first line tells us what we're doing
+            # If it's GET, we return the file specified via commandline
+            # If it's HEAD, we return the headers we'd return for that file
+            # If it's something else, return 405 Method Not Allowed
+            method = lines[0]
+            if not (method.startswith("GET") or method.startswith("HEAD")):
+                # This server can't do anything with these methods.
+                # So just tell the browser it's an invalid request
+                sendResponse("405 Method Not Allowed",
+                             "text/html",
+                             generateErrorPage("405 Method Not Allowed",
+                                               "Your browser sent a request to perform an action the server doesn't recognize."),
+                             read.conn)
+                read.conn.close()
+                openconn.remove(read.conn)
+                continue

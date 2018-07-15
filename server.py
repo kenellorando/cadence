@@ -223,7 +223,7 @@ def basicHeaders(status, contentType):
 
     out =  "HTTP/1.1 "+status+"\r\n"
     out += "Date: "+time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())+"\r\n"
-    out += "Server: Single file server (Python)\r\n"
+    out += "Server: Cadence purpose-built webserver\r\n"
     out += "Connection: close\r\n"
 
     # Add cache-control header iff we have caching set

@@ -26,7 +26,7 @@ if len(sys.argv)>3:
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 sock.bind(("", port))
-sock.listen(5))
+sock.listen(5)
 
 # Helper functions
 def waitingRequest(s, blocksize=4096):

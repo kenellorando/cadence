@@ -9,6 +9,7 @@ import hashlib
 
 # Prep work
 port = int(sys.argv[1])
+directory = sys.argv[2]
 
 caching=0
 
@@ -321,3 +322,29 @@ while True:
                 read.conn.close()
                 openconn.remove(read.conn)
                 continue
+
+            # Parse the filename out of the request
+            filename = directory+method.split(' ')[1]
+            # If the filename ends in a slash, assume 'index.html'
+            if filename.endswith('/'):
+                filename += "index.html"
+
+            # Guess the MIME type of the file.
+            type = mimeTypeOf(filename)
+
+            # Read the file into memory
+            file = ""
+            with open(filename, 'r', 0) as f:
+                file = f.read()
+
+            # Serve the file back to the client.
+            # If the method is GET, use sendResponse to send the file contents.
+            if method.startswith("GET"):
+                sendResponse("200 OK", type, file, read.conn)
+            # If the method is HEAD, generate the same response, but strip the body
+            else:
+                read.conn.sendall(constructResponse(basicHeaders("200 OK", type), file).split("\r\n\r\n")[0]+"\r\n\r\n")
+
+            # Now that we're done, close the connection and move on.
+            read.conn.close()
+            openconn.remove(read.conn)

@@ -349,6 +349,25 @@ while True:
                 read.conn.close()
                 openconn.remove(read.conn)
                 continue
+            except:
+                # Some unknown error occurred. Return 500.
+                # First, generate our error message
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                message = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+
+                # Now send the error message.
+                sendResponse("500 Internal Server Error",
+                             "text/html",
+                             generateErrorPage("500 Internal Server Error",
+                                               "The server encountered an error while attempting to process your request.\n"+
+                                               "<!-- Ok, since you know what you're doing, I'll confess.\n"+
+                                               "I know what the error is. Python says:\n"+
+                                               message+'\n'+" -->"),
+                             read.conn)
+                # Close the connection and continue
+                read.conn.close()
+                openconn.remove(read.conn)
+                continue
 
             # Serve the file back to the client.
             # If the method is GET, use sendResponse to send the file contents.

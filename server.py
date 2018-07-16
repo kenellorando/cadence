@@ -6,8 +6,18 @@ import sys
 import time
 import os
 import hashlib
+import logging
+import logging.handlers
 
 # Prep work
+# Log both to the console and to a daily rotating file, storing no more than 30 days of logs
+logging.basicConfig(level=logging.INFO,
+                    format="[%(asctime)s] %(levelname)s %(message)s",
+                    handlers=[
+                        logging.StreamHandler(),
+                        logging.handlers.TimedRotatingFileHandler(os.path.dirname(os.path.abspath(__file__))+"/logs/server", 'D', 1, 30)])
+logger = logging.getLogger("Cadence Server")
+
 port = int(sys.argv[1])
 directory = sys.argv[2].encode()
 
@@ -21,7 +31,7 @@ if len(sys.argv)>3:
         else:
             caching = 3600 # One hour caching by default
     else:
-        print ("Warning: Did not understand argument "+sys.argv[3])
+        logger.warning("Did not understand argument %s.", sys.argv[3])
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -36,6 +46,7 @@ def waitingRequest(s, blocksize=4096):
     # Hopefully, our headers will be in the first blocksize.
     # But first, we know that if output is smaller than blocksize, we have everything that's ready for us
     if len(out)<blocksize:
+        logger.debug("Downloaded request of size %d.", len(out))
         return out
 
     # While true, try to parse a content size out of our received data, and if we can't, fetch a block.
@@ -57,21 +68,25 @@ def waitingRequest(s, blocksize=4096):
     if contentSize>0:
         out += s.recv(contentSize)
 
+    logger.debug("Downloaded request of size %d.", len(out))
+
     # out should now contain all of our request
     return out
 
 def mimeTypeOf (filename):
     "Attempts to find the appropriate MIME type for this file by extension (MIME types taken from https://www.freeformatter.com/mime-types-list.html)"
 
-    parts = str(filename).split(".")
+    parts = filename.decode().split(".")
     if len(parts)<2:
         # The file has no extension.
         # Default to application/octet-stream
+        logger.debug("Assumed file %s was type %s (no extension).", filename.decode(), "application/octet-stream")
         return "application/octet-stream"
 
     # The extension is whatever is after the last '.' in the filename
     # Switch to lowercase for comparison
     extension = parts[len(parts)-1].lower()
+    logger.debug("Extension %s", extension)
 
     # Giant dictionary of extensions -> MIME types
     dictionary = {
@@ -214,9 +229,11 @@ def mimeTypeOf (filename):
     if not extension in dictionary.keys():
         # We don't recognize this filetype
         # Default to application/octet-stream
+        logger.debug("Assumed file %s was type %s (unknown extension).", filename.decode(), "application/octet-stream")
         return "application/octet-stream"
 
     # Recognized filetype. Return it.
+    logger.debug("Guessed file %s was type %s.", filename.decode(), dictionary[extension])
     return dictionary[extension]
 
 def basicHeaders(status, contentType):
@@ -251,6 +268,7 @@ def sendResponse(status, contentType, content, sock):
     "Constructs and sends a response with the first three parameters via sock"
 
     sock.sendall(constructResponse(basicHeaders(status, contentType), content))
+    logger.info("Sent response to socket %d.", sock.fileno())
 
 # Probably won't see much use for this... But need it at least for 400 bad request
 def generateErrorPage(title, description):
@@ -285,6 +303,7 @@ openconn = []
 while True:
     # List of sockets we're waiting to read from
     # (we do block on writes... But we don't want to wait on reads.)
+    logger.debug("Assembling socket list")
     r = []
     # Add all waiting connections
     for conn in openconn:
@@ -293,14 +312,18 @@ while True:
     r.append(Connection(sock, True))
 
     # Now, select sockets to read from
+    logger.debug("Selection...")
     readable, u1, u2 = select.select(r, [], [])
+    logger.debug("Selected %d readable sockets.", len(readable))
 
     # And process all those sockets
     for read in readable:
         # For the accept socket, accept the connection and add it to the list
         if read.isAccept:
+            logger.info("Accepting a new connection.")
             openconn.append(read.conn.accept()[0])
         else:
+            logger.info("Processing request from socket %d.", read.fileno())
             # Fetch the HTTP request waiting on read
             request = waitingRequest(read.conn)
             # Lines of the HTTP request (needed to read the header)
@@ -311,6 +334,7 @@ while True:
             # If it's HEAD, we return the headers we'd return for that file
             # If it's something else, return 405 Method Not Allowed
             method = lines[0]
+            logger.debug("Method line %s", method.decode())
             if not (method.startswith(b"GET") or method.startswith(b"HEAD")):
                 # This server can't do anything with these methods.
                 # So just tell the browser it's an invalid request
@@ -323,19 +347,20 @@ while True:
                 openconn.remove(read.conn)
 
                 # Print note on error
-                print ("Could not execute method "+method)
+                logger.info("Could not execute method %s.", method)
                 continue
 
             # Parse the filename out of the request
             filename = directory+method.split(b' ')[1]
             # If the filename ends in a slash, assume 'index.html'
             if filename.endswith(b'/'):
-                filename += "index.html"
+                filename += b"index.html"
 
             # Guess the MIME type of the file.
             type = mimeTypeOf(filename)
 
             # Read the file into memory
+            logger.info("Attempting file read on file %s.", filename.decode())
             file = ""
             try:
                 with open(filename, 'rb', 0) as f:
@@ -345,7 +370,7 @@ while True:
                 sendResponse("404 Not Found",
                              "text/html",
                              generateErrorPage("404 Not Found",
-                                               "The requested file \""+str(method).split(' ')[1]+
+                                               "The requested file \""+method.decode().split(' ')[1]+
                                                "\" was not found on this server."),
                              read.conn)
                 # Close the connection and continue
@@ -353,7 +378,7 @@ while True:
                 openconn.remove(read.conn)
 
                 # Print note on error
-                print ("Could not find file "+str(filename))
+                logger.warning("Could not find file %s.", filename.decode())
                 file = ""
             except:
                 # Some unknown error occurred. Return 500.
@@ -375,10 +400,11 @@ while True:
                 openconn.remove(read.conn)
 
                 # Print note on error
-                print ("Could not open file "+str(filename))
+                logger.exception("Could not open file %s.", filename.decode(), exc_info=True)
                 file = ""
 
             if file=="":
+                logger.debug("Breaking off connection attempt due to file open issue.")
                 continue
 
             # Serve the file back to the client.
@@ -388,6 +414,7 @@ while True:
             # If the method is HEAD, generate the same response, but strip the body
             else:
                 read.conn.sendall(constructResponse(basicHeaders("200 OK", type), file).split("\r\n\r\n")[0]+"\r\n\r\n")
+                logger.info("Sent headers to socket %d.", read.fileno())
 
             # Now that we're done, close the connection and move on.
             read.conn.close()

@@ -9,7 +9,7 @@ import hashlib
 
 # Prep work
 port = int(sys.argv[1])
-directory = sys.argv[2]
+directory = sys.argv[2].encode()
 
 caching=0
 
@@ -21,7 +21,7 @@ if len(sys.argv)>3:
         else:
             caching = 3600 # One hour caching by default
     else:
-        print "Warning: Did not understand argument "+sys.argv[3]
+        print ("Warning: Did not understand argument "+sys.argv[3])
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -63,7 +63,7 @@ def waitingRequest(s, blocksize=4096):
 def mimeTypeOf (filename):
     "Attempts to find the appropriate MIME type for this file by extension (MIME types taken from https://www.freeformatter.com/mime-types-list.html)"
 
-    parts = filename.split(".")
+    parts = str(filename).split(".")
     if len(parts)<2:
         # The file has no extension.
         # Default to application/octet-stream
@@ -232,7 +232,7 @@ def basicHeaders(status, contentType):
         out += "Cache-Control: public, max-age="+str(caching)+"\r\n"
 
     out += "Content-Type: "+contentType+"\r\n"
-    return out
+    return out.encode()
 
 def constructResponse(unendedHeaders, content):
     "Attaches unendedHeaders and content into one HTTP response (adding content-length in the process)"
@@ -243,7 +243,7 @@ def constructResponse(unendedHeaders, content):
     if caching>0:
         response += "ETag: \""+hashlib.sha256(content).hexdigest()+"\"\r\n"
 
-    response += "Content-Length: "+str(len(content))+"\r\n\r\n"
+    response += b"Content-Length: "+bytes(len(content))+b"\r\n\r\n"
     response += content
     return response
 
@@ -266,7 +266,7 @@ def generateErrorPage(title, description):
     content += "    <p>"+description+"</p>\n"
     content += "  </body>\n"
     content += "</html>\n"
-    return content
+    return content.encode()
 
 # Class to store an open connection
 class Connection:
@@ -304,14 +304,14 @@ while True:
             # Fetch the HTTP request waiting on read
             request = waitingRequest(read.conn)
             # Lines of the HTTP request (needed to read the header)
-            lines = request.split("\r\n")
+            lines = request.split(b"\r\n")
 
             # The first line tells us what we're doing
             # If it's GET, we return the file specified via commandline
             # If it's HEAD, we return the headers we'd return for that file
             # If it's something else, return 405 Method Not Allowed
             method = lines[0]
-            if not (method.startswith("GET") or method.startswith("HEAD")):
+            if not (method.startswith(b"GET") or method.startswith(b"HEAD")):
                 # This server can't do anything with these methods.
                 # So just tell the browser it's an invalid request
                 sendResponse("405 Method Not Allowed",
@@ -321,12 +321,15 @@ while True:
                              read.conn)
                 read.conn.close()
                 openconn.remove(read.conn)
+
+                # Print note on error
+                print ("Could not execute method "+method)
                 continue
 
             # Parse the filename out of the request
-            filename = directory+method.split(' ')[1]
+            filename = directory+method.split(b' ')[1]
             # If the filename ends in a slash, assume 'index.html'
-            if filename.endswith('/'):
+            if filename.endswith(b'/'):
                 filename += "index.html"
 
             # Guess the MIME type of the file.
@@ -335,20 +338,23 @@ while True:
             # Read the file into memory
             file = ""
             try:
-                with open(filename, 'r', 0) as f:
+                with open(filename, 'rb', 0) as f:
                     file = f.read()
             except FileNotFoundError:
                 # The file wasn't found. Return 404.
                 sendResponse("404 Not Found",
                              "text/html",
                              generateErrorPage("404 Not Found",
-                                               "The requested file \""+method.split(' ')[1]+
+                                               "The requested file \""+str(method).split(' ')[1]+
                                                "\" was not found on this server."),
                              read.conn)
                 # Close the connection and continue
                 read.conn.close()
                 openconn.remove(read.conn)
-                continue
+
+                # Print note on error
+                print ("Could not find file "+str(filename))
+                file = ""
             except:
                 # Some unknown error occurred. Return 500.
                 # First, generate our error message
@@ -367,11 +373,17 @@ while True:
                 # Close the connection and continue
                 read.conn.close()
                 openconn.remove(read.conn)
+
+                # Print note on error
+                print ("Could not open file "+str(filename))
+                file = ""
+
+            if file=="":
                 continue
 
             # Serve the file back to the client.
             # If the method is GET, use sendResponse to send the file contents.
-            if method.startswith("GET"):
+            if method.startswith(b"GET"):
                 sendResponse("200 OK", type, file, read.conn)
             # If the method is HEAD, generate the same response, but strip the body
             else:

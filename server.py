@@ -258,9 +258,9 @@ def constructResponse(unendedHeaders, content):
 
     # Add ETag iff we have caching set
     if caching>0:
-        response += "ETag: \""+hashlib.sha256(content).hexdigest()+"\"\r\n"
+        response += b"ETag: \""+hashlib.sha256(content).hexdigest().encode()+b"\"\r\n"
 
-    response += b"Content-Length: "+bytes(len(content))+b"\r\n\r\n"
+    response += b"Content-Length: "+str(len(content)).encode()+b"\r\n\r\n"
     response += content
     return response
 
@@ -408,6 +408,26 @@ while True:
                 continue
 
             # Serve the file back to the client.
+            # First, handle caching
+            if caching>0:
+                logger.debug("Caching is enabled, checking for If-None-Match")
+                ETag = ""
+                for line in lines:
+                    if line.startswith(b"If-None-Match: "):
+                        ETag = line.split(b"\"")[1]
+                        logger.debug("Found header - ETag %s.", ETag.decode())
+
+                # If we have an ETag and it matches our file, return 304 Not Modified
+                if ETag == hashlib.sha256(file).hexdigest().encode():
+                    # ETag matches. Return our basic headers, plus the ETag
+                    read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+ETag+b"\"\r\n\r\n")
+                    logger.info("Client already has this file (matching hash %s) - Issued 304.", ETag.decode())
+
+                    # Close the connection and move on.
+                    read.conn.close()
+                    openconn.remove(read.conn)
+                    continue
+
             # If the method is GET, use sendResponse to send the file contents.
             if method.startswith(b"GET"):
                 sendResponse("200 OK", type, file, read.conn)

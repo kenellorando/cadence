@@ -334,8 +334,21 @@ while True:
 
             # Read the file into memory
             file = ""
-            with open(filename, 'r', 0) as f:
-                file = f.read()
+            try:
+                with open(filename, 'r', 0) as f:
+                    file = f.read()
+            except FileNotFoundError:
+                # The file wasn't found. Return 404.
+                sendResponse("404 Not Found",
+                             "text/html",
+                             generateErrorPage("404 Not Found",
+                                               "The requested file \""+method.split(' ')[1]+
+                                               "\" was not found on this server."),
+                             read.conn)
+                # Close the connection and continue
+                read.conn.close()
+                openconn.remove(read.conn)
+                continue
 
             # Serve the file back to the client.
             # If the method is GET, use sendResponse to send the file contents.

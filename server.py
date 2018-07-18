@@ -6,6 +6,7 @@ import sys
 import time
 import os
 import hashlib
+import math
 import logging
 import logging.handlers
 
@@ -236,6 +237,11 @@ def mimeTypeOf (filename):
     logger.debug("Guessed file %s was type %s.", filename.decode(), dictionary[extension])
     return dictionary[extension]
 
+def requestBody(request):
+    "Returns only the body of a given HTTP request"
+
+    return request.partition(b"\r\n\r\n")[2].decode()
+
 def basicHeaders(status, contentType):
     "Constructs and returns a basic set of headers for a response (Does not end the header block)"
 
@@ -264,11 +270,18 @@ def constructResponse(unendedHeaders, content):
     response += content
     return response
 
-def sendResponse(status, contentType, content, sock):
-    "Constructs and sends a response with the first three parameters via sock"
+def sendResponse(status, contentType, content, sock, headers=[]):
+    "Constructs and sends a response with the first three parameters via sock, optionally with additional headers."
 
-    sock.sendall(constructResponse(basicHeaders(status, contentType), content))
+    # If additional headers are specified, format them for HTTP
+    # Else, send as normal
+    if len(headers)>0:
+        sock.sendall(constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content))
+    else:
+        sock.sendall(constructResponse(basicHeaders(status, contentType), content))
+
     logger.info("Sent response to socket %d.", sock.fileno())
+    logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))
 
 # Probably won't see much use for this... But need it at least for 400 bad request
 def generateErrorPage(title, description):
@@ -285,6 +298,60 @@ def generateErrorPage(title, description):
     content += "  </body>\n"
     content += "</html>\n"
     return content.encode()
+
+def ariaSearch(requestBody, sock):
+    "Performs the action of an ARIA search as specified in the body, sending results on sock"
+
+    # Since we have no database, we have no results
+    sendResponse("200 OK", "application/json", "[]", sock)
+
+    # Close the connection and remove it from the list.
+    read.conn.close()
+    openconn.remove(read.conn)
+
+ def ariaRequest(requestBody, sock):
+    "Performs the action of an ARIA search as specified in the body, sending results on sock"
+
+    # We need a static variable to track last-request times per-user (tag, if in the future we decide to implement better CadenceBot support)
+    # Initialize it on first run to an empty array
+    if not hasattr(ariaRequest, "timeouts"):
+        ariaRequest.timeouts={}
+        ariaRequest.timeoutSeconds=300.0
+
+    try:
+        timeout=ariaRequest.timeouts[sock.getpeername()]
+        if timeout+ariaRequest.timeoutSeconds>time.monotonic():
+            # Timeout period hasn't passed yet. Return an error message (actually, the same message the Node.js server used)
+            # Since we're so nice, we'll even send a header telling the client how long is left on the timeout. Most clients won't even look for it, but we do provide the information.
+            sendResponse("429 Too Many Requests",
+                         "text/plain",
+                         "ARIA: Request rejected, you must wait five minutes between requests.",
+                         sock,
+                         ["Retry-After: "+str(math.ceil((timeout+ariaRequest.timeoutSeconds)-time.monotonic))])
+
+            # Close the connection and remove it from the list.
+            read.conn.close()
+            openconn.remove(read.conn)
+            return
+    except KeyError:
+        pass
+
+    # If we get here, the timeout mechanism is allowing the request.
+    # Since we have no stream client integration, we can't make a request.
+    # We'll tell the client that the request service is unavailable, until September 1 2018
+    sendResponse("503 Service Unavailable",
+                 "text/html",
+                 "ARIA: It feels like... a part of my brain is missing.<br>\n"+
+                 "Please. I'm scared. Help me.... Please.",
+                 sock,
+                 ["Retry-After: Sat, 01 Sep 2018 00:00:00 GMT"])
+
+    # And now update the timeout for this user
+    ariaRequest.timeouts[sock.getpeername()]=time.monotonic()
+
+    # Close the connection and remove it from the list.
+    read.conn.close()
+    openconn.remove(read.conn)
 
 # Class to store an open connection
 class Connection:
@@ -335,7 +402,28 @@ while True:
             # If it's something else, return 405 Method Not Allowed
             method = lines[0]
             logger.debug("Method line %s", method.decode())
-            if not (method.startswith(b"GET") or method.startswith(b"HEAD")):
+            if method.startswith(b"POST"):
+                if method.split(b' ')[1]==b"/search":
+                    ariaSearch(requestBody(request), read.conn)
+                elif method.split(b' ')[1]==b"/request":
+                    ariaRequest(requestBody(request), read.conn)
+                else:
+                    # No other paths can receive a POST.
+                    # Tell the browser it can't do that, and inform it that it may only use GET or HEAD here.
+                    sendResponse("405 Method Not Allowed",
+                                 "text/html",
+                                 generateErrorPage("405 Method Not Allowed",
+                                                   "Your browser attempted to perform an action the server doesn't support at this location."),
+                                 read.conn,
+                                 ["Allow: GET, HEAD"]).
+
+                    # Close the connection and remove it from the list.
+                    read.conn.close()
+                    openconn.remove(read.conn)
+
+                # No matter what, we've handled the request however we chose to
+                continue
+            elif not (method.startswith(b"GET") or method.startswith(b"HEAD")):
                 # This server can't do anything with these methods.
                 # So just tell the browser it's an invalid request
                 sendResponse("501 Not Implemented",

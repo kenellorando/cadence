@@ -338,10 +338,10 @@ while True:
             if not (method.startswith(b"GET") or method.startswith(b"HEAD")):
                 # This server can't do anything with these methods.
                 # So just tell the browser it's an invalid request
-                sendResponse("405 Method Not Allowed",
+                sendResponse("501 Not Implemented",
                              "text/html",
-                             generateErrorPage("405 Method Not Allowed",
-                                               "Your browser sent a request to perform an action the server doesn't recognize."),
+                             generateErrorPage("501 Not Implemented",
+                                               "Your browser sent a request to perform an action the server doesn't support."),
                              read.conn)
                 read.conn.close()
                 openconn.remove(read.conn)

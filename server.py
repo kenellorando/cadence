@@ -469,6 +469,15 @@ while True:
             logger.info("Processing request from socket %d.", read.fileno())
             # Fetch the HTTP request waiting on read
             request = waitingRequest(read.conn)
+
+            # If the request is zero-length, the client disconnected. Skip the work of figuring that out the hard way, and the unhelpful log message.
+            # Log a better message, remove the connection from the list, and close the socket (skipping the rest of the loop)
+            if len(request) == 0:
+                logger.info("Empty request on socket %d.", read.fileno())
+                openconn.remove(read.conn)
+                read.conn.close()
+                continue
+
             # Lines of the HTTP request (needed to read the header)
             lines = request.split(b"\r\n")
 

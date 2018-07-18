@@ -475,6 +475,11 @@ while True:
             if len(request) == 0:
                 logger.info("Empty request on socket %d.", read.fileno())
                 openconn.remove(read.conn)
+                sendResponse("400 Bad Request",
+                             "text/html",
+                             generateErrorPage("400 Bad Request",
+                                               "Your browser send an empty request."),
+                             read.conn)
                 read.conn.close()
                 continue
 

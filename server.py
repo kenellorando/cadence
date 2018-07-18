@@ -319,7 +319,7 @@ def ariaSearch(requestBody, sock):
     except KeyError:
         # Some wiseguy sent us a bad request. Tsk tsk.
         # Send an error message that the frontend will (should) ignore
-        sendResponse("400 Bad Request", "application/json", "Invalid request - "+requestBody+" does not contain a search key.", sock)
+        sendResponse("400 Bad Request", "application/json", "Invalid request - "+requestBody+" does not contain a search key.", sock, ["Warning: 199 Cadence \"Search request \'"+requestBody+"\' could not be parsed into a search term.\""])
 
         # Close the connection and return
         sock.close()

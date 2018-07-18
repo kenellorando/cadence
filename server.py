@@ -302,8 +302,16 @@ def generateErrorPage(title, description):
 def ariaSearch(requestBody, sock):
     "Performs the action of an ARIA search as specified in the body, sending results on sock"
 
+    # Log the search
+    logger.info("Received a search request on socket %d.", sock.fileno())
+    logger.debug("Search body was: %s.", requestBody)
+
     # Since we have no database, we have no results
     sendResponse("200 OK", "application/json", "[]", sock)
+
+    # Log results
+    # Results are currently mocked
+    logger.debug("Search had 0 results - [].")
 
     # Close the connection and remove it from the list.
     read.conn.close()
@@ -311,6 +319,10 @@ def ariaSearch(requestBody, sock):
 
  def ariaRequest(requestBody, sock):
     "Performs the action of an ARIA search as specified in the body, sending results on sock"
+
+    # Log the request
+    logger.info("Received a song request on socket %d.", sock.fileno())
+    logger.debug("Request body was: %s.", requestBody)
 
     # We need a static variable to track last-request times per-user (tag, if in the future we decide to implement better CadenceBot support)
     # Initialize it on first run to an empty array
@@ -320,6 +332,7 @@ def ariaSearch(requestBody, sock):
 
     try:
         timeout=ariaRequest.timeouts[sock.getpeername()]
+        logger.debug("Request timeout for %s at second %f. Current time %f.", sock.getpeername(), timeout+ariaRequest.timeoutSeconds, time.monotonic())
         if timeout+ariaRequest.timeoutSeconds>time.monotonic():
             # Timeout period hasn't passed yet. Return an error message (actually, the same message the Node.js server used)
             # Since we're so nice, we'll even send a header telling the client how long is left on the timeout. Most clients won't even look for it, but we do provide the information.
@@ -332,6 +345,9 @@ def ariaSearch(requestBody, sock):
             # Close the connection and remove it from the list.
             read.conn.close()
             openconn.remove(read.conn)
+
+            # Log timeout
+            logger.info("Request too close to previous request from address %s.", sock.getpeername())
             return
     except KeyError:
         pass
@@ -352,6 +368,9 @@ def ariaSearch(requestBody, sock):
     # Close the connection and remove it from the list.
     read.conn.close()
     openconn.remove(read.conn)
+
+    # Log failed request
+    logger.warning("Unable to issue request.")
 
 # Class to store an open connection
 class Connection:
@@ -403,6 +422,7 @@ while True:
             method = lines[0]
             logger.debug("Method line %s", method.decode())
             if method.startswith(b"POST"):
+                logger.info("Received POST request to %s.", method.split(b' ')[1].decode())
                 if method.split(b' ')[1]==b"/search":
                     ariaSearch(requestBody(request), read.conn)
                 elif method.split(b' ')[1]==b"/request":
@@ -420,6 +440,9 @@ while True:
                     # Close the connection and remove it from the list.
                     read.conn.close()
                     openconn.remove(read.conn)
+
+                    # Log method not allowed
+                    logger.info("Issued method not allowed.")
 
                 # No matter what, we've handled the request however we chose to
                 continue

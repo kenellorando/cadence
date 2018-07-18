@@ -9,6 +9,8 @@ import hashlib
 import math
 import logging
 import logging.handlers
+from telnetlib import Telnet
+from urllib import parse
 
 # Prep work
 # Log both to the console and to a daily rotating file, storing no more than 30 days of logs
@@ -314,13 +316,13 @@ def ariaSearch(requestBody, sock):
 
     # Log results
     # Results are currently mocked
-    logger.debug("Search had 0 results - [].")
+    logger.debug("Search for \"%s\" had 0 results - [].", parse.parse_qs(requestBody)["search"][0])
 
     # Close the connection and remove it from the list.
-    read.conn.close()
-    openconn.remove(read.conn)
+    sock.close()
+    openconn.remove(sock)
 
- def ariaRequest(requestBody, sock):
+def ariaRequest(requestBody, sock):
     "Performs the action of an ARIA search as specified in the body, sending results on sock"
 
     # Log the request
@@ -346,8 +348,8 @@ def ariaSearch(requestBody, sock):
                          ["Retry-After: "+str(math.ceil((timeout+ariaRequest.timeoutSeconds)-time.monotonic))])
 
             # Close the connection and remove it from the list.
-            read.conn.close()
-            openconn.remove(read.conn)
+            sock.close()
+            openconn.remove(sock)
 
             # Log timeout
             logger.info("Request too close to previous request from address %s.", sock.getpeername())
@@ -356,24 +358,54 @@ def ariaSearch(requestBody, sock):
         pass
 
     # If we get here, the timeout mechanism is allowing the request.
-    # Since we have no stream client integration, we can't make a request.
-    # We'll tell the client that the request service is unavailable, until September 1 2018
-    sendResponse("503 Service Unavailable",
-                 "text/html",
-                 "ARIA: It feels like... a part of my brain is missing.<br>\n"+
-                 "Please. I'm scared. Help me.... Please.",
-                 sock,
-                 ["Retry-After: Sat, 01 Sep 2018 00:00:00 GMT"])
+    # First, isolate the path of our request
+    path = parse.parse_qs(requestBody)["path"][0]
+    logger.info("Path: %s", path)
 
-    # And now update the timeout for this user
-    ariaRequest.timeouts[sock.getpeername()]=time.monotonic()
+    # Use telnet to connect to the stream client and transmit the request
+    connection = Telnet('localhost', 1234)
+    try:
+        connection.write(("request.push "+path).encode())
+        response=connection.read_until(b'END', 2)
 
-    # Close the connection and remove it from the list.
-    read.conn.close()
-    openconn.remove(read.conn)
+        logger.info("Pushed request. Source client response: %s", response)
 
-    # Log failed request
-    logger.warning("Unable to issue request.")
+        # And now update the timeout for this user
+        ariaRequest.timeouts[sock.getpeername()]=time.monotonic()
+        logger.debug("Updated timeout: User at %s may request again at %f.", sock.getpeername(), time.monotonic())
+
+        # Inform the user that their request has been received.
+        # Include a custom header with the queue position.
+        # Provide the same information in a comment in the ariaSays element.
+        pos = ""
+        try:
+            pos = str(int(response.decode()))
+        except:
+            pos = "Unknown"
+
+        sendResponse("200 OK",
+                     "text/html",
+                     "ARIA: Request received!\n"+
+                     "<!-- Position in queue: "+pos+" -->",
+                     sock,
+                     ["X-Queue-Position: "+pos])
+    except:
+        logger.exception("Exception while requesting song %s.", path, exc_info=True)
+
+        # Something bad happened while contacting the stream client
+        # We'll tell the client that the request service is unavailable, until September 1 2018
+        # And we'll give the user a somewhat humorous response
+        sendResponse("503 Service Unavailable",
+                     "text/html",
+                     "ARIA: It feels like... a part of my brain is missing.<br>\n"+
+                     "Please. I'm scared. Help me.... Please.",
+                     sock,
+                     ["Retry-After: Sat, 01 Sep 2018 00:00:00 GMT"])
+    finally:
+        # Close the connection and remove it from the list.
+        sock.close()
+        openconn.remove(sock)
+        connection.close()
 
 # Class to store an open connection
 class Connection:
@@ -461,7 +493,7 @@ while True:
                 openconn.remove(read.conn)
 
                 # Print note on error
-                logger.info("Could not execute method %s.", method)
+                logger.info("Could not execute method %s.", method.decode())
                 continue
 
             # Parse the filename out of the request

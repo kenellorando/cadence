@@ -319,9 +319,8 @@ def ariaSearch(requestBody, sock):
     # Results are currently mocked
     logger.debug("Search for \"%s\" had 0 results - [].", parse.parse_qs(requestBody)["search"][0])
 
-    # Close the connection and remove it from the list.
+    # Close the connection.
     sock.close()
-    openconn.remove(sock)
 
 def ariaRequest(requestBody, sock):
     "Performs the action of an ARIA search as specified in the body, sending results on sock"
@@ -348,9 +347,8 @@ def ariaRequest(requestBody, sock):
                          sock,
                          ["Retry-After: "+str(math.ceil((timeout+ariaRequest.timeoutSeconds)-time.monotonic))])
 
-            # Close the connection and remove it from the list.
+            # Close the connection.
             sock.close()
-            openconn.remove(sock)
 
             # Log timeout
             logger.info("Request too close to previous request from address %s.", sock.getpeername())
@@ -403,9 +401,8 @@ def ariaRequest(requestBody, sock):
                      sock,
                      ["Retry-After: Sat, 01 Sep 2018 00:00:00 GMT"])
     finally:
-        # Close the connection and remove it from the list.
+        # Close the connection.
         sock.close()
-        openconn.remove(sock)
         connection.close()
 
 # Class to store an open connection
@@ -484,14 +481,15 @@ while True:
                                  read.conn,
                                  ["Allow: GET, HEAD"])
 
-                    # Close the connection and remove it from the list.
+                    # Close the connection.
                     read.conn.close()
-                    openconn.remove(read.conn)
 
                     # Log method not allowed
                     logger.info("Issued method not allowed.")
 
-                # No matter what, we've handled the request however we chose to
+                # No matter what, we've handled the request however we chose to.
+                # Remove it from openconn
+                openconn.remove(read.conn)
                 continue
             elif not (method.startswith(b"GET") or method.startswith(b"HEAD")):
                 # This server can't do anything with these methods.

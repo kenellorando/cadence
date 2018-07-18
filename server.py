@@ -11,6 +11,7 @@ import logging
 import logging.handlers
 from telnetlib import Telnet
 from urllib import parse
+from threading import Thread
 
 # Prep work
 # Log both to the console and to a daily rotating file, storing no more than 30 days of logs
@@ -459,9 +460,9 @@ while True:
             if method.startswith(b"POST"):
                 logger.info("Received POST request to %s.", method.split(b' ')[1].decode())
                 if method.split(b' ')[1]==b"/search":
-                    ariaSearch(requestBody(request), read.conn)
+                    Thread(target=ariaSearch, args=(requestBody(request), read.conn)).start()
                 elif method.split(b' ')[1]==b"/request":
-                    ariaRequest(requestBody(request), read.conn)
+                    Thread(target=ariaRequest, args=(requestBody(request), read.conn)).start()
                 else:
                     # No other paths can receive a POST.
                     # Tell the browser it can't do that, and inform it that it may only use GET or HEAD here.

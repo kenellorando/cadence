@@ -312,12 +312,25 @@ def ariaSearch(requestBody, sock):
     logger.info("Received a search request on socket %d.", sock.fileno())
     logger.debug("Search body was: %s.", requestBody)
 
+    # Parse the query
+    query = ""
+    try:
+        query = parse.parse_qs(requestBody)["search"][0]
+    except KeyError:
+        # Some wiseguy sent us a bad request. Tsk tsk.
+        # Send an error message that the frontend will (should) ignore
+        sendResponse("400 Bad Request", "application/json", "Invalid request - "+requestBody+" does not contain a search key.", sock)
+
+        # Close the connection and return
+        sock.close()
+        return
+
     # Since we have no database, we have no results
     sendResponse("200 OK", "application/json", "[]", sock)
 
     # Log results
     # Results are currently mocked
-    logger.debug("Search for \"%s\" had 0 results - [].", parse.parse_qs(requestBody)["search"][0])
+    logger.debug("Search for \"%s\" had 0 results - [].", query)
 
     # Close the connection.
     sock.close()

@@ -267,7 +267,10 @@ def constructResponse(unendedHeaders, content):
         response += b"ETag: \""+hashlib.sha256(content).hexdigest().encode()+b"\"\r\n"
 
     response += b"Content-Length: "+str(len(content)).encode()+b"\r\n\r\n"
-    response += content
+    if isinstance(content, str):
+        response += content.encode()
+    else:
+        response += content
     return response
 
 def sendResponse(status, contentType, content, sock, headers=[]):
@@ -435,7 +438,7 @@ while True:
                                  generateErrorPage("405 Method Not Allowed",
                                                    "Your browser attempted to perform an action the server doesn't support at this location."),
                                  read.conn,
-                                 ["Allow: GET, HEAD"]).
+                                 ["Allow: GET, HEAD"])
 
                     # Close the connection and remove it from the list.
                     read.conn.close()

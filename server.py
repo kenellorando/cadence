@@ -378,7 +378,7 @@ def ariaRequest(requestBody, sock):
     connection = Telnet('localhost', 1234)
     try:
         connection.write(("request.push "+path).encode())
-        response=connection.read_until(b'END', 2)
+        response=connection.read_until(b'END', 2).decode()
 
         logger.info("Pushed request. Source client response: %s", response)
 
@@ -391,7 +391,7 @@ def ariaRequest(requestBody, sock):
         # Provide the same information in a comment in the ariaSays element.
         pos = ""
         try:
-            pos = str(int(response.decode()))
+            pos = str(int(response))
         except:
             pos = "Unknown"
 

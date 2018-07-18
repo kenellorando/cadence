@@ -440,6 +440,17 @@ while True:
 
     # And process all those sockets
     for read in readable:
+        # Ignore erroneous sockets (those with negative file descriptors)
+        if read.fileno() < 0:
+            # Drop the connection from openconn, close the error, and continue on our way
+            # Ignore errors: What matters is that we don't do anything with the sockets
+            try:
+                openconn.remove(read.conn)
+                read.conn.close()
+            except:
+                pass
+            continue
+
         # For the accept socket, accept the connection and add it to the list
         if read.isAccept:
             logger.info("Accepting a new connection.")

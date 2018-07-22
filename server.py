@@ -584,20 +584,58 @@ while True:
                 with open(filename, 'rb', 0) as f:
                     file = f.read()
             except FileNotFoundError:
-                # The file wasn't found. Return 404.
-                sendResponse("404 Not Found",
-                             "text/html",
-                             generateErrorPage("404 Not Found",
-                                               "The requested file \""+method.decode().split(' ')[1]+
-                                               "\" was not found on this server."),
-                             read.conn)
-                # Close the connection and continue
-                read.conn.close()
-                openconn.remove(read.conn)
+                # The file wasn't found.
+                # Check for the 418 easter egg
+                if method.split(b' ')[1].endswith(b"coffee"):
+                    # Someone must be trying to get some coffee!
+                    # Too bad for them.
+                    # Image is, unsurprisingly, a teapot I rendered
+                    image = ""
+                    try:
+                        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "teapot.png"), 'rb', 0) as f:
+                            image = base64.b64encode(f.read()).decode()
+                    except:
+                        pass
 
-                # Print note on error
-                logger.warning("Could not find file %s.", filename.decode())
-                file = ""
+                    # If file load failed, just skip the image
+                    if len(image)==0:
+                        sendResponse("418 I'm a teapot",
+                                     "text/html",
+                                     generateErrorPage("418 I'm a teapot",
+                                                       "I'm sorry - I can't make coffee for you.<br>I'm a teapot."),
+                                     read.conn)
+                    else:
+                        sendResponse("418 I'm a teapot",
+                                     "text/html",
+                                     generateErrorPage("418 I'm a teapot",
+                                                       "I'm sorry - I can't make coffee for you.</p>"+
+                                                       "<img src=\"data:image/png;base64,"+image+"\" width=256 height=256><p>I'm a teapot."),
+                                     read.conn)
+
+                    # Log the teapot
+                    logger.warning("Became a teapot in response to request for unfound file %s.", filename.decode())
+
+                    # Close the connection and continue
+                    read.conn.close()
+                    openconn.remove(read.conn)
+                    file = ""
+
+                # Not a teapot
+                else:
+                    # Return 404.
+                    sendResponse("404 Not Found",
+                                 "text/html",
+                                 generateErrorPage("404 Not Found",
+                                                   "The requested file \""+method.decode().split(' ')[1]+
+                                                   "\" was not found on this server."),
+                                 read.conn)
+                    # Close the connection and continue
+                    read.conn.close()
+                    openconn.remove(read.conn)
+
+                    # Print note on error
+                    logger.warning("Could not find file %s.", filename.decode())
+                    file = ""
             except:
                 # Some unknown error occurred. Return 500.
                 # First, generate our error message

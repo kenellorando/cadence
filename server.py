@@ -261,6 +261,7 @@ def basicHeaders(status, contentType):
     out += "Date: "+time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())+"\r\n"
     out += "Server: Cadence purpose-built webserver\r\n"
     out += "Connection: close\r\n"
+    out += "Tk: N\r\n"
 
     # Add cache-control header iff we have caching set
     if caching>0:

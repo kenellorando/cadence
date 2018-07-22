@@ -24,7 +24,7 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger("Cadence Server")
 
 port = int(sys.argv[1])
-directory = sys.argv[2].encode()
+directory = os.path.realpath(sys.argv[2]).encode()
 
 caching=0
 

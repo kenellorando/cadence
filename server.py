@@ -255,7 +255,7 @@ def ETag(content):
         return base64.urlsafe_b64encode(hashlib.sha256(content).digest())
 
 def HTTP_time(at=time.time()):
-    "Returns a string formatted as an HTTP time, corresponding to the time specified by at (defaults to the present)"
+    "Returns a string formatted as an HTTP time, corresponding to the unix time specified by at (defaults to the present)"
 
     return time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(at))
 
@@ -627,10 +627,10 @@ while True:
 
             # If the method is GET, use sendResponse to send the file contents.
             if method.startswith(b"GET"):
-                sendResponse("200 OK", type, file, read.conn)
+                sendResponse("200 OK", type, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))])
             # If the method is HEAD, generate the same response, but strip the body
             else:
-                read.conn.sendall(constructResponse(basicHeaders("200 OK", type), file).split("\r\n\r\n")[0]+"\r\n\r\n")
+                read.conn.sendall(constructResponse(basicHeaders("200 OK", type)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).split("\r\n\r\n")[0]+"\r\n\r\n")
                 logger.info("Sent headers to socket %d.", read.fileno())
 
             # Now that we're done, close the connection and move on.

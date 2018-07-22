@@ -546,9 +546,9 @@ while True:
 
             # Parse the filename out of the request
             filename = os.path.join(directory, method.split(b' ')[1][1:])
-            # If the filename ends in a slash, assume 'index.html'
-            if filename.endswith(os.sep.encode()):
-                filename += b"index.html"
+            # If the filename is a directory, join it to "index.html"
+            if os.path.isdir(filename):
+                filename = os.path.join(directory, b"index.html")
 
             # Normalize the file path
             filename = os.path.realpath(filename)

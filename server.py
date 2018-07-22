@@ -546,8 +546,11 @@ while True:
             # Parse the filename out of the request
             filename = os.path.join(directory, method.split(b' ')[1][1:])
             # If the filename ends in a slash, assume 'index.html'
-            if filename.endswith(b'/'):
+            if filename.endswith(os.sep.encode()):
                 filename += b"index.html"
+
+            # Normalize the file path
+            filename = os.path.realpath(filename)
 
             # Guess the MIME type of the file.
             type = mimeTypeOf(filename)

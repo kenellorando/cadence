@@ -254,11 +254,16 @@ def ETag(content):
     else:
         return base64.urlsafe_b64encode(hashlib.sha256(content).digest())
 
+def HTTP_time(at=time.time()):
+    "Returns a string formatted as an HTTP time, corresponding to the time specified by at (defaults to the present)"
+
+    return time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(at))
+
 def basicHeaders(status, contentType):
     "Constructs and returns a basic set of headers for a response (Does not end the header block)"
 
     out =  "HTTP/1.1 "+status+"\r\n"
-    out += "Date: "+time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())+"\r\n"
+    out += "Date: "+HTTP_time()+"\r\n"
     out += "Server: Cadence purpose-built webserver\r\n"
     out += "Connection: close\r\n"
 

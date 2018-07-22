@@ -6,6 +6,7 @@ import sys
 import time
 import os
 import hashlib
+import base64
 import math
 import logging
 import logging.handlers
@@ -245,6 +246,14 @@ def requestBody(request):
 
     return request.partition(b"\r\n\r\n")[2].decode()
 
+def ETag(content):
+    "Returns a standard ETag of content (base64 encoded sha256) for use anywhere ETags are used in the server. ETags are returned in the same form content was passed (string or bytes)"
+
+    if isinstance(content, str):
+        return base64.urlsafe_b64encode(hashlib.sha256(content.encode()).digest()).decode()
+    else:
+        return base64.urlsafe_b64encode(hashlib.sha256(content).digest())
+
 def basicHeaders(status, contentType):
     "Constructs and returns a basic set of headers for a response (Does not end the header block)"
 
@@ -267,7 +276,7 @@ def constructResponse(unendedHeaders, content):
 
     # Add ETag iff we have caching set
     if caching>0:
-        response += b"ETag: \""+hashlib.sha256(content).hexdigest().encode()+b"\"\r\n"
+        response += b"ETag: \""+ETag(content)+b"\"\r\n"
 
     response += b"Content-Length: "+str(len(content)).encode()+b"\r\n\r\n"
     if isinstance(content, str):
@@ -594,17 +603,17 @@ while True:
             # First, handle caching
             if caching>0:
                 logger.debug("Caching is enabled, checking for If-None-Match")
-                ETag = ""
+                Etag = ""
                 for line in lines:
                     if line.startswith(b"If-None-Match: "):
-                        ETag = line.split(b"\"")[1]
-                        logger.debug("Found header - ETag %s.", ETag.decode())
+                        Etag = line.split(b"\"")[1]
+                        logger.debug("Found header - ETag %s.", Etag.decode())
 
                 # If we have an ETag and it matches our file, return 304 Not Modified
-                if ETag == hashlib.sha256(file).hexdigest().encode():
+                if Etag == ETag(file):
                     # ETag matches. Return our basic headers, plus the ETag
-                    read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+ETag+b"\"\r\n\r\n")
-                    logger.info("Client already has this file (matching hash %s) - Issued 304.", ETag.decode())
+                    read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+Etag+b"\"\r\n\r\n")
+                    logger.info("Client already has this file (matching hash %s) - Issued 304.", Etag.decode())
 
                     # Close the connection and move on.
                     read.conn.close()

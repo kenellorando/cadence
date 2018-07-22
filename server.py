@@ -552,6 +552,27 @@ while True:
             # Normalize the file path
             filename = os.path.realpath(filename)
 
+            # Check if the relative path between the file and the service directory includes '..'
+            # In other words, if one has to go 'up' in the directory structure to get to the target
+            # If this is the case, return an error forbidding access to that file
+            if b".." in os.path.relpath(filename, directory):
+                # Detected attempt to access file outside allowed directory.
+                # ACCESS DENIED
+                sendResponse("403 Forbidden",
+                             "text/html",
+                             generateErrorPage("403 Forbidden",
+                                               "You are not permitted to access \""+method.decode().split(' ')[1]+"\" on this server."),
+                             read.conn,
+                             ["Warning: 299 Cadence Access to files above the root directory of the served path is forbidden. This incident has been logged."])
+
+                # Log an error, pertaining to the fact that an attempt to access forbidden data has been thwarted.
+                logger.error("Client at %s attempted to access forbidden file %s, but was denied access.", read.conn.getpeername(), filename.decode())
+
+                # Close the connection and continue
+                read.conn.close()
+                openconn.remove(read.conn)
+                continue
+
             # Guess the MIME type of the file.
             type = mimeTypeOf(filename)
 

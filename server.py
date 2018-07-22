@@ -617,7 +617,7 @@ while True:
                 # If we have an ETag and it matches our file, return 304 Not Modified
                 if Etag == ETag(file):
                     # ETag matches. Return our basic headers, plus the ETag
-                    read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+Etag+b"\"\r\n\r\n")
+                    read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+Etag+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                     logger.info("Client already has this file (matching hash %s) - Issued 304.", Etag.decode())
 
                     # Close the connection and move on.

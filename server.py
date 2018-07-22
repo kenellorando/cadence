@@ -8,6 +8,7 @@ import os
 import hashlib
 import base64
 import math
+import traceback
 import logging
 import logging.handlers
 from telnetlib import Telnet

@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO,
                     format="[%(asctime)s] %(levelname)s %(message)s",
                     handlers=[
                         logging.StreamHandler(),
-                        logging.handlers.TimedRotatingFileHandler(os.path.dirname(os.path.abspath(__file__))+"/logs/server", 'D', 1, 30)])
+                        logging.handlers.TimedRotatingFileHandler(os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs", "server"), 'D', 1, 30)])
 logger = logging.getLogger("Cadence Server")
 
 port = int(sys.argv[1])

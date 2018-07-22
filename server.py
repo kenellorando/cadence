@@ -630,7 +630,7 @@ while True:
                             mtime = parse_HTTP_time(mt)
                             logger.debug("Found header - mtime %f, from timestamp %s.", mtime, mt.decode())
 
-                    if mtime>=os.path.getmtime(filename):
+                    if mtime>=math.floor(os.path.getmtime(filename)):
                         # Last modified time was given (all NaN comparisons return false), and the file has not since been modified.
                         # Return basic headers, plus ETag and mtime
                         read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+ETag(file)+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")

@@ -548,7 +548,7 @@ while True:
             filename = os.path.join(directory, method.split(b' ')[1][1:])
             # If the filename is a directory, join it to "index.html"
             if os.path.isdir(filename):
-                filename = os.path.join(directory, b"index.html")
+                filename = os.path.join(filename, b"index.html")
 
             # Normalize the file path
             filename = os.path.realpath(filename)

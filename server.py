@@ -4,6 +4,7 @@ import socket
 import select
 import sys
 import time
+import calendar
 import os
 import hashlib
 import base64
@@ -255,11 +256,21 @@ def ETag(content):
     else:
         return base64.urlsafe_b64encode(hashlib.sha256(content).digest())
 
+def HTTP_time(at=time.time()):
+    "Returns a string formatted as an HTTP time, corresponding to the unix time specified by at (defaults to the present)"
+
+    return time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(at))
+
+def parse_HTTP_time(at):
+    "Returns a Unix timestamp from an HTTP timestamp"
+
+    return calendar.timegm(time.strptime(at, "%a, %d %b %Y %H:%M:%S GMT"))
+
 def basicHeaders(status, contentType):
     "Constructs and returns a basic set of headers for a response (Does not end the header block)"
 
     out =  "HTTP/1.1 "+status+"\r\n"
-    out += "Date: "+time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())+"\r\n"
+    out += "Date: "+HTTP_time()+"\r\n"
     out += "Server: Cadence purpose-built webserver\r\n"
     out += "Connection: close\r\n"
     out += "Tk: N\r\n"
@@ -673,10 +684,31 @@ while True:
                         Etag = line.split(b"\"")[1]
                         logger.debug("Found header - ETag %s.", Etag.decode())
 
+                # If there was no If-None-Match, check for a provided If-Modified-Since
+                if Etag == "":
+                    logger.debug("Found no ETag, searching for last modified time.")
+                    mtime = float("nan")
+                    for line in lines:
+                        if line.startswith(b"If-Modified-Since: "):
+                            mt = line.partition(b": ")[2]
+                            mtime = parse_HTTP_time(mt)
+                            logger.debug("Found header - mtime %f, from timestamp %s.", mtime, mt.decode())
+
+                    if mtime>=math.floor(os.path.getmtime(filename)):
+                        # Last modified time was given (all NaN comparisons return false), and the file has not since been modified.
+                        # Return basic headers, plus ETag and mtime
+                        read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+ETag(file)+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
+                        logger.info("Client already has this file (not modified since %f [which is %s]).", mtime, HTTP_time(mtime))
+
+                        # Close the connection and move on.
+                        read.conn.close()
+                        openconn.remove(read.conn)
+                        continue
+
                 # If we have an ETag and it matches our file, return 304 Not Modified
-                if Etag == ETag(file):
-                    # ETag matches. Return our basic headers, plus the ETag
-                    read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+Etag+b"\"\r\n\r\n")
+                elif Etag == ETag(file):
+                    # ETag matches. Return our basic headers, plus the ETag and mtime
+                    read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+Etag+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                     logger.info("Client already has this file (matching hash %s) - Issued 304.", Etag.decode())
 
                     # Close the connection and move on.
@@ -686,10 +718,10 @@ while True:
 
             # If the method is GET, use sendResponse to send the file contents.
             if method.startswith(b"GET"):
-                sendResponse("200 OK", type, file, read.conn)
+                sendResponse("200 OK", type, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))])
             # If the method is HEAD, generate the same response, but strip the body
             else:
-                read.conn.sendall(constructResponse(basicHeaders("200 OK", type), file).split("\r\n\r\n")[0]+"\r\n\r\n")
+                read.conn.sendall(constructResponse(basicHeaders("200 OK", type)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).split("\r\n\r\n")[0]+"\r\n\r\n")
                 logger.info("Sent headers to socket %d.", read.fileno())
 
             # Now that we're done, close the connection and move on.

@@ -4,6 +4,7 @@ import socket
 import select
 import sys
 import time
+import calendar
 import os
 import hashlib
 import base64
@@ -258,6 +259,11 @@ def HTTP_time(at=time.time()):
     "Returns a string formatted as an HTTP time, corresponding to the unix time specified by at (defaults to the present)"
 
     return time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(at))
+
+def parse_HTTP_time(at):
+    "Returns a Unix timestamp from an HTTP timestamp"
+
+    return calendar.timegm(time.strptime(at, "%a, %d %b %Y %H:%M:%S GMT"))
 
 def basicHeaders(status, contentType):
     "Constructs and returns a basic set of headers for a response (Does not end the header block)"

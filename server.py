@@ -620,9 +620,30 @@ while True:
                         Etag = line.split(b"\"")[1]
                         logger.debug("Found header - ETag %s.", Etag.decode())
 
+                # If there was no If-None-Match, check for a provided If-Modified-Since
+                if Etag == "":
+                    logger.debug("Found no ETag, searching for last modified time.")
+                    mtime = float("nan")
+                    for line in lines:
+                        if line.startswith(b"If-Modified-Since: "):
+                            mt = line.partition(b": ")[2]
+                            mtime = parse_HTTP_time(mt)
+                            logger.debug("Found header - mtime %f, from timestamp %s.", mtime, mt.decode())
+
+                    if mtime>=os.path.getmtime(filename):
+                        # Last modified time was given (all NaN comparisons return false), and the file has not since been modified.
+                        # Return basic headers, plus ETag and mtime
+                        read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+ETag(file)+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
+                        logger.info("Client already has this file (not modified since %f [which is %s]).", mtime, HTTP_time(mtime))
+
+                        # Close the connection and move on.
+                        read.conn.close()
+                        openconn.remove(read.conn)
+                        continue
+
                 # If we have an ETag and it matches our file, return 304 Not Modified
-                if Etag == ETag(file):
-                    # ETag matches. Return our basic headers, plus the ETag
+                elif Etag == ETag(file):
+                    # ETag matches. Return our basic headers, plus the ETag and mtime
                     read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+Etag+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                     logger.info("Client already has this file (matching hash %s) - Issued 304.", Etag.decode())
 

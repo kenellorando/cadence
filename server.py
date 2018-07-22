@@ -456,6 +456,9 @@ class Connection:
 # List of open connections
 openconn = []
 
+# Pre-create mimeTypeOf dictionary
+mimeTypeOf(b"MimeType.precreate.file")
+
 # Infinite loop for connection service
 while True:
     # List of sockets we're waiting to read from

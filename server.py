@@ -17,16 +17,17 @@ from urllib import parse
 from threading import Thread
 
 # Prep work
-# If logs/ directory does not exist, create it
-if not os.path.exists('./logs/'):
-    os.makedirs('./logs/')
+# If logs directory does not exist, create it
+logdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+if not os.path.exists(logdir):
+    os.makedirs(logdir)
 
 # Log both to the console and to a daily rotating file, storing no more than 30 days of logs
 logging.basicConfig(level=logging.INFO,
                     format="[%(asctime)s] %(levelname)s %(message)s",
                     handlers=[
                         logging.StreamHandler(),
-                        logging.handlers.TimedRotatingFileHandler(os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs", "server"), 'D', 1, 30)])
+                        logging.handlers.TimedRotatingFileHandler(os.path.join(logdir, "server"), 'D', 1, 30)])
 logger = logging.getLogger("Cadence Server")
 
 port = int(sys.argv[1])

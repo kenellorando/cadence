@@ -11,12 +11,12 @@ It is my intent that once development is complete enough to import into Cadence,
 
 ## Running
 
-The command line is python server.py <port> <path to directory> [-c [seconds]]
+The command line is `python server.py <port> <path to directory> [-c [seconds]]`
 
-Port is which port to serve the site on. If it's something privileged like 80, the server will require sudo.
+`port` is which port to serve the site on. If it's something privileged like 80, the server will require `sudo`.
 
-The path to directory is the path to the root of the site (ie, the front-end folder).
+The `path to directory` is the path to the root of the site (ie, the front-end folder).
 
-Those two are the only mandatory flags. If you provide -c (which I recommend), the server will instruct browsers that they are permitted to cache resources. You can provide an integer after that flag to set the number of seconds browsers are told cache resources are fresh for, or you can leave it to use the default (currently 3600).
+Those two are the only mandatory flags. If you provide `-c` (which I recommend), the server will instruct browsers that they are permitted to cache resources. You can provide an integer after that flag to set the number of seconds browsers are told cache resources are fresh for, or you can leave it to use the default (currently 3600).
 
 Logs are stored next to the server itself, in a folder called "logs".

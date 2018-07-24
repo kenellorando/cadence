@@ -22,19 +22,6 @@ html.transition {
   100% { background-color: black; }
 }
 
-/* Handles the fade animation for the switcher */
-html.transition {
-  background-image: none !important;
-
-  animation: fade 3s ease-in 1;
-}
-
-/* Defines the fade animation keyframes */
-@keyframes fade {
-  0% { background-color: white;  }
-  100% { background-color: black; }
-}
-
 body {
   /*Opacity of content within body*/
   opacity: 1;

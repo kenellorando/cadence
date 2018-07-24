@@ -568,8 +568,10 @@ while True:
 
             # Parse the filename out of the request
             filename = os.path.join(directory, method.split(b' ')[1][1:])
+            dir = False
             # If the filename is a directory, join it to "index.html"
             if os.path.isdir(filename):
+                dir = True
                 filename = os.path.join(filename, b"index.html")
 
             # Normalize the file path
@@ -592,6 +594,23 @@ while True:
                 logger.error("Client at %s attempted to access forbidden file %s, but was denied access.", read.conn.getpeername(), filename.decode())
 
                 # Close the connection and continue
+                read.conn.close()
+                openconn.remove(read.conn)
+                continue
+
+            # Perform redirect of directories that don't end in a separator or slash
+            targ = method.split(b' ')[1].decode()
+            if dir and not (targ.endswith(os.path.sep) or targ.endswith('/')):
+                sendResponse("301 Moved Permanently",
+                             "text/html",
+                             b"",
+                             read.conn,
+                             ["Location: "+targ+'/'])
+
+                # Log redirect
+                logger.info("Issued redirect from %s to %s/.", targ, targ)
+
+                # Close connection and continue
                 read.conn.close()
                 openconn.remove(read.conn)
                 continue

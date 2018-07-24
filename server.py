@@ -97,7 +97,7 @@ def mimeTypeOf (filename):
 
     # The extension is whatever is after the last '.' in the filename
     # Switch to lowercase for comparison
-    extension = parts[len(parts)-1].lower()
+    extension = parts[-1].lower()
     logger.debug("Extension %s", extension)
 
     # Giant dictionary of extensions -> MIME types

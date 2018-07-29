@@ -7,7 +7,7 @@ It is my intent that once development is complete enough to import into Cadence,
 
 ## Requirements
 
-`cadence-server` runs on python3. I'm not sure what the minimum required version is, but it's being tested and developed on 3.7.
+`cadence-server` runs on python3. I'm not sure what the minimum required version is, but it's being tested and developed on 3.6.
 
 ## Running
 

@@ -92,8 +92,8 @@ directory = os.path.realpath(sys.argv[2]).encode()
 caching=0
 
 # Check if we might have the -c flag
-if len(sys.argv)>3:
-    if sys.argv[3].startswith("-c"):
+if len(sys.argv)>3 or config.getboolean('force_caching'):
+    if sys.argv[3].startswith("-c") or config.getboolean('force_caching'):
         if len(sys.argv)>4:
             caching = int(sys.argv[4])
         else:

@@ -436,12 +436,14 @@ def ariaRequest(requestBody, sock):
 
         # Data for special requests
         ariaRequest.specialEnabled=config.getboolean('special_request_timeouts')
+        ariaRequest.specialForced=config.getboolean('special_request_force_enable')
 
         # If enabled, also add in our whitelist
         if (ariaRequest.specialEnabled):
             whitelist = config['special_request_whitelist']
             # If the whitelist is set to empty, disable special timeouts
-            if whitelist == "None":
+            # (Unless they're force-enabled)
+            if whitelist == "None" and not ariaRequest.specialForced:
                 ariaRequest.specialEnabled = False
             # Else, parse out a list of addresses and save it
             else:
@@ -457,7 +459,8 @@ def ariaRequest(requestBody, sock):
         # Check if config is set to let us try to use a tag
         if ariaRequest.specialEnabled:
             # Check if this client is on the whitelist allowed to use special request timeouts
-            if tag in ariaRequest.specialWhitelist:
+            # Alternatively, check if we're allowing specials from all addresses
+            if tag in ariaRequest.specialWhitelist or ariaRequest.specialForced:
                 # We're in business.
                 # Check if the request includes a tag
                 if "tag" in request.keys():

@@ -462,7 +462,7 @@ def ariaRequest(requestBody, sock):
                 # Check if the request includes a tag
                 if "tag" in request.keys():
                     # Use that tag for timeouts (joining any possible additional values with ampersands)
-                    tag = '&'.join(request["tag"])
+                    tag += '/' + '&'.join(request["tag"])
 
         timeout=ariaRequest.timeouts[tag]
         logger.debug("Request timeout for %s at second %f. Current time %f.", sock.getpeername(), timeout+ariaRequest.timeoutSeconds, time.monotonic())

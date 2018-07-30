@@ -450,10 +450,10 @@ def ariaRequest(requestBody, sock):
 
     request = parse.parse_qs(requestBody)
 
-    try:
-        # Either use peername or provided tag for timeouts
-        tag = sock.getpeername()[0]
+    # Either use peername or provided tag for timeouts
+    tag = sock.getpeername()[0]
 
+    try:
         # Check if config is set to let us try to use a tag
         if ariaRequest.specialEnabled:
             # Check if this client is on the whitelist allowed to use special request timeouts
@@ -465,7 +465,7 @@ def ariaRequest(requestBody, sock):
                     tag += '/' + '&'.join(request["tag"])
 
         timeout=ariaRequest.timeouts[tag]
-        logger.debug("Request timeout for %s at second %f. Current time %f.", sock.getpeername(), timeout+ariaRequest.timeoutSeconds, time.monotonic())
+        logger.debug("Request timeout for %s at second %f. Current time %f.", tag, timeout+ariaRequest.timeoutSeconds, time.monotonic())
         if timeout+ariaRequest.timeoutSeconds>time.monotonic():
             # Timeout period hasn't passed yet. Return an error message (actually, the same message the Node.js server used)
             # Since we're so nice, we'll even send a header telling the client how long is left on the timeout. Most clients won't even look for it, but we do provide the information.
@@ -479,7 +479,7 @@ def ariaRequest(requestBody, sock):
             sock.close()
 
             # Log timeout
-            logger.info("Request too close to previous request from address %s.", sock.getpeername())
+            logger.info("Request too close to previous request from user %s.", tag)
             return
     except KeyError:
         pass
@@ -499,7 +499,7 @@ def ariaRequest(requestBody, sock):
 
         # And now update the timeout for this user
         ariaRequest.timeouts[sock.getpeername()]=time.monotonic()
-        logger.debug("Updated timeout: User at %s may request again at %f.", sock.getpeername(), time.monotonic())
+        logger.debug("Updated timeout: User at %s may request again at %f.", tag, time.monotonic())
 
         # Inform the user that their request has been received.
         # Include a custom header with the queue position.

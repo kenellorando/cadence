@@ -428,14 +428,43 @@ def ariaRequest(requestBody, sock):
     logger.info("Received a song request on socket %d.", sock.fileno())
     logger.debug("Request body was: %s.", requestBody)
 
-    # We need a static variable to track last-request times per-user (tag, if in the future we decide to implement better CadenceBot support)
+    # We need a static variable to track last-request times per-user
     # Initialize it on first run to an empty array
     if not hasattr(ariaRequest, "timeouts"):
         ariaRequest.timeouts={}
         ariaRequest.timeoutSeconds=300.0
 
+        # Data for special requests
+        ariaRequest.specialEnabled=config.getboolean('special_request_timeouts')
+
+        # If enabled, also add in our whitelist
+        if (ariaRequest.specialEnabled):
+            whitelist = config['special_request_whitelist']
+            # If the whitelist is set to empty, disable special timeouts
+            if whitelist == "None":
+                ariaRequest.specialEnabled = False
+            # Else, parse out a list of addresses and save it
+            else:
+                whitelist = whitelist.split(',')
+                ariaRequest.specialWhitelist = [addr.strip() for addr in whitelist]
+
+    request = parse.parse_qs(requestBody)
+
     try:
-        timeout=ariaRequest.timeouts[sock.getpeername()]
+        # Either use peername or provided tag for timeouts
+        tag = sock.getpeername()[0]
+
+        # Check if config is set to let us try to use a tag
+        if ariaRequest.specialEnabled:
+            # Check if this client is on the whitelist allowed to use special request timeouts
+            if tag in ariaRequest.specialWhitelist:
+                # We're in business.
+                # Check if the request includes a tag
+                if "tag" in request.keys():
+                    # Use that tag for timeouts (joining any possible additional values with ampersands)
+                    tag = '&'.join(request["tag"])
+
+        timeout=ariaRequest.timeouts[tag]
         logger.debug("Request timeout for %s at second %f. Current time %f.", sock.getpeername(), timeout+ariaRequest.timeoutSeconds, time.monotonic())
         if timeout+ariaRequest.timeoutSeconds>time.monotonic():
             # Timeout period hasn't passed yet. Return an error message (actually, the same message the Node.js server used)
@@ -457,7 +486,7 @@ def ariaRequest(requestBody, sock):
 
     # If we get here, the timeout mechanism is allowing the request.
     # First, isolate the path of our request
-    path = parse.parse_qs(requestBody)["path"][0]
+    path = request["path"][0]
     logger.info("Path: %s", path)
 
     # Use telnet to connect to the stream client and transmit the request

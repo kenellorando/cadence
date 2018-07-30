@@ -498,7 +498,7 @@ def ariaRequest(requestBody, sock):
         logger.info("Pushed request. Source client response: %s", response)
 
         # And now update the timeout for this user
-        ariaRequest.timeouts[sock.getpeername()]=time.monotonic()
+        ariaRequest.timeouts[tag]=time.monotonic()
         logger.debug("Updated timeout: User at %s may request again at %f.", tag, time.monotonic())
 
         # Inform the user that their request has been received.
@@ -521,11 +521,9 @@ def ariaRequest(requestBody, sock):
 
         # Something bad happened while contacting the stream client
         # We'll tell the client that the request service is unavailable, until September 1 2018
-        # And we'll give the user a somewhat humorous response
         sendResponse("503 Service Unavailable",
                      "text/html",
-                     "ARIA: It feels like... a part of my brain is missing.<br>\n"+
-                     "Please. I'm scared. Help me.... Please.",
+                     "ARIA: Something went wrong while processing your request.",
                      sock,
                      ["Retry-After: Sat, 01 Sep 2018 00:00:00 GMT"])
     finally:

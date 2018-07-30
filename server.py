@@ -15,20 +15,76 @@ import logging.handlers
 from telnetlib import Telnet
 from urllib import parse
 from threading import Thread
+from configparser import ConfigParser
 
 # Prep work
+# Load in our configuration
+# First, load in the defaults
+defaultconfig = ConfigParser(interpolation=None)
+defaultconfig.read('default-config.ini')
+
+# Now use those defaults to load in the overrides
+config = ConfigParser(defaults=defaultconfig['DEFAULT'], interpolation=None)
+config.read('config.ini')
+config = config['DEFAULT']
+
+level = config['loglevel']
+# Translate a log level (as configured) into a useful log level
+leveldict = {
+    "DEBUG"    : logging.DEBUG,
+    "INFO"     : logging.INFO,
+    "WARNING"  : logging.WARNING,
+    "ERROR"    : logging.ERROR,
+    "CRITICAL" : logging.CRITICAL
+}
+
+# Check if our log level is a valid name
+if level in leveldict.keys():
+    level = leveldict[level]
+# If it isn't, try to convert it from an integer
+else:
+    try:
+        level = int(level)
+    except ValueError as ex:
+        # We don't understand this level.
+        # Raise a new exception with a somewhat more helpful error
+        raise RuntimeError("Could not interpret \""+level+"\" as a valid logging level") from ex
+
 # If logs directory does not exist, create it
-logdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+logdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), config['logdirectory'])
+logdir = os.path.realpath(logdir)
 if not os.path.exists(logdir):
     os.makedirs(logdir)
 
+# Prepare the handlers for our logger (using the data as configured)
+handlers = []
+if config.getboolean('log_to_console'):
+    # Find the correct stream and add it
+    if config['logstream']=="stdout":
+        handlers.append(logging.StreamHandler(sys.stdout))
+    elif config['logstream']=="stderr":
+        handlers.append(logging.StreamHandler(sys.stderr))
+    else:
+        # No found handler. Warn the user and use stderr
+        from warnings import warn
+        warn("Could not parse "+config['logstream']+" as a console stream. Using stderr.")
+        handlers.append(logging.StreamHandler(sys.stderr))
+if config.getboolean('log_to_disk'):
+    # Assemble and add the timed rotating file handler
+    handlers.append(logging.handlers.TimedRotatingFileHandler(os.path.join(logdir, config['logfile']), 'D', 1, 30))
+
+# If the handlers list is empty, reconfigure so that logging uses a StreamHandler, but has an unreasonably high logging level.
+# That way, logging will be effectively disabled, without adding any code anywhere else
+if len(handlers)==0:
+    handlers.append(logging.StreamHandler(sys.stdout))
+    level=math.pow(2, 64)
+
 # Log both to the console and to a daily rotating file, storing no more than 30 days of logs
-logging.basicConfig(level=logging.INFO,
-                    format="[%(asctime)s] %(levelname)s %(message)s",
-                    handlers=[
-                        logging.StreamHandler(),
-                        logging.handlers.TimedRotatingFileHandler(os.path.join(logdir, "server"), 'D', 1, 30)])
-logger = logging.getLogger("Cadence Server")
+logging.basicConfig(level=level,
+                    format=config['logformat'],
+                    handlers=handlers)
+logger = logging.getLogger(config['logger'])
+logger.setLevel(level)
 
 port = int(sys.argv[1])
 directory = os.path.realpath(sys.argv[2]).encode()

@@ -11,7 +11,7 @@ It is my intent that once development is complete enough to import into Cadence,
 
 ## Running
 
-The command line is `python server.py <port> <path to directory> [-c [seconds]]`
+The simplest command line is `python server.py <port> <path to directory> [-c [seconds]]`. However, in production, I recommend passing `-OO` to python before `server.py`. This will cause Python to ignore debugging code and remove documentation strings before running the server.
 
 `port` is which port to serve the site on. If it's something privileged like 80, the server will require `sudo`.
 

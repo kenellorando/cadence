@@ -97,7 +97,7 @@ if len(sys.argv)>3:
         if len(sys.argv)>4:
             caching = int(sys.argv[4])
         else:
-            caching = 3600 # One hour caching by default
+            caching = config['default_caching_duration']
     else:
         logger.warning("Did not understand argument %s.", sys.argv[3])
 

@@ -536,9 +536,49 @@ def ariaRequest(requestBody, sock):
 
 # Class to store an open connection
 class Connection:
-    def __init__(self, conn, isAccept=False):
+    def __init__(self, conn, isAccept=False, IP=None):
         self.conn = conn
         self.isAccept = isAccept
+        self.IP=IP
+
+    # Follows configured behavior to attempt to get an IP out of request headers
+    def setIPFrom(self, requestHeaders):
+        header = config['client_identification_header']
+        if header == "None":
+            # Use the socket connection address and return
+            self.IP=sock.getpeername()[0]
+            return
+
+        # Attempt to find that header in the request headers
+        # requestHeaders can either be a list of headers, bytes, or a string representing the headers
+        # Either way, make sure it ends up as a list of strings
+        lines = []
+        if type(requestHeaders) is list:
+            if type(requestHeaders[0]) is bytes:
+                lines = [line.decode() for line in requestHeaders]
+            else:
+                # Assume strings
+                lines = requestHeaders
+        elif type(requestHeaders) is str:
+            lines = requestHeaders.split("\r\n")
+        elif type(requestHeaders) is bytes:
+            lines = requestHeaders.decode().split("\r\n")
+        else:
+            # Assume it's some sort of collection
+            lines = [line for line in requestHeaders]
+
+        # Lines is now a list of strings, where each string is an HTTP header.
+        for line in lines:
+            if line.startswith(header):
+                # We've found our header.
+                value = line.partition(": ")[2]
+
+                # Set our IP to be that value
+                self.IP=value
+                return
+
+        # We didn't find the header. Fall back to the socket connection address.
+        self.IP=sock.getpeername()[0]
 
     # For compatibility with select
     def fileno(self):

@@ -781,7 +781,7 @@ while True:
             except FileNotFoundError:
                 # The file wasn't found.
                 # Check for the 418 easter egg
-                if method.split(b' ')[1].endswith(b"coffee"):
+                if method.split(b' ')[1].endswith(b"coffee") and config.getboolean('enable_418'):
                     # Someone must be trying to get some coffee!
                     # Too bad for them.
                     # Image is, unsurprisingly, a teapot I rendered

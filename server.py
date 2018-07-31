@@ -679,7 +679,7 @@ while True:
             # If it's something else, return 405 Method Not Allowed
             method = lines[0]
             logger.debug("Method line %s", method.decode())
-            if method.startswith(b"POST"):
+            if method.startswith(b"POST") and config.getboolean('enable_aria'):
                 logger.info("Received POST request to %s.", method.split(b' ')[1].decode())
                 if method.split(b' ')[1]==b"/search":
                     Thread(target=ariaSearch, args=(requestBody(request), read)).start()

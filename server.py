@@ -338,6 +338,7 @@ def basicHeaders(status, contentType):
         basicHeaders.format =  "HTTP/1.1 {0}\r\n"
         basicHeaders.format += "Date: {1}\r\n"
         basicHeaders.format += "Connection: close\r\n"
+        basicHeaders.format += "Accept-Ranges: bytes\r\n"
         basicHeaders.format += "\r\n".join([s.strip() for s in config['additional_headers'].split(',')])+"\r\n"
 
         # Add cache-control header iff we have caching set

@@ -391,8 +391,15 @@ def generateErrorPage(title, description):
     content += "</html>\n"
     return content.encode()
 
-def ariaSearch(requestBody, sock):
-    "Performs the action of an ARIA search as specified in the body, sending results on sock"
+def ariaSearch(requestBody, conn):
+    "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"
+
+    # Accept either a socket or a Connection
+    sock = conn
+    # If conn is a Connection, use the socket from it
+    # (we don't use any information from Connection)
+    if type(conn) is Connection:
+        sock = conn.conn
 
     # Log the search
     logger.info("Received a search request on socket %d.", sock.fileno())
@@ -421,8 +428,20 @@ def ariaSearch(requestBody, sock):
     # Close the connection.
     sock.close()
 
-def ariaRequest(requestBody, sock):
-    "Performs the action of an ARIA search as specified in the body, sending results on sock"
+def ariaRequest(requestBody, conn):
+    "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"
+
+    # Setup for connection IP
+    sock = conn
+    # If connection, sock is the socket from the connection
+    if type(conn) is Connection:
+        sock = conn.conn
+    # Otherwise, conn needs to be a socket.
+    # That socket stays in sock
+    # conn becomes a Connection covering that socket with the IP set from the peername
+    else:
+        conn = Connection(sock)
+        conn.IP = sock.getpeername()[0]
 
     # Log the request
     logger.info("Received a song request on socket %d.", sock.fileno())
@@ -452,8 +471,8 @@ def ariaRequest(requestBody, sock):
 
     request = parse.parse_qs(requestBody)
 
-    # Either use peername or provided tag for timeouts
-    tag = sock.getpeername()[0]
+    # Either use client IP or provided tag for timeouts
+    tag = conn.IP
 
     try:
         # Check if config is set to let us try to use a tag
@@ -657,9 +676,9 @@ while True:
             if method.startswith(b"POST"):
                 logger.info("Received POST request to %s.", method.split(b' ')[1].decode())
                 if method.split(b' ')[1]==b"/search":
-                    Thread(target=ariaSearch, args=(requestBody(request), read.conn)).start()
+                    Thread(target=ariaSearch, args=(requestBody(request), read)).start()
                 elif method.split(b' ')[1]==b"/request":
-                    Thread(target=ariaRequest, args=(requestBody(request), read.conn)).start()
+                    Thread(target=ariaRequest, args=(requestBody(request), read)).start()
                 else:
                     # No other paths can receive a POST.
                     # Tell the browser it can't do that, and inform it that it may only use GET or HEAD here.
@@ -720,7 +739,7 @@ while True:
                              ["Warning: 299 Cadence Access to files above the root directory of the served path is forbidden. This incident has been logged."])
 
                 # Log an error, pertaining to the fact that an attempt to access forbidden data has been thwarted.
-                logger.error("Client at %s attempted to access forbidden file %s, but was denied access.", read.conn.getpeername(), filename.decode())
+                logger.error("Client at %s attempted to access forbidden file %s, but was denied access.", read.IP, filename.decode())
 
                 # Close the connection and continue
                 read.conn.close()

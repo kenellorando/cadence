@@ -527,7 +527,7 @@ def ariaRequest(requestBody, conn):
         # And now update the timeout for this user if the timeout is positive
         if ariaRequest.timeoutSeconds>0:
             ariaRequest.timeouts[tag]=time.monotonic()
-            logger.debug("Updated timeout: User at %s may request again at %f.", tag, time.monotonic())
+            logger.debug("Updated timeout: User at %s may request again at %f.", tag, time.monotonic()+ariaRequest.timeoutSeconds)
 
         # Inform the user that their request has been received.
         # Include a custom header with the queue position.

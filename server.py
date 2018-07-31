@@ -451,7 +451,7 @@ def ariaRequest(requestBody, conn):
     # Initialize it on first run to an empty array
     if not hasattr(ariaRequest, "timeouts"):
         ariaRequest.timeouts={}
-        ariaRequest.timeoutSeconds=300.0
+        ariaRequest.timeoutSeconds=float(config['request_timeout'])
 
         # Data for special requests
         ariaRequest.specialEnabled=config.getboolean('special_request_timeouts')

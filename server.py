@@ -652,7 +652,7 @@ while True:
         else:
             logger.info("Processing request from socket %d.", read.fileno())
             # Fetch the HTTP request waiting on read
-            request = waitingRequest(read.conn)
+            request = waitingRequest(read.conn, int(config['HTTP_blocksize']))
 
             # Set the IP on the connection
             read.setIPFrom(request.partition("\r\n\r\n")[0])

@@ -629,6 +629,9 @@ while True:
             # Fetch the HTTP request waiting on read
             request = waitingRequest(read.conn)
 
+            # Set the IP on the connection
+            read.setIPFrom(request.partition("\r\n\r\n")[0])
+
             # If the request is zero-length, the client disconnected. Skip the work of figuring that out the hard way, and the unhelpful log message.
             # Log a better message, remove the connection from the list, and close the socket (skipping the rest of the loop)
             if len(request) == 0:

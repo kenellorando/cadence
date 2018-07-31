@@ -475,6 +475,11 @@ def ariaRequest(requestBody, conn):
     tag = conn.IP
 
     try:
+        # If request timeout is zero, throw a KeyError to skip the timeout logic
+        # This is a bit hacky, I know, but its easy, and I don't expect production instances to do this
+        if ariaRequest.timeoutSeconds <= 0.0:
+            raise KeyError("Fake error to skip timeout logic")
+
         # Check if config is set to let us try to use a tag
         if ariaRequest.specialEnabled:
             # Check if this client is on the whitelist allowed to use special request timeouts
@@ -519,9 +524,10 @@ def ariaRequest(requestBody, conn):
 
         logger.info("Pushed request. Source client response: %s", response)
 
-        # And now update the timeout for this user
-        ariaRequest.timeouts[tag]=time.monotonic()
-        logger.debug("Updated timeout: User at %s may request again at %f.", tag, time.monotonic())
+        # And now update the timeout for this user if the timeout is positive
+        if ariaRequest.timeoutSeconds>0:
+            ariaRequest.timeouts[tag]=time.monotonic()
+            logger.debug("Updated timeout: User at %s may request again at %f.", tag, time.monotonic())
 
         # Inform the user that their request has been received.
         # Include a custom header with the queue position.

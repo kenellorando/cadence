@@ -104,7 +104,7 @@ if len(sys.argv)>3 or config.getboolean('force_caching'):
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 sock.bind(("", port))
-sock.listen(5)
+sock.listen(int(config['backlog']))
 
 # Helper functions
 def waitingRequest(s, blocksize=4096):

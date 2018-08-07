@@ -333,18 +333,22 @@ def parse_HTTP_time(at):
 def basicHeaders(status, contentType):
     "Constructs and returns a basic set of headers for a response (Does not end the header block)"
 
-    out =  "HTTP/1.1 "+status+"\r\n"
-    out += "Date: "+HTTP_time()+"\r\n"
-    out += "Server: Cadence purpose-built webserver\r\n"
-    out += "Connection: close\r\n"
-    out += "Tk: N\r\n"
+    # For performance, pre-create a format string for basic headers (we use this function a lot)
+    if not hasattr(basicHeaders, "format"):
+        basicHeaders.format =  "HTTP/1.1 {0}\r\n"
+        basicHeaders.format += "Date: {1}\r\n"
+        basicHeaders.format += "Server: Cadence purpose-built webserver\r\n"
+        basicHeaders.format += "Connection: close\r\n"
+        basicHeaders.format += "Tk: N\r\n"
 
-    # Add cache-control header iff we have caching set
-    if caching>0:
-        out += "Cache-Control: public, max-age="+str(caching)+"\r\n"
+        # Add cache-control header iff we have caching set
+        if caching>0:
+            basicHeaders.format += "Cache-Control: public, max-age="+str(caching)+"\r\n"
 
-    out += "Content-Type: "+contentType+"\r\n"
-    return out.encode()
+        basicHeaders.format += "Content-Type: {2}\r\n"
+        
+    # Format in our arguments and return
+    return basicHeaders.format.format(status, HTTP_time(), contentType).encode()
 
 def constructResponse(unendedHeaders, content):
     "Attaches unendedHeaders and content into one HTTP response (adding content-length in the process)"

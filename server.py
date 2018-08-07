@@ -596,7 +596,13 @@ class Connection:
         for line in lines:
             if line.startswith(header):
                 # We've found our header.
-                value = line.partition(": ")[2]
+                vals = line.partition(": ")
+                value = vals[2]
+
+                # Handle standard headers which require more processing
+                if vals[0]=="X-Forwarded-For":
+                    # X-Forwarded-For includes a list of forwarding proxies we don't care about.
+                    value=value.partition(",")[0]
 
                 # Set our IP to be that value
                 self.IP=value

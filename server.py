@@ -641,8 +641,10 @@ class Connection:
 # List of open connections
 openconn = []
 
-# Pre-create mimeTypeOf dictionary
+# Pre-create mimeTypeOf dictionary, basic headers, and error page data
 mimeTypeOf(b"MimeType.precreate.file")
+generateErrorPage("PRECREATION", "YOU SHOULD NEVER SEE THIS")
+basicHeaders("599 Server Pre-create", "MimeType/precreate.file")
 
 # Infinite loop for connection service
 while True:

@@ -603,6 +603,21 @@ class Connection:
                 if vals[0]=="X-Forwarded-For":
                     # X-Forwarded-For includes a list of forwarding proxies we don't care about.
                     value=value.partition(",")[0]
+                elif vals[0]=="Forwarded":
+                    # Forwarded includes more data than just identifier
+                    parts=[part.strip() for part in value.split(';')]
+
+                    # Get the field that contains source data
+                    for part in parts:
+                        if part[:4].lower() == "for=":
+                            # Part is our part.
+                            value=part[4:]
+                            break
+
+                    # We're probably done, unless the address is IPv6.
+                    # IPv6 records, for no apparent reason, must be in quotes and brackets. Strip both just in case
+                    if value.startswith('\"'):
+                        value=value.strip('[]\"')
 
                 # Set our IP to be that value
                 self.IP=value

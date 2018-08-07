@@ -379,17 +379,21 @@ def sendResponse(status, contentType, content, sock, headers=[]):
 def generateErrorPage(title, description):
     "Returns the HTML for an error page with title and description"
 
-    content =  "<!DOCTYPE html>\n"
-    content += "<html>\n"
-    content += "  <head>\n"
-    content += "    <title>"+title+"</title>\n"
-    content += "  </head>\n"
-    content += "  <body>\n"
-    content += "    <h1 style='text-align: center; width:100%'>"+title+"</h1>\n"
-    content += "    <p>"+description+"</p>\n"
-    content += "  </body>\n"
-    content += "</html>\n"
-    return content.encode()
+    # For performance, construct this once the first time an error page is generated
+    if not hasattr(generateErrorPage, "format"):
+        generateErrorPage.format =  "<!DOCTYPE html>\n"
+        generateErrorPage.format += "<html>\n"
+        generateErrorPage.format += "  <head>\n"
+        generateErrorPage.format += "    <title>{0}</title>\n"
+        generateErrorPage.format += "  </head>\n"
+        generateErrorPage.format += "  <body>\n"
+        generateErrorPage.format += "    <h1 style='text-align: center; width:100%'>{0}</h1>\n"
+        generateErrorPage.format += "    <p>{1}</p>\n"
+        generateErrorPage.format += "  </body>\n"
+        generateErrorPage.format += "</html>\n"
+
+    # Use string formatting to insert the parameters into the page
+    return generateErrorPage.format.format(title, description).encode()
 
 def ariaSearch(requestBody, conn):
     "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"

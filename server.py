@@ -504,6 +504,22 @@ def ariaRequest(requestBody, conn):
                     # Use that tag for timeouts (joining any possible additional values with ampersands)
                     tag += '/' + '&'.join(request["tag"])
 
+        # Check if the user is blacklisted
+        if tag in ariaRequest.requestBlacklist or conn.IP in ariaRequest.requestBlacklist:
+            # User on the blacklist. Issue a Forbidden response.
+            sendResponse("403 Forbidden",
+                         "text/plain",
+                         "ARIA: The server administrator has forbidden you from submitting requests.",
+                         sock,
+                         ["Warning: 299 Cadence The server has been configured to block this user from requesting songs."])
+
+            # Close the connection.
+            sock.close()
+
+            # Log the blacklist error.
+            logger.warning("User with tag %s at address %s is on the request blacklist, and therefore was bocked from making a request.", tag, conn.IP)
+            return
+
         timeout=ariaRequest.timeouts[tag]
         logger.debug("Request timeout for %s at second %f. Current time %f.", tag, timeout+ariaRequest.timeoutSeconds, time.monotonic())
         if timeout+ariaRequest.timeoutSeconds>time.monotonic():

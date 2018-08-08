@@ -576,63 +576,68 @@ class Connection:
 
     # Follows configured behavior to attempt to get an IP out of request headers
     def setIPFrom(self, requestHeaders):
-        header = config['client_identification_header']
-        if header == "None":
-            # Use the socket connection address and return
-            self.IP=sock.getpeername()[0]
-            return
-
-        # Attempt to find that header in the request headers
-        # requestHeaders can either be a list of headers, bytes, or a string representing the headers
-        # Either way, make sure it ends up as a list of strings
-        lines = []
-        if type(requestHeaders) is list:
-            if type(requestHeaders[0]) is bytes:
-                lines = [line.decode() for line in requestHeaders]
-            else:
-                # Assume strings
-                lines = requestHeaders
-        elif type(requestHeaders) is str:
-            lines = requestHeaders.split("\r\n")
-        elif type(requestHeaders) is bytes:
-            lines = requestHeaders.decode().split("\r\n")
-        else:
-            # Assume it's some sort of collection
-            lines = [line for line in requestHeaders]
-
-        # Lines is now a list of strings, where each string is an HTTP header.
-        for line in lines:
-            if line.startswith(header):
-                # We've found our header.
-                vals = line.partition(": ")
-                value = vals[2]
-
-                # Handle standard headers which require more processing
-                if vals[0]=="X-Forwarded-For":
-                    # X-Forwarded-For includes a list of forwarding proxies we don't care about.
-                    value=value.partition(",")[0]
-                elif vals[0]=="Forwarded":
-                    # Forwarded includes more data than just identifier
-                    parts=[part.strip() for part in value.split(';')]
-
-                    # Get the field that contains source data
-                    for part in parts:
-                        if part[:4].lower() == "for=":
-                            # Part is our part.
-                            value=part[4:]
-                            break
-
-                    # We're probably done, unless the address is IPv6.
-                    # IPv6 records, for no apparent reason, must be in quotes and brackets. Strip both just in case
-                    if value.startswith('\"'):
-                        value=value.strip('[]\"')
-
-                # Set our IP to be that value
-                self.IP=value
+        try:
+            header = config['client_identification_header']
+            if header == "None":
+                # Use the socket connection address and return
+                self.IP=self.conn.getpeername()[0]
                 return
 
-        # We didn't find the header. Fall back to the socket connection address.
-        self.IP=sock.getpeername()[0]
+            # Attempt to find that header in the request headers
+            # requestHeaders can either be a list of headers, bytes, or a string representing the headers
+            # Either way, make sure it ends up as a list of strings
+            lines = []
+            if type(requestHeaders) is list:
+                if type(requestHeaders[0]) is bytes:
+                    lines = [line.decode() for line in requestHeaders]
+                else:
+                    # Assume strings
+                    lines = requestHeaders
+            elif type(requestHeaders) is str:
+                lines = requestHeaders.split("\r\n")
+            elif type(requestHeaders) is bytes:
+                lines = requestHeaders.decode().split("\r\n")
+            else:
+                # Assume it's some sort of collection
+                lines = [line for line in requestHeaders]
+
+            # Lines is now a list of strings, where each string is an HTTP header.
+            for line in lines:
+                if line.startswith(header):
+                    # We've found our header.
+                    vals = line.partition(": ")
+                    value = vals[2]
+
+                    # Handle standard headers which require more processing
+                    if vals[0]=="X-Forwarded-For":
+                        # X-Forwarded-For includes a list of forwarding proxies we don't care about.
+                        value=value.partition(",")[0]
+                    elif vals[0]=="Forwarded":
+                        # Forwarded includes more data than just identifier
+                        parts=[part.strip() for part in value.split(';')]
+
+                        # Get the field that contains source data
+                        for part in parts:
+                            if part[:4].lower() == "for=":
+                                # Part is our part.
+                                value=part[4:]
+                                break
+
+                        # We're probably done, unless the address is IPv6.
+                        # IPv6 records, for no apparent reason, must be in quotes and brackets. Strip both just in case
+                        if value.startswith('\"'):
+                            value=value.strip('[]\"')
+
+                    # Set our IP to be that value
+                    self.IP=value
+                    return
+
+            # We didn't find the header. Fall back to the socket connection address.
+            self.IP=self.conn.getpeername()[0]
+        except OSError:
+            logger.exception("Exception while attempting to read client IP from socket %d.", self.conn.fileno(), exc_info=True)
+            self.IP="Unknown (exception while processing IP address; See log for socket "+str(self.conn.fileno())+")."
+            # Note, happily, that including the socket number in there at least provides some separation between connections.
 
     # For compatibility with select
     def fileno(self):

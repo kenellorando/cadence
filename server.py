@@ -482,6 +482,14 @@ def ariaRequest(requestBody, conn):
         else:
             ariaRequest.requestBlacklist=[addr.strip() for addr in config['request_blacklist'].split(',')]
 
+        # Configure the whitelist
+        # Since the mechanism is intended to conditionally allow special requests, disable it if those are off.
+        # Since the mechanism is only triggered when the blacklist is triggered, disable it if the blacklist is empty.
+        if config['request_whitelist']=="None" or not ariaRequest.specialEnabled or ariaRequest.requestBlacklist==[]:
+            ariaRequest.requestWhitelist=[]
+        else:
+            ariaRequest.requestWhitelist=[addr.strip() for addr in config['request_whitelist'].split(',')]
+
     request = parse.parse_qs(requestBody)
 
     # Either use client IP or provided tag for timeouts

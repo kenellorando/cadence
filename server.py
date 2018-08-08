@@ -345,7 +345,7 @@ def basicHeaders(status, contentType):
             basicHeaders.format += "Cache-Control: public, max-age="+str(caching)+"\r\n"
 
         basicHeaders.format += "Content-Type: {2}\r\n"
-        
+
     # Format in our arguments and return
     return basicHeaders.format.format(status, HTTP_time(), contentType).encode()
 
@@ -475,6 +475,12 @@ def ariaRequest(requestBody, conn):
             else:
                 whitelist = whitelist.split(',')
                 ariaRequest.specialWhitelist = [addr.strip() for addr in whitelist]
+
+        # Configure the blacklist
+        if config['request_blacklist']=="None":
+            ariaRequest.requestBlacklist=[]
+        else:
+            ariaRequest.requestBlacklist=[addr.strip() for addr in config['request_blacklist'].split(',')]
 
     request = parse.parse_qs(requestBody)
 

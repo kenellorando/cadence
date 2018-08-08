@@ -513,7 +513,7 @@ def ariaRequest(requestBody, conn):
                     tag += '/' + '&'.join(request["tag"])
 
         # Check if the user is blacklisted
-        if tag in ariaRequest.requestBlacklist or conn.IP in ariaRequest.requestBlacklist:
+        if tag not in ariaRequest.requestWhitelist and (tag in ariaRequest.requestBlacklist or conn.IP in ariaRequest.requestBlacklist):
             # User on the blacklist. Issue a Forbidden response.
             sendResponse("403 Forbidden",
                          "text/plain",

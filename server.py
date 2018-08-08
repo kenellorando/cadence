@@ -337,9 +337,7 @@ def basicHeaders(status, contentType):
     if not hasattr(basicHeaders, "format"):
         basicHeaders.format =  "HTTP/1.1 {0}\r\n"
         basicHeaders.format += "Date: {1}\r\n"
-        basicHeaders.format += "Server: Cadence purpose-built webserver\r\n"
         basicHeaders.format += "Connection: close\r\n"
-        basicHeaders.format += "Tk: N\r\n"
 
         # Add cache-control header iff we have caching set
         if caching>0:

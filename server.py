@@ -350,14 +350,18 @@ def basicHeaders(status, contentType):
     # Format in our arguments and return
     return basicHeaders.format.format(status, HTTP_time(), contentType).encode()
 
-def constructResponse(unendedHeaders, content):
-    "Attaches unendedHeaders and content into one HTTP response (adding content-length in the process)"
+def constructResponse(unendedHeaders, content, etag=None):
+    "Attaches unendedHeaders and content into one HTTP response (adding content-length in the process), optionally overriding the etag"
 
     response =  unendedHeaders
 
     # Add ETag iff we have caching set
     if caching>0:
-        response += b"ETag: \""+ETag(content)+b"\"\r\n"
+        # Either generate our own, or use the provided one
+        if etag==None:
+            response += b"ETag: \""+ETag(content)+b"\"\r\n"
+        else:
+            response += b"ETag: \""+etag+b"\"\r\n"
 
     response += b"Content-Length: "+str(len(content)).encode()+b"\r\n\r\n"
     if isinstance(content, str):
@@ -366,15 +370,15 @@ def constructResponse(unendedHeaders, content):
         response += content
     return response
 
-def sendResponse(status, contentType, content, sock, headers=[]):
-    "Constructs and sends a response with the first three parameters via sock, optionally with additional headers."
+def sendResponse(status, contentType, content, sock, headers=[], etag=None):
+    "Constructs and sends a response with the first three parameters via sock, optionally with additional headers, and optionally overriding the ETag"
 
     # If additional headers are specified, format them for HTTP
     # Else, send as normal
     if len(headers)>0:
-        sock.sendall(constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content))
+        sock.sendall(constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, etag))
     else:
-        sock.sendall(constructResponse(basicHeaders(status, contentType), content))
+        sock.sendall(constructResponse(basicHeaders(status, contentType), content, etag))
 
     logger.info("Sent response to socket %d.", sock.fileno())
     logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))

@@ -97,7 +97,7 @@ if len(sys.argv)>3 or config.getboolean('force_caching'):
         if len(sys.argv)>4:
             caching = int(sys.argv[4])
         else:
-            caching = config['default_caching_duration']
+            caching = int(config['default_caching_duration'])
     else:
         logger.warning("Did not understand argument %s.", sys.argv[3])
 
@@ -328,6 +328,9 @@ def HTTP_time(at=time.time()):
 def parse_HTTP_time(at):
     "Returns a Unix timestamp from an HTTP timestamp"
 
+    if isinstance(at, bytes):
+        at=at.decode()
+
     return calendar.timegm(time.strptime(at, "%a, %d %b %Y %H:%M:%S GMT"))
 
 def basicHeaders(status, contentType):
@@ -338,6 +341,7 @@ def basicHeaders(status, contentType):
         basicHeaders.format =  "HTTP/1.1 {0}\r\n"
         basicHeaders.format += "Date: {1}\r\n"
         basicHeaders.format += "Connection: close\r\n"
+        basicHeaders.format += "Accept-Ranges: bytes\r\n"
         basicHeaders.format += "\r\n".join([s.strip() for s in config['additional_headers'].split(',')])+"\r\n"
 
         # Add cache-control header iff we have caching set
@@ -349,14 +353,18 @@ def basicHeaders(status, contentType):
     # Format in our arguments and return
     return basicHeaders.format.format(status, HTTP_time(), contentType).encode()
 
-def constructResponse(unendedHeaders, content):
-    "Attaches unendedHeaders and content into one HTTP response (adding content-length in the process)"
+def constructResponse(unendedHeaders, content, etag=None):
+    "Attaches unendedHeaders and content into one HTTP response (adding content-length in the process), optionally overriding the etag"
 
     response =  unendedHeaders
 
     # Add ETag iff we have caching set
     if caching>0:
-        response += b"ETag: \""+ETag(content)+b"\"\r\n"
+        # Either generate our own, or use the provided one
+        if etag==None:
+            response += b"ETag: \""+ETag(content)+b"\"\r\n"
+        else:
+            response += b"ETag: \""+etag+b"\"\r\n"
 
     response += b"Content-Length: "+str(len(content)).encode()+b"\r\n\r\n"
     if isinstance(content, str):
@@ -365,15 +373,15 @@ def constructResponse(unendedHeaders, content):
         response += content
     return response
 
-def sendResponse(status, contentType, content, sock, headers=[]):
-    "Constructs and sends a response with the first three parameters via sock, optionally with additional headers."
+def sendResponse(status, contentType, content, sock, headers=[], etag=None):
+    "Constructs and sends a response with the first three parameters via sock, optionally with additional headers, and optionally overriding the ETag"
 
     # If additional headers are specified, format them for HTTP
     # Else, send as normal
     if len(headers)>0:
-        sock.sendall(constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content))
+        sock.sendall(constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, etag))
     else:
-        sock.sendall(constructResponse(basicHeaders(status, contentType), content))
+        sock.sendall(constructResponse(basicHeaders(status, contentType), content, etag))
 
     logger.info("Sent response to socket %d.", sock.fileno())
     logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))
@@ -736,7 +744,7 @@ while True:
                 continue
 
             # Lines of the HTTP request (needed to read the header)
-            lines = request.split(b"\r\n")
+            lines = request.partition(b"\r\n\r\n")[0].split(b"\r\n")
 
             # The first line tells us what we're doing
             # If it's GET, we return the file specified via commandline
@@ -787,7 +795,8 @@ while True:
                 continue
 
             # Parse the filename out of the request
-            filename = os.path.join(directory, method.split(b' ')[1][1:])
+            # Trim leading slashes to keep Python from thinking that the method refers to the root directory.
+            filename = os.path.join(directory, method.split(b' ')[1].lstrip(b'/'))
             dir = False
             # If the filename is a directory, join it to "index.html"
             if os.path.isdir(filename):
@@ -966,12 +975,64 @@ while True:
                     openconn.remove(read.conn)
                     continue
 
+            # Check if we're doing a byte reply
+            done=False
+            for line in lines:
+                if line.startswith(b"Range: "):
+                    # We have a byte-range-request
+                    logger.debug("Request on socket %d is a range request.", read.fileno())
+
+                    # Perform a byte-range reply
+                    range=line.partition(b": ")[2]
+                    # 'Range' should look like "bytes=x-y"
+                    # Clip out those first six characters
+                    range=range[6:]
+                    # Now, trim our file to match that range, saving the original length and ETag
+                    points=[int(point) if len(point)!=0 else None for point in range.partition(b"-")[::2]]
+                    length=len(file)
+                    # Handle empty points
+                    if points[0]==None:
+                        points[0]=0
+                    if points[1]==None:
+                        points[1]=length-1
+
+                    etag=ETag(file)
+                    file=file[points[0]:points[1]+1]
+                    # File now only contain the range that was requested.
+                    # Send it off, with a Content-Range header explaining how much we sent.
+                    # Respect both GET and HEAD
+                    # Pass the ETag we calculated
+                    if method.startswith(b"GET"):
+                        sendResponse("206 Partial Content",
+                                     type,
+                                     file,
+                                     read.conn,
+                                     ["Content-Range: bytes {0}-{1}/{2}".format(points[0], points[1], length),
+                                      "Last-Modified: "+HTTP_time(os.path.getmtime(filename))],
+                                     etag)
+                    else:
+                        read.conn.sendall(constructResponse(basicHeaders("206 Partial Content", type)+
+                                                                b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n"+
+                                                                "Content-Range: bytes {0}-{1}/{2}\r\n".format(points[0], points[1], length).encode(),
+                                                            etag).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
+                        logger.info("Sent headers for partial request to socket %d.", read.fileno())
+
+                    # Now, close the connection and move on
+                    read.conn.close()
+                    openconn.remove(read.conn)
+                    done=True
+
+            # Skip the normal full-file processing if we already sent a message
+            if done:
+                continue
+
+            # If we're here, we're not doing a byte range reply
             # If the method is GET, use sendResponse to send the file contents.
             if method.startswith(b"GET"):
                 sendResponse("200 OK", type, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))])
             # If the method is HEAD, generate the same response, but strip the body
             else:
-                read.conn.sendall(constructResponse(basicHeaders("200 OK", type)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).split("\r\n\r\n")[0]+"\r\n\r\n")
+                read.conn.sendall(constructResponse(basicHeaders("200 OK", type)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
                 logger.info("Sent headers to socket %d.", read.fileno())
 
             # Now that we're done, close the connection and move on.

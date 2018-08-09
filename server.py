@@ -777,7 +777,8 @@ while True:
                              "text/html",
                              generateErrorPage("501 Not Implemented",
                                                "Your browser sent a request to perform an action the server doesn't support."),
-                             read.conn)
+                             read.conn,
+                             ["Allow: GET, HEAD"])
                 read.conn.close()
                 openconn.remove(read.conn)
 

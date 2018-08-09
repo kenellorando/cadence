@@ -795,7 +795,8 @@ while True:
                 continue
 
             # Parse the filename out of the request
-            filename = os.path.join(directory, method.split(b' ')[1][1:])
+            # Trim leading slashes to keep Python from thinking that the method refers to the root directory.
+            filename = os.path.join(directory, method.split(b' ')[1].lstrip(b'/'))
             dir = False
             # If the filename is a directory, join it to "index.html"
             if os.path.isdir(filename):

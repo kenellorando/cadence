@@ -97,7 +97,7 @@ if len(sys.argv)>3 or config.getboolean('force_caching'):
         if len(sys.argv)>4:
             caching = int(sys.argv[4])
         else:
-            caching = config['default_caching_duration']
+            caching = int(config['default_caching_duration'])
     else:
         logger.warning("Did not understand argument %s.", sys.argv[3])
 
@@ -327,6 +327,9 @@ def HTTP_time(at=time.time()):
 
 def parse_HTTP_time(at):
     "Returns a Unix timestamp from an HTTP timestamp"
+
+    if isinstance(at, bytes):
+        at=at.decode()
 
     return calendar.timegm(time.strptime(at, "%a, %d %b %Y %H:%M:%S GMT"))
 

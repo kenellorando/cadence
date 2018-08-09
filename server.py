@@ -1030,7 +1030,13 @@ while True:
                     # Clip out those first six characters
                     range=range[6:]
                     # Now, trim our file to match that range, saving the original length and ETag
-                    points=[int(point) if len(point)!=0 else None for point in range.partition(b"-")[::2]]
+                    # Catch errors in the process and treat them as being ill-formed
+                    # This includes multipart requests, which are currently considered more trouble than they're worth.
+                    try:
+                        points=[int(point) if len(point)!=0 else None for point in range.partition(b"-")[::2]]
+                    except:
+                        points=[-1, -1]
+
                     length=len(file)
                     # Handle empty points
                     if points[0]==None:

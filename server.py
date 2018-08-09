@@ -1038,6 +1038,26 @@ while True:
                     if points[1]==None:
                         points[1]=length-1
 
+                    if points[0]<0 or points[1]>length or points[0]>points[1]:
+                        # The request cannot be satisfied
+                        # (The request doesn't ask for a valid part of the file)
+                        # Issue a 416
+                        sendResponse("416 Range Not Satisfiable",
+                                     "text/html",
+                                     generateErrorPage("416 Range Not Satisfiable",
+                                                       "The server was unable to satisfy your request for bytes {0} to {1} of a {2} byte file.".format(points[0], points[1], length)),
+                                     read.conn,
+                                     ["Content-Range: */"+str(length)])
+
+                        # Log the problem
+                        logger.warning("Could not satisfy request from socket %d for bytes %d to %d of %d byte file %s.", read.fileno(), points[0], points[1], length, filename)
+
+                        # Close the connection and continue
+                        read.conn.close()
+                        openconn.remove(read.conn)
+                        done=True
+                        break
+
                     etag=ETag(file)
                     file=file[points[0]:points[1]+1]
                     # File now only contain the range that was requested.

@@ -1021,6 +1021,7 @@ while True:
                     read.conn.close()
                     openconn.remove(read.conn)
                     done=True
+                    break
 
             # Skip the normal full-file processing if we already sent a message
             if done:

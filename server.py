@@ -975,6 +975,58 @@ while True:
                     openconn.remove(read.conn)
                     continue
 
+            # Check if we're doing a byte reply
+            done=False
+            for line in lines:
+                if line.startswith(b"Range: "):
+                    # We have a byte-range-request
+                    logger.debug("Request on socket %d is a range request.", read.fileno())
+
+                    # Perform a byte-range reply
+                    range=line.partition(b": ")[2]
+                    # 'Range' should look like "bytes=x-y"
+                    # Clip out those first six characters
+                    range=range[6:]
+                    # Now, trim our file to match that range, saving the original length and ETag
+                    points=[int(point) if len(point)!=0 else None for point in range.partition(b"-")[::2]]
+                    length=len(file)
+                    # Handle empty points
+                    if points[0]==None:
+                        points[0]=0
+                    if points[1]==None:
+                        points[1]=length-1
+
+                    etag=ETag(file)
+                    file=file[points[0]:points[1]+1]
+                    # File now only contain the range that was requested.
+                    # Send it off, with a Content-Range header explaining how much we sent.
+                    # Respect both GET and HEAD
+                    # Pass the ETag we calculated
+                    if method.startswith(b"GET"):
+                        sendResponse("206 Partial Content",
+                                     type,
+                                     file,
+                                     read.conn,
+                                     ["Content-Range: bytes {0}-{1}/{2}".format(points[0], points[1], length),
+                                      "Last-Modified: "+HTTP_time(os.path.getmtime(filename))],
+                                     etag)
+                    else:
+                        read.conn.sendall(constructResponse(basicHeaders("206 Partial Content", type)+
+                                                                b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n"+
+                                                                "Content-Range: bytes {0}-{1}/{2}\r\n".format(points[0], points[1], length).encode(),
+                                                            etag).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
+                        logger.info("Sent headers for partial request to socket %d.", read.fileno())
+
+                    # Now, close the connection and move on
+                    read.conn.close()
+                    openconn.remove(read.conn)
+                    done=True
+
+            # Skip the normal full-file processing if we already sent a message
+            if done:
+                continue
+
+            # If we're here, we're not doing a byte range reply
             # If the method is GET, use sendResponse to send the file contents.
             if method.startswith(b"GET"):
                 sendResponse("200 OK", type, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))])

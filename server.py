@@ -982,6 +982,48 @@ while True:
                     # We have a byte-range-request
                     logger.debug("Request on socket %d is a range request.", read.fileno())
 
+                    # Check for If-Range
+                    exit=False
+                    for l in lines:
+                        if l.startswith(b"If-Range: "):
+                            # We found an If-Range
+                            value=l.partition(b": ")[2]
+
+                            # Check if the If-Range is a last-modified or an ETag
+                            # Because our ETags are base64 encoded, we can check for the presence of a space to do this
+                            if b' ' in value:
+                                # Value is a last-modified
+                                mtime=parse_HTTP_time(value)
+                                logger.debug("Request is using mtime for If-Range.")
+
+                                # Compare mtimes
+                                if mtime<math.floor(os.path.getmtime(filename)):
+                                    # The file has been modified. We have to do a full-file.
+                                    exit=True
+                                    logger.debug("File modified since %d (mtime %d).", mtime, math.floor(os.path.getmtime(filename)))
+
+                                # Either way, we're done. Break out.
+                                break
+
+                            else:
+                                # Value is an ETag
+                                value=value.strip(b"\"")
+                                logger.debug("Request is using ETag for If-Range.")
+
+                                # Compare ETags
+                                etag=ETag(file)
+                                if value!=etag:
+                                    # The file has been modified. We have to do a full-file.
+                                    exit=True
+                                    logger.debug("File modified. Client ETag \"%s\", server ETag \"%s\".", value, etag)
+
+                                # Either way, we're done. Break out.
+                                break
+
+                    # If the If-Range says not to perform a byte-range reply, break out of the loop early
+                    if exit:
+                        break
+
                     # Perform a byte-range reply
                     range=line.partition(b": ")[2]
                     # 'Range' should look like "bytes=x-y"

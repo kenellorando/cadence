@@ -978,6 +978,11 @@ while True:
             # Check if we're doing a byte reply
             done=False
             for line in lines:
+                # If we're not processing byte replies, break out of the loop
+                # (this is here to reduce indentation on this really big loop)
+                if not config.getboolean("enable_range_requests"):
+                    break
+
                 if line.startswith(b"Range: "):
                     # We have a byte-range-request
                     logger.debug("Request on socket %d is a range request.", read.fileno())

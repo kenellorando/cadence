@@ -1037,6 +1037,9 @@ while True:
                     except:
                         points=[-1, -1]
 
+                        # Log that there was an exception
+                        logger.exception("Exception while processing range request for %s. If this is a multipart request, consider submitting an issue on github to add support for your use-case.", line.partition(b": ")[2].decode(), exc_info=True)
+
                     length=len(file)
                     # Handle empty points
                     if points[0]==None:

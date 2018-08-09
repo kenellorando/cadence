@@ -737,7 +737,7 @@ while True:
                 continue
 
             # Lines of the HTTP request (needed to read the header)
-            lines = request.split(b"\r\n")
+            lines = request.partition(b"\r\n\r\n")[0].split(b"\r\n")
 
             # The first line tells us what we're doing
             # If it's GET, we return the file specified via commandline

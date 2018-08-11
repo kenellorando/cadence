@@ -440,6 +440,32 @@ def ariaSearch(requestBody, conn):
         sock.close()
         return
 
+    # Attempt to connect to the database
+    try:
+        # Process all the timeout values we claimed to support
+        timeout=config['db_timeout']
+        if timeout=="None":
+            timeout=0
+        else:
+            timeout=int(timeout)
+            if timeout<0:
+                timeout=0
+
+        db = pg8000.connect(user=config['db_username'], host=config['db_host'],0
+                            port=int(config['db_port']), database=config['db_name'],
+                            password=config['db_password'], ssl=config.getboolean('db_encrypt'),
+                            timeout=timeout)
+        cursor = db.cursor()
+    except:
+        # Send the client an error message
+        sendResponse("500 Internal Server Error", "application/json", "The server could not access the ARIA database.", sock)
+
+        # Log the exception
+        logger.exception("Could not connect to ARIA database.", exc_info=True)
+
+        # Close the connection.
+        sock.close()
+
     # Since we have no database, we have no results
     sendResponse("200 OK", "application/json", "[]", sock)
 

@@ -445,11 +445,11 @@ def ariaSearch(requestBody, conn):
         # Process all the timeout values we claimed to support
         timeout=config['db_timeout']
         if timeout=="None":
-            timeout=0
+            timeout=None
         else:
             timeout=int(timeout)
-            if timeout<0:
-                timeout=0
+            if timeout<=0:
+                timeout=None
 
         db = pg8000.connect(user=config['db_username'], host=config['db_host'],0
                             port=int(config['db_port']), database=config['db_name'],

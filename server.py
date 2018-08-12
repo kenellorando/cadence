@@ -516,11 +516,17 @@ def ariaSearch(requestBody, conn):
 
         # Log results
         logger.debug("Search for \"%s\" had 0 results - %s.", query, results)
+    except:
+        # Well, we couldn't search. Tell the user and log the error
 
+        # Send a response to the user
+        sendResponse("500 Internal Server Error", "application/json", "The server could not query the database.", sock)
+
+        # Log the error
+        logger.exception("Could connect to database, but could not execute search.", exc_info=True)
+    finally:
         # Close the connection.
         sock.close()
-    except:
-        pass
 
 def ariaRequest(requestBody, conn):
     "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"

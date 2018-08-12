@@ -417,6 +417,17 @@ def generateErrorPage(title, description):
 def ariaSearch(requestBody, conn):
     "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"
 
+    if not hasattr(ariaSearch, "timeout"):
+        # Pre-store certain values from configuration
+        # Process all the timeout values we claimed to support
+        ariaSearch.timeout=config['db_timeout']
+        if ariaSearch.timeout=="None":
+            ariaSearch.timeout=None
+        else:
+            ariaSearch.timeout=int(timeout)
+            if ariaSearch.timeout<=0:
+                ariaSearch.timeout=None
+
     # Accept either a socket or a Connection
     sock = conn
     # If conn is a Connection, use the socket from it
@@ -443,19 +454,10 @@ def ariaSearch(requestBody, conn):
 
     # Attempt to connect to the database
     try:
-        # Process all the timeout values we claimed to support
-        timeout=config['db_timeout']
-        if timeout=="None":
-            timeout=None
-        else:
-            timeout=int(timeout)
-            if timeout<=0:
-                timeout=None
-
         db = pg8000.connect(user=config['db_username'], host=config['db_host'],0
                             port=int(config['db_port']), database=config['db_name'],
                             password=config['db_password'], ssl=config.getboolean('db_encrypt'),
-                            timeout=timeout)
+                            timeout=ariaSearch.timeout)
         cursor = db.cursor()
     except:
         # Send the client an error message

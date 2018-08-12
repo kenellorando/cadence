@@ -11,6 +11,7 @@ import base64
 import math
 import traceback
 import pg8000
+import string
 import logging
 import logging.handlers
 from telnetlib import Telnet
@@ -466,15 +467,35 @@ def ariaSearch(requestBody, conn):
         # Close the connection.
         sock.close()
 
-    # Since we have no database, we have no results
-    sendResponse("200 OK", "application/json", "[]", sock)
+    # Now, try to conduct the search using that connection
+    try:
+        results=[]
+        q=query.lower().translate(str.maketrans(dict.fromkeys(string.punctuation)))
 
-    # Log results
-    # Results are currently mocked
-    logger.debug("Search for \"%s\" had 0 results - [].", query)
+        # Incomplete query string
+        selectfrom="SELECT * FROM "+config['db_table']+" "
 
-    # Close the connection.
-    sock.close()
+        # Check for our special query forms, and get results out of them
+        if q.startswith("songs named "):
+            cursor.execute(selectfrom+"WHERE "+config['db_column_title']+" LIKE %s", q[12:])
+            results=cursor.fetchall()
+        elif q.startswith("songs by "):
+            cursor.execute(selectfrom+"WHERE "+config['db_column_artist']+" LIKE %s", q[9:])
+            results=cursor.fetchall()
+        elif q.endswith(" songs") and config['db_column_genre']!="None":
+            cursor.execute(selectfrom+"WHERE "+config['db_column_genre']+" LIKE %s", q[:-6])
+            results=cursor.fetchall()
+        else:
+            # We don't have a special form.
+            # For now, we haven't yet agreed on how the server should behave in this situation
+            # But I'm sure it'll include results where the artist or title match the query.
+
+        # Log results
+        logger.debug("Search for \"%s\" had 0 results - [].", query)
+
+        # Close the connection.
+        sock.close()
+    except:
 
 def ariaRequest(requestBody, conn):
     "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"

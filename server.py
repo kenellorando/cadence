@@ -506,6 +506,9 @@ def ariaSearch(requestBody, conn):
                                   song[config['db_column_path']].replace("\"", "\\\""))
                  for song in results]
 
+        # Store the number of results for the log
+        length=len(results)
+
         # Formatter is now a list of strings, each of which is an ARIA search result in JSON encoding
         # Now, join those strings together to make a single JSON string
         results="[{"+"},{".join(results)+"}]" # Disgusting, but surprisingly effective
@@ -515,7 +518,7 @@ def ariaSearch(requestBody, conn):
         sendResponse("200 OK", "application/json", results, sock)
 
         # Log results
-        logger.debug("Search for \"%s\" had 0 results - %s.", query, results)
+        logger.debug("Search for \"%s\" had %d results - %s.", query, length, results)
     except:
         # Well, we couldn't search. Tell the user and log the error
 

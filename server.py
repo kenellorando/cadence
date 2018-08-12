@@ -428,6 +428,9 @@ def ariaSearch(requestBody, conn):
             if ariaSearch.timeout<=0:
                 ariaSearch.timeout=None
 
+        # Incomplete database search query string
+        ariaSearch.selectfrom="SELECT * FROM "+config['db_table']+" "
+
     # Accept either a socket or a Connection
     sock = conn
     # If conn is a Connection, use the socket from it
@@ -474,21 +477,18 @@ def ariaSearch(requestBody, conn):
         results=[]
         q=query.lower().translate(str.maketrans(dict.fromkeys(string.punctuation)))
 
-        # Incomplete query string
-        selectfrom="SELECT * FROM "+config['db_table']+" "
-
         # Check for our special query forms, and get results out of them
         if q.startswith("songs named "):
-            cursor.execute(selectfrom+"WHERE "+config['db_column_title']+" LIKE %s", q[12:])
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" LIKE %s", q[12:])
         elif q.startswith("songs by "):
-            cursor.execute(selectfrom+"WHERE "+config['db_column_artist']+" LIKE %s", q[9:])
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" LIKE %s", q[9:])
         elif q.endswith(" songs") and config['db_column_genre']!="None":
-            cursor.execute(selectfrom+"WHERE "+config['db_column_genre']+" LIKE %s", q[:-6])
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_genre']+" LIKE %s", q[:-6])
         else:
             # We don't have a special form.
             # For now, we haven't yet agreed on how the server should behave in this situation
             # But I'm sure it'll include results where the artist or title match the query.
-            cursor.execute(selectfrom+"WHERE "+config['db_column_artist']+" LIKE %s OR "+config['db_column_title']+" LIKE %s", q, q)
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" LIKE %s OR "+config['db_column_title']+" LIKE %s", q, q)
 
         # Save our results
         results=cursor.fetchall()

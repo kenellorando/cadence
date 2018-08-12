@@ -457,7 +457,7 @@ def ariaSearch(requestBody, conn):
 
     # Attempt to connect to the database
     try:
-        db = pg8000.connect(user=config['db_username'], host=config['db_host'],0
+        db = pg8000.connect(user=config['db_username'], host=config['db_host'],
                             port=int(config['db_port']), database=config['db_name'],
                             password=config['db_password'], ssl=config.getboolean('db_encrypt'),
                             timeout=ariaSearch.timeout)

@@ -478,24 +478,49 @@ def ariaSearch(requestBody, conn):
         # Check for our special query forms, and get results out of them
         if q.startswith("songs named "):
             cursor.execute(selectfrom+"WHERE "+config['db_column_title']+" LIKE %s", q[12:])
-            results=cursor.fetchall()
         elif q.startswith("songs by "):
             cursor.execute(selectfrom+"WHERE "+config['db_column_artist']+" LIKE %s", q[9:])
-            results=cursor.fetchall()
         elif q.endswith(" songs") and config['db_column_genre']!="None":
             cursor.execute(selectfrom+"WHERE "+config['db_column_genre']+" LIKE %s", q[:-6])
-            results=cursor.fetchall()
         else:
             # We don't have a special form.
             # For now, we haven't yet agreed on how the server should behave in this situation
             # But I'm sure it'll include results where the artist or title match the query.
+            cursor.execute(selectfrom+"WHERE "+config['db_column_artist']+" LIKE %s OR "+config['db_column_title']+" LIKE %s", q, q)
+
+        # Save our results
+        results=cursor.fetchall()
+
+        # Close the database connection and cursor
+        connection.close()
+        cursor.close()
+
+        # Now, we have a collection of results. We need to make it a JSON-parsable collection
+        # In addition, we need to make sure it has the appropriate names for the ARIA frontend
+        # First, let's do that second part, with a JSON-parsable formatted string
+        # Making our lives more difficult is the fact that this data can technically contain quotes.
+        # We need to escape those to not confuse the browser, with a simply disgusting replace call
+        formatter="{\"title\": \"{0}\",\"artist\": \"{1}\",\"path\": \"{2}\"}"
+        results=[formatter.format(song[config['db_column_title']].replace("\"", "\\\""),
+                                  song[config['db_column_artist']].replace("\"", "\\\""),
+                                  song[config['db_column_path']].replace("\"", "\\\""))
+                 for song in results]
+
+        # Formatter is now a list of strings, each of which is an ARIA search result in JSON encoding
+        # Now, join those strings together to make a single JSON string
+        results="[{"+"},{".join(results)+"}]" # Disgusting, but surprisingly effective
+        # Who needs JSON libraries anyway?
+
+        # Send that result string to the user
+        sendResponse("200 OK", "application/json", results, sock)
 
         # Log results
-        logger.debug("Search for \"%s\" had 0 results - [].", query)
+        logger.debug("Search for \"%s\" had 0 results - %s.", query, results)
 
         # Close the connection.
         sock.close()
     except:
+        pass
 
 def ariaRequest(requestBody, conn):
     "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"

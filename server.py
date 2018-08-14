@@ -384,9 +384,17 @@ def constructResponse(unendedHeaders, content, etag=None):
 def sendResponse(status, contentType, content, sock, headers=[], etag=None):
     "Constructs and sends a response with the first three parameters via sock, optionally with additional headers, and optionally overriding the ETag"
 
-    # Handle unencoded content
-    if type(content) is str:
-        content=content.encode()
+    # Attempt to handle unencoded content
+    # This occasionally throws TypeErrors, for no reason I can tell.
+    # It complains that 'str' object is not callable... But the only thing I'm calling is type?
+    try:
+        if isinstance(content, str):
+            content=content.encode()
+    except:
+        logger.debug("Strange error while attempting str/bytes detection.", exc_info=True)
+
+        # At least keep from crashing.
+        content=bytes(content)
 
     # If additional headers are specified, format them for HTTP
     # Else, send as normal
@@ -946,7 +954,7 @@ while True:
                 continue
 
             # Guess the MIME type of the file.
-            type = mimeTypeOf(filename)
+            mimetype = mimeTypeOf(filename)
 
             # Read the file into memory
             logger.info("Attempting file read on file %s.", filename.decode())
@@ -1057,7 +1065,7 @@ while True:
                     if mtime>=math.floor(os.path.getmtime(filename)):
                         # Last modified time was given (all NaN comparisons return false), and the file has not since been modified.
                         # Return basic headers, plus ETag and mtime
-                        read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+ETag(file)+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
+                        read.conn.sendall(basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+ETag(file)+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                         logger.info("Client already has this file (not modified since %f [which is %s]).", mtime, HTTP_time(mtime))
 
                         # Close the connection and move on.
@@ -1068,7 +1076,7 @@ while True:
                 # If we have an ETag and it matches our file, return 304 Not Modified
                 elif Etag == ETag(file):
                     # ETag matches. Return our basic headers, plus the ETag and mtime
-                    read.conn.sendall(basicHeaders("304 Not Modified", type)+b"ETag: \""+Etag+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
+                    read.conn.sendall(basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+Etag+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                     logger.info("Client already has this file (matching hash %s) - Issued 304.", Etag.decode())
 
                     # Close the connection and move on.
@@ -1181,14 +1189,14 @@ while True:
                     # Pass the ETag we calculated
                     if method.startswith(b"GET"):
                         sendResponse("206 Partial Content",
-                                     type,
+                                     mimetype,
                                      file,
                                      read.conn,
                                      ["Content-Range: bytes {0}-{1}/{2}".format(points[0], points[1], length),
                                       "Last-Modified: "+HTTP_time(os.path.getmtime(filename))],
                                      etag)
                     else:
-                        read.conn.sendall(constructResponse(basicHeaders("206 Partial Content", type)+
+                        read.conn.sendall(constructResponse(basicHeaders("206 Partial Content", mimetype)+
                                                                 b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n"+
                                                                 "Content-Range: bytes {0}-{1}/{2}\r\n".format(points[0], points[1], length).encode(),
                                                             etag).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
@@ -1207,10 +1215,10 @@ while True:
             # If we're here, we're not doing a byte range reply
             # If the method is GET, use sendResponse to send the file contents.
             if method.startswith(b"GET"):
-                sendResponse("200 OK", type, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))])
+                sendResponse("200 OK", mimetype, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))])
             # If the method is HEAD, generate the same response, but strip the body
             else:
-                read.conn.sendall(constructResponse(basicHeaders("200 OK", type)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
+                read.conn.sendall(constructResponse(basicHeaders("200 OK", mimetype)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
                 logger.info("Sent headers to socket %d.", read.fileno())
 
             # Now that we're done, close the connection and move on.

@@ -607,6 +607,9 @@ def ariaRequest(requestBody, conn):
         else:
             ariaRequest.requestWhitelist=[addr.strip() for addr in config['request_whitelist'].split(',')]
 
+        # Configure the liquidsoap target
+        ariaRequest.liquidsoapPort=int(config['liquidsoap_port'])
+
     request = parse.parse_qs(requestBody)
 
     # Either use client IP or provided tag for timeouts
@@ -671,7 +674,7 @@ def ariaRequest(requestBody, conn):
     logger.info("Path: %s", path)
 
     # Use telnet to connect to the stream client and transmit the request
-    connection = Telnet('localhost', 1234)
+    connection = Telnet(config['liquidsoap_host'], ariaRequest.liquidsoapPort)
     try:
         connection.write(("request.push "+path).encode())
         response=connection.read_until(b'END', 2).decode()

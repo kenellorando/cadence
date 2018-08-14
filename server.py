@@ -498,7 +498,7 @@ def ariaSearch(requestBody, conn):
         results=cursor.fetchall()
 
         # Close the database connection and cursor
-        connection.close()
+        db.close()
         cursor.close()
 
         # Now, we have a collection of results. We need to make it a JSON-parsable collection

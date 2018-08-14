@@ -520,9 +520,9 @@ def ariaSearch(requestBody, conn):
         # Making our lives more difficult is the fact that this data can technically contain quotes.
         # We need to escape those to not confuse the browser, with a simply disgusting replace call
         formatter="\"title\": \"{0}\", \"artist\": \"{1}\", \"path\": \"{2}\""
-        results=[formatter.format(song[0].replace("\"", "\\\"").replace("\\", "\\\\"),
-                                  song[1].replace("\"", "\\\"").replace("\\", "\\\\"),
-                                  song[2].replace("\"", "\\\"").replace("\\", "\\\\"))
+        results=[formatter.format(song[0].replace("\\", "\\\\").replace("\"", "\\\""),
+                                  song[1].replace("\\", "\\\\").replace("\"", "\\\""),
+                                  song[2].replace("\\", "\\\\").replace("\"", "\\\""))
                  for song in results]
 
         # If no results, just send an empty array

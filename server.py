@@ -497,6 +497,9 @@ def ariaSearch(requestBody, conn):
         # Save our results
         results=cursor.fetchall()
 
+        # Store the number of results for the log
+        length=len(results)
+
         # Close the database connection and cursor
         db.close()
         cursor.close()
@@ -512,13 +515,15 @@ def ariaSearch(requestBody, conn):
                                   song[config['db_column_path']].replace("\"", "\\\""))
                  for song in results]
 
-        # Store the number of results for the log
-        length=len(results)
-
-        # Formatter is now a list of strings, each of which is an ARIA search result in JSON encoding
-        # Now, join those strings together to make a single JSON string
-        results="[{"+"},{".join(results)+"}]" # Disgusting, but surprisingly effective
-        # Who needs JSON libraries anyway?
+        # If no results, just send an empty array
+        if length==0:
+            results="[]"
+        # Otherwise perform normal JSON formatter
+        else:
+            # results is now a list of strings, each of which is an ARIA search result in JSON encoding
+            # Now, join those strings together to make a single JSON string
+            results="[{"+"},{".join(results)+"}]" # Disgusting, but surprisingly effective
+            # Who needs JSON libraries anyway?
 
         # Send that result string to the user
         sendResponse("200 OK", "application/json", results, sock)

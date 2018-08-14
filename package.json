@@ -21,7 +21,7 @@
     "express": "latest",
     "express-rate-limit": "^2.9.0",
     "mongodb": "^2.2.31",
-    "musicmetadata": "latest",
+    "music-metadata": "latest",
     "telnet-client": "latest"
   },
   "devDependencies": {},

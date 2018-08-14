@@ -9,7 +9,7 @@ var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
-var mm = require('musicmetadata');
+var mm = require('music-metadata');
 var Telnet = require('telnet-client');
 var RateLimit = require('express-rate-limit')
 
@@ -112,25 +112,25 @@ MongoClient.connect(DB_URL, function (err, db) {
             if (!music)
               return next();
 
-            var parser = mm(fs.createReadStream(file), function (err, metadata) {
-              if (err) {
-                next();
-              }
+            mm.parseFile(file).then( function(metadata) {
               // Insert the object to the database
               db.collection("music").update({
                 path: file
               }, {
                 $set: {
-                  "title": metadata.title,
-                  "artist": metadata.artist,
-                  "album": metadata.album
+                  "title": metadata.common.title,
+                  "artist": metadata.common.artist,
+                  "album": metadata.common.album
                 }
               }, {
                 upsert: true
               })
+              next(); // Parse files sequential
+            }).catch( function(err) {
+              console.log(`Warning: failed to retrieve metadata from '${file}': ${err.message}`);
+              next();
             })
           };
-          next();
         });
       })();
     });

@@ -654,7 +654,7 @@ def ariaRequest(requestBody, conn):
                          "text/plain",
                          "ARIA: Request rejected, you must wait five minutes between requests.",
                          sock,
-                         ["Retry-After: "+str(math.ceil((timeout+ariaRequest.timeoutSeconds)-time.monotonic))])
+                         ["Retry-After: "+str(math.ceil((timeout+ariaRequest.timeoutSeconds)-time.monotonic()))])
 
             # Close the connection.
             sock.close()

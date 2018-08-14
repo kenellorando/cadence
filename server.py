@@ -481,12 +481,14 @@ def ariaSearch(requestBody, conn):
         results=[]
         q=query.lower()
 
+        d = str.maketrans(dict.fromkeys(string.punctuation))
+
         # Check for our special query forms, and get results out of them
-        if q.startswith("songs named "):
+        if q.translate(d).startswith("songs named "):
             cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" LIKE %s", (q[12:],))
-        elif q.startswith("songs by "):
+        elif q.translate(d).startswith("songs by "):
             cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" LIKE %s", (q[9:],))
-        elif q.endswith(" songs") and config['db_column_genre']!="None":
+        elif q.translate(d).endswith(" songs") and config['db_column_genre']!="None":
             cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_genre']+" LIKE %s", (q[:-6],))
         else:
             # We don't have a special form.

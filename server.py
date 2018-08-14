@@ -688,7 +688,7 @@ def ariaRequest(requestBody, conn):
         # Provide the same information in a comment in the ariaSays element.
         pos = ""
         try:
-            pos = str(int(response))
+            pos = str(int(response[:-3])) # read_until includes the "END", so we have to strip it out.
         except:
             pos = "Unknown"
 

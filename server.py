@@ -384,6 +384,10 @@ def constructResponse(unendedHeaders, content, etag=None):
 def sendResponse(status, contentType, content, sock, headers=[], etag=None):
     "Constructs and sends a response with the first three parameters via sock, optionally with additional headers, and optionally overriding the ETag"
 
+    # Handle unencoded content
+    if type(content) is str:
+        content=content.encode()
+
     # If additional headers are specified, format them for HTTP
     # Else, send as normal
     if len(headers)>0:

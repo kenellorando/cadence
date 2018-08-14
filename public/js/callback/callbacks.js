@@ -11,6 +11,8 @@ function registerCallback(child) {
 // Call this function to register a callback class as inheriting from a different class
 // This class should either be registered through this function or through registerCallback
 // Unless, of course, the class is CallbackInterface, in which case this is equivalent to registerCallback
+// Note that calling this does not make the child call the parent's callback functions.
+// You should take care of this yourself.
 function registerCallbackAs(child, parent) {
     child.prototype=Object.create(parent.prototype)
     child.prototype.constructor=child

@@ -832,8 +832,9 @@ while True:
             # Accept as many connections as we can until none are immediately ready for accept
             try:
                 while True:
-                    logger.info("Accepting a new connection.")
-                    openconn.append(Connection(read.conn.accept()[0], False))
+                    conn = read.conn.accept()[0]
+                    openconn.append(Connection(conn, False))
+                    logger.info("Accepting a new connection, attached socket %d.", conn.fileno())
             except socket.timeout:
                 pass
             except BlockingIOError:

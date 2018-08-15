@@ -562,9 +562,9 @@ def ariaRequest(requestBody, conn):
         sock = conn.conn
     # Otherwise, conn needs to be a socket.
     # That socket stays in sock
-    # conn becomes a Connection covering that socket with the IP set from the peername
+    # conn becomes a read Connection covering that socket with the IP set from the peername
     else:
-        conn = Connection(sock)
+        conn = Connection(sock, False)
         conn.IP = sock.getpeername()[0]
 
     # Log the request
@@ -809,9 +809,9 @@ while True:
     r = []
     # Add all waiting connections
     for conn in openconn:
-        r.append(Connection(conn))
+        r.append(Connection(conn, False))
     # And also the incoming connection accept socket
-    r.append(Connection(sock, True))
+    r.append(Connection(sock, False, True))
 
     # Now, select sockets to read from
     logger.debug("Selection...")

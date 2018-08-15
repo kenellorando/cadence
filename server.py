@@ -381,7 +381,7 @@ def constructResponse(unendedHeaders, content, etag=None):
         response += content
     return response
 
-def queueResponse(response, sock):
+def queueResponse(sock, response):
     "Prepare the response to be sent on the socket sock. No work is done to response before send."
 
     openconn.append(Connection(sock, True, content=response))

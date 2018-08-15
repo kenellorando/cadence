@@ -408,7 +408,7 @@ def sendResponse(status, contentType, content, sock, headers=[], etag=None):
     else:
         queueResponse(sock, constructResponse(basicHeaders(status, contentType), content, etag))
 
-    logger.info("Sent response to socket %d.", sock.fileno())
+    logger.info("Queued response for socket %d.", sock.fileno())
     logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))
 
 # Probably won't see much use for this... But need it at least for 400 bad request
@@ -1244,4 +1244,5 @@ while True:
     logger.debug("Selected %d writeable sockets.", len(writeable))
     for write in writeable:
         # Handling writes is a lot easier than reads, because the read logic has made all the decisions.
+        logger.info("Sent response to socket %d.", write.fileno())
         write.conn.sendall(write.content)

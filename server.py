@@ -404,9 +404,9 @@ def sendResponse(status, contentType, content, sock, headers=[], etag=None):
     # If additional headers are specified, format them for HTTP
     # Else, send as normal
     if len(headers)>0:
-        sock.sendall(constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, etag))
+        queueResponse(sock, constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, etag))
     else:
-        sock.sendall(constructResponse(basicHeaders(status, contentType), content, etag))
+        queueResponse(sock, constructResponse(basicHeaders(status, contentType), content, etag))
 
     logger.info("Sent response to socket %d.", sock.fileno())
     logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))
@@ -1075,7 +1075,7 @@ while True:
                     if mtime>=math.floor(os.path.getmtime(filename)):
                         # Last modified time was given (all NaN comparisons return false), and the file has not since been modified.
                         # Return basic headers, plus ETag and mtime
-                        read.conn.sendall(basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+ETag(file)+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
+                        queueResponse(read.conn, basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+ETag(file)+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                         logger.info("Client already has this file (not modified since %f [which is %s]).", mtime, HTTP_time(mtime))
 
                         # Close the connection and move on.
@@ -1086,7 +1086,7 @@ while True:
                 # If we have an ETag and it matches our file, return 304 Not Modified
                 elif Etag == ETag(file):
                     # ETag matches. Return our basic headers, plus the ETag and mtime
-                    read.conn.sendall(basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+Etag+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
+                    queueResponse(read.conn, basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+Etag+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                     logger.info("Client already has this file (matching hash %s) - Issued 304.", Etag.decode())
 
                     # Close the connection and move on.
@@ -1206,10 +1206,11 @@ while True:
                                       "Last-Modified: "+HTTP_time(os.path.getmtime(filename))],
                                      etag)
                     else:
-                        read.conn.sendall(constructResponse(basicHeaders("206 Partial Content", mimetype)+
-                                                                b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n"+
-                                                                "Content-Range: bytes {0}-{1}/{2}\r\n".format(points[0], points[1], length).encode(),
-                                                            etag).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
+                        queueResponse(read.conn, constructResponse(basicHeaders("206 Partial Content",
+                                                                                mimetype)+
+                                                                   b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n"+
+                                                                   "Content-Range: bytes {0}-{1}/{2}\r\n".format(points[0], points[1], length).encode(),
+                                                                   etag).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
                         logger.info("Sent headers for partial request to socket %d.", read.fileno())
 
                     # Now, close the connection and move on
@@ -1228,7 +1229,7 @@ while True:
                 sendResponse("200 OK", mimetype, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))])
             # If the method is HEAD, generate the same response, but strip the body
             else:
-                read.conn.sendall(constructResponse(basicHeaders("200 OK", mimetype)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
+                queueResponse(read.conn, constructResponse(basicHeaders("200 OK", mimetype)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
                 logger.info("Sent headers to socket %d.", read.fileno())
 
             # Now that we're done, close the connection and move on.

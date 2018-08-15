@@ -108,6 +108,9 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind(("", port))
 sock.listen(int(config['backlog']))
 
+# Set sock as nonblocking
+sock.setblocking(False)
+
 # Helper functions
 def waitingRequest(s, blocksize=4096):
     "Returns a string containing one complete HTTP request from s, loaded in chunks of blocksize"
@@ -826,8 +829,16 @@ while True:
 
         # For the accept socket, accept the connection and add it to the list
         if read.isAccept:
-            logger.info("Accepting a new connection.")
-            openconn.append(Connection(read.conn.accept()[0], False))
+            # Accept as many connections as we can until none are immediately ready for accept
+            try:
+                while True:
+                    conn = read.conn.accept()[0]
+                    openconn.append(Connection(conn, False))
+                    logger.info("Accepting a new connection, attached socket %d.", conn.fileno())
+            except socket.timeout:
+                pass
+            except BlockingIOError:
+                pass
         else:
             logger.info("Processing request from socket %d.", read.fileno())
             # Fetch the HTTP request waiting on read

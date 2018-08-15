@@ -1239,3 +1239,9 @@ while True:
             # Now that we're done, close the connection and move on.
             read.conn.close()
             openconn.remove(read.conn)
+
+    # Now, handle the writeable sockets
+    logger.debug("Selected %d writeable sockets.", len(writeable))
+    for write in writeable:
+        # Handling writes is a lot easier than reads, because the read logic has made all the decisions.
+        write.conn.sendall(write.content)

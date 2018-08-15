@@ -836,6 +836,8 @@ while True:
                     openconn.append(Connection(read.conn.accept()[0], False))
             except socket.timeout:
                 pass
+            except BlockingIOError:
+                pass
         else:
             logger.info("Processing request from socket %d.", read.fileno())
             # Fetch the HTTP request waiting on read

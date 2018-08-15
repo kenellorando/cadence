@@ -381,6 +381,11 @@ def constructResponse(unendedHeaders, content, etag=None):
         response += content
     return response
 
+def queueResponse(response, sock):
+    "Prepare the response to be sent on the socket sock. No work is done to response before send."
+
+    openconn.append(Connection(sock, True, content=response))
+
 def sendResponse(status, contentType, content, sock, headers=[], etag=None):
     "Constructs and sends a response with the first three parameters via sock, optionally with additional headers, and optionally overriding the ETag"
 

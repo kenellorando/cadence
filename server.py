@@ -718,10 +718,11 @@ def ariaRequest(requestBody, conn):
 
 # Class to store an open connection
 class Connection:
-    def __init__(self, conn, isWrite, isAccept=False, IP=None):
+    def __init__(self, conn, isWrite, isAccept=False, content=None, IP=None):
         self.conn = conn
         self.isWrite=isWrite
         self.isAccept = isAccept
+        self.content = content
         self.IP=IP
 
     # Follows configured behavior to attempt to get an IP out of request headers

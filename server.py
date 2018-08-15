@@ -1205,6 +1205,22 @@ def readFrom(read):
         # Now that we're done, remove read connection and move on.
         openconn.remove(read)
 
+def writeTo(write):
+    "Performs the operation of writing to the given Connection or set of Connections"
+
+    # If write isn't a Connection, assume it's a collection of Connections
+    if type(write) is not Connection:
+        for w in write:
+            writeTo(w)
+
+    # Handling writes is a lot easier than reads, because the read logic has made all the decisions.
+    write.conn.sendall(write.content)
+    logger.info("Sent response to socket %d.", write.fileno())
+
+    # Close the connection and remove it from the waiting list
+    write.conn.close()
+    openconn.remove(write)
+
 # Infinite loop for connection service
 while True:
     # List of sockets we're waiting to read from or write to
@@ -1233,10 +1249,4 @@ while True:
     # Now, handle the writeable sockets
     logger.debug("Selected %d writeable sockets.", len(writeable))
     for write in writeable:
-        # Handling writes is a lot easier than reads, because the read logic has made all the decisions.
-        logger.info("Sent response to socket %d.", write.fileno())
-        write.conn.sendall(write.content)
-
-        # Close the connection and remove it from the waiting list
-        write.conn.close()
-        openconn.remove(write)
+        writeTo(write)

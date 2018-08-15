@@ -1246,3 +1246,7 @@ while True:
         # Handling writes is a lot easier than reads, because the read logic has made all the decisions.
         logger.info("Sent response to socket %d.", write.fileno())
         write.conn.sendall(write.content)
+
+        # Close the connection and remove it from the waiting list
+        write.conn.close()
+        openconn.remove(write)

@@ -823,12 +823,12 @@ while True:
     # And also add the incoming connection accept socket
     r.append(Connection(sock, False, True))
 
-    # Now, select sockets to read from
+    # Now, select sockets to process
     logger.debug("Selection...")
-    readable, u1, u2 = select.select(r, [], [])
+    readable, writeable, u2 = select.select(r, w, [])
     logger.debug("Selected %d readable sockets.", len(readable))
 
-    # And process all those sockets
+    # Read from the readable sockets
     for read in readable:
         # Ignore erroneous sockets (those with negative file descriptors)
         if read.fileno() < 0:

@@ -108,6 +108,9 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind(("", port))
 sock.listen(int(config['backlog']))
 
+# Set sock as nonblocking
+sock.setblocking(False)
+
 # Helper functions
 def waitingRequest(s, blocksize=4096):
     "Returns a string containing one complete HTTP request from s, loaded in chunks of blocksize"

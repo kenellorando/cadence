@@ -829,8 +829,13 @@ while True:
 
         # For the accept socket, accept the connection and add it to the list
         if read.isAccept:
-            logger.info("Accepting a new connection.")
-            openconn.append(Connection(read.conn.accept()[0], False))
+            # Accept as many connections as we can until none are immediately ready for accept
+            try:
+                while True:
+                    logger.info("Accepting a new connection.")
+                    openconn.append(Connection(read.conn.accept()[0], False))
+            except socket.timeout:
+                pass
         else:
             logger.info("Processing request from socket %d.", read.fileno())
             # Fetch the HTTP request waiting on read

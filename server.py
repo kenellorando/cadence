@@ -718,8 +718,9 @@ def ariaRequest(requestBody, conn):
 
 # Class to store an open connection
 class Connection:
-    def __init__(self, conn, isAccept=False, IP=None):
+    def __init__(self, conn, isWrite, isAccept=False, IP=None):
         self.conn = conn
+        self.isWrite=isWrite
         self.isAccept = isAccept
         self.IP=IP
 

@@ -1221,6 +1221,11 @@ def writeTo(write):
     write.conn.close()
     openconn.remove(write)
 
+maxThreads=int(config['max_threads'])
+# Counters for thread numbers
+readnum = 0
+writenum = 0
+
 # Infinite loop for connection service
 while True:
     # List of sockets we're waiting to read from or write to
@@ -1241,12 +1246,33 @@ while True:
     logger.debug("Selection...")
     readable, writeable, u2 = select.select(r, w, [])
 
-    # Read from the readable sockets
-    logger.debug("Selected %d readable sockets.", len(readable))
-    for read in readable:
-        readFrom(read)
+    # If we're in single-thread mode
+    if maxThreads==0:
+        # Read from the readable sockets
+        logger.debug("Selected %d readable sockets.", len(readable))
+        for read in readable:
+            readFrom(read)
 
-    # Now, handle the writeable sockets
-    logger.debug("Selected %d writeable sockets.", len(writeable))
-    for write in writeable:
-        writeTo(write)
+        # Now, handle the writeable sockets
+        logger.debug("Selected %d writeable sockets.", len(writeable))
+        for write in writeable:
+            writeTo(write)
+
+    # We're performing operations on multiple threads
+    # If the maximum number of threads is one, skip over the logic for splitting up the socket arrays
+    elif maxThreads==1:
+        # Read from the readable sockets in a read thread
+        logger.debug("Selected %d readable sockets.", len(readable))
+        reader = Thread(target=readFrom, name="reader"+readnum, args=(readable,))
+        readnum+=1
+        reader.start()
+
+        # Now, handle the writeable sockets in a write thread
+        logger.debug("Selected %d writeable sockets.", len(writeable))
+        writer = Thread(target=writeTo, name="writer"+writenum, args=(writeable,))
+        writenum+=1
+        writer.start()
+
+        # Wait for both threads to finish
+        reader.join()
+        writer.join()

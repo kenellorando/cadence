@@ -1221,10 +1221,32 @@ def writeTo(write):
     write.conn.close()
     openconn.remove(write)
 
+def createThread(target, name, args):
+    "Wrapper for the Thread constructor which takes positional arguments"
+
+    return Thread(target=target, name=name, args=args)
+
+def constantIterable(const):
+    "A generator which always returns const"
+
+    while True:
+        yield const
+
+def nameIterable(prefix):
+    "A generator which generates an infinite sequence of strings, as prefix+id, for id in {0...infinity}"
+
+    prefix=str(prefix)
+    ID=0
+    while True:
+        yield prefix+str(ID)
+        ID+=1
+
 maxThreads=int(config['max_threads'])
-# Counters for thread numbers
-readnum = 0
-writenum = 0
+# Generators for thread creation maps
+reader = constantIterable(readFrom)
+writer = constantIterable(writeTo)
+readname = nameIterable("reader")
+writename = nameIterable("writer")
 
 # Infinite loop for connection service
 while True:
@@ -1263,16 +1285,45 @@ while True:
     elif maxThreads==1:
         # Read from the readable sockets in a read thread
         logger.debug("Selected %d readable sockets.", len(readable))
-        reader = Thread(target=readFrom, name="reader"+readnum, args=(readable,))
-        readnum+=1
+        reader = Thread(target=readFrom, name=next(readname), args=(readable,))
         reader.start()
 
         # Now, handle the writeable sockets in a write thread
         logger.debug("Selected %d writeable sockets.", len(writeable))
-        writer = Thread(target=writeTo, name="writer"+writenum, args=(writeable,))
-        writenum+=1
+        writer = Thread(target=writeTo, name=next(writename), args=(writeable,))
         writer.start()
 
         # Wait for both threads to finish
         reader.join()
         writer.join()
+
+    # We have to use multiple threads per operation
+    else:
+        logger.debug("Selected %d readable sockets.", len(readable))
+        # Split up the readable sockets and read from them
+        readers=[]
+        # If we have as many sockets as threads, or less sockets than threads, just map sockets to threads
+        if maxThreads<=len(readable):
+            # Create a list of threads to run reads on
+            readers=list(map(createThread, reader, readname, ((read,) for read in readable)))
+            # ...and start all of those threads
+            for thread in readers:
+                thread.start()
+
+        logger.debug("Selected %d writeable sockets.", len(writeable))
+        # Split up the writeable sockets and write to them
+        writers=[]
+        # If we have as many sockets as threads, or less sockets than threads, just map sockets to threads
+        if maxThreads<=len(writeable):
+            # Create a list of threads to run writes on
+            writers=list(map(createThread, writer, writename, ((write,) for write in writeable)))
+            # ...and start all of those threads
+            for thread in writers:
+                thread.start()
+
+        # By here, all of our readers and writers are running.
+        # Wait for all of them to end before returning to selection
+        for r in readers:
+            r.join()
+        for w in writers:
+            w.join()

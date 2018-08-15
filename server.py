@@ -381,6 +381,11 @@ def constructResponse(unendedHeaders, content, etag=None):
         response += content
     return response
 
+def queueResponse(sock, response):
+    "Prepare the response to be sent on the socket sock. No work is done to response before send."
+
+    openconn.append(Connection(sock, True, content=response))
+
 def sendResponse(status, contentType, content, sock, headers=[], etag=None):
     "Constructs and sends a response with the first three parameters via sock, optionally with additional headers, and optionally overriding the ETag"
 
@@ -399,11 +404,11 @@ def sendResponse(status, contentType, content, sock, headers=[], etag=None):
     # If additional headers are specified, format them for HTTP
     # Else, send as normal
     if len(headers)>0:
-        sock.sendall(constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, etag))
+        queueResponse(sock, constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, etag))
     else:
-        sock.sendall(constructResponse(basicHeaders(status, contentType), content, etag))
+        queueResponse(sock, constructResponse(basicHeaders(status, contentType), content, etag))
 
-    logger.info("Sent response to socket %d.", sock.fileno())
+    logger.info("Queued response for socket %d.", sock.fileno())
     logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))
 
 # Probably won't see much use for this... But need it at least for 400 bad request
@@ -462,9 +467,6 @@ def ariaSearch(requestBody, conn):
         # Some wiseguy sent us a bad request. Tsk tsk.
         # Send an error message that the frontend will (should) ignore
         sendResponse("400 Bad Request", "application/json", "Invalid request - "+requestBody+" does not contain a search key.", sock, ["Warning: 199 Cadence \"Search request \'"+requestBody+"\' could not be parsed into a search term.\""])
-
-        # Close the connection and return
-        sock.close()
         return
 
     # Attempt to connect to the database
@@ -480,9 +482,6 @@ def ariaSearch(requestBody, conn):
 
         # Log the exception
         logger.exception("Could not connect to ARIA database.", exc_info=True)
-
-        # Close the connection.
-        sock.close()
 
     # Now, try to conduct the search using that connection
     try:
@@ -548,9 +547,6 @@ def ariaSearch(requestBody, conn):
 
         # Log the error
         logger.exception("Could connect to database, but could not execute search.", exc_info=True)
-    finally:
-        # Close the connection.
-        sock.close()
 
 def ariaRequest(requestBody, conn):
     "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"
@@ -562,9 +558,9 @@ def ariaRequest(requestBody, conn):
         sock = conn.conn
     # Otherwise, conn needs to be a socket.
     # That socket stays in sock
-    # conn becomes a Connection covering that socket with the IP set from the peername
+    # conn becomes a read Connection covering that socket with the IP set from the peername
     else:
-        conn = Connection(sock)
+        conn = Connection(sock, False)
         conn.IP = sock.getpeername()[0]
 
     # Log the request
@@ -641,9 +637,6 @@ def ariaRequest(requestBody, conn):
                          sock,
                          ["Warning: 299 Cadence The server has been configured to block this user from requesting songs."])
 
-            # Close the connection.
-            sock.close()
-
             # Log the blacklist error.
             logger.warning("User with tag %s at address %s is on the request blacklist, and therefore was bocked from making a request.", tag, conn.IP)
             return
@@ -658,9 +651,6 @@ def ariaRequest(requestBody, conn):
                          "ARIA: Request rejected, you must wait five minutes between requests.",
                          sock,
                          ["Retry-After: "+str(math.ceil((timeout+ariaRequest.timeoutSeconds)-time.monotonic()))])
-
-            # Close the connection.
-            sock.close()
 
             # Log timeout
             logger.info("Request too close to previous request from user %s.", tag)
@@ -712,15 +702,15 @@ def ariaRequest(requestBody, conn):
                      sock,
                      ["Retry-After: Sat, 01 Sep 2018 00:00:00 GMT"])
     finally:
-        # Close the connection.
-        sock.close()
         connection.close()
 
 # Class to store an open connection
 class Connection:
-    def __init__(self, conn, isAccept=False, IP=None):
+    def __init__(self, conn, isWrite, isAccept=False, content=None, IP=None):
         self.conn = conn
+        self.isWrite=isWrite
         self.isAccept = isAccept
+        self.content = content
         self.IP=IP
 
     # Follows configured behavior to attempt to get an IP out of request headers
@@ -802,29 +792,33 @@ basicHeaders("599 Server Pre-create", "MimeType/precreate.file")
 
 # Infinite loop for connection service
 while True:
-    # List of sockets we're waiting to read from
-    # (we do block on writes... But we don't want to wait on reads.)
+    # List of sockets we're waiting to read from or write to
     logger.debug("Assembling socket list")
     r = []
+    w = []
     # Add all waiting connections
     for conn in openconn:
-        r.append(Connection(conn))
-    # And also the incoming connection accept socket
-    r.append(Connection(sock, True))
+        # Either append to w or r depending on whether the socket is waiting for write or for read
+        if conn.isWrite:
+            w.append(conn)
+        else:
+            r.append(conn)
+    # And also add the incoming connection accept socket
+    r.append(Connection(sock, False, True))
 
-    # Now, select sockets to read from
+    # Now, select sockets to process
     logger.debug("Selection...")
-    readable, u1, u2 = select.select(r, [], [])
+    readable, writeable, u2 = select.select(r, w, [])
     logger.debug("Selected %d readable sockets.", len(readable))
 
-    # And process all those sockets
+    # Read from the readable sockets
     for read in readable:
         # Ignore erroneous sockets (those with negative file descriptors)
         if read.fileno() < 0:
             # Drop the connection from openconn, close the error, and continue on our way
             # Ignore errors: What matters is that we don't do anything with the sockets
             try:
-                openconn.remove(read.conn)
+                openconn.remove(read)
                 read.conn.close()
             except:
                 pass
@@ -833,7 +827,7 @@ while True:
         # For the accept socket, accept the connection and add it to the list
         if read.isAccept:
             logger.info("Accepting a new connection.")
-            openconn.append(read.conn.accept()[0])
+            openconn.append(Connection(read.conn.accept()[0], False))
         else:
             logger.info("Processing request from socket %d.", read.fileno())
             # Fetch the HTTP request waiting on read
@@ -846,13 +840,12 @@ while True:
             # Log a better message, remove the connection from the list, and close the socket (skipping the rest of the loop)
             if len(request) == 0:
                 logger.info("Empty request on socket %d.", read.fileno())
-                openconn.remove(read.conn)
+                openconn.remove(read)
                 sendResponse("400 Bad Request",
                              "text/html",
                              generateErrorPage("400 Bad Request",
                                                "Your browser send an empty request."),
                              read.conn)
-                read.conn.close()
                 continue
 
             # Lines of the HTTP request (needed to read the header)
@@ -880,15 +873,12 @@ while True:
                                  read.conn,
                                  ["Allow: GET, HEAD"])
 
-                    # Close the connection.
-                    read.conn.close()
-
                     # Log method not allowed
                     logger.info("Issued method not allowed.")
 
                 # No matter what, we've handled the request however we chose to.
                 # Remove it from openconn
-                openconn.remove(read.conn)
+                openconn.remove(read)
                 continue
             elif not (method.startswith(b"GET") or method.startswith(b"HEAD")):
                 # This server can't do anything with these methods.
@@ -899,8 +889,7 @@ while True:
                                                "Your browser sent a request to perform an action the server doesn't support."),
                              read.conn,
                              ["Allow: GET, HEAD"])
-                read.conn.close()
-                openconn.remove(read.conn)
+                openconn.remove(read)
 
                 # Print note on error
                 logger.info("Could not execute method %s.", method.decode())
@@ -934,9 +923,8 @@ while True:
                 # Log an error, pertaining to the fact that an attempt to access forbidden data has been thwarted.
                 logger.error("Client at %s attempted to access forbidden file %s, but was denied access.", read.IP, filename.decode())
 
-                # Close the connection and continue
-                read.conn.close()
-                openconn.remove(read.conn)
+                # Remove the read connection and continue
+                openconn.remove(read)
                 continue
 
             # Perform redirect of directories that don't end in a separator or slash
@@ -951,9 +939,8 @@ while True:
                 # Log redirect
                 logger.info("Issued redirect from %s to %s/.", targ, targ)
 
-                # Close connection and continue
-                read.conn.close()
-                openconn.remove(read.conn)
+                # Remove read connection and continue
+                openconn.remove(read)
                 continue
 
             # Guess the MIME type of the file.
@@ -997,9 +984,8 @@ while True:
                     # Log the teapot
                     logger.warning("Became a teapot in response to request for unfound file %s.", filename.decode())
 
-                    # Close the connection and continue
-                    read.conn.close()
-                    openconn.remove(read.conn)
+                    # Remove read connection and continue
+                    openconn.remove(read)
                     file = ""
 
                 # Not a teapot
@@ -1011,9 +997,8 @@ while True:
                                                    "The requested file \""+method.decode().split(' ')[1]+
                                                    "\" was not found on this server."),
                                  read.conn)
-                    # Close the connection and continue
-                    read.conn.close()
-                    openconn.remove(read.conn)
+                    # Remove read connection and continue
+                    openconn.remove(read)
 
                     # Print note on error
                     logger.warning("Could not find file %s.", filename.decode())
@@ -1033,9 +1018,8 @@ while True:
                                                "I know what the error is. Python says:\n"+
                                                message+'\n'+" -->"),
                              read.conn)
-                # Close the connection and continue
-                read.conn.close()
-                openconn.remove(read.conn)
+                # Remove read connection and continue
+                openconn.remove(read)
 
                 # Print note on error
                 logger.exception("Could not open file %s.", filename.decode(), exc_info=True)
@@ -1068,23 +1052,21 @@ while True:
                     if mtime>=math.floor(os.path.getmtime(filename)):
                         # Last modified time was given (all NaN comparisons return false), and the file has not since been modified.
                         # Return basic headers, plus ETag and mtime
-                        read.conn.sendall(basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+ETag(file)+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
+                        queueResponse(read.conn, basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+ETag(file)+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                         logger.info("Client already has this file (not modified since %f [which is %s]).", mtime, HTTP_time(mtime))
 
-                        # Close the connection and move on.
-                        read.conn.close()
-                        openconn.remove(read.conn)
+                        # Remove read connection and move on.
+                        openconn.remove(read)
                         continue
 
                 # If we have an ETag and it matches our file, return 304 Not Modified
                 elif Etag == ETag(file):
                     # ETag matches. Return our basic headers, plus the ETag and mtime
-                    read.conn.sendall(basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+Etag+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
+                    queueResponse(read.conn, basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+Etag+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                     logger.info("Client already has this file (matching hash %s) - Issued 304.", Etag.decode())
 
-                    # Close the connection and move on.
-                    read.conn.close()
-                    openconn.remove(read.conn)
+                    # Remove read connection and move on.
+                    openconn.remove(read)
                     continue
 
             # Check if we're doing a byte reply
@@ -1178,9 +1160,8 @@ while True:
                         # Log the problem
                         logger.warning("Could not satisfy request from socket %d for bytes %d to %d of %d byte file %s.", read.fileno(), points[0], points[1], length, filename)
 
-                        # Close the connection and continue
-                        read.conn.close()
-                        openconn.remove(read.conn)
+                        # Remove read connection and continue
+                        openconn.remove(read)
                         done=True
                         break
 
@@ -1199,15 +1180,15 @@ while True:
                                       "Last-Modified: "+HTTP_time(os.path.getmtime(filename))],
                                      etag)
                     else:
-                        read.conn.sendall(constructResponse(basicHeaders("206 Partial Content", mimetype)+
-                                                                b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n"+
-                                                                "Content-Range: bytes {0}-{1}/{2}\r\n".format(points[0], points[1], length).encode(),
-                                                            etag).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
+                        queueResponse(read.conn, constructResponse(basicHeaders("206 Partial Content",
+                                                                                mimetype)+
+                                                                   b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n"+
+                                                                   "Content-Range: bytes {0}-{1}/{2}\r\n".format(points[0], points[1], length).encode(),
+                                                                   etag).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
                         logger.info("Sent headers for partial request to socket %d.", read.fileno())
 
-                    # Now, close the connection and move on
-                    read.conn.close()
-                    openconn.remove(read.conn)
+                    # Now, remove read connection and move on
+                    openconn.remove(read)
                     done=True
                     break
 
@@ -1221,9 +1202,19 @@ while True:
                 sendResponse("200 OK", mimetype, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))])
             # If the method is HEAD, generate the same response, but strip the body
             else:
-                read.conn.sendall(constructResponse(basicHeaders("200 OK", mimetype)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
+                queueResponse(read.conn, constructResponse(basicHeaders("200 OK", mimetype)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
                 logger.info("Sent headers to socket %d.", read.fileno())
 
-            # Now that we're done, close the connection and move on.
-            read.conn.close()
-            openconn.remove(read.conn)
+            # Now that we're done, remove read connection and move on.
+            openconn.remove(read)
+
+    # Now, handle the writeable sockets
+    logger.debug("Selected %d writeable sockets.", len(writeable))
+    for write in writeable:
+        # Handling writes is a lot easier than reads, because the read logic has made all the decisions.
+        logger.info("Sent response to socket %d.", write.fileno())
+        write.conn.sendall(write.content)
+
+        # Close the connection and remove it from the waiting list
+        write.conn.close()
+        openconn.remove(write)

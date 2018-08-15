@@ -809,14 +809,18 @@ basicHeaders("599 Server Pre-create", "MimeType/precreate.file")
 
 # Infinite loop for connection service
 while True:
-    # List of sockets we're waiting to read from
-    # (we do block on writes... But we don't want to wait on reads.)
+    # List of sockets we're waiting to read from or write to
     logger.debug("Assembling socket list")
     r = []
+    w = []
     # Add all waiting connections
     for conn in openconn:
-        r.append(Connection(conn, False))
-    # And also the incoming connection accept socket
+        # Either append to w or r depending on whether the socket is waiting for write or for read
+        if conn.isWrite:
+            w.append(conn)
+        else:
+            r.append(conn)
+    # And also add the incoming connection accept socket
     r.append(Connection(sock, False, True))
 
     # Now, select sockets to read from

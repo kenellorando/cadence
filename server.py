@@ -382,8 +382,10 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
             # We can silently use this encoding
             break
         elif encoding=="gzip":
+            l=len(content)
             # Compress the content with gzip
             content=gzip.compress(content)
+            logger.debug("Compressed content from %d bytes to %d bytes using gzip.", l, len(content))
 
             # ETags are content-encoding-dependent.
             # The passed tag is an identity tag.
@@ -392,8 +394,10 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
                 etag+="-gzip"
             break
         elif encoding=="bzip2":
+            l=len(content)
             # Compress the content with bzip2
             content=bz2.compress(content)
+            logger.debug("Compressed content from %d bytes to %d bytes using bzip2.", l, len(content))
 
             # ETags are content-encoding-dependent.
             # The passed tag is an identity tag.

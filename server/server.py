@@ -77,7 +77,7 @@ if config.getboolean('log_to_console'):
         handlers.append(logging.StreamHandler(sys.stderr))
 if config.getboolean('log_to_disk'):
     # Assemble and add the timed rotating file handler
-    handlers.append(logging.handlers.TimedRotatingFileHandler(os.path.join(logdir, config['logfile']), 'D', 1, 30))
+    handlers.append(logging.handlers.TimedRotatingFileHandler(os.path.join(logdir, config['logfile']), config['log_rotation_interval'], int(config['log_rotation_period']), int(config['log_backup_count'])))
 
 # If the handlers list is empty, reconfigure so that logging uses a StreamHandler, but has an unreasonably high logging level.
 # That way, logging will be effectively disabled, without adding any code anywhere else

@@ -15,6 +15,7 @@ import string
 import gzip
 import bz2
 import re
+import lzma
 import logging
 import logging.handlers
 from telnetlib import Telnet

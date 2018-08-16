@@ -347,6 +347,7 @@ def basicHeaders(status, contentType):
         basicHeaders.format =  "HTTP/1.1 {0}\r\n"
         basicHeaders.format += "Date: {1}\r\n"
         basicHeaders.format += "Connection: close\r\n"
+        basicHeaders.format += "Vary: Accept-Encoding\r\n"
 
         # Advertise the configured state of our range request support
         if config.getboolean("enable_range_requests"):

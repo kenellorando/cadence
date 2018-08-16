@@ -392,6 +392,9 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
             # Add a note to identify it as a gzip tag
             if etag!=None:
                 etag+="-gzip"
+
+            # Add an encoding header
+            response += b"Content-Encoding: gzip\r\n"
             break
         elif encoding=="bzip2":
             l=len(content)
@@ -404,6 +407,9 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
             # Add a note to identify it as a bzip2 tag
             if etag!=None:
                 etag+="-bzip2"
+
+            # Add an encoding header
+            response += b"Content-Encoding: bzip2\r\n"
             break
 
     # Add ETag iff we have caching set

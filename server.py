@@ -1220,7 +1220,7 @@ def writeTo(write, log=True):
     # If write isn't a Connection, assume it's a collection of Connections
     if type(write) is not Connection:
         for w in write:
-            writeTo(w)
+            writeTo(w, False)
         return
 
     # Handling writes is a lot easier than reads, because the read logic has made all the decisions.

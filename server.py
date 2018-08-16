@@ -407,9 +407,9 @@ def sendResponse(status, contentType, content, sock, headers=[], allowEncodings=
     # If additional headers are specified, format them for HTTP
     # Else, send as normal
     if len(headers)>0:
-        queueResponse(sock, constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, etag))
+        queueResponse(sock, constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, allowEncodings, etag))
     else:
-        queueResponse(sock, constructResponse(basicHeaders(status, contentType), content, etag))
+        queueResponse(sock, constructResponse(basicHeaders(status, contentType), content, allowEncodings, etag))
 
     logger.info("Queued response for socket %d.", sock.fileno())
     logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))

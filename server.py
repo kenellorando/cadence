@@ -376,6 +376,14 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
     if isinstance(content, str):
         content = content.encode()
 
+    # Add ETag iff we have caching set
+    if caching>0:
+        # Either generate our own, or use the provided one
+        if etag==None:
+            response += b"ETag: \""+ETag(content)+b"\"\r\n"
+        else:
+            response += b"ETag: \""+etag+b"\"\r\n"
+
     # Process our encodings
     for encoding in allowEncodings:
         if encoding=="identity" or encoding=="*":
@@ -387,12 +395,6 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
             content=gzip.compress(content)
             logger.debug("Compressed content from %d bytes to %d bytes using gzip.", l, len(content))
 
-            # ETags are content-encoding-dependent.
-            # The passed tag is an identity tag.
-            # Add a note to identify it as a gzip tag
-            if etag!=None:
-                etag+="-gzip"
-
             # Add an encoding header
             response += b"Content-Encoding: gzip\r\n"
             break
@@ -402,23 +404,9 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
             content=bz2.compress(content)
             logger.debug("Compressed content from %d bytes to %d bytes using bzip2.", l, len(content))
 
-            # ETags are content-encoding-dependent.
-            # The passed tag is an identity tag.
-            # Add a note to identify it as a bzip2 tag
-            if etag!=None:
-                etag+="-bzip2"
-
             # Add an encoding header
             response += b"Content-Encoding: bzip2\r\n"
             break
-
-    # Add ETag iff we have caching set
-    if caching>0:
-        # Either generate our own, or use the provided one
-        if etag==None:
-            response += b"ETag: \""+ETag(content)+b"\"\r\n"
-        else:
-            response += b"ETag: \""+etag+b"\"\r\n"
 
     response += b"Content-Length: "+str(len(content)).encode()+b"\r\n\r\n"
     response += content

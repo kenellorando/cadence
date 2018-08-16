@@ -805,6 +805,7 @@ def readFrom(read, log=True):
     if type(read) is not Connection:
         for r in read:
             readFrom(r, False)
+        return
 
     # Ignore erroneous sockets (those with negative file descriptors)
     if read.fileno() < 0:
@@ -1220,6 +1221,7 @@ def writeTo(write, log=True):
     if type(write) is not Connection:
         for w in write:
             writeTo(w)
+        return
 
     # Handling writes is a lot easier than reads, because the read logic has made all the decisions.
     write.conn.sendall(write.content)

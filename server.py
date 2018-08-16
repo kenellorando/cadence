@@ -370,6 +370,20 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
 
     response =  unendedHeaders
 
+    # Accept a str content
+    if isinstance(content, str):
+        content = content.encode()
+
+    # Process our encodings
+    for encoding in encodings:
+        if encoding=="identity" or encoding=="*":
+            # We can silently use this encoding
+            break
+        elif encoding=="gzip":
+            # Compress the content with gzip
+            content=gzip.compress(content)
+            break
+
     # Add ETag iff we have caching set
     if caching>0:
         # Either generate our own, or use the provided one
@@ -379,10 +393,7 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
             response += b"ETag: \""+etag+b"\"\r\n"
 
     response += b"Content-Length: "+str(len(content)).encode()+b"\r\n\r\n"
-    if isinstance(content, str):
-        response += content.encode()
-    else:
-        response += content
+    response += content
     return response
 
 def queueResponse(sock, response):

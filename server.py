@@ -368,7 +368,7 @@ def basicHeaders(status, contentType):
     # Format in our arguments and return
     return basicHeaders.format.format(status, HTTP_time(), contentType).encode()
 
-def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
+def constructResponse(unendedHeaders, content, contentType, allowEncodings=None, etag=None):
     "Attaches unendedHeaders and content into one HTTP response (adding content-length in the process), optionally overriding the etag. allowEncodings should be a list of strings of allowed encodings, or None."
 
     # Pre-compile our regex pattern
@@ -440,9 +440,9 @@ def sendResponse(status, contentType, content, sock, headers=[], allowEncodings=
     # If additional headers are specified, format them for HTTP
     # Else, send as normal
     if len(headers)>0:
-        queueResponse(sock, constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, allowEncodings, etag))
+        queueResponse(sock, constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, contentType, allowEncodings, etag))
     else:
-        queueResponse(sock, constructResponse(basicHeaders(status, contentType), content, allowEncodings, etag))
+        queueResponse(sock, constructResponse(basicHeaders(status, contentType), content, contentType, allowEncodings, etag))
 
     logger.info("Queued response for socket %d.", sock.fileno())
     logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))
@@ -1231,6 +1231,8 @@ def readFrom(read, log=True):
                                                                             mimetype)+
                                                                b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n"+
                                                                "Content-Range: bytes {0}-{1}/{2}\r\n".format(points[0], points[1], length).encode(),
+                                                               file,
+                                                               mimetype,
                                                                encodings,
                                                                etag).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
                     logger.info("Sent headers for partial request to socket %d.", read.fileno())
@@ -1250,7 +1252,7 @@ def readFrom(read, log=True):
             sendResponse("200 OK", mimetype, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))], encodings)
         # If the method is HEAD, generate the same response, but strip the body
         else:
-            queueResponse(read.conn, constructResponse(basicHeaders("200 OK", mimetype)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file, encodings).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
+            queueResponse(read.conn, constructResponse(basicHeaders("200 OK", mimetype)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file, mimetype, encodings).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
             logger.info("Sent headers to socket %d.", read.fileno())
 
         # Now that we're done, remove read connection and move on.

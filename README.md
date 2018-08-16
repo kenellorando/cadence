@@ -7,7 +7,7 @@ It is my intent that once development is complete enough to import into Cadence,
 
 ## Requirements
 
-`cadence-server` runs on python3. I'm not sure what the minimum required version is, but it's being tested and developed on 3.6.
+`cadence-server` runs on python3. I'm not sure what the minimum required version is (it's no earlier than 3.3), but it's being tested and developed on 3.6.
 
 In order to run ARIA searches, `cadence-server` requires the `pg8000` module, which can be installed by running `pip install pg8000`.
 

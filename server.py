@@ -12,6 +12,10 @@ import math
 import traceback
 import pg8000
 import string
+import gzip
+import bz2
+import re
+import lzma
 import logging
 import logging.handlers
 from telnetlib import Telnet
@@ -346,6 +350,7 @@ def basicHeaders(status, contentType):
         basicHeaders.format =  "HTTP/1.1 {0}\r\n"
         basicHeaders.format += "Date: {1}\r\n"
         basicHeaders.format += "Connection: close\r\n"
+        basicHeaders.format += "Vary: Accept-Encoding\r\n"
 
         # Advertise the configured state of our range request support
         if config.getboolean("enable_range_requests"):
@@ -364,10 +369,18 @@ def basicHeaders(status, contentType):
     # Format in our arguments and return
     return basicHeaders.format.format(status, HTTP_time(), contentType).encode()
 
-def constructResponse(unendedHeaders, content, etag=None):
-    "Attaches unendedHeaders and content into one HTTP response (adding content-length in the process), optionally overriding the etag"
+def constructResponse(unendedHeaders, content, contentType, allowEncodings=None, etag=None):
+    "Attaches unendedHeaders and content into one HTTP response (adding content-length in the process), optionally overriding the etag. allowEncodings should be a list of strings of allowed encodings, or None."
+
+    # Pre-compile our regex pattern
+    if not hasattr(constructResponse, "compressPattern"):
+        constructResponse.compressPattern=re.compile(config['compress_type_regex'], re.IGNORECASE)
 
     response =  unendedHeaders
+
+    # Accept a str content
+    if isinstance(content, str):
+        content = content.encode()
 
     # Add ETag iff we have caching set
     if caching>0:
@@ -377,11 +390,44 @@ def constructResponse(unendedHeaders, content, etag=None):
         else:
             response += b"ETag: \""+etag+b"\"\r\n"
 
+    # Process our encodings
+    l=len(content)
+    # Only attempt to find an encoding if:
+    #   - We have some allowed encodings object to process
+    #   - The size of our content is large enough that we're configured to compress it
+    #   - The MIME type of our file is configured to be compressed.
+    if allowEncodings!=None and l>int(config['minimum_compress_size']) and constructResponse.compressPattern.fullmatch(contentType)!=None:
+        for encoding in allowEncodings:
+            if encoding=="identity" or encoding=="*":
+                # We can silently use this encoding
+                break
+            elif encoding=="gzip":
+                # Compress the content with gzip
+                content=gzip.compress(content)
+                logger.debug("Compressed content from %d bytes to %d bytes using gzip.", l, len(content))
+
+                # Add an encoding header
+                response += b"Content-Encoding: gzip\r\n"
+                break
+            elif encoding=="bzip2":
+                # Compress the content with bzip2
+                content=bz2.compress(content)
+                logger.debug("Compressed content from %d bytes to %d bytes using bzip2.", l, len(content))
+
+                # Add an encoding header
+                response += b"Content-Encoding: bzip2\r\n"
+                break
+            elif encoding=="xz":
+                # Compress the content with LZMA2 (as an XZ container)
+                content=lzma.compress(content, lzma.FORMAT_XZ)
+                logger.debug("Compressed content from %d bytes to %d bytes using LZMA2.", l, len(content))
+
+                # Add an encoding header
+                response += b"Content-Encoding: xz\r\n"
+                break
+
     response += b"Content-Length: "+str(len(content)).encode()+b"\r\n\r\n"
-    if isinstance(content, str):
-        response += content.encode()
-    else:
-        response += content
+    response += content
     return response
 
 def queueResponse(sock, response):
@@ -389,8 +435,8 @@ def queueResponse(sock, response):
 
     openconn.append(Connection(sock, True, content=response))
 
-def sendResponse(status, contentType, content, sock, headers=[], etag=None):
-    "Constructs and sends a response with the first three parameters via sock, optionally with additional headers, and optionally overriding the ETag"
+def sendResponse(status, contentType, content, sock, headers=[], allowEncodings=None, etag=None):
+    "Constructs and sends a response with the first three parameters via sock, optionally with additional headers, and optionally overriding the ETag. allowEncodings should be a list of strings of allowed encodings, or None."
 
     # Attempt to handle unencoded content
     # This occasionally throws TypeErrors, for no reason I can tell.
@@ -407,9 +453,9 @@ def sendResponse(status, contentType, content, sock, headers=[], etag=None):
     # If additional headers are specified, format them for HTTP
     # Else, send as normal
     if len(headers)>0:
-        queueResponse(sock, constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, etag))
+        queueResponse(sock, constructResponse(basicHeaders(status, contentType)+("\r\n".join(headers)+"\r\n").encode(), content, contentType, allowEncodings, etag))
     else:
-        queueResponse(sock, constructResponse(basicHeaders(status, contentType), content, etag))
+        queueResponse(sock, constructResponse(basicHeaders(status, contentType), content, contentType, allowEncodings, etag))
 
     logger.info("Queued response for socket %d.", sock.fileno())
     logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))
@@ -948,6 +994,17 @@ def readFrom(read, log=True):
         # Guess the MIME type of the file.
         mimetype = mimeTypeOf(filename)
 
+        # See if we have an Accept-Encoding header
+        encodings = []
+        for header in request.partition(b"\r\n\r\n")[0].decode().split("\r\n"):
+            if header.lower().startswith("accept-encoding: "):
+                # Parse the values given by the header
+                value = header.partition(": ")[2]
+                values = value.split(", ")
+                encodings = [val.partition(";")[0] for val in values] # We don't care about quality values
+
+                break
+
         # Read the file into memory
         logger.info("Attempting file read on file %s.", filename.decode())
         file = ""
@@ -1180,12 +1237,16 @@ def readFrom(read, log=True):
                                  read.conn,
                                  ["Content-Range: bytes {0}-{1}/{2}".format(points[0], points[1], length),
                                   "Last-Modified: "+HTTP_time(os.path.getmtime(filename))],
+                                 encodings,
                                  etag)
                 else:
                     queueResponse(read.conn, constructResponse(basicHeaders("206 Partial Content",
                                                                             mimetype)+
                                                                b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n"+
                                                                "Content-Range: bytes {0}-{1}/{2}\r\n".format(points[0], points[1], length).encode(),
+                                                               file,
+                                                               mimetype,
+                                                               encodings,
                                                                etag).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
                     logger.info("Sent headers for partial request to socket %d.", read.fileno())
 
@@ -1201,10 +1262,10 @@ def readFrom(read, log=True):
         # If we're here, we're not doing a byte range reply
         # If the method is GET, use sendResponse to send the file contents.
         if method.startswith(b"GET"):
-            sendResponse("200 OK", mimetype, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))])
+            sendResponse("200 OK", mimetype, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))], encodings)
         # If the method is HEAD, generate the same response, but strip the body
         else:
-            queueResponse(read.conn, constructResponse(basicHeaders("200 OK", mimetype)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
+            queueResponse(read.conn, constructResponse(basicHeaders("200 OK", mimetype)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file, mimetype, encodings).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
             logger.info("Sent headers to socket %d.", read.fileno())
 
         # Now that we're done, remove read connection and move on.

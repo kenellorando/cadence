@@ -1324,7 +1324,7 @@ while True:
         rpools=readable
 
         # If we don't have enough threads for that, split the work up into maxThreads pools
-        if maxThreads>len(readable):
+        if maxThreads<len(readable):
             rpools=splitInto(readable, maxThreads)
 
         # Create a list of threads to run reads on
@@ -1340,7 +1340,7 @@ while True:
         wpools=writeable
 
         # If we don't have enough threads for that, split the work up into maxThreads pools
-        if maxThreads>len(writeable):
+        if maxThreads<len(writeable):
             wpools=splitInto(writeable, maxThreads)
 
         # Create a list of threads to run writes on

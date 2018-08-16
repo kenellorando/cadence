@@ -382,6 +382,11 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
         elif encoding=="gzip":
             # Compress the content with gzip
             content=gzip.compress(content)
+
+            # ETags are content-encoding-dependent.
+            # The passed tag is an identity tag.
+            # Add a note to identify it as a gzip tag
+            etag+="-gzip"
             break
 
     # Add ETag iff we have caching set

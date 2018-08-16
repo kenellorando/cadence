@@ -12,6 +12,7 @@ import math
 import traceback
 import pg8000
 import string
+import gzip
 import logging
 import logging.handlers
 from telnetlib import Telnet

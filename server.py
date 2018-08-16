@@ -1309,8 +1309,8 @@ while True:
         # Now, handle the writeable sockets
         logger.debug("Selected %d writeable sockets.", len(writeable))
         for write in writeable:
-            writeTo(write)
             openconn.remove(write)
+            writeTo(write)
 
     # We're performing operations on multiple threads
     # If the maximum number of threads is one, skip over the logic for splitting up the socket arrays
@@ -1320,17 +1320,17 @@ while True:
         reader = Thread(target=readFrom, name=next(readname), args=(readable,))
         reader.start()
 
-        # Now, handle the writeable sockets in a write thread
-        logger.debug("Selected %d writeable sockets.", len(writeable))
-        writer = Thread(target=writeTo, name=next(writename), args=(writeable,))
-        writer.start()
-
         # We don't need to block on all the writes.
         # Blocking on the reads is fair, because it means that writes can be handled immediately
         # But blocking on the writes to finish doesn't matter
         # The only thing we need is to remove the sockets from the openconn list.
         # We do that before waiting for any thread joins.
         openconn=[conn for conn in openconn if conn not in writeable]
+
+        # Now, handle the writeable sockets in a write thread
+        logger.debug("Selected %d writeable sockets.", len(writeable))
+        writer = Thread(target=writeTo, name=next(writename), args=(writeable,))
+        writer.start()
 
         # Wait for both threads to finish
         reader.join()
@@ -1363,18 +1363,18 @@ while True:
         if maxThreads<len(writeable):
             wpools=splitInto(writeable, maxThreads)
 
-        # Create a list of threads to run writes on
-        writers=list(map(createThread, writer, writename, ((write,) for write in wpools)))
-        # ...and start all of those threads
-        for thread in writers:
-            thread.start()
-
         # We don't need to block on all the writes.
         # Blocking on the reads is fair, because it means that writes can be handled immediately
         # But blocking on the writes to finish doesn't matter
         # The only thing we need is to remove the sockets from the openconn list.
         # We do that before waiting for any thread joins.
         openconn=[conn for conn in openconn if conn not in writeable]
+
+        # Create a list of threads to run writes on
+        writers=list(map(createThread, writer, writename, ((write,) for write in wpools)))
+        # ...and start all of those threads
+        for thread in writers:
+            thread.start()
 
         # By here, all of our readers and writers are running.
         # Wait for all of them to end before returning to selection

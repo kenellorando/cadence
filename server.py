@@ -14,6 +14,7 @@ import pg8000
 import string
 import gzip
 import bz2
+import re
 import logging
 import logging.handlers
 from telnetlib import Telnet

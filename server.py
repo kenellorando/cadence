@@ -417,6 +417,14 @@ def constructResponse(unendedHeaders, content, contentType, allowEncodings=None,
                 # Add an encoding header
                 response += b"Content-Encoding: bzip2\r\n"
                 break
+            elif encoding=="xz":
+                # Compress the content with LZMA2 (as an XZ container)
+                content=lzma.compress(content, lzma.FORMAT_XZ)
+                logger.debug("Compressed content from %d bytes to %d bytes using LZMA2.", l, len(content))
+
+                # Add an encoding header
+                response += b"Content-Encoding: xz\r\n"
+                break
 
     response += b"Content-Length: "+str(len(content)).encode()+b"\r\n\r\n"
     response += content

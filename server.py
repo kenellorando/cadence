@@ -16,7 +16,7 @@ import logging
 import logging.handlers
 from telnetlib import Telnet
 from urllib import parse
-from threading import Thread
+from threading import Thread, current_thread
 from configparser import ConfigParser
 
 # Prep work
@@ -794,13 +794,17 @@ generateErrorPage("PRECREATION", "YOU SHOULD NEVER SEE THIS")
 basicHeaders("599 Server Pre-create", "MimeType/precreate.file")
 
 # Network operation helper functions
-def readFrom(read):
+def readFrom(read, log=True):
     "Performs the operation of reading from the given Connection or set of Connections"
+
+    # Log which thread we're on
+    if log:
+        logger.debug("Beginning read(s) on thread %s.", current_thread().name)
 
     # If this isn't a Connection, assume it's a collection of Connections and recurse
     if type(read) is not Connection:
         for r in read:
-            readFrom(r)
+            readFrom(r, False)
 
     # Ignore erroneous sockets (those with negative file descriptors)
     if read.fileno() < 0:
@@ -1205,8 +1209,12 @@ def readFrom(read):
         # Now that we're done, remove read connection and move on.
         openconn.remove(read)
 
-def writeTo(write):
+def writeTo(write, log=True):
     "Performs the operation of writing to the given Connection or set of Connections"
+
+    # Log which thread we're on
+    if log:
+        logger.debug("Beginning write(s) on thread %s.", current_thread().name)
 
     # If write isn't a Connection, assume it's a collection of Connections
     if type(write) is not Connection:

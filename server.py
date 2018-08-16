@@ -390,6 +390,15 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
             # Add a note to identify it as a gzip tag
             etag+="-gzip"
             break
+        elif encoding=="bzip2":
+            # Compress the content with bzip2
+            content=bz2.compress(content)
+
+            # ETags are content-encoding-dependent.
+            # The passed tag is an identity tag.
+            # Add a note to identify it as a bzip2 tag
+            etag+="-bzip2"
+            break
 
     # Add ETag iff we have caching set
     if caching>0:

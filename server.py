@@ -1310,24 +1310,34 @@ while True:
         logger.debug("Selected %d readable sockets.", len(readable))
         # Split up the readable sockets and read from them
         readers=[]
-        # If we have as many sockets as threads, or less sockets than threads, just map sockets to threads
-        if maxThreads<=len(readable):
-            # Create a list of threads to run reads on
-            readers=list(map(createThread, reader, readname, ((read,) for read in readable)))
-            # ...and start all of those threads
-            for thread in readers:
-                thread.start()
+        # Our work pools start as one socket to one thread
+        rpools=readable
+
+        # If we don't have enough threads for that, split the work up into maxThreads pools
+        if maxThreads>len(readable):
+            rpools=splitInto(readable, maxThreads)
+
+        # Create a list of threads to run reads on
+        readers=list(map(createThread, reader, readname, ((read,) for read in rpools)))
+        # ...and start all of those threads
+        for thread in readers:
+            thread.start()
 
         logger.debug("Selected %d writeable sockets.", len(writeable))
         # Split up the writeable sockets and write to them
         writers=[]
-        # If we have as many sockets as threads, or less sockets than threads, just map sockets to threads
-        if maxThreads<=len(writeable):
-            # Create a list of threads to run writes on
-            writers=list(map(createThread, writer, writename, ((write,) for write in writeable)))
-            # ...and start all of those threads
-            for thread in writers:
-                thread.start()
+        # Our work pools start as one socket to one thread
+        wpools=writeable
+
+        # If we don't have enough threads for that, split the work up into maxThreads pools
+        if maxThreads>len(writeable):
+            wpools=splitInto(writeable, maxThreads)
+
+        # Create a list of threads to run writes on
+        writers=list(map(createThread, writer, writename, ((write,) for write in wpools)))
+        # ...and start all of those threads
+        for thread in writers:
+            thread.start()
 
         # By here, all of our readers and writers are running.
         # Wait for all of them to end before returning to selection

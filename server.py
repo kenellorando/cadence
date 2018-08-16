@@ -391,7 +391,11 @@ def constructResponse(unendedHeaders, content, contentType, allowEncodings=None,
 
     # Process our encodings
     l=len(content)
-    if allowEncodings!=None and l>int(config['minimum_compress_size']):
+    # Only attempt to find an encoding if:
+    #   - We have some allowed encodings object to process
+    #   - The size of our content is large enough that we're configured to compress it
+    #   - The MIME type of our file is configured to be compressed.
+    if allowEncodings!=None and l>int(config['minimum_compress_size']) and constructResponse.compressPattern.fullmatch(contentType)!=None:
         for encoding in allowEncodings:
             if encoding=="identity" or encoding=="*":
                 # We can silently use this encoding

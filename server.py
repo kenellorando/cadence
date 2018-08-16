@@ -1296,6 +1296,7 @@ while True:
         logger.debug("Selected %d writeable sockets.", len(writeable))
         for write in writeable:
             writeTo(write)
+            openconn.remove(write)
 
     # We're performing operations on multiple threads
     # If the maximum number of threads is one, skip over the logic for splitting up the socket arrays
@@ -1310,9 +1311,15 @@ while True:
         writer = Thread(target=writeTo, name=next(writename), args=(writeable,))
         writer.start()
 
+        # We don't need to block on all the writes.
+        # Blocking on the reads is fair, because it means that writes can be handled immediately
+        # But blocking on the writes to finish doesn't matter
+        # The only thing we need is to remove the sockets from the openconn list.
+        # We do that before waiting for any thread joins.
+        openconn=[conn for conn in openconn if conn not in writeable]
+
         # Wait for both threads to finish
         reader.join()
-        writer.join()
 
     # We have to use multiple threads per operation
     else:

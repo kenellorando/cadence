@@ -385,13 +385,13 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
             response += b"ETag: \""+etag+b"\"\r\n"
 
     # Process our encodings
-    if allowEncodings!=None:
+    l=len(content)
+    if allowEncodings!=None and l>int(config['minimum_compress_size']):
         for encoding in allowEncodings:
             if encoding=="identity" or encoding=="*":
                 # We can silently use this encoding
                 break
             elif encoding=="gzip":
-                l=len(content)
                 # Compress the content with gzip
                 content=gzip.compress(content)
                 logger.debug("Compressed content from %d bytes to %d bytes using gzip.", l, len(content))
@@ -400,7 +400,6 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
                 response += b"Content-Encoding: gzip\r\n"
                 break
             elif encoding=="bzip2":
-                l=len(content)
                 # Compress the content with bzip2
                 content=bz2.compress(content)
                 logger.debug("Compressed content from %d bytes to %d bytes using bzip2.", l, len(content))

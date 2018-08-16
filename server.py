@@ -1224,7 +1224,21 @@ def writeTo(write, log=True):
         return
 
     # Handling writes is a lot easier than reads, because the read logic has made all the decisions.
-    write.conn.sendall(write.content)
+    # Set the socket as nonblocking
+    write.conn.setblocking(False)
+
+    # Send as much data as we can until we're forced to block
+    try:
+        while len(write.content)>0:
+            sent=write.conn.send(write.content)
+            write.content=write.content[sent:]
+    except:
+        logger.debug("Write interrupted on socket %d. %d bytes remaining.", write.fileno(), len(write.content))
+
+        # Re-add the connection to the open connection list
+        openconn.append(write)
+        return
+
     logger.info("Sent response to socket %d.", write.fileno())
 
     # Close the connection

@@ -9,6 +9,8 @@ It is my intent that once development is complete enough to import into Cadence,
 
 `cadence-server` runs on python3. I'm not sure what the minimum required version is, but it's being tested and developed on 3.6.
 
+In order to run ARIA searches, `cadence-server` requires the `pg8000` module, which can be installed by running `pip install pg8000`.
+
 ## Running
 
 The simplest command line is `python server.py <port> <path to directory> [-c [seconds]]`. However, in production, I recommend passing `-OO` to python before `server.py`. This will cause Python to ignore debugging code and remove documentation strings before running the server.

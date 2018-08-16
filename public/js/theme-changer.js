@@ -7,7 +7,7 @@ function setThemeColor(color) {
 // Function that starts playing the video for video themes
 function setVideo(themeObj) {
   var video = document.getElementById("video-source");
-  var filename = document.location + themeObj.videoPath;
+  var filename = document.origin + themeObj.videoPath;
   // Loads the video source
   if (video.src !== filename) {
     video.src = filename;

@@ -371,6 +371,10 @@ def basicHeaders(status, contentType):
 def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
     "Attaches unendedHeaders and content into one HTTP response (adding content-length in the process), optionally overriding the etag. allowEncodings should be a list of strings of allowed encodings, or None."
 
+    # Pre-compile our regex pattern
+    if not hasattr(constructResponse, "compressPattern"):
+        constructResponse.compressPattern=re.compile(config['compress_type_regex'], re.IGNORECASE)
+
     response =  unendedHeaders
 
     # Accept a str content

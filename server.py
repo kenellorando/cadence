@@ -1227,9 +1227,8 @@ def writeTo(write, log=True):
     write.conn.sendall(write.content)
     logger.info("Sent response to socket %d.", write.fileno())
 
-    # Close the connection and remove it from the waiting list
+    # Close the connection
     write.conn.close()
-    openconn.remove(write)
 
 def createThread(target, name, args):
     "Wrapper for the Thread constructor which takes positional arguments"
@@ -1349,9 +1348,14 @@ while True:
         for thread in writers:
             thread.start()
 
+        # We don't need to block on all the writes.
+        # Blocking on the reads is fair, because it means that writes can be handled immediately
+        # But blocking on the writes to finish doesn't matter
+        # The only thing we need is to remove the sockets from the openconn list.
+        # We do that before waiting for any thread joins.
+        openconn=[conn for conn in openconn if conn not in writeable]
+
         # By here, all of our readers and writers are running.
         # Wait for all of them to end before returning to selection
         for r in readers:
             r.join()
-        for w in writers:
-            w.join()

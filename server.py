@@ -1241,6 +1241,14 @@ def nameIterable(prefix):
         yield prefix+str(ID)
         ID+=1
 
+def splitInto(arr, n):
+    "Splits arr into n roughly equally sized pieces."
+
+    # See how we can divide the length of the array into n pieces
+    quotient, remainder=divmod(len(arr), n)
+    # Use some neat math and our divisions to split the array in a generator statement
+    return (arr[i*quotient+min(i, remainder) : (i+1)*quotient+min(i+1, remainder)] for i in range(n))
+
 maxThreads=int(config['max_threads'])
 # Generators for thread creation maps
 reader = constantIterable(readFrom)

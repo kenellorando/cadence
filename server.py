@@ -377,7 +377,7 @@ def constructResponse(unendedHeaders, content, allowEncodings=None, etag=None):
         content = content.encode()
 
     # Process our encodings
-    for encoding in encodings:
+    for encoding in allowEncodings:
         if encoding=="identity" or encoding=="*":
             # We can silently use this encoding
             break

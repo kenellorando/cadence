@@ -1364,6 +1364,11 @@ while True:
     w = []
     # Add all waiting connections
     for conn in openconn:
+        # Don't append sockets with negative file descriptors
+        if conn.fileno()<0:
+            openconn.remove(conn)
+            continue
+
         # Either append to w or r depending on whether the socket is waiting for write or for read
         if conn.isWrite:
             w.append(conn)

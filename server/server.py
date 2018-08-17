@@ -891,6 +891,17 @@ def readFrom(read, log=True):
         # Set the IP on the connection
         read.setIPFrom(request.partition(b"\r\n\r\n")[0])
 
+        # See if we have an Accept-Encoding header
+        encodings = []
+        for header in request.partition(b"\r\n\r\n")[0].decode().split("\r\n"):
+            if header.lower().startswith("accept-encoding: "):
+                # Parse the values given by the header
+                value = header.partition(": ")[2]
+                values = value.split(", ")
+                encodings = [val.partition(";")[0] for val in values] # We don't care about quality values
+
+                break
+
         # If the request is zero-length, the client disconnected. Skip the work of figuring that out the hard way, and the unhelpful log message.
         # Log a better message, remove the connection from the list, and close the socket (skipping the rest of the loop)
         if len(request) == 0:
@@ -900,7 +911,8 @@ def readFrom(read, log=True):
                          "text/html",
                          generateErrorPage("400 Bad Request",
                                            "Your browser send an empty request."),
-                         read.conn)
+                         read.conn,
+                         allowEncodings=encodings)
             return
 
         # Lines of the HTTP request (needed to read the header)
@@ -926,7 +938,8 @@ def readFrom(read, log=True):
                              generateErrorPage("405 Method Not Allowed",
                                                "Your browser attempted to perform an action the server doesn't support at this location."),
                              read.conn,
-                             ["Allow: GET, HEAD"])
+                             ["Allow: GET, HEAD"],
+                             encodings)
 
                 # Log method not allowed
                 logger.info("Issued method not allowed.")
@@ -943,7 +956,8 @@ def readFrom(read, log=True):
                          generateErrorPage("501 Not Implemented",
                                            "Your browser sent a request to perform an action the server doesn't support."),
                          read.conn,
-                         ["Allow: GET, HEAD"])
+                         ["Allow: GET, HEAD"],
+                         encodings)
             openconn.remove(read)
 
             # Print note on error
@@ -973,7 +987,8 @@ def readFrom(read, log=True):
                          generateErrorPage("403 Forbidden",
                                            "You are not permitted to access \""+method.decode().split(' ')[1]+"\" on this server."),
                          read.conn,
-                         ["Warning: 299 Cadence Access to files above the root directory of the served path is forbidden. This incident has been logged."])
+                         ["Warning: 299 Cadence Access to files above the root directory of the served path is forbidden. This incident has been logged."],
+                         encodings)
 
             # Log an error, pertaining to the fact that an attempt to access forbidden data has been thwarted.
             logger.error("Client at %s attempted to access forbidden file %s, but was denied access.", read.IP, filename.decode())
@@ -1001,17 +1016,6 @@ def readFrom(read, log=True):
         # Guess the MIME type of the file.
         mimetype = mimeTypeOf(filename)
 
-        # See if we have an Accept-Encoding header
-        encodings = []
-        for header in request.partition(b"\r\n\r\n")[0].decode().split("\r\n"):
-            if header.lower().startswith("accept-encoding: "):
-                # Parse the values given by the header
-                value = header.partition(": ")[2]
-                values = value.split(", ")
-                encodings = [val.partition(";")[0] for val in values] # We don't care about quality values
-
-                break
-
         # Read the file into memory
         logger.info("Attempting file read on file %s.", filename.decode())
         file = ""
@@ -1038,14 +1042,16 @@ def readFrom(read, log=True):
                                  "text/html",
                                  generateErrorPage("418 I'm a teapot",
                                                    "I'm sorry - I can't make coffee for you.<br>I'm a teapot."),
-                                 read.conn)
+                                 read.conn,
+                                 allowEncodings=encodings)
                 else:
                     sendResponse("418 I'm a teapot",
                                  "text/html",
                                  generateErrorPage("418 I'm a teapot",
                                                    "I'm sorry - I can't make coffee for you.</p>"+
                                                    "<img src=\"data:image/png;base64,"+image+"\" width=256 height=256><p>I'm a teapot."),
-                                 read.conn)
+                                 read.conn,
+                                 allowEncodings=encodings)
 
                 # Log the teapot
                 logger.warning("Became a teapot in response to request for unfound file %s.", filename.decode())
@@ -1062,7 +1068,8 @@ def readFrom(read, log=True):
                              generateErrorPage("404 Not Found",
                                                "The requested file \""+method.decode().split(' ')[1]+
                                                "\" was not found on this server."),
-                             read.conn)
+                             read.conn,
+                             allowEncodings=encodings)
                 # Remove read connection and continue
                 openconn.remove(read)
 
@@ -1083,7 +1090,8 @@ def readFrom(read, log=True):
                                            "<!-- Ok, since you know what you're doing, I'll confess.\n"+
                                            "I know what the error is. Python says:\n"+
                                            message+'\n'+" -->"),
-                         read.conn)
+                         read.conn,
+                         allowEncodings=encodings)
             # Remove read connection and continue
             openconn.remove(read)
 
@@ -1221,7 +1229,8 @@ def readFrom(read, log=True):
                                  generateErrorPage("416 Range Not Satisfiable",
                                                    "The server was unable to satisfy your request for bytes {0} to {1} of a {2} byte file.".format(points[0], points[1], length)),
                                  read.conn,
-                                 ["Content-Range: */"+str(length)])
+                                 ["Content-Range: */"+str(length)],
+                                 encodings)
 
                     # Log the problem
                     logger.warning("Could not satisfy request from socket %d for bytes %d to %d of %d byte file %s.", read.fileno(), points[0], points[1], length, filename)

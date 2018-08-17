@@ -531,9 +531,6 @@ def ariaSearch(requestBody, conn):
 
         # Log the exception
         logger.exception("Could not connect to ARIA database.", exc_info=True)
-
-        # Close socket and return
-        sock.close()
         return
 
     # Now, try to conduct the search using that connection
@@ -600,9 +597,6 @@ def ariaSearch(requestBody, conn):
 
         # Log the error
         logger.exception("Could connect to database, but could not execute search.", exc_info=True)
-
-    finally:
-        sock.close()
 
 def ariaRequest(requestBody, conn):
     "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"

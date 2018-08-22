@@ -883,6 +883,11 @@ def nameIterable(prefix):
 # Network operation helper functions
 def readFrom(read, log=True):
     "Performs the operation of reading from the given Connection or set of Connections"
+    
+    # Set up our generators for ARIA thread names
+    if not hasattr(readFrom, "searcherName"):
+        readFrom.searcherName=nameIterable("ARIA searcher ")
+        readFrom.requesterName=nameIterable("ARIA requester ")
 
     # Log which thread we're on
     if log:

@@ -1393,7 +1393,7 @@ while True:
     # Now, select sockets to process
 
     logger.debug("Selection...")
-    readable, writeable, u2 = select.select(r, w, [])
+    readable, writeable, u2 = select.select(r, w, [], timeout)
 
     # If we're in single-thread mode
     if maxThreads==0:

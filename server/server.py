@@ -516,7 +516,12 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
     except KeyError:
         # Some wiseguy sent us a bad request. Tsk tsk.
         # Send an error message that the frontend will (should) ignore
-        sendResponse("400 Bad Request", "application/json", "Invalid request - "+requestBody+" does not contain a search key.", sock, ["Warning: 199 Cadence \"Search request \'"+requestBody+"\' could not be parsed into a search term.\""])
+        sendResponse("400 Bad Request",
+                     "application/json",
+                     "Invalid request - "+requestBody+" does not contain a search key.",
+                     sock,
+                     ["Warning: 199 Cadence \"Search request \'"+requestBody+"\' could not be parsed into a search term.\""],
+                     allowEncodings)
         return
 
     # Attempt to connect to the database
@@ -528,7 +533,11 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
         cursor = db.cursor()
     except:
         # Send the client an error message
-        sendResponse("500 Internal Server Error", "application/json", "The server could not access the ARIA database.", sock)
+        sendResponse("500 Internal Server Error"
+                     "application/json",
+                     "The server could not access the ARIA database.",
+                     sock,
+                     allowEncodings=allowEncodings)
 
         # Log the exception
         logger.exception("Could not connect to ARIA database.", exc_info=True)
@@ -586,7 +595,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             # Who needs JSON libraries anyway?
 
         # Send that result string to the user
-        sendResponse("200 OK", "application/json", results, sock)
+        sendResponse("200 OK", "application/json", results, sock, allowEncodings=allowEncodings)
 
         # Log results
         logger.debug("Search for \"%s\" had %d results - %s.", query, length, results)
@@ -594,7 +603,11 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
         # Well, we couldn't search. Tell the user and log the error
 
         # Send a response to the user
-        sendResponse("500 Internal Server Error", "application/json", "The server could not query the database.", sock)
+        sendResponse("500 Internal Server Error",
+                     "application/json",
+                     "The server could not query the database.",
+                     sock,
+                     allowEncodings=allowEncodings)
 
         # Log the error
         logger.exception("Could connect to database, but could not execute search.", exc_info=True)

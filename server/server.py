@@ -1363,6 +1363,7 @@ def splitInto(arr, n):
     return (arr[i*quotient+min(i, remainder) : (i+1)*quotient+min(i+1, remainder)] for i in range(n))
 
 maxThreads=int(config['max_threads'])
+timeout=None if config['select_timeout']=="None" else float(config['select_timeout'])
 # Generators for thread creation maps
 reader = constantIterable(readFrom)
 writer = constantIterable(writeTo)

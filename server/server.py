@@ -858,6 +858,28 @@ mimeTypeOf(b"MimeType.precreate.file")
 generateErrorPage("PRECREATION", "YOU SHOULD NEVER SEE THIS")
 basicHeaders("599 Server Pre-create", "MimeType/precreate.file")
 
+# Helpers for thread work
+# This includes functions to create infinite sequences of thread names
+def createThread(target, name, args):
+    "Wrapper for the Thread constructor which takes positional arguments"
+
+    return Thread(target=target, name=name, args=args)
+
+def constantIterable(const):
+    "A generator which always returns const"
+
+    while True:
+        yield const
+
+def nameIterable(prefix):
+    "A generator which generates an infinite sequence of strings, as prefix+id, for id in {0...infinity}"
+
+    prefix=str(prefix)
+    ID=0
+    while True:
+        yield prefix+str(ID)
+        ID+=1
+
 # Network operation helper functions
 def readFrom(read, log=True):
     "Performs the operation of reading from the given Connection or set of Connections"
@@ -1326,26 +1348,6 @@ def writeTo(write, log=True):
 
     # Close the connection
     write.conn.close()
-
-def createThread(target, name, args):
-    "Wrapper for the Thread constructor which takes positional arguments"
-
-    return Thread(target=target, name=name, args=args)
-
-def constantIterable(const):
-    "A generator which always returns const"
-
-    while True:
-        yield const
-
-def nameIterable(prefix):
-    "A generator which generates an infinite sequence of strings, as prefix+id, for id in {0...infinity}"
-
-    prefix=str(prefix)
-    ID=0
-    while True:
-        yield prefix+str(ID)
-        ID+=1
 
 def splitInto(arr, n):
     "Splits arr into n roughly equally sized pieces."

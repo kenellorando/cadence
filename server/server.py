@@ -883,7 +883,7 @@ def nameIterable(prefix):
 # Network operation helper functions
 def readFrom(read, log=True):
     "Performs the operation of reading from the given Connection or set of Connections"
-    
+
     # Set up our generators for ARIA thread names
     if not hasattr(readFrom, "searcherName"):
         readFrom.searcherName=nameIterable("ARIA searcher ")
@@ -967,9 +967,9 @@ def readFrom(read, log=True):
         if method.startswith(b"POST") and config.getboolean('enable_aria'):
             logger.info("Received POST request to %s.", method.split(b' ')[1].decode())
             if method.split(b' ')[1]==b"/search":
-                Thread(target=ariaSearch, args=(requestBody(request), read, encodings)).start()
+                createThread(ariaSearch, next(readFrom.searcherName), (requestBody(request), read, encodings)).start()
             elif method.split(b' ')[1]==b"/request":
-                Thread(target=ariaRequest, args=(requestBody(request), read, encodings)).start()
+                createThread(ariaRequest, next(readFrom.requesterName), (requestBody(request), read, encodings)).start()
             else:
                 # No other paths can receive a POST.
                 # Tell the browser it can't do that, and inform it that it may only use GET or HEAD here.

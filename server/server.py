@@ -888,9 +888,10 @@ def readFrom(read, log=True):
         # Accept as many connections as we can until none are immediately ready for accept
         try:
             while True:
-                conn = read.conn.accept()[0]
-                openconn.append(Connection(conn, False))
+                conn, address = read.conn.accept()
+                openconn.append(Connection(conn, False, IP=address))
                 logger.info("Accepting a new connection, attached socket %d.", conn.fileno())
+                logger.debug("Connection is from %s.", address) # Not the client address per se, but informative in theory nonetheless.
         except socket.timeout:
             pass
         except BlockingIOError:

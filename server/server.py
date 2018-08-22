@@ -467,8 +467,9 @@ def generateErrorPage(title, description):
     # For performance, construct this once the first time an error page is generated
     if not hasattr(generateErrorPage, "format"):
         generateErrorPage.format =  "<!DOCTYPE html>\n"
-        generateErrorPage.format += "<html>\n"
+        generateErrorPage.format += "<html lang='en'>\n"
         generateErrorPage.format += "  <head>\n"
+        generateErrorPage.format += "    <meta charset='utf-8'>\n"
         generateErrorPage.format += "    <title>{0}</title>\n"
         generateErrorPage.format += "  </head>\n"
         generateErrorPage.format += "  <body>\n"

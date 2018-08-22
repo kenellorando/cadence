@@ -889,6 +889,7 @@ def readFrom(read, log=True):
         try:
             while True:
                 conn, address = read.conn.accept()
+                address = address[0]
                 openconn.append(Connection(conn, False, IP=address))
                 logger.info("Accepting a new connection, attached socket %d.", conn.fileno())
                 logger.debug("Connection is from %s.", address) # Not the client address per se, but informative in theory nonetheless.

@@ -699,7 +699,8 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
                          "text/plain",
                          "ARIA: The server administrator has forbidden you from submitting requests.",
                          sock,
-                         ["Warning: 299 Cadence The server has been configured to block this user from requesting songs."])
+                         ["Warning: 299 Cadence The server has been configured to block this user from requesting songs."],
+                         allowEncodings)
 
             # Log the blacklist error.
             logger.warning("User with tag %s at address %s is on the request blacklist, and therefore was bocked from making a request.", tag, conn.IP)
@@ -714,7 +715,8 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
                          "text/plain",
                          "ARIA: Request rejected, you must wait five minutes between requests.",
                          sock,
-                         ["Retry-After: "+str(math.ceil((timeout+ariaRequest.timeoutSeconds)-time.monotonic()))])
+                         ["Retry-After: "+str(math.ceil((timeout+ariaRequest.timeoutSeconds)-time.monotonic()))],
+                         allowEncodings)
 
             # Log timeout
             logger.info("Request too close to previous request from user %s.", tag)
@@ -754,7 +756,8 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
                      "ARIA: Request received!\n"+
                      "<!-- Position in queue: "+pos+" -->",
                      sock,
-                     ["X-Queue-Position: "+pos])
+                     ["X-Queue-Position: "+pos],
+                     allowEncodings)
     except:
         logger.exception("Exception while requesting song %s.", path, exc_info=True)
 
@@ -764,7 +767,8 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
                      "text/html",
                      "ARIA: Something went wrong while processing your request.",
                      sock,
-                     ["Retry-After: Sat, 01 Sep 2018 00:00:00 GMT"])
+                     ["Retry-After: Sat, 01 Sep 2018 00:00:00 GMT"],
+                     allowEncodings)
     finally:
         connection.close()
 

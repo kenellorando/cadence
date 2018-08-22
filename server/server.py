@@ -481,8 +481,8 @@ def generateErrorPage(title, description):
     # Use string formatting to insert the parameters into the page
     return generateErrorPage.format.format(title, description).encode()
 
-def ariaSearch(requestBody, conn):
-    "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"
+def ariaSearch(requestBody, conn, allowEncodings=None):
+    "Performs the action of an ARIA search as specified in the body, sending results on the passed connection, optionally allowing the results to be encoded"
 
     if not hasattr(ariaSearch, "timeout"):
         # Pre-store certain values from configuration
@@ -599,8 +599,8 @@ def ariaSearch(requestBody, conn):
         # Log the error
         logger.exception("Could connect to database, but could not execute search.", exc_info=True)
 
-def ariaRequest(requestBody, conn):
-    "Performs the action of an ARIA search as specified in the body, sending results on the passed connection"
+def ariaRequest(requestBody, conn, allowEncodings=None):
+    "Performs the action of an ARIA search as specified in the body, sending results on the passed connection, optionally allowing the results to be encoded"
 
     # Setup for connection IP
     sock = conn

@@ -900,6 +900,18 @@ def readFrom(read, log=True):
         # Fetch the HTTP request waiting on read
         request = waitingRequest(read.conn, int(config['HTTP_blocksize']))
 
+        # If the request is zero-length, the client disconnected. Skip the work of figuring that out the hard way, and the unhelpful log message.
+        # Log a better message, remove the connection from the list, and close the socket (skipping the rest of the loop)
+        if len(request) == 0:
+            logger.info("Empty request on socket %d.", read.fileno())
+            openconn.remove(read)
+            sendResponse("400 Bad Request",
+                         "text/html",
+                         generateErrorPage("400 Bad Request",
+                                           "Your browser send an empty request."),
+                         read.conn)
+            return
+
         # Set the IP on the connection
         read.setIPFrom(request.partition(b"\r\n\r\n")[0])
 
@@ -913,19 +925,6 @@ def readFrom(read, log=True):
                 encodings = [val.partition(";")[0] for val in values] # We don't care about quality values
 
                 break
-
-        # If the request is zero-length, the client disconnected. Skip the work of figuring that out the hard way, and the unhelpful log message.
-        # Log a better message, remove the connection from the list, and close the socket (skipping the rest of the loop)
-        if len(request) == 0:
-            logger.info("Empty request on socket %d.", read.fileno())
-            openconn.remove(read)
-            sendResponse("400 Bad Request",
-                         "text/html",
-                         generateErrorPage("400 Bad Request",
-                                           "Your browser send an empty request."),
-                         read.conn,
-                         allowEncodings=encodings)
-            return
 
         # Lines of the HTTP request (needed to read the header)
         lines = request.partition(b"\r\n\r\n")[0].split(b"\r\n")

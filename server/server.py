@@ -27,11 +27,11 @@ from configparser import ConfigParser
 # Load in our configuration
 # First, load in the defaults
 defaultconfig = ConfigParser(interpolation=None)
-defaultconfig.read('default-config.ini')
+defaultconfig.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default-config.ini'))
 
 # Now use those defaults to load in the overrides
 config = ConfigParser(defaults=defaultconfig['DEFAULT'], interpolation=None)
-config.read('config.ini')
+config.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini'))
 config = config['DEFAULT']
 
 level = config['loglevel']

@@ -459,7 +459,8 @@ def sendResponse(status, contentType, content, sock, headers=[], allowEncodings=
         queueResponse(sock, constructResponse(basicHeaders(status, contentType), content, contentType, allowEncodings, etag))
 
     logger.info("Queued response for socket %d.", sock.fileno())
-    logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug("Response had %d additional headers: \"%s\".", len(headers), ", ".join(headers))
 
 # Probably won't see much use for this... But need it at least for 400 bad request
 def generateErrorPage(title, description):

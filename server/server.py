@@ -34,6 +34,9 @@ config = ConfigParser(defaults=defaultconfig['DEFAULT'], interpolation=None)
 config.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini'))
 config = config['DEFAULT']
 
+# Set whether the logging module will handle exceptions on its own
+logging.raiseExceptions=config.getboolean("log_raise_exceptions")
+
 level = config['loglevel']
 # Translate a log level (as configured) into a useful log level
 leveldict = {

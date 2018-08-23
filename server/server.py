@@ -1413,8 +1413,10 @@ while True:
     elif maxThreads==1:
         # Read from the readable sockets in a read thread
         logger.debug("Selected %d readable sockets.", len(readable))
-        reader = Thread(target=readFrom, name=next(readname), args=(readable,))
-        reader.start()
+        reader = None
+        if len(readable)!=0:
+            reader = Thread(target=readFrom, name=next(readname), args=(readable,))
+            reader.start()
 
         # We don't need to block on all the writes.
         # Blocking on the reads is fair, because it means that writes can be handled immediately
@@ -1425,11 +1427,13 @@ while True:
 
         # Now, handle the writeable sockets in a write thread
         logger.debug("Selected %d writeable sockets.", len(writeable))
-        writer = Thread(target=writeTo, name=next(writename), args=(writeable,))
-        writer.start()
+        if len(writable)!=0:
+            writer = Thread(target=writeTo, name=next(writename), args=(writeable,))
+            writer.start()
 
-        # Wait for both threads to finish
-        reader.join()
+        if len(readable)!=0:
+            # Wait for both threads to finish
+            reader.join()
 
     # We have to use multiple threads per operation
     else:

@@ -1389,7 +1389,7 @@ writename = nameIterable("writer")
 # Infinite loop for connection service
 while True:
     # List of sockets we're waiting to read from or write to
-    logger.debug("Assembling socket list")
+    logger.verbose("Assembling socket list")
     r = []
     w = []
     # Add all waiting connections
@@ -1408,18 +1408,18 @@ while True:
     r.append(Connection(sock, False, True))
     # Now, select sockets to process
 
-    logger.debug("Selection...")
+    logger.verbose("Selection...")
     readable, writeable, u2 = select.select(r, w, [], timeout)
 
     # If we're in single-thread mode
     if maxThreads==0:
         # Read from the readable sockets
-        logger.debug("Selected %d readable sockets.", len(readable))
+        logger.verbose("Selected %d readable sockets.", len(readable))
         for read in readable:
             readFrom(read)
 
         # Now, handle the writeable sockets
-        logger.debug("Selected %d writeable sockets.", len(writeable))
+        logger.verbose("Selected %d writeable sockets.", len(writeable))
         for write in writeable:
             openconn.remove(write)
             writeTo(write)
@@ -1428,7 +1428,7 @@ while True:
     # If the maximum number of threads is one, skip over the logic for splitting up the socket arrays
     elif maxThreads==1:
         # Read from the readable sockets in a read thread
-        logger.debug("Selected %d readable sockets.", len(readable))
+        logger.verbose("Selected %d readable sockets.", len(readable))
         reader = None
         if len(readable)!=0:
             reader = Thread(target=readFrom, name=next(readname), args=(readable,))
@@ -1442,7 +1442,7 @@ while True:
         openconn=[conn for conn in openconn if conn not in writeable]
 
         # Now, handle the writeable sockets in a write thread
-        logger.debug("Selected %d writeable sockets.", len(writeable))
+        logger.verbose("Selected %d writeable sockets.", len(writeable))
         if len(writable)!=0:
             writer = Thread(target=writeTo, name=next(writename), args=(writeable,))
             writer.start()
@@ -1453,7 +1453,7 @@ while True:
 
     # We have to use multiple threads per operation
     else:
-        logger.debug("Selected %d readable sockets.", len(readable))
+        logger.verbose("Selected %d readable sockets.", len(readable))
         # Split up the readable sockets and read from them
         readers=[]
         # Our work pools start as one socket to one thread
@@ -1469,7 +1469,7 @@ while True:
         for thread in readers:
             thread.start()
 
-        logger.debug("Selected %d writeable sockets.", len(writeable))
+        logger.verbose("Selected %d writeable sockets.", len(writeable))
         # Split up the writeable sockets and write to them
         writers=[]
         # Our work pools start as one socket to one thread

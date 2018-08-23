@@ -47,6 +47,10 @@ def _verbose(self, message, *args, **kwargs):
 
 logging.getLoggerClass().verbose=_verbose
 
+# If set to do so, change the log milliseconds format
+if config.getboolean('log_milliseconds_with_period'):
+    logging.Formatter.default_msec_format='%s.%03d'
+
 level = config['loglevel']
 # Translate a log level (as configured) into a useful log level
 leveldict = {

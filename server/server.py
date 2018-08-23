@@ -50,6 +50,7 @@ logging.getLoggerClass().verbose=_verbose
 level = config['loglevel']
 # Translate a log level (as configured) into a useful log level
 leveldict = {
+    "VERBOSE"  : 5,
     "DEBUG"    : logging.DEBUG,
     "INFO"     : logging.INFO,
     "WARNING"  : logging.WARNING,

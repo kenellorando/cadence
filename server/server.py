@@ -37,6 +37,16 @@ config = config['DEFAULT']
 # Set whether the logging module will handle exceptions on its own
 logging.raiseExceptions=config.getboolean("log_raise_exceptions")
 
+# Configure a new logging level (VERBOSE)
+logging.addLevelName(5, "VERBOSE")
+def _verbose(self, message, *args, **kwargs):
+    "Function for logging at a below-debug level"
+
+    if self.isEnabledFor(5):
+        self._log(5, message, args, **kwargs)
+
+logging.getLoggerClass().verbose=_verbose
+
 level = config['loglevel']
 # Translate a log level (as configured) into a useful log level
 leveldict = {

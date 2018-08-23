@@ -87,7 +87,8 @@ if len(handlers)==0:
 
 # Log both to the console and to a daily rotating file, storing no more than 30 days of logs
 logging.basicConfig(level=level,
-                    format=config['logformat'],
+                    format=config['log_debugformat'] if config.getboolean('log_use_debugformat')
+                                                     else config['logformat'],
                     handlers=handlers)
 logger = logging.getLogger(config['logger'])
 logger.setLevel(level)

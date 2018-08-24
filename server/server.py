@@ -38,12 +38,13 @@ config = config['DEFAULT']
 logging.raiseExceptions=config.getboolean("log_raise_exceptions")
 
 # Configure a new logging level (VERBOSE)
-logging.addLevelName(5, "VERBOSE")
+logging.VERBOSE=5
+logging.addLevelName(logging.VERBOSE, "VERBOSE")
 def _verbose(self, message, *args, **kwargs):
     "Function for logging at a below-debug level"
 
-    if self.isEnabledFor(5):
-        self._log(5, message, args, **kwargs)
+    if self.isEnabledFor(logging.VERBOSE):
+        self._log(logging.VERBOSE, message, args, **kwargs)
 
 logging.getLoggerClass().verbose=_verbose
 
@@ -54,7 +55,7 @@ if config.getboolean('log_milliseconds_with_period'):
 level = config['loglevel']
 # Translate a log level (as configured) into a useful log level
 leveldict = {
-    "VERBOSE"  : 5,
+    "VERBOSE"  : logging.VERBOSE,
     "DEBUG"    : logging.DEBUG,
     "INFO"     : logging.INFO,
     "WARNING"  : logging.WARNING,

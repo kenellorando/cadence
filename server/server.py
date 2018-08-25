@@ -1066,7 +1066,7 @@ def readFrom(read, log=True):
         for header in lines:
             if header.decode().lower().startswith("accept-encoding: "):
                 # Parse the values given by the header
-                value = header.partition(": ")[2]
+                value = header.decode().partition(": ")[2]
                 logger.debug("Allowed encodings: %s.", value)
                 values = value.split(", ")
                 encodings = [val.partition(";")[0] for val in values] # We don't care about quality values

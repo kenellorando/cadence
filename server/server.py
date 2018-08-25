@@ -43,8 +43,8 @@ logging.addLevelName(logging.VERBOSE, "VERBOSE")
 def _verbose(self, message, *args, **kwargs):
     "Function for logging at a below-debug level"
 
-    if self.isEnabledFor(logging.VERBOSE):
-        self._log(logging.VERBOSE, message, args, **kwargs)
+    # if self.isEnabledFor(logging.VERBOSE):
+    self._log(logging.VERBOSE, message, args, **kwargs)
 
 logging.getLoggerClass().verbose=_verbose
 
@@ -76,12 +76,14 @@ else:
         raise RuntimeError("Could not interpret \""+level+"\" as a valid logging level") from ex
 
 
-#####################################################################################################
-# Set verbose logging to a no-op if it's disabled                                                   #
-# This is a performance enhancement, which breaks verbose logging if loglevel changes dynamically.  #
-# If you encounter issues with this, remove this code.                                              #
-# When it works, this avoids a lot of unnecessary function calls (which are expensive in Python)    #
-#####################################################################################################
+#############################################################################################################
+# Set verbose logging to a no-op if it's disabled                                                           #
+# This is a performance enhancement, which breaks verbose logging if loglevel changes dynamically.          #
+# If you encounter issues with this, remove this code.                                                      #
+# When it works, this avoids a lot of unnecessary function calls (which are expensive in Python)            #
+# Note that if you do remove this, you need to restore the check which is commented out in _verbose         #
+# This check is removed, since _verbose can now only be called (through a logger) when VERBOSE is enabled.  #
+#############################################################################################################
 def noop(self, message, *args, **kwargs):
     "Does nothing, with arguments compatible to a logging function"
     pass

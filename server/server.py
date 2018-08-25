@@ -1579,7 +1579,8 @@ while True:
             rpools=splitInto(readable, maxThreads)
 
         # Create a list of threads to run reads on
-        readers=list(map(createThread, reader, readname, ((read,) for read in rpools)))
+        if len(rpools)>0:
+            readers=list(map(createThread, reader, readname, ((read,) for read in rpools)))
         # ...and start all of those threads
         for thread in readers:
             thread.start()
@@ -1602,7 +1603,8 @@ while True:
         openconn=[conn for conn in openconn if conn not in writeable]
 
         # Create a list of threads to run writes on
-        writers=list(map(createThread, writer, writename, ((write,) for write in wpools)))
+        if len(wpools)>0:
+            writers=list(map(createThread, writer, writename, ((write,) for write in wpools)))
         # ...and start all of those threads
         for thread in writers:
             thread.start()

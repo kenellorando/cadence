@@ -189,6 +189,7 @@ def mimeTypeOf (filename):
     # In order to keep this whole thing from being recreated every time a request for a file is made,
     #   only allocate it the first time the function is called and store it as a local for other requests
     if not hasattr(mimeTypeOf, "dictionary"):
+        logger.verbose("Configuring MIME type dictionary...")
         mimeTypeOf.dictionary = {
             "es": "application/ecmascript",
             "epub": "application/epub+zip",
@@ -325,6 +326,7 @@ def mimeTypeOf (filename):
             "wmv": "video/x-ms-wmv",
             "avi": "video/x-msvideo",
         }
+        logger.verbose("Done.")
 
     if not extension in mimeTypeOf.dictionary.keys():
         # We don't recognize this filetype
@@ -367,6 +369,7 @@ def basicHeaders(status, contentType):
 
     # For performance, pre-create a format string for basic headers (we use this function a lot)
     if not hasattr(basicHeaders, "format"):
+        logger.verbose("Assembling basic headers format...")
         basicHeaders.format =  "HTTP/1.1 {0}\r\n"
         basicHeaders.format += "Date: {1}\r\n"
         basicHeaders.format += "Connection: close\r\n"
@@ -386,6 +389,8 @@ def basicHeaders(status, contentType):
 
         basicHeaders.format += "Content-Type: {2}\r\n"
 
+        logger.verbose("Done.")
+
     # Format in our arguments and return
     return basicHeaders.format.format(status, HTTP_time(), contentType).encode()
 
@@ -394,7 +399,9 @@ def constructResponse(unendedHeaders, content, contentType, allowEncodings=None,
 
     # Pre-compile our regex pattern
     if not hasattr(constructResponse, "compressPattern"):
+        logger.verbose("Compiling compression regex...")
         constructResponse.compressPattern=re.compile(config['compress_type_regex'], re.IGNORECASE)
+        logger.verbose("Done.")
 
     response =  unendedHeaders
 
@@ -408,6 +415,7 @@ def constructResponse(unendedHeaders, content, contentType, allowEncodings=None,
         if etag==None:
             response += b"ETag: \""+ETag(content)+b"\"\r\n"
         else:
+            logger.verbose("Overrided ETag.")
             response += b"ETag: \""+etag+b"\"\r\n"
 
     # Process our encodings
@@ -418,6 +426,7 @@ def constructResponse(unendedHeaders, content, contentType, allowEncodings=None,
     #   - The MIME type of our file is configured to be compressed.
     if allowEncodings!=None and l>int(config['minimum_compress_size']) and constructResponse.compressPattern.fullmatch(contentType)!=None:
         for encoding in allowEncodings:
+            logger.debug("Permitted to use encoding %s.", encoding)
             if encoding=="identity" or encoding=="*":
                 # We can silently use this encoding
                 break
@@ -487,6 +496,7 @@ def generateErrorPage(title, description):
 
     # For performance, construct this once the first time an error page is generated
     if not hasattr(generateErrorPage, "format"):
+        logger.verbose("Assembling error page generation format...")
         generateErrorPage.format =  "<!DOCTYPE html>\n"
         generateErrorPage.format += "<html lang='en'>\n"
         generateErrorPage.format += "  <head>\n"
@@ -498,6 +508,7 @@ def generateErrorPage(title, description):
         generateErrorPage.format += "    <p>{1}</p>\n"
         generateErrorPage.format += "  </body>\n"
         generateErrorPage.format += "</html>\n"
+        logger.verbose("Done.")
 
     # Use string formatting to insert the parameters into the page
     return generateErrorPage.format.format(title, description).encode()
@@ -508,6 +519,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
     if not hasattr(ariaSearch, "timeout"):
         # Pre-store certain values from configuration
         # Process all the timeout values we claimed to support
+        logger.verbose("Parsing search timeout and assembling select string prefix...")
         ariaSearch.timeout=config['db_timeout']
         if ariaSearch.timeout=="None":
             ariaSearch.timeout=None
@@ -518,6 +530,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
 
         # Incomplete database search query string
         ariaSearch.selectfrom="SELECT "+config['db_column_title']+", "+config['db_column_artist']+", "+config['db_column_path']+" FROM "+config['db_table']+" "
+        logger.verbose("Done.")
 
     # Accept either a socket or a Connection
     sock = conn
@@ -533,6 +546,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
     # Parse the query
     query = ""
     try:
+        logger.verbose("Attempting to parse as search query.")
         query = parse.parse_qs(requestBody)["search"][0]
     except KeyError:
         # Some wiseguy sent us a bad request. Tsk tsk.
@@ -543,15 +557,19 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
                      sock,
                      ["Warning: 199 Cadence \"Search request \'"+requestBody+"\' could not be parsed into a search term.\""],
                      allowEncodings)
+        logger.info("Unable to parse %s as a search term.", requestBody)
         return
 
     # Attempt to connect to the database
     try:
+        logger.verbose("Attempting database connection...")
         db = pg8000.connect(user=config['db_username'], host=config['db_host'],
                             port=int(config['db_port']), database=config['db_name'],
                             password=config['db_password'], ssl=config.getboolean('db_encrypt'),
                             timeout=ariaSearch.timeout)
+        logger.verbose("Acquiring cursor...")
         cursor = db.cursor()
+        logger.verbose("Done.")
     except:
         # Send the client an error message
         sendResponse("500 Internal Server Error"
@@ -573,20 +591,29 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
 
         # Check for our special query forms, and get results out of them
         if d.startswith("songs named "):
-            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" ILIKE %s", ('%'+q[12:]+'%',))
+            Q=q[12:]
+            logger.verbose("Executing title search for %s (search term %s).", q, Q)
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" ILIKE %s", ('%'+Q+'%',))
         elif d.startswith("songs by "):
-            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s", ('%'+q[9:]+'%',))
+            Q=q[9:]
+            logger.verbose("Executing artist search for %s (search term %s).", q, Q)
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s", ('%'+Q+'%',))
         elif d.endswith(" songs") and config['db_column_genre']!="None":
-            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_genre']+" ILIKE %s", ('%'+q[:-6]+'%',))
+            Q=q[:-6]
+            logger.verbose("Executing genre search for %s (search term %s).", q, Q)
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_genre']+" ILIKE %s", ('%'+Q+'%',))
         else:
             # We don't have a special form.
             # For now, we haven't yet agreed on how the server should behave in this situation
             # But I'm sure it'll include results where the artist or title match the query.
             Q='%'+q+'%'
+            logger.verbose("Non-special search. Executing general-case search.")
             cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s OR "+config['db_column_title']+" ILIKE %s", (Q, Q))
 
         # Save our results
         results=cursor.fetchall()
+
+        logger.verbose("Search complete, results fetched.")
 
         # Store the number of results for the log
         length=len(results)
@@ -594,6 +621,8 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
         # Close the database connection and cursor
         db.close()
         cursor.close()
+
+        logger.verbose("Connection and cursor closed.")
 
         # Now, we have a collection of results. We need to make it a JSON-parsable collection
         # In addition, we need to make sure it has the appropriate names for the ARIA frontend
@@ -656,12 +685,18 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
     # We need a static variable to track last-request times per-user
     # Initialize it on first run to an empty array
     if not hasattr(ariaRequest, "timeouts"):
+        logger.verbose("Configuring request data...")
+
         ariaRequest.timeouts={}
         ariaRequest.timeoutSeconds=float(config['request_timeout'])
+
+        logger.verbose("Configured timeout: %f seconds.", ariaRequest.timeoutSeconds)
 
         # Data for special requests
         ariaRequest.specialEnabled=config.getboolean('special_request_timeouts')
         ariaRequest.specialForced=config.getboolean('special_request_force_enable')
+
+        logger.verbose("Configured special request switches - feature enable %s, feature enabled for all clients %s.", ariaRequest.specialEnabled, ariaRequest.specialForced)
 
         # If enabled, also add in our whitelist
         if (ariaRequest.specialEnabled):
@@ -670,16 +705,25 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
             # (Unless they're force-enabled)
             if whitelist == "None" and not ariaRequest.specialForced:
                 ariaRequest.specialEnabled = False
+                logger.verbose("Feature enabled for no clients - Enable switch set to off.")
             # Else, parse out a list of addresses and save it
             else:
                 whitelist = whitelist.split(',')
                 ariaRequest.specialWhitelist = [addr.strip() for addr in whitelist]
+
+                if logger.isEnabledFor(logging.VERBOSE):
+                    logger.verbose("Configured whitelist - %d permitted addresses: %s.", len(ariaRequest.specialWhitelist), ','.join(ariaRequest.specialWhitelist))
+
+        logger.verbose("Finished configuration of special request features.")
 
         # Configure the blacklist
         if config['request_blacklist']=="None":
             ariaRequest.requestBlacklist=[]
         else:
             ariaRequest.requestBlacklist=[addr.strip() for addr in config['request_blacklist'].split(',')]
+
+        if logger.isEnabledFor(logging.VERBOSE):
+            logger.verbose("Configured blacklist - %d blocked clients: %s.", len(ariaRequest.requestBlacklist), ','.join(ariaRequest.requestBlacklist))
 
         # Configure the whitelist
         # Since the mechanism is intended to conditionally allow special requests, disable it if those are off.
@@ -689,8 +733,13 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
         else:
             ariaRequest.requestWhitelist=[addr.strip() for addr in config['request_whitelist'].split(',')]
 
+        if logger.isEnabledFor(logging.VERBOSE):
+            logger.verbose("Configured whitelist - %d unblocked clients: %s.", len(ariaRequest.requestWhitelist), ','.join(ariaRequest.requestWhitelist))
+
         # Configure the liquidsoap target
         ariaRequest.liquidsoapPort=int(config['liquidsoap_port'])
+
+        logger.verbose("All data configured. Liquidsoap will be contacted on port %d.", ariaRequest.liquidsoapPort)
 
     request = parse.parse_qs(requestBody)
 
@@ -701,20 +750,31 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
         # If request timeout is zero, throw a KeyError to skip the timeout logic
         # This is a bit hacky, I know, but its easy, and I don't expect production instances to do this
         if ariaRequest.timeoutSeconds <= 0.0:
+            logger.verbose("Timeouts disabled.")
             raise KeyError("Fake error to skip timeout logic")
+
+        logger.verbose("Checking timeout for %s...", tag)
 
         # Check if config is set to let us try to use a tag
         if ariaRequest.specialEnabled:
             # Check if this client is on the whitelist allowed to use special request timeouts
             # Alternatively, check if we're allowing specials from all addresses
+            logger.verbose("Checking for special-request access...")
             if tag in ariaRequest.specialWhitelist or ariaRequest.specialForced:
                 # We're in business.
                 # Check if the request includes a tag
+                logger.verbose("Permitted. Checking for presence of special request tag....")
                 if "tag" in request.keys():
                     # Use that tag for timeouts (joining any possible additional values with ampersands)
                     tag += '/' + '&'.join(request["tag"])
+                    logger.verbose("Included. New identifier %s.", tag)
+                else:
+                    logger.verbose("Not found.")
+            else:
+                logger.verbose("Not permitted.")
 
         # Check if the user is blacklisted
+        logger.verbose("Checking for blacklisting...")
         if tag not in ariaRequest.requestWhitelist and (tag in ariaRequest.requestBlacklist or conn.IP in ariaRequest.requestBlacklist):
             # User on the blacklist. Issue a Forbidden response.
             sendResponse("403 Forbidden",
@@ -727,6 +787,7 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
             # Log the blacklist error.
             logger.warning("User with tag %s at address %s is on the request blacklist, and therefore was bocked from making a request.", tag, conn.IP)
             return
+        logger.verbose("Passed.")
 
         timeout=ariaRequest.timeouts[tag]
         logger.debug("Request timeout for %s at second %f. Current time %f.", tag, timeout+ariaRequest.timeoutSeconds, time.monotonic())
@@ -745,6 +806,8 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
             return
     except KeyError:
         pass
+
+    logger.verbose("User is permitted to request.")
 
     # If we get here, the timeout mechanism is allowing the request.
     # First, isolate the path of our request
@@ -885,6 +948,8 @@ basicHeaders("599 Server Pre-create", "MimeType/precreate.file")
 def createThread(target, name, args):
     "Wrapper for the Thread constructor which takes positional arguments"
 
+    logger.verbose("Creating thread %s.", name)
+
     return Thread(target=target, name=name, args=args)
 
 def constantIterable(const):
@@ -899,6 +964,7 @@ def nameIterable(prefix):
     prefix=str(prefix)
     ID=0
     while True:
+        logger.verbose("Advanced name \"%s\" to #%d.", prefix, ID)
         yield prefix+str(ID)
         ID+=1
 
@@ -908,8 +974,10 @@ def readFrom(read, log=True):
 
     # Set up our generators for ARIA thread names
     if not hasattr(readFrom, "searcherName"):
+        logger.verbose("Configuring ARIA thread name generators...")
         readFrom.searcherName=nameIterable("ARIA searcher ")
         readFrom.requesterName=nameIterable("ARIA requester ")
+        logger.verbose("Done.")
 
     # Log which thread we're on
     if log:
@@ -917,14 +985,18 @@ def readFrom(read, log=True):
 
     # If this isn't a Connection, assume it's a collection of Connections and recurse
     if type(read) is not Connection:
+        logger.verbose("Attempting iteration over passed collection...")
         for r in read:
+            logger.verbose("Beginning read.")
             readFrom(r, False)
+        logger.verbose("All reads complete.")
         return
 
     # Ignore erroneous sockets (those with negative file descriptors)
     if read.fileno() < 0:
         # Drop the connection from openconn, close the error, and continue on our way
         # Ignore errors: What matters is that we don't do anything with the sockets
+        logger.verbose("Noticed negative file descriptor %d.", read.fileno())
         try:
             openconn.remove(read)
             read.conn.close()
@@ -964,6 +1036,7 @@ def readFrom(read, log=True):
             return
 
         # Set the IP on the connection
+        logger.verbose("Attempting to parse IP from connection...")
         headers=request.partition(b"\r\n\r\n")[0]
         read.setIPFrom(headers)
 
@@ -971,11 +1044,13 @@ def readFrom(read, log=True):
         lines = headers.split(b"\r\n")
 
         # See if we have an Accept-Encoding header
+        logger.verbose("Attempting to grab list of allowed encodings...")
         encodings = []
         for header in lines:
             if header.decode().lower().startswith("accept-encoding: "):
                 # Parse the values given by the header
                 value = header.partition(": ")[2]
+                logger.debug("Allowed encodings: %s.", value)
                 values = value.split(", ")
                 encodings = [val.partition(";")[0] for val in values] # We don't care about quality values
 
@@ -1093,14 +1168,18 @@ def readFrom(read, log=True):
                 # Too bad for them.
                 # Image is, unsurprisingly, a teapot I rendered
                 image = ""
+                logger.verbose("Attempt to get coffee. Becoming a teapot. Attempting to access teapot image...")
                 try:
                     with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "teapot.png"), 'rb', 0) as f:
                         image = base64.b64encode(f.read()).decode()
                 except:
+                    logger.debug("Could not open teapot image.", exc_info=True)
                     pass
+                logger.verbose("Done.")
 
                 # If file load failed, just skip the image
                 if len(image)==0:
+                    logger.verbose("Sending imageless 418 easter egg page.")
                     sendResponse("418 I'm a teapot",
                                  "text/html",
                                  generateErrorPage("418 I'm a teapot",
@@ -1108,6 +1187,7 @@ def readFrom(read, log=True):
                                  read.conn,
                                  allowEncodings=encodings)
                 else:
+                    logger.verbose("Sending 418 easter egg page.")
                     sendResponse("418 I'm a teapot",
                                  "text/html",
                                  generateErrorPage("418 I'm a teapot",
@@ -1195,6 +1275,8 @@ def readFrom(read, log=True):
                     # Remove read connection and move on.
                     openconn.remove(read)
                     return
+                else:
+                    logger.info("Need to resend file (last modified too recently or no mtime passed).")
 
             # If we have an ETag and it matches our file, return 304 Not Modified
             elif Etag == ETag(file):
@@ -1208,6 +1290,7 @@ def readFrom(read, log=True):
 
         # Check if we're doing a byte reply
         done=False
+        logger.verbose("Checking for range request...")
         for line in lines:
             # If we're not processing byte replies, break out of the loop
             # (this is here to reduce indentation on this really big loop)
@@ -1220,10 +1303,12 @@ def readFrom(read, log=True):
 
                 # Check for If-Range
                 exit=False
+                logger.verbose("Checking for If-Range....")
                 for l in lines:
                     if l.startswith(b"If-Range: "):
                         # We found an If-Range
                         value=l.partition(b": ")[2]
+                        logger.debug("Found If-Range: %s.", value)
 
                         # Check if the If-Range is a last-modified or an ETag
                         # Because our ETags are base64 encoded, we can check for the presence of a space to do this
@@ -1262,6 +1347,7 @@ def readFrom(read, log=True):
 
                 # Perform a byte-range reply
                 range=line.partition(b": ")[2]
+                logger.verbose("Parsing passed range \"%s\"...", range)
                 # 'Range' should look like "bytes=x-y"
                 # Clip out those first six characters
                 range=range[6:]
@@ -1340,6 +1426,7 @@ def readFrom(read, log=True):
 
         # If we're here, we're not doing a byte range reply
         # If the method is GET, use sendResponse to send the file contents.
+        logger.verbose("Performing regular request.")
         if method.startswith(b"GET"):
             sendResponse("200 OK", mimetype, file, read.conn, ["Last-Modified: "+HTTP_time(os.path.getmtime(filename))], encodings)
         # If the method is HEAD, generate the same response, but strip the body
@@ -1359,7 +1446,9 @@ def writeTo(write, log=True):
 
     # If write isn't a Connection, assume it's a collection of Connections
     if type(write) is not Connection:
+        logger.verbose("Attempting iteration over passed collection...")
         for w in write:
+            logger.verbose("Beginning write.")
             writeTo(w, False)
         return
 
@@ -1367,7 +1456,9 @@ def writeTo(write, log=True):
     # Send data unless we encounter an exception
     try:
         while len(write.content)>0:
+            logger.verbose("Sending %d bytes...", len(write.content))
             sent=write.conn.send(write.content)
+            logger.verbose("Sent %d bytes.", sent)
             write.content=write.content[sent:]
 
         logger.info("Sent response to socket %d.", write.fileno())
@@ -1438,7 +1529,7 @@ while True:
         logger.verbose("Selected %d readable sockets.", len(readable))
         reader = None
         if len(readable)!=0:
-            reader = Thread(target=readFrom, name=next(readname), args=(readable,))
+            reader = createThread(readFrom, next(readname), (readable,))
             reader.start()
 
         # We don't need to block on all the writes.
@@ -1451,7 +1542,7 @@ while True:
         # Now, handle the writeable sockets in a write thread
         logger.verbose("Selected %d writeable sockets.", len(writeable))
         if len(writable)!=0:
-            writer = Thread(target=writeTo, name=next(writename), args=(writeable,))
+            writer = createThread(writeTo, next(writename), (writeable,))
             writer.start()
 
         if len(readable)!=0:

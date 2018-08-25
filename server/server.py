@@ -75,6 +75,21 @@ else:
         # Raise a new exception with a somewhat more helpful error
         raise RuntimeError("Could not interpret \""+level+"\" as a valid logging level") from ex
 
+
+#####################################################################################################
+# Set verbose logging to a no-op if it's disabled                                                   #
+# This is a performance enhancement, which breaks verbose logging if loglevel changes dynamically.  #
+# If you encounter issues with this, remove this code.                                              #
+# When it works, this avoids a lot of unnecessary function calls (which are expensive in Python)    #
+#####################################################################################################
+def noop(self, message, *args, **kwargs):
+    "Does nothing, with arguments compatible to a logging function"
+    pass
+
+if level>logging.VERBOSE:
+    logging.getLoggerClass().verbose=noop
+
+
 # If logs directory does not exist, create it
 logdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), config['logdirectory'])
 logdir = os.path.realpath(logdir)

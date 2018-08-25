@@ -573,16 +573,17 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
 
         # Check for our special query forms, and get results out of them
         if d.startswith("songs named "):
-            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" ILIKE %s", (q[12:],))
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" ILIKE %s", ('%'+q[12:]+'%',))
         elif d.startswith("songs by "):
-            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s", (q[9:],))
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s", ('%'+q[9:]+'%',))
         elif d.endswith(" songs") and config['db_column_genre']!="None":
-            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_genre']+" ILIKE %s", (q[:-6],))
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_genre']+" ILIKE %s", ('%'+q[:-6]+'%',))
         else:
             # We don't have a special form.
             # For now, we haven't yet agreed on how the server should behave in this situation
             # But I'm sure it'll include results where the artist or title match the query.
-            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s OR "+config['db_column_title']+" ILIKE %s", (q, q))
+            Q='%'+q+'%'
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s OR "+config['db_column_title']+" ILIKE %s", (Q, Q))
 
         # Save our results
         results=cursor.fetchall()

@@ -964,21 +964,22 @@ def readFrom(read, log=True):
             return
 
         # Set the IP on the connection
-        read.setIPFrom(request.partition(b"\r\n\r\n")[0])
+        headers=request.partition(b"\r\n\r\n")[0]
+        read.setIPFrom(headers)
+
+        # Lines of the HTTP request (needed to read the header)
+        lines = headers.split(b"\r\n")
 
         # See if we have an Accept-Encoding header
         encodings = []
-        for header in request.partition(b"\r\n\r\n")[0].decode().split("\r\n"):
-            if header.lower().startswith("accept-encoding: "):
+        for header in lines:
+            if header.decode().lower().startswith("accept-encoding: "):
                 # Parse the values given by the header
                 value = header.partition(": ")[2]
                 values = value.split(", ")
                 encodings = [val.partition(";")[0] for val in values] # We don't care about quality values
 
                 break
-
-        # Lines of the HTTP request (needed to read the header)
-        lines = request.partition(b"\r\n\r\n")[0].split(b"\r\n")
 
         # The first line tells us what we're doing
         # If it's GET, we return the file specified via commandline

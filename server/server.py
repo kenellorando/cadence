@@ -1603,7 +1603,7 @@ while True:
         openconn=[conn for conn in openconn if conn not in writeable]
 
         # Create a list of threads to run writes on
-        if len(writable)>0:
+        if len(writeable)>0:
             writers=list(map(createThread, writer, writename, ((write,) for write in wpools)))
         # ...and start all of those threads
         for thread in writers:

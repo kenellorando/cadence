@@ -26,6 +26,23 @@ from configparser import ConfigParser
 # Prep work
 # Load in our configuration
 # First, load in the defaults
+# Use a line-ending agnostic hash to make sure default-config.ini hasn't been edited (lightly)
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default-config.ini'), 'r') as f:
+    defaults = f.read()
+    agnostic = defaults.translate(str.maketrans(dict.fromkeys(['\r','\n'])))
+    hash = hashlib.sha256(agnostic.encode()).hexdigest()
+
+    # This variable holds the 'canonical' hash of the default configuration file
+    canonical = "550aabcef436ebf98831dd04d9e64a492be1e4d9a42433e50e63f1903e224f61"
+
+    # Now, the check.
+    # Halt startup if the hashes don't match
+    if hash!=canonical:
+        sys.stderr.write("Default configuration hash mismatch!\n")
+        sys.stderr.write("If you are developing the server code, please update the 'canonical' hash in the server code:\n")
+        sys.stderr.write("canonical = '{0}'\n".format(hash))
+        sys.exit(1)
+
 defaultconfig = ConfigParser(interpolation=None)
 defaultconfig.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default-config.ini'))
 

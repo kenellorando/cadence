@@ -634,7 +634,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
                 # Year search
                 logger.verbose("Executing year search for %s (search term %s).", q, Q)
                 cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s", (Q,))
-            else
+            else:
                 # Album search
                 logger.verbose("Executing album search for %s (search term %s).", q, Q)
                 cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_album']+" ILIKE %s", ('%'+Q+'%',))

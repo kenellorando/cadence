@@ -18,10 +18,18 @@
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 
   <!-- Heading: Rock Salt; Subtitle: Roboto 300i; ARIA Messages: VT232; All else: PT Sans -->
-  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+  <!-- CSS preloading technique as described at https://stackoverflow.com/a/40314216 -->
+  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  
+  <noscript id="scriptless-fonts">
+    <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+  </noscript>
 
   <!-- Import base, norm, modules CSS -->
   <link rel="stylesheet" type="text/css" href="/css/master-import.css">
@@ -30,16 +38,29 @@
   <!-- Selected style CSS -->
   <link rel="stylesheet" type="text/css" id="selected-css" href=".">
 
-  <!-- jQuery Google CDN -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <!-- Theme data JSON -->
-  <script type="text/javascript" src="/js/theme.json"></script>
-  <!-- ARIA Front-end -->
-  <script src="/js/aria.js"></script>
-  <!-- Theme Changer -->
-  <script src="/js/theme-changer.js"></script>
-  <!-- Radio-page script -->
-  <script src="/js/radio-page.js"></script>
+  <!-- Conditionally use special behavior for IE9 (only supported IE with buggy defer) -->
+  <!--[if IE]>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/theme.json"></script>
+    <script src="/js/aria.js" async defer></script>
+    <script src="/js/theme-changer.js" async defer></script>
+    <script src="/js/radio-page.js" async defer></script>
+  <![endif]-->
+  
+  <!-- IE later than 10 and other browsers don't understand conditional comments. -->
+  <!-- These browsers guarantee the execution order of deferred scripts, so all the scripts can get defers -->
+  <!-- [if !IE]> -->
+    <!-- jQuery Google CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js" defer></script>
+    <!-- Theme data JSON -->
+    <script type="text/javascript" src="/js/theme.json" defer></script>
+    <!-- ARIA Front-end -->
+    <script src="/js/aria.js" defer></script>
+    <!-- Theme Changer -->
+    <script src="/js/theme-changer.js" defer></script>
+    <!-- Radio-page script -->
+    <script src="/js/radio-page.js" defer></script>
+  <!-- <![endif] -->
 </head>
 
 

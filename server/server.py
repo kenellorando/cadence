@@ -619,6 +619,25 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             Q=q[:-6]
             logger.verbose("Executing genre search for %s (search term %s).", q, Q)
             cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_genre']+" ILIKE %s", ('%'+Q+'%',))
+        elif d.startswith("songs from ") and (config['db_column_year']!="None" or config['db_column_album']!="None"):
+            # Joint search for year or album (Either could validly be requested in this format)
+            Q=q[11:]
+
+            # Three valid conditions: by year, by album, or both
+            # Note that year search is done on a textual copy, to enable pattern searches
+            # However, it is not done on an 'includes' basis like the others - It doesn't make sense to get '1900' as a valid result for '19' in the context of years
+            if config['db_column_year']!="None" and config['db_column_album']!="None":
+                # Dual search
+                logger.verbose("Executing hybrid year/album search for %s (search term %s).", q, Q)
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s", (Q, '%'+Q+'%'))
+            elif config['db_column_year']!="None":
+                # Year search
+                logger.verbose("Executing year search for %s (search term %s).", q, Q)
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s", (Q,))
+            else
+                # Album search
+                logger.verbose("Executing album search for %s (search term %s).", q, Q)
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_album']+" ILIKE %s", ('%'+Q+'%',))
         else:
             # We don't have a special form.
             # For now, we haven't yet agreed on how the server should behave in this situation

@@ -638,6 +638,10 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
                 # Album search
                 logger.verbose("Executing album search for %s (search term %s).", q, Q)
                 cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_album']+" ILIKE %s", ('%'+Q+'%',))
+        elif d.startswith("songs released in ") and config['db_column_year']!="None":
+            Q=q[18:]
+            logger.verbose("Executing year search for %s (search term %s).", q, Q)
+            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s", (Q,))
         else:
             # We don't have a special form.
             # For now, we haven't yet agreed on how the server should behave in this situation

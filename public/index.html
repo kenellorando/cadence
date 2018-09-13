@@ -18,10 +18,11 @@
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
   <!-- Heading: Rock Salt; Subtitle: Roboto 300i; ARIA Messages: VT232; All else: PT Sans -->
-  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+  <!-- CSS preloading technique as described at https://stackoverflow.com/a/40314216 -->
+  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
 
   <!-- Import base, norm, modules CSS -->
   <link rel="stylesheet" type="text/css" href="/css/master-import.css">

@@ -631,7 +631,8 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
         if d.startswith("songs named "):
             Q=q[12:]
             logger.verbose("Executing title search for %s (search term %s).", q, Q)
-            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" ILIKE %s", ('%'+Q+'%',))
+            selector=ariaSearch.sortedSearcher.format(config['db_column_title']+" ILIKE %s")
+            cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
         elif d.startswith("songs by "):
             Q=q[9:]
             logger.verbose("Executing artist search for %s (search term %s).", q, Q)

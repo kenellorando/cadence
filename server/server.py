@@ -668,7 +668,8 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
         elif d.startswith("songs released in ") and config['db_column_year']!="None":
             Q=q[18:]
             logger.verbose("Executing year search for %s (search term %s).", q, Q)
-            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s", (Q,))
+            selector=ariaSearch.sortedSearcher.format(config['db_column_year']+"::text ILIKE %s")
+            cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
         elif d.startswith("songs in ") and config['db_column_album']!="None":
             Q=q[9:]
             logger.verbose("Executing album search for %s (search term %s).", q, Q)

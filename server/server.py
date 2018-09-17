@@ -653,15 +653,18 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             if config['db_column_year']!="None" and config['db_column_album']!="None":
                 # Dual search
                 logger.verbose("Executing hybrid year/album search for %s (search term %s).", q, Q)
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s", (Q, '%'+Q+'%'))
+                selector=ariaSearch.sortedSearcher.format(config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s")
+                cursor.execute(selector, (Q, Q, "%"+Q, "%"+Q, Q+"%", Q+"%", "%"+Q+"%", "%"+Q+"%"))
             elif config['db_column_year']!="None":
                 # Year search
                 logger.verbose("Executing year search for %s (search term %s).", q, Q)
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s", (Q,))
+                selector=ariaSearch.sortedSearcher.format(config['db_column_year']+"::text ILIKE %s")
+                cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
             else:
                 # Album search
                 logger.verbose("Executing album search for %s (search term %s).", q, Q)
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_album']+" ILIKE %s", ('%'+Q+'%',))
+                selector=ariaSearch.sortedSearcher.format(config['db_column_album']+" ILIKE %s")
+                cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
         elif d.startswith("songs released in ") and config['db_column_year']!="None":
             Q=q[18:]
             logger.verbose("Executing year search for %s (search term %s).", q, Q)

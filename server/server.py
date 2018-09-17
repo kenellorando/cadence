@@ -563,8 +563,11 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
                 ariaSearch.timeout=None
 
         # Incomplete database search query strings
-        ariaSearch.select="SELECT "+config['db_column_title']+", "+config['db_column_artist']+", "+config['db_column_path']+" FROM "
-        ariaSearch.selectfrom=ariaSearch.select+config['db_table']+" "
+        ariaSearch.select="SELECT "+config['db_column_title']+", "+config['db_column_artist']+", "+config['db_column_path']
+        ariaSearch.selectfrom=ariaSearch.select+" FROM "+config['db_table']+" "
+        # Long and complicated search string which allows sorted results from four queries with different parameters
+        # Here be dragons.
+        ariaSearch.sortedSearcher=ariaSearch.select+" FROM (("+ariaSearch.select+", 1 AS sort FROM "+config['db_table']+" WHERE {0}) UNION ("+ariaSearch.select+", 2 AS sort FROM "+config['db_table']+" WHERE {0}) UNION ("+ariaSearch.select+", 3 AS sort FROM "+config['db_table']+" WHERE {0}) UNION ("+ariaSearch.select+", 4 AS sort FROM "+config['db_table']+" WHERE {0})) AS temp ORDER BY sort"
         logger.verbose("Done.")
 
     # Accept either a socket or a Connection

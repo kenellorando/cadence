@@ -562,8 +562,9 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             if ariaSearch.timeout<=0:
                 ariaSearch.timeout=None
 
-        # Incomplete database search query string
-        ariaSearch.selectfrom="SELECT "+config['db_column_title']+", "+config['db_column_artist']+", "+config['db_column_path']+" FROM "+config['db_table']+" "
+        # Incomplete database search query strings
+        ariaSearch.select="SELECT "+config['db_column_title']+", "+config['db_column_artist']+", "+config['db_column_path']+" FROM "
+        ariaSearch.selectfrom=ariaSearch.select+config['db_table']+" "
         logger.verbose("Done.")
 
     # Accept either a socket or a Connection

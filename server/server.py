@@ -679,9 +679,9 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             # We don't have a special form.
             # For now, we haven't yet agreed on how the server should behave in this situation
             # But I'm sure it'll include results where the artist or title match the query.
-            Q='%'+q+'%'
             logger.verbose("Non-special search. Executing general-case search.")
-            cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s OR "+config['db_column_title']+" ILIKE %s", (Q, Q))
+            selector=ariaSearch.sortedSearcher.format(config['db_column_artist']+" ILIKE %s OR "+config['db_column_title']+" ILIKE %s")
+            cursor.execute(selector, (q, q, "%"+q, "%"+q, q+"%", q+"%", "%"+q+"%", "%"+q+"%"))
 
         # Save our results
         results=cursor.fetchall()

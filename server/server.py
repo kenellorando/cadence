@@ -635,7 +635,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             Q=q[12:]
             logger.verbose("Executing title search for %s (search term %s).", q, Q)
             if ariaSearch.levenshtein:
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_title']+")")
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_title']+")", ("%"+Q+"%", Q))
             else:
                 selector=ariaSearch.sortedSearcher.format(config['db_column_title']+" ILIKE %s")
                 cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))

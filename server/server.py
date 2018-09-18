@@ -496,7 +496,7 @@ def constructResponse(unendedHeaders, content, contentType, allowEncodings=None,
 def queueResponse(sock, response):
     "Prepare the response to be sent on the socket sock. No work is done to response before send."
 
-    openconn.append(Connection(sock, True, content=response))
+    selector.register(Connection(sock, True, content=response), selectors.EVENT_WRITE)
 
 def sendResponse(status, contentType, content, sock, headers=[], allowEncodings=None, etag=None):
     "Constructs and sends a response with the first three parameters via sock, optionally with additional headers, and optionally overriding the ETag. allowEncodings should be a list of strings of allowed encodings, or None."

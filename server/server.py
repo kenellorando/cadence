@@ -1109,10 +1109,11 @@ def readFrom(read, log=True):
 
     # Ignore erroneous sockets (those with negative file descriptors)
     if read.fileno() < 0:
-        # Drop the connection from openconn, close the error, and continue on our way
+        # Drop the connection from selector, close the error, and continue on our way
         # Ignore errors: What matters is that we don't do anything with the sockets
         logger.verbose("Noticed negative file descriptor %d.", read.fileno())
         try:
+            selector.unregister(read)
             read.conn.close()
         except:
             pass

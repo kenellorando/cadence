@@ -1116,7 +1116,6 @@ def readFrom(read, log=True):
         # Ignore errors: What matters is that we don't do anything with the sockets
         logger.verbose("Noticed negative file descriptor %d.", read.fileno())
         try:
-            openconn.remove(read)
             read.conn.close()
         except:
             pass
@@ -1145,7 +1144,6 @@ def readFrom(read, log=True):
         # Log a better message, remove the connection from the list, and close the socket (skipping the rest of the loop)
         if len(request) == 0:
             logger.info("Empty request on socket %d.", read.fileno())
-            openconn.remove(read)
             sendResponse("400 Bad Request",
                          "text/html",
                          generateErrorPage("400 Bad Request",
@@ -1201,8 +1199,6 @@ def readFrom(read, log=True):
                 logger.info("Issued method not allowed.")
 
             # No matter what, we've handled the request however we chose to.
-            # Remove it from openconn
-            openconn.remove(read)
             return
         elif not (method.startswith(b"GET") or method.startswith(b"HEAD")):
             # This server can't do anything with these methods.
@@ -1214,7 +1210,6 @@ def readFrom(read, log=True):
                          read.conn,
                          ["Allow: GET, HEAD"],
                          encodings)
-            openconn.remove(read)
 
             # Print note on error
             logger.info("Could not execute method %s.", method.decode())
@@ -1249,8 +1244,6 @@ def readFrom(read, log=True):
             # Log an error, pertaining to the fact that an attempt to access forbidden data has been thwarted.
             logger.error("Client at %s attempted to access forbidden file %s, but was denied access.", read.IP, filename.decode())
 
-            # Remove the read connection and continue
-            openconn.remove(read)
             return
 
         # Perform redirect of directories that don't end in a separator or slash
@@ -1265,8 +1258,6 @@ def readFrom(read, log=True):
             # Log redirect
             logger.info("Issued redirect from %s to %s/.", targ, targ)
 
-            # Remove read connection and continue
-            openconn.remove(read)
             return
 
         # Guess the MIME type of the file.
@@ -1317,8 +1308,6 @@ def readFrom(read, log=True):
                 # Log the teapot
                 logger.warning("Became a teapot in response to request for unfound file %s.", filename.decode())
 
-                # Remove read connection and continue
-                openconn.remove(read)
                 file = ""
 
             # Not a teapot
@@ -1331,8 +1320,6 @@ def readFrom(read, log=True):
                                                "\" was not found on this server."),
                              read.conn,
                              allowEncodings=encodings)
-                # Remove read connection and continue
-                openconn.remove(read)
 
                 # Print note on error
                 logger.warning("Could not find file %s.", filename.decode())
@@ -1353,8 +1340,6 @@ def readFrom(read, log=True):
                                            message+'\n'+" -->"),
                          read.conn,
                          allowEncodings=encodings)
-            # Remove read connection and continue
-            openconn.remove(read)
 
             # Print note on error
             logger.exception("Could not open file %s.", filename.decode(), exc_info=True)
@@ -1390,8 +1375,6 @@ def readFrom(read, log=True):
                     queueResponse(read.conn, basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+ETag(file)+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                     logger.info("Client already has this file (not modified since %f [which is %s]).", mtime, HTTP_time(mtime))
 
-                    # Remove read connection and move on.
-                    openconn.remove(read)
                     return
                 else:
                     logger.info("Need to resend file (last modified too recently or no mtime passed).")
@@ -1402,8 +1385,6 @@ def readFrom(read, log=True):
                 queueResponse(read.conn, basicHeaders("304 Not Modified", mimetype)+b"ETag: \""+Etag+b"\"\r\nLast-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n\r\n")
                 logger.info("Client already has this file (matching hash %s) - Issued 304.", Etag.decode())
 
-                # Remove read connection and move on.
-                openconn.remove(read)
                 return
 
         # Check if we're doing a byte reply
@@ -1502,8 +1483,7 @@ def readFrom(read, log=True):
                     # Log the problem
                     logger.warning("Could not satisfy request from socket %d for bytes %d to %d of %d byte file %s.", read.fileno(), points[0], points[1], length, filename)
 
-                    # Remove read connection and continue
-                    openconn.remove(read)
+                    # Continue
                     done=True
                     break
 
@@ -1533,8 +1513,7 @@ def readFrom(read, log=True):
                                                                etag).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
                     logger.info("Sent headers for partial request to socket %d.", read.fileno())
 
-                # Now, remove read connection and move on
-                openconn.remove(read)
+                # Now, move on
                 done=True
                 break
 
@@ -1551,9 +1530,6 @@ def readFrom(read, log=True):
         else:
             queueResponse(read.conn, constructResponse(basicHeaders("200 OK", mimetype)+b"Last-Modified: "+HTTP_time(os.path.getmtime(filename)).encode()+b"\r\n", file, mimetype, encodings).partition(b"\r\n\r\n")[0]+b"\r\n\r\n")
             logger.info("Sent headers to socket %d.", read.fileno())
-
-        # Now that we're done, remove read connection and move on.
-        openconn.remove(read)
 
 def writeTo(write, log=True):
     "Performs the operation of writing to the given Connection or set of Connections"

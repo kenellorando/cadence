@@ -21,5 +21,7 @@ $(document).ready(function() {
     // Volume bar listeners
     $("#volume").change(function() {
         volumeToggle(this.val())
+    }).on("input", function() {
+        volumeToggle(this.val());
     });
 });

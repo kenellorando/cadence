@@ -1608,6 +1608,7 @@ while True:
         # Read from the readable sockets
         logger.verbose("Selected %d readable sockets.", len(readable))
         for read in readable:
+            openconn.remove(read)
             readFrom(read)
 
         # Now, handle the writeable sockets
@@ -1626,12 +1627,10 @@ while True:
             reader = createThread(readFrom, next(readname), (readable,))
             reader.start()
 
-        # We don't need to block on all the writes.
-        # Blocking on the reads is fair, because it means that writes can be handled immediately
-        # But blocking on the writes to finish doesn't matter
+        # Make sure we don't double process sockets when we go on to selection
         # The only thing we need is to remove the sockets from the openconn list.
         # We do that before waiting for any thread joins.
-        openconn=[conn for conn in openconn if conn not in writeable]
+        openconn=[conn for conn in openconn if conn not in writeable and conn not in readable]
 
         # Now, handle the writeable sockets in a write thread
         logger.verbose("Selected %d writeable sockets.", len(writeable))
@@ -1672,12 +1671,10 @@ while True:
         if maxThreads<len(writeable):
             wpools=splitInto(writeable, maxThreads)
 
-        # We don't need to block on all the writes.
-        # Blocking on the reads is fair, because it means that writes can be handled immediately
-        # But blocking on the writes to finish doesn't matter
+        # Make sure we don't double process sockets when we go on to selection
         # The only thing we need is to remove the sockets from the openconn list.
         # We do that before waiting for any thread joins.
-        openconn=[conn for conn in openconn if conn not in writeable]
+        openconn=[conn for conn in openconn if conn not in writeable and conn not in readable]
 
         # Create a list of threads to run writes on
         if len(writeable)>0:

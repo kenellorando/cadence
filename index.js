@@ -1,7 +1,7 @@
 const PORT = 8080;
-const IP = '198.37.25.198';
+const IP = '192.168.1.6';
 const DB_URL = 'mongodb://localhost:27017/cadence';
-const MUSIC_DIR = '/music';
+const MUSIC_DIR = '/home/ken/music';
 
 var path = require('path');
 var fs = require('fs');

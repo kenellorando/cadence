@@ -700,8 +700,15 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
         elif d.startswith("songs released in ") and config['db_column_year']!="None":
             Q=q[18:]
             logger.verbose("Executing year search for %s (search term %s).", q, Q)
-            selector=ariaSearch.sortedSearcher.format(config['db_column_year']+"::text ILIKE %s")
-            cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
+            try:
+                i=int(Q)
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY ABS("+config['db_column_year']+"-%d)", (Q, i))
+            except ValueError:
+                if ariaSearch.levenshtein:
+                    cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY levenshtein("+config['db_column_year']+"::text, %s)", (Q, Q))
+                else:
+                    selector=ariaSearch.sortedSearcher.format(config['db_column_year']+"::text ILIKE %s")
+                    cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
         elif d.startswith("songs in ") and config['db_column_album']!="None":
             Q=q[9:]
             logger.verbose("Executing album search for %s (search term %s).", q, Q)

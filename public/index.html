@@ -41,11 +41,11 @@
   <!-- Conditionally use special behavior for IE9 (only supported IE with buggy defer) -->
   <!--[if IE]>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="/js/handlers.js" async defer></script>
     <script type="text/javascript" src="/js/theme.json"></script>
     <script src="/js/aria.js" async defer></script>
     <script src="/js/theme-changer.js" async defer></script>
     <script src="/js/radio-page.js" async defer></script>
+    <script src="/js/handlers.js" async defer></script>
   <![endif]-->
   
   <!-- IE later than 10 and other browsers don't understand conditional comments. -->
@@ -53,8 +53,6 @@
   <!-- [if !IE]> -->
     <!-- jQuery Google CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" defer></script>
-    <!-- Event handlers -->
-    <script src="/js/handlers.js" defer></script>
     <!-- Theme data JSON -->
     <script type="text/javascript" src="/js/theme.json" defer></script>
     <!-- ARIA Front-end -->
@@ -63,6 +61,8 @@
     <script src="/js/theme-changer.js" defer></script>
     <!-- Radio-page script -->
     <script src="/js/radio-page.js" defer></script>
+    <!-- Event handlers -->
+    <script src="/js/handlers.js" defer></script>
   <!-- <![endif] -->
 </head>
 

@@ -123,4 +123,5 @@ function toggleChangelog() {
   }
 }
 
+// Execute the load handler whenever the page is ready
 $(document).ready(defaultPlayer);

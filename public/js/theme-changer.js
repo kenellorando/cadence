@@ -111,4 +111,5 @@ function defaultTheme() {
   }
 }
 
+// Execute the load handler whenever the page is ready
 $(document).ready(defaultTheme);

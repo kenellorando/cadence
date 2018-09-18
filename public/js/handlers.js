@@ -17,4 +17,9 @@ $(document).ready(function() {
 
     // Click listeners
     $("#oldToggle").click(toggleChangelog);
+
+    // Volume bar listeners
+    $("#volume").change(function() {
+        volumeToggle(this.val())
+    });
 });

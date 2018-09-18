@@ -11,7 +11,7 @@ $(document).ready(function() {
     // Iterate over those sheets and set them to be applicable for loading
     for (var i=0; i<delayedCss.length; ++i) {
         if (delayedCss[i].media!="all") {
-            delayedCss[i].media="all"
+            delayedCss[i].media="all";
         }
     }
 
@@ -20,7 +20,7 @@ $(document).ready(function() {
 
     // Volume bar listeners
     $("#volume").change(function() {
-        volumeToggle(this.val())
+        volumeToggle(this.val());
     }).on("input", function() {
         volumeToggle(this.val());
     });

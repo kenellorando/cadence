@@ -1586,7 +1586,7 @@ while True:
     # Select sockets to process
 
     logger.verbose("Selection...")
-    readable, writeable, u2 = select.select(r, w, [], timeout)
+    ready = selector.select(timeout)
 
     # If we're in single-thread mode
     if maxThreads==0:

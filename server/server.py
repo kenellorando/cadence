@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import socket
-import select
+import selectors
 import sys
 import time
 import calendar

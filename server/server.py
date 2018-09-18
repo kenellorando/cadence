@@ -1570,6 +1570,9 @@ def splitInto(arr, n):
 # Selector for open connections
 selector = selectors.DefaultSelector()
 
+# Add accept socket
+selector.register(Connection(sock, False, True), selectors.EVENT_READ)
+
 maxThreads=int(config['max_threads'])
 timeout=None if config['select_timeout']=="None" else float(config['select_timeout'])
 # Generators for thread creation maps

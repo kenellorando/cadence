@@ -1053,9 +1053,6 @@ class Connection:
     def fileno(self):
         return self.conn.fileno()
 
-# List of open connections
-openconn = []
-
 # Pre-create mimeTypeOf dictionary, basic headers, and error page data
 mimeTypeOf(b"MimeType.precreate.file")
 generateErrorPage("PRECREATION", "YOU SHOULD NEVER SEE THIS")
@@ -1569,6 +1566,9 @@ def splitInto(arr, n):
     quotient, remainder=divmod(len(arr), n)
     # Use some neat math and our divisions to split the array in a generator statement
     return (arr[i*quotient+min(i, remainder) : (i+1)*quotient+min(i+1, remainder)] for i in range(n))
+
+# Selector for open connections
+selector = selectors.DefaultSelector()
 
 maxThreads=int(config['max_threads'])
 timeout=None if config['select_timeout']=="None" else float(config['select_timeout'])

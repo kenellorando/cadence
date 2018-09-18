@@ -15,13 +15,21 @@
   <meta name="msapplication-navbutton-color" content="#CCCCCC" id="ie-color">
 
   <title>Cadence Radio ♥</title>
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 
   <!-- Heading: Rock Salt; Subtitle: Roboto 300i; ARIA Messages: VT232; All else: PT Sans -->
-  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+  <!-- CSS preloading technique as described at https://stackoverflow.com/a/40314216 -->
+  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
+  
+  <noscript id="scriptless-fonts">
+    <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+  </noscript>
 
   <!-- Import base, norm, modules CSS -->
   <link rel="stylesheet" type="text/css" href="/css/master-import.css">
@@ -30,20 +38,35 @@
   <!-- Selected style CSS -->
   <link rel="stylesheet" type="text/css" id="selected-css" href=".">
 
-  <!-- jQuery Google CDN -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <!-- Theme callback prototype -->
-  <script type="text/javascript" src="/js/callback/prototype.js"></script>
-  <!-- Theme callbacks -->
-  <script type="text/javascript" src="/js/callback/callbacks.js"></script>
-  <!-- Theme data JSON -->
-  <script type="text/javascript" src="/js/theme.json"></script>
-  <!-- ARIA Front-end -->
-  <script src="/js/aria.js"></script>
-  <!-- Theme Changer -->
-  <script src="/js/theme-changer.js"></script>
-  <!-- Radio-page script -->
-  <script src="/js/radio-page.js"></script>
+  <!-- Conditionally use special behavior for IE9 (only supported IE with buggy defer) -->
+  <!--[if IE]>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/callback/prototype.js"></script>
+    <script type="text/javascript" src="/js/callback/callbacks.js"></script>
+    <script type="text/javascript" src="/js/theme.json"></script>
+    <script src="/js/aria.js" async defer></script>
+    <script src="/js/theme-changer.js" async defer></script>
+    <script src="/js/radio-page.js" async defer></script>
+  <![endif]-->
+  
+  <!-- IE later than 10 and other browsers don't understand conditional comments. -->
+  <!-- These browsers guarantee the execution order of deferred scripts, so all the scripts can get defers -->
+  <!-- [if !IE]> -->
+    <!-- jQuery Google CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" defer></script>
+    <!-- Theme callback prototype -->
+    <script type="text/javascript" src="/js/callback/prototype.js" defer></script>
+    <!-- Theme callbacks -->
+    <script type="text/javascript" src="/js/callback/callbacks.js" defer></script>
+    <!-- Theme data JSON -->
+    <script type="text/javascript" src="/js/theme.json" defer></script>
+    <!-- ARIA Front-end -->
+    <script src="/js/aria.js" defer></script>
+    <!-- Theme Changer -->
+    <script src="/js/theme-changer.js" defer></script>
+    <!-- Radio-page script -->
+    <script src="/js/radio-page.js" defer></script>
+  <!-- <![endif] -->
 </head>
 
 
@@ -54,7 +77,7 @@
 
     <div id="player">
       <!-- Connection to source -->
-      <audio id="stream" src="http://cadenceradio.com:8000/cadence1"></audio>
+      <audio id="stream" src="http://stream.cadenceradio.com:8000/cadence1"></audio>
 
       <!-- Display title/artist, may add more later -->
       <div id="nowPlaying">
@@ -89,10 +112,12 @@
           <button type="button" class="themeChoice" id="chicagoEvening">Chicago Evening</button>
           <button type="button" class="themeChoice" id="cyberpunkBartender">Cyberpunk Bartender</button>
           <button type="button" class="themeChoice" id="yorha">YoRHa</button>
-          <button type="button" class="themeChoice" id="cabin">Cabin</button>
-          <button type="button" class="themeChoice" id="lightMage">Light Mage</button>
           <button type="button" class="themeChoice" id="yourName">Your Name</button>
           <button type="button" class="themeChoice" id="spaceStation">Space Station</button>
+          <button type="button" class="themeChoice" id="legacy">Legacy</button>
+          <!--
+
+          <button type="button" class="themeChoice" id="sanFrancisco">San Francisco</button>
           <button type="button" class="themeChoice" id="minimalist">Minimalist</button>
           <button type="button" class="themeChoice" id="minimalistDark">Minimalist Dark</button>
           <button type="button" class="themeChoice" id="hawaiianSunset">Hawaiian Sunset</button>
@@ -100,9 +125,8 @@
           <button type="button" class="themeChoice" id="tokyoNight">Tokyo Night</button>
           <button type="button" class="themeChoice" id="mayberry">Mayberry</button>
           <button type="button" class="themeChoice" id="starGuardian">Star Guardian</button>
-          <button type="button" class="themeChoice" id="legacy">Legacy</button>
-          <button type="button" class="themeChoice" id="sanFrancisco">San Francisco</button>
-          <!--
+          <button type="button" class="themeChoice" id="cabin">Cabin</button>
+          <button type="button" class="themeChoice" id="lightMage">Light Mage</button>
           -->
         </div>
       </div>
@@ -130,7 +154,7 @@
       <section>
         <h2>About Cadence:</h2>
         <p>Cadence is an online radio whose creation was inspired by the anime-themed <a href="http://r-a-d.io/">R/a/dio</a>.
-          Originally started as an <a href="http://cadenceradio.com/original">experiment</a> in February 2017, the project
+          Originally started as an <a href="/original/">experiment</a> in February 2017, the project
           is my first endeavour to practice a full range of IT-skills.</p>
 
           <p>Cadence's frontend is served through a Node.js webserver interacting with a Mongo music database, both configured around a Liquidsoap/Icecast stream server. </p>
@@ -148,22 +172,9 @@
     <div class="content-right">
       <section>
         <h2>Announcements</h2>
-        <h3 class="announcement">5/1: Fermata</h3>
-        <p>On Saturday, May 5th, I am moving out of my dorm, and Cadence's server will be taken down.</p>
-        <p>I can't provide an accurate time estimate for when it will return. This summer, I intend to find a new place to host, as well as make new server hardware purchases.</p>
-        <p>This year has seen incredible new features and improvements. The installation of new server software allowed us to create song requests functionality in the ARIA project, finishing one of our toughest goals. Half a dozen new themes were provided by Cadence contributors as well. Though an issue dealing with database indexes still exists, I've decided to let this one go for now and ceremonially declare Cadence to finally have hit version 2.0 before we go down for the summer.</p>
-        <p>If you are interested in donating, I have a personal <a href="https://www.paypal.me/kenellorando">PayPal</a> account here. If you still want a <a href="https://i.imgur.com/1eat5sa.jpg">Cadence sticker</a>, I still have some left available for cheap purchase(contributors receive one for free).</p>
-        <p>That said, thank you all again for listening to Cadence Radio. Special thank you to our contributors:</p>
-        <ul>
-          <li>Ryan Hodin</li>
-          <li>Bobby Ton</li>
-          <li>Jakob Frank</li>
-          <li>Michael Farrell</li>
-          <li>Mike Folk</li>
-          <li>Zheng Guo</li>
-          <li>Karen Santos</li>
-          <li>Kelvin Chang</li>
-        </ul>
+        <h3 class="announcement">7/30: Tempo Primo</h3>
+        <p>Well, it took two months, but Cadence is finally in the process of coming back online!</p>
+        <p>In the upcoming weeks, get ready for a <a href="https://github.com/za419/cadence-server">new webserver</a>, new music, and of course, more Railgun.</p>
       </section>
       <section id="changelog">
         <h2>Changelog:</h2>

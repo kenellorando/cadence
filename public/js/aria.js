@@ -25,7 +25,7 @@ $(document).ready(function () {
 
     $.ajax({
       type: 'POST',
-      url: 'http://cadenceradio.com/search',
+      url: '/search',
       dataType: 'application/json',
       crossDomain: true,
       data: data,
@@ -82,11 +82,11 @@ $(document).ready(function () {
     $(".requestButton").prop('disabled', true);
 
     // Switch the request button styles so they appear red for the same amount of time
-    document.getElementById('aria-request-button').href=document.location.origin+"/css/modules/aria/request-button-disabled.css";
+    document.getElementById('aria-request-button').href="/css/modules/aria/request-button-disabled.css";
 
     $.ajax({
       type: 'POST',
-      url: 'http://cadenceradio.com/request',
+      url: '/request',
       data: data,
       success: function (result) {
         console.log(result);
@@ -94,7 +94,7 @@ $(document).ready(function () {
         // After five minutes, return functionality to the button and change to green
         setTimeout(function () {
           $(".requestButton").prop('disabled', false);
-          document.getElementById('aria-request-button').href=document.location.origin+"/css/modules/aria/request-button.css";
+          document.getElementById('aria-request-button').href="/css/modules/aria/request-button.css";
         }, 1000 * 60 * 5);
       },
       error: function (result) {
@@ -102,7 +102,7 @@ $(document).ready(function () {
         ariaSays.innerHTML = result.responseText;
         setTimeout(function () {
           $(".requestButton").prop('disabled', false);
-          document.getElementById('aria-request-button').href=document.location.origin+"/css/modules/aria/request-button.css";
+          document.getElementById('aria-request-button').href="/css/modules/aria/request-button.css";
         }, 1000 * 60 * 5);
       }
     });

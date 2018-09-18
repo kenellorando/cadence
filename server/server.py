@@ -1596,13 +1596,13 @@ while True:
         # Read from the readable sockets
         logger.verbose("Selected %d readable sockets.", len(readable))
         for read in readable:
-            openconn.remove(read)
+            selector.unregister(read)
             readFrom(read)
 
         # Now, handle the writeable sockets
         logger.verbose("Selected %d writeable sockets.", len(writeable))
         for write in writeable:
-            openconn.remove(write)
+            selector.unregister(write)
             writeTo(write)
 
     # We're performing operations on multiple threads
@@ -1616,9 +1616,9 @@ while True:
             reader.start()
 
         # Make sure we don't double process sockets when we go on to selection
-        # The only thing we need is to remove the sockets from the openconn list.
+        # The only thing we need is to remove the sockets from the selector list.
         # We do that before waiting for any thread joins.
-        openconn=[conn for conn in openconn if conn not in writeable and conn not in readable]
+        list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
 
         # Now, handle the writeable sockets in a write thread
         logger.verbose("Selected %d writeable sockets.", len(writeable))
@@ -1660,9 +1660,9 @@ while True:
             wpools=splitInto(writeable, maxThreads)
 
         # Make sure we don't double process sockets when we go on to selection
-        # The only thing we need is to remove the sockets from the openconn list.
+        # The only thing we need is to remove the sockets from the selector list.
         # We do that before waiting for any thread joins.
-        openconn=[conn for conn in openconn if conn not in writeable and conn not in readable]
+        list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
 
         # Create a list of threads to run writes on
         if len(writeable)>0:

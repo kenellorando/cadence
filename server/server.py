@@ -1583,25 +1583,7 @@ writename = nameIterable("writer")
 
 # Infinite loop for connection service
 while True:
-    # List of sockets we're waiting to read from or write to
-    logger.verbose("Assembling socket list")
-    r = []
-    w = []
-    # Add all waiting connections
-    for conn in openconn:
-        # Don't append sockets with negative file descriptors
-        if conn.fileno()<0:
-            openconn.remove(conn)
-            continue
-
-        # Either append to w or r depending on whether the socket is waiting for write or for read
-        if conn.isWrite:
-            w.append(conn)
-        else:
-            r.append(conn)
-    # And also add the incoming connection accept socket
-    r.append(Connection(sock, False, True))
-    # Now, select sockets to process
+    # Select sockets to process
 
     logger.verbose("Selection...")
     readable, writeable, u2 = select.select(r, w, [], timeout)

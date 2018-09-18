@@ -33,7 +33,7 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default-conf
     hash = hashlib.sha256(agnostic.encode()).hexdigest()
 
     # This variable holds the 'canonical' hash of the default configuration file
-    canonical = "550aabcef436ebf98831dd04d9e64a492be1e4d9a42433e50e63f1903e224f61"
+    canonical = "a49e36929b1cab71a8d5e5423b07862901d899164c32abe0195a37dcec758303"
 
     # Now, the check.
     # Halt startup if the hashes don't match

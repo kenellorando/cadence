@@ -635,7 +635,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             Q=q[12:]
             logger.verbose("Executing title search for %s (search term %s).", q, Q)
             if ariaSearch.levenshtein:
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_title']+")", ("%"+Q+"%", Q))
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_title']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_title']+") ASC", ("%"+Q+"%", Q))
             else:
                 selector=ariaSearch.sortedSearcher.format(config['db_column_title']+" ILIKE %s")
                 cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
@@ -643,7 +643,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             Q=q[9:]
             logger.verbose("Executing artist search for %s (search term %s).", q, Q)
             if ariaSearch.levenshtein:
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_artist']+")", ("%"+Q+"%", Q))
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_artist']+") ASC", ("%"+Q+"%", Q))
             else:
                 selector=ariaSearch.sortedSearcher.format(config['db_column_artist']+" ILIKE %s")
                 cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
@@ -651,7 +651,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             Q=q[:-6]
             logger.verbose("Executing genre search for %s (search term %s).", q, Q)
             if ariaSearch.levenshtein:
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_genre']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_genre']+")", ("%"+Q+"%", Q))
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_genre']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_genre']+") ASC", ("%"+Q+"%", Q))
             else:
                 selector=ariaSearch.sortedSearcher.format(config['db_column_genre']+" ILIKE %s")
                 cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
@@ -671,9 +671,9 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
                     try:
                         i=int(Q)
 
-                        cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s ORDER BY LEAST(ABS("+config['db_column_year']+"-%d), levenshtein("+config['db_column_album']+", %s))", (Q, '%'+Q+'%', i, Q))
+                        cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s ORDER BY LEAST(ABS("+config['db_column_year']+"-%d), levenshtein("+config['db_column_album']+", %s)) ASC", (Q, '%'+Q+'%', i, Q))
                     except ValueError:
-                        cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s ORDER BY LEAST(levenshtein("+config['db_column_year']+"::text, %s), levenshtein("+config['db_column_album']+", %s))", (Q, '%'+Q+'%', Q, Q))
+                        cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s ORDER BY LEAST(levenshtein("+config['db_column_year']+"::text, %s), levenshtein("+config['db_column_album']+", %s)) ASC", (Q, '%'+Q+'%', Q, Q))
                 else:
                     selector=ariaSearch.sortedSearcher.format(config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s")
                     cursor.execute(selector, (Q, Q, "%"+Q, "%"+Q, Q+"%", Q+"%", "%"+Q+"%", "%"+Q+"%"))
@@ -682,10 +682,10 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
                 logger.verbose("Executing year search for %s (search term %s).", q, Q)
                 try:
                     i=int(Q)
-                    cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY ABS("+config['db_column_year']+"-%d)", (Q, i))
+                    cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY ABS("+config['db_column_year']+"-%d) ASC", (Q, i))
                 except ValueError:
                     if ariaSearch.levenshtein:
-                        cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY levenshtein("+config['db_column_year']+"::text, %s)", (Q, Q))
+                        cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY levenshtein("+config['db_column_year']+"::text, %s) ASC", (Q, Q))
                     else:
                         selector=ariaSearch.sortedSearcher.format(config['db_column_year']+"::text ILIKE %s")
                         cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
@@ -693,7 +693,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
                 # Album search
                 logger.verbose("Executing album search for %s (search term %s).", q, Q)
                 if ariaSearch.levenshtein:
-                    cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_album']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_album']+")", ('%'+Q+'%', Q))
+                    cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_album']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_album']+") ASC", ('%'+Q+'%', Q))
                 else:
                     selector=ariaSearch.sortedSearcher.format(config['db_column_album']+" ILIKE %s")
                     cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
@@ -702,10 +702,10 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             logger.verbose("Executing year search for %s (search term %s).", q, Q)
             try:
                 i=int(Q)
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY ABS("+config['db_column_year']+"-%d)", (Q, i))
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY ABS("+config['db_column_year']+"-%d) ASC", (Q, i))
             except ValueError:
                 if ariaSearch.levenshtein:
-                    cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY levenshtein("+config['db_column_year']+"::text, %s)", (Q, Q))
+                    cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY levenshtein("+config['db_column_year']+"::text, %s) ASC", (Q, Q))
                 else:
                     selector=ariaSearch.sortedSearcher.format(config['db_column_year']+"::text ILIKE %s")
                     cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
@@ -713,7 +713,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             Q=q[9:]
             logger.verbose("Executing album search for %s (search term %s).", q, Q)
             if ariaSearch.levenshtein:
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_album']+" ILIKE %s ORDER BY levenshtein("+config['db_column_album']+", %s)", ('%'+Q+'%', Q))
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_album']+" ILIKE %s ORDER BY levenshtein("+config['db_column_album']+", %s) ASC", ('%'+Q+'%', Q))
             else:
                 selector=ariaSearch.sortedSearcher.format(config['db_column_album']+" ILIKE %s")
                 cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
@@ -723,7 +723,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             # But I'm sure it'll include results where the artist or title match the query.
             logger.verbose("Non-special search. Executing general-case search.")
             if ariaSearch.levenshtein:
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s OR "+config['db_column_title']+" ILIKE %s ORDER BY LEAST(levenshtein("+config['db_column_artist']+", %s), levenshtein("+config['db_column_title']+", %s))", ('%'+q+'%', '%'+q+'%', q, q))
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s OR "+config['db_column_title']+" ILIKE %s ORDER BY LEAST(levenshtein("+config['db_column_artist']+", %s), levenshtein("+config['db_column_title']+", %s)) ASC", ('%'+q+'%', '%'+q+'%', q, q))
             else:
                 selector=ariaSearch.sortedSearcher.format(config['db_column_artist']+" ILIKE %s OR "+config['db_column_title']+" ILIKE %s")
                 cursor.execute(selector, (q, q, "%"+q, "%"+q, q+"%", q+"%", "%"+q+"%", "%"+q+"%"))

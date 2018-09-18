@@ -122,3 +122,5 @@ function toggleChangelog() {
     document.getElementById("oldToggle").innerHTML = "Hide Full History";
   }
 }
+
+$(document).ready(defaultPlayer);

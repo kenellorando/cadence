@@ -110,3 +110,5 @@ function defaultTheme() {
     themeChanger(theme);
   }
 }
+
+$(document).ready(defaultTheme);

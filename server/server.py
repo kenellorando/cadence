@@ -712,8 +712,11 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
         elif d.startswith("songs in ") and config['db_column_album']!="None":
             Q=q[9:]
             logger.verbose("Executing album search for %s (search term %s).", q, Q)
-            selector=ariaSearch.sortedSearcher.format(config['db_column_album']+" ILIKE %s")
-            cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
+            if ariaSearch.levenshtein:
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_album']+" ILIKE %s ORDER BY levenshtein("+config['db_column_album']+", %s)", ('%'+Q+'%', Q))
+            else:
+                selector=ariaSearch.sortedSearcher.format(config['db_column_album']+" ILIKE %s")
+                cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
         else:
             # We don't have a special form.
             # For now, we haven't yet agreed on how the server should behave in this situation

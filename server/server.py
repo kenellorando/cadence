@@ -568,6 +568,9 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
         # Long and complicated search string which allows sorted results from four queries with different parameters
         # Here be dragons.
         ariaSearch.sortedSearcher=ariaSearch.select+" FROM (("+ariaSearch.select+", 1 AS sort FROM "+config['db_table']+" WHERE {0}) UNION ("+ariaSearch.select+", 2 AS sort FROM "+config['db_table']+" WHERE {0}) UNION ("+ariaSearch.select+", 3 AS sort FROM "+config['db_table']+" WHERE {0}) UNION ("+ariaSearch.select+", 4 AS sort FROM "+config['db_table']+" WHERE {0})) AS temp ORDER BY sort ASC"
+
+        # Sorting switch
+        ariaSearch.levenshtein=config.getboolean('aria_sort_edit_distance')
         logger.verbose("Done.")
 
     # Accept either a socket or a Connection

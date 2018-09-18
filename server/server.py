@@ -1584,9 +1584,12 @@ writename = nameIterable("writer")
 # Infinite loop for connection service
 while True:
     # Select sockets to process
-
     logger.verbose("Selection...")
     ready = selector.select(timeout)
+
+    # Pull socket lists from the list of ready tuples
+    readable=[r[0].fileobj for r in ready if r[1]&selectors.EVENT_READ]
+    writable=[w[0].fileobj for w in ready if w[1]&selectors.EVENT_WRITE]
 
     # If we're in single-thread mode
     if maxThreads==0:

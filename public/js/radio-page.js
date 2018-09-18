@@ -25,7 +25,7 @@ function defaultPlayer() {
 // GETS and displays currently playing info
 function radioTitle() {
   // Located on Testament's stream client 'web' folder
-  var url = 'http://cadenceradio.com:8000/now-playing.xsl';
+  var url = 'http://stream.cadenceradio.com:8000/now-playing.xsl';
 
   $.ajax({
     type: 'GET',
@@ -74,7 +74,7 @@ $(document).ready(function () {
   if (stream.paused) {
     // Loads up the real stream again if mobile
     if (mobile) {
-      stream.src = "http://cadenceradio.com:8000/cadence1";
+      stream.src = "http://stream.cadenceradio.com/cadence1";
     }
     stream.load();
     stream.play();

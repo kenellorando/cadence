@@ -642,8 +642,11 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
         elif d.startswith("songs by "):
             Q=q[9:]
             logger.verbose("Executing artist search for %s (search term %s).", q, Q)
-            selector=ariaSearch.sortedSearcher.format(config['db_column_artist']+" ILIKE %s")
-            cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
+            if ariaSearch.levenshtein:
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_artist']+" ILIKE %s ORDER BY levenshtein(%s, "+config['db_column_artist']+")", ("%"+Q+"%", Q))
+            else:
+                selector=ariaSearch.sortedSearcher.format(config['db_column_artist']+" ILIKE %s")
+                cursor.execute(selector, (Q, "%"+Q, Q+"%", "%"+Q+"%"))
         elif d.endswith(" songs") and config['db_column_genre']!="None":
             Q=q[:-6]
             logger.verbose("Executing genre search for %s (search term %s).", q, Q)

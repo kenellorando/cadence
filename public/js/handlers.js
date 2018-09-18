@@ -14,4 +14,7 @@ $(document).ready(function() {
             delayedCss[i].media="all"
         }
     }
+
+    // Click listeners
+    $("#oldToggle").click(toggleChangelog);
 });

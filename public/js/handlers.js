@@ -20,8 +20,8 @@ $(document).ready(function() {
 
     // Volume bar listeners
     $("#volume").change(function() {
-        volumeToggle(this.val());
+        volumeToggle(this.value);
     }).on("input", function() {
-        volumeToggle(this.val());
+        volumeToggle(this.value);
     });
 });

@@ -1638,8 +1638,8 @@ while True:
             writer = createThread(writeTo, next(writename), (writeable,))
             writer.start()
 
-        if len(readable)!=0:
-            # Wait for both threads to finish
+        if len(readable)!=0 and config.getboolean('block_on_read'):
+            # Wait for the reader to finish
             reader.join()
 
     # We have to use multiple threads per operation
@@ -1684,6 +1684,7 @@ while True:
             thread.start()
 
         # By here, all of our readers and writers are running.
-        # Wait for all of them to end before returning to selection
-        for r in readers:
-            r.join()
+        # If configured to do so, wait for the readers to finish before returning to select
+        if config.getboolean('block_on_read'):
+            for r in readers:
+                r.join()

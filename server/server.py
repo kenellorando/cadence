@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import socket
-import select
+import selectors
 import sys
 import time
 import calendar
@@ -33,7 +33,7 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default-conf
     hash = hashlib.sha256(agnostic.encode()).hexdigest()
 
     # This variable holds the 'canonical' hash of the default configuration file
-    canonical = "49a5bae6ba6e4c7ee12c8a4558631e4176e653f81ddc343d9f2ccedfed9c59e4"
+    canonical = "448ca4bec58877468a257756f252e2c137c9bad933515e94d2bc479c3c27fdea"
 
     # Now, the check.
     # Halt startup if the hashes don't match
@@ -496,7 +496,11 @@ def constructResponse(unendedHeaders, content, contentType, allowEncodings=None,
 def queueResponse(sock, response):
     "Prepare the response to be sent on the socket sock. No work is done to response before send."
 
-    openconn.append(Connection(sock, True, content=response))
+    # Either register the new writer, or modify the existing one.
+    try:
+        selector.register(Connection(sock, True, content=response), selectors.EVENT_WRITE)
+    except KeyError:
+        selector.modify(Connection(sock, True, content=response), selectors.EVENT_WRITE)
 
 def sendResponse(status, contentType, content, sock, headers=[], allowEncodings=None, etag=None):
     "Constructs and sends a response with the first three parameters via sock, optionally with additional headers, and optionally overriding the ETag. allowEncodings should be a list of strings of allowed encodings, or None."
@@ -1053,9 +1057,6 @@ class Connection:
     def fileno(self):
         return self.conn.fileno()
 
-# List of open connections
-openconn = []
-
 # Pre-create mimeTypeOf dictionary, basic headers, and error page data
 mimeTypeOf(b"MimeType.precreate.file")
 generateErrorPage("PRECREATION", "YOU SHOULD NEVER SEE THIS")
@@ -1112,10 +1113,11 @@ def readFrom(read, log=True):
 
     # Ignore erroneous sockets (those with negative file descriptors)
     if read.fileno() < 0:
-        # Drop the connection from openconn, close the error, and continue on our way
+        # Drop the connection from selector, close the error, and continue on our way
         # Ignore errors: What matters is that we don't do anything with the sockets
         logger.verbose("Noticed negative file descriptor %d.", read.fileno())
         try:
+            selector.unregister(read)
             read.conn.close()
         except:
             pass
@@ -1128,7 +1130,7 @@ def readFrom(read, log=True):
             while True:
                 conn, address = read.conn.accept()
                 address = address[0]
-                openconn.append(Connection(conn, False, IP=address))
+                selector.register(Connection(conn, False, IP=address), selectors.EVENT_READ)
                 logger.info("Accepting a new connection, attached socket %d.", conn.fileno())
                 logger.debug("Connection is from %s.", address) # Not the client address per se, but informative in theory nonetheless.
         except socket.timeout:
@@ -1570,6 +1572,9 @@ def splitInto(arr, n):
     # Use some neat math and our divisions to split the array in a generator statement
     return (arr[i*quotient+min(i, remainder) : (i+1)*quotient+min(i+1, remainder)] for i in range(n))
 
+# Selector for open connections
+selector = selectors.DefaultSelector()
+
 maxThreads=int(config['max_threads'])
 timeout=None if config['select_timeout']=="None" else float(config['select_timeout'])
 # Generators for thread creation maps
@@ -1580,41 +1585,36 @@ writename = nameIterable("writer")
 
 # Infinite loop for connection service
 while True:
-    # List of sockets we're waiting to read from or write to
-    logger.verbose("Assembling socket list")
-    r = []
-    w = []
-    # Add all waiting connections
-    for conn in openconn:
-        # Don't append sockets with negative file descriptors
-        if conn.fileno()<0:
-            openconn.remove(conn)
-            continue
+    # Make sure the accept socket is in the select list
+    try:
+        selector.register(Connection(sock, False, True), selectors.EVENT_READ)
+        logger.verbose("Accept socket was not already in the selection queue.")
+    except KeyError:
+        pass
+    except:
+        logger.exception("Problem with accept socket.", exc_info=True)
+        raise
 
-        # Either append to w or r depending on whether the socket is waiting for write or for read
-        if conn.isWrite:
-            w.append(conn)
-        else:
-            r.append(conn)
-    # And also add the incoming connection accept socket
-    r.append(Connection(sock, False, True))
-    # Now, select sockets to process
-
+    # Select sockets to process
     logger.verbose("Selection...")
-    readable, writeable, u2 = select.select(r, w, [], timeout)
+    ready = selector.select(timeout)
+
+    # Pull socket lists from the list of ready tuples
+    readable=[r[0].fileobj for r in ready if r[1]&selectors.EVENT_READ]
+    writeable=[w[0].fileobj for w in ready if w[1]&selectors.EVENT_WRITE]
 
     # If we're in single-thread mode
     if maxThreads==0:
         # Read from the readable sockets
         logger.verbose("Selected %d readable sockets.", len(readable))
         for read in readable:
-            openconn.remove(read)
+            selector.unregister(read)
             readFrom(read)
 
         # Now, handle the writeable sockets
         logger.verbose("Selected %d writeable sockets.", len(writeable))
         for write in writeable:
-            openconn.remove(write)
+            selector.unregister(write)
             writeTo(write)
 
     # We're performing operations on multiple threads
@@ -1628,9 +1628,9 @@ while True:
             reader.start()
 
         # Make sure we don't double process sockets when we go on to selection
-        # The only thing we need is to remove the sockets from the openconn list.
+        # The only thing we need is to remove the sockets from the selector list.
         # We do that before waiting for any thread joins.
-        openconn=[conn for conn in openconn if conn not in writeable and conn not in readable]
+        list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
 
         # Now, handle the writeable sockets in a write thread
         logger.verbose("Selected %d writeable sockets.", len(writeable))
@@ -1672,9 +1672,9 @@ while True:
             wpools=splitInto(writeable, maxThreads)
 
         # Make sure we don't double process sockets when we go on to selection
-        # The only thing we need is to remove the sockets from the openconn list.
+        # The only thing we need is to remove the sockets from the selector list.
         # We do that before waiting for any thread joins.
-        openconn=[conn for conn in openconn if conn not in writeable and conn not in readable]
+        list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
 
         # Create a list of threads to run writes on
         if len(writeable)>0:

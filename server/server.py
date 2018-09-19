@@ -1571,9 +1571,6 @@ def splitInto(arr, n):
 # Selector for open connections
 selector = selectors.DefaultSelector()
 
-# Add accept socket
-selector.register(Connection(sock, False, True), selectors.EVENT_READ)
-
 maxThreads=int(config['max_threads'])
 timeout=None if config['select_timeout']=="None" else float(config['select_timeout'])
 # Generators for thread creation maps
@@ -1584,6 +1581,16 @@ writename = nameIterable("writer")
 
 # Infinite loop for connection service
 while True:
+    # Make sure the accept socket is in the select list
+    try:
+        selector.register(Connection(sock, False, True), selectors.EVENT_READ)
+        logger.verbose("Accept socket was not already in the selection queue.")
+    except KeyError:
+        pass
+    except:
+        logger.exception("Problem with accept socket.", exc_info=True)
+        raise
+
     # Select sockets to process
     logger.verbose("Selection...")
     ready = selector.select(timeout)

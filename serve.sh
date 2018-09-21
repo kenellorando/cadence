@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nohup python server/server.py 80 ./public/ &
+sudo nohup python server/server.py 80 ./public/ &

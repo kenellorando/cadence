@@ -99,7 +99,7 @@
 
       <div id="version">
         <p style="margin:0">Cadence/ARIA Development Build</p>
-        <p style="margin:0 0 30px 0;">Ver. 2.0.1</p>
+        <p style="margin:0 0 30px 0;">Ver. 3.0.0</p>
       </div>
 
       <!-- Theme selector -->
@@ -113,7 +113,6 @@
           <button type="button" class="themeChoice" id="spaceStation">Space Station</button>
           <button type="button" class="themeChoice" id="legacy">Legacy</button>
           <!--
-
           <button type="button" class="themeChoice" id="sanFrancisco">San Francisco</button>
           <button type="button" class="themeChoice" id="minimalist">Minimalist</button>
           <button type="button" class="themeChoice" id="minimalistDark">Minimalist Dark</button>
@@ -155,32 +154,34 @@
           Originally started as an <a href="/original/">experiment</a> in February 2017, the project
           is my first endeavour to practice a full range of IT-skills.</p>
 
-          <p>Cadence's frontend is served through a Node.js webserver interacting with a Mongo music database, both configured around a Liquidsoap/Icecast stream server. </p>
+          <p>Cadence is served through a Python webserver interacting with a Postgres music database, both configured around a Liquidsoap/Icecast stream server. </p>
 
         <p>The server typically plays all the genres of music I like, a mix of classic rock, synthpop, and metal. I occasionally
           override the server and play a certain genre, artist, or the same song on an endless loop.</p>
 
         <p>If you're interested in seeing this project's development, nearly everything is available on GitHub:
-          <a href="https://github.com/kenellorando/cadence">source</a>/<a href="https://github.com/kenellorando/cadence/issues">issues</a>.</p>
-
-        <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
+          <a href="https://github.com/kenellorando/cadence">source</a>/<a href="https://github.com/kenellorando/cadence/issues">issues</a>. A <a href="cadenceradio.slack.com">Slack channel</a> is available for direct communication with the development team.</p>
+      </section>
+      <section>
+        <h2>Legal Disclaimer</h2>
+          <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
       </section>
     </div>
 
     <div class="content-right">
       <section>
         <h2>Announcements</h2>
-        <h3 class="announcement">7/30: Tempo Primo</h3>
-        <p>Well, it took two months, but Cadence is finally in the process of coming back online!</p>
-        <p>In the upcoming weeks, get ready for a <a href="https://github.com/za419/cadence-server">new webserver</a>, new music, and of course, more Railgun.</p>
+        <h3 class="announcement">9/26: Cadence 3.0.0</h3>
+        <p>Today, I am pleased to announce the release of Cadence 3.0.0. This historical landmark in the development history of Cadence marks the successful integration of the new Python webserver, as well as the retirement of our first 2.0 Node.js server. You may notice improvements in audio access speed and reduced proneness to crashing.</p>
+        
+        <p>Many thanks to the contributions of Ryan Hodin (za419), architect of these new back-end features and stability improvements. Many thanks to him for his dedication, and all our newcoming friends and developers who work towards a more rhythmic experience.</p>
       </section>
       <section id="changelog">
         <h2>Changelog:</h2>
-        <!--
         <ul>
-          <li></li>
+          <li>9/26: Integration of new 3.0 Python server. Retirement of the 2.0 Nodejs server.</li>
+            <li>7/23: Creation of a Slack channel to better facilitate developer and administrator communication. (<a href="cadenceradio.slack.com">cadenceradio.slack.com</a>).</li>
         </ul>
-        -->
         <h4><a id="oldToggle">Show Full History</a></h4>
         <div id="old">
           <ul>
@@ -223,7 +224,7 @@
     </div>
   </div>
   <!-- /CONTENT -->
-  <footer>A project by Ken Ellorando</footer>
+  <footer>A project by <a href="https://kenellorando.com">Ken Ellorando</a></footer>
 
   <div class="fullscreen-bg">
     <video loop muted autoplay class="fullscreen-bg-video">

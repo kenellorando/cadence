@@ -746,6 +746,12 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
 
         logger.verbose("Connection and cursor closed.")
 
+        # Just in case, remove duplicate search results
+        paths=[]
+        results=[song for song in results if song[2] not in paths and paths.append(song[2])==None]
+        logger.verbose("Pre-deduplication, %d results. Post-deduplication, %d results.", length, len(results))
+        length=len(results)
+
         # Now, we have a collection of results. We need to make it a JSON-parsable collection
         # In addition, we need to make sure it has the appropriate names for the ARIA frontend
         # First, let's do that second part, with a JSON-parsable formatted string

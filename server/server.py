@@ -675,7 +675,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
                     try:
                         i=int(Q)
 
-                        cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s ORDER BY LEAST(ABS("+config['db_column_year']+"-%d), levenshtein("+config['db_column_album']+", %s)) ASC", (Q, '%'+Q+'%', i, Q))
+                        cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s ORDER BY LEAST(ABS("+config['db_column_year']+"-%s), levenshtein("+config['db_column_album']+", %s)) ASC", (Q, '%'+Q+'%', Q, Q))
                     except ValueError:
                         cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s OR "+config['db_column_album']+" ILIKE %s ORDER BY LEAST(levenshtein("+config['db_column_year']+"::text, %s), levenshtein("+config['db_column_album']+", %s)) ASC", (Q, '%'+Q+'%', Q, Q))
                 else:
@@ -686,7 +686,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
                 logger.verbose("Executing year search for %s (search term %s).", q, Q)
                 try:
                     i=int(Q)
-                    cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY ABS("+config['db_column_year']+"-%d) ASC", (Q, i))
+                    cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY ABS("+config['db_column_year']+"-%s) ASC", (Q, Q))
                 except ValueError:
                     if ariaSearch.levenshtein:
                         cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY levenshtein("+config['db_column_year']+"::text, %s) ASC", (Q, Q))
@@ -706,7 +706,7 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
             logger.verbose("Executing year search for %s (search term %s).", q, Q)
             try:
                 i=int(Q)
-                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY ABS("+config['db_column_year']+"-%d) ASC", (Q, i))
+                cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY ABS("+config['db_column_year']+"-%s) ASC", (Q, Q))
             except ValueError:
                 if ariaSearch.levenshtein:
                     cursor.execute(ariaSearch.selectfrom+"WHERE "+config['db_column_year']+"::text ILIKE %s ORDER BY levenshtein("+config['db_column_year']+"::text, %s) ASC", (Q, Q))
@@ -745,6 +745,12 @@ def ariaSearch(requestBody, conn, allowEncodings=None):
         cursor.close()
 
         logger.verbose("Connection and cursor closed.")
+
+        # Just in case, remove duplicate search results
+        paths=[]
+        results=[song for song in results if song[2] not in paths and paths.append(song[2])==None]
+        logger.verbose("Pre-deduplication, %d results. Post-deduplication, %d results.", length, len(results))
+        length=len(results)
 
         # Now, we have a collection of results. We need to make it a JSON-parsable collection
         # In addition, we need to make sure it has the appropriate names for the ARIA frontend

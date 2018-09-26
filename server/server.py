@@ -1102,6 +1102,16 @@ def readFrom(read, log=True):
         logger.verbose("Configuring ARIA thread name generators...")
         readFrom.searcherName=nameIterable("ARIA searcher ")
         readFrom.requesterName=nameIterable("ARIA requester ")
+
+        logger.verbose("Configuring connection blacklist...")
+        blacklist = config['connection_blacklist']
+        if blacklist==None:
+            readFrom.blacklist=[]
+        else:
+            blacklist = blacklist.split(',')
+            readFrom.blacklist = [addr.strip() for addr in blacklist]
+
+        logger.verbose("%d blacklisted addresses.", len(readFrom.blacklist))
         logger.verbose("Done.")
 
     # Log which thread we're on

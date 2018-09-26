@@ -1146,6 +1146,15 @@ def readFrom(read, log=True):
             while True:
                 conn, address = read.conn.accept()
                 address = address[0]
+
+                # Check for blacklisting
+                if address in readFrom.blacklist:
+                    # This address is on the blacklist.
+                    # Deny the connection.
+                    logger.info("Denied incoming connection from %s (blacklisted IP address).", address)
+                    conn.close()
+                    continue
+
                 selector.register(Connection(conn, False, IP=address), selectors.EVENT_READ)
                 logger.info("Accepting a new connection, attached socket %d.", conn.fileno())
                 logger.debug("Connection is from %s.", address) # Not the client address per se, but informative in theory nonetheless.

@@ -1111,6 +1111,10 @@ def readFrom(read, log=True):
             blacklist = blacklist.split(',')
             readFrom.blacklist = [addr.strip() for addr in blacklist]
 
+        readFrom.blacklistResponse = config['blacklist_response']
+        if readfrom.blacklistResponse=="None":
+            readfrom.blacklistResponse=False
+
         logger.verbose("%d blacklisted addresses.", len(readFrom.blacklist))
         logger.verbose("Done.")
 

@@ -1156,6 +1156,8 @@ def readFrom(read, log=True):
                     # This address is on the blacklist.
                     # Deny the connection.
                     logger.info("Denied incoming connection from %s (blacklisted IP address).", address)
+                    if readFrom.blacklistResponse!=False:
+                        conn.sendall(readfrom.blacklistResponse)
                     conn.close()
                     continue
 

@@ -33,7 +33,7 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default-conf
     hash = hashlib.sha256(agnostic.encode()).hexdigest()
 
     # This variable holds the 'canonical' hash of the default configuration file
-    canonical = "448ca4bec58877468a257756f252e2c137c9bad933515e94d2bc479c3c27fdea"
+    canonical = "d3bfbba77e5ee84facd2c0d52f6bc55880bf30224a6a00d42fcbbee6280f806b"
 
     # Now, the check.
     # Halt startup if the hashes don't match
@@ -1102,6 +1102,20 @@ def readFrom(read, log=True):
         logger.verbose("Configuring ARIA thread name generators...")
         readFrom.searcherName=nameIterable("ARIA searcher ")
         readFrom.requesterName=nameIterable("ARIA requester ")
+
+        logger.verbose("Configuring connection blacklist...")
+        blacklist = config['connection_blacklist']
+        if blacklist==None:
+            readFrom.blacklist=[]
+        else:
+            blacklist = blacklist.split(',')
+            readFrom.blacklist = [addr.strip() for addr in blacklist]
+
+        readFrom.blacklistResponse = config['blacklist_response']
+        if readfrom.blacklistResponse=="None":
+            readfrom.blacklistResponse=False
+
+        logger.verbose("%d blacklisted addresses.", len(readFrom.blacklist))
         logger.verbose("Done.")
 
     # Log which thread we're on
@@ -1136,6 +1150,17 @@ def readFrom(read, log=True):
             while True:
                 conn, address = read.conn.accept()
                 address = address[0]
+
+                # Check for blacklisting
+                if address in readFrom.blacklist:
+                    # This address is on the blacklist.
+                    # Deny the connection.
+                    logger.info("Denied incoming connection from %s (blacklisted IP address).", address)
+                    if readFrom.blacklistResponse!=False:
+                        conn.sendall(readfrom.blacklistResponse)
+                    conn.close()
+                    continue
+
                 selector.register(Connection(conn, False, IP=address), selectors.EVENT_READ)
                 logger.info("Accepting a new connection, attached socket %d.", conn.fileno())
                 logger.debug("Connection is from %s.", address) # Not the client address per se, but informative in theory nonetheless.

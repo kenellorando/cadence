@@ -57,7 +57,7 @@ if config.getboolean("log_uncaught"):
         logger.critical("Uncaught exception:\n%s\n", ''.join(traceback.format_exception(type, value, tb)))
 
         # Check if we're supposed to keep crashing
-        if config.getboolean("suppress_uncaught"):
+        if config.getboolean("suppress_uncaught") and not issubclass(type, KeyboardInterrupt):
             # Recurse if we encounter more uncaught errors
             try:
                 main()

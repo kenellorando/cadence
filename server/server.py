@@ -54,7 +54,7 @@ config = config['DEFAULT']
 # Check whether we're supposed to handle uncaught exceptions
 if config.getboolean("log_uncaught"):
     def logUncaught(type, value, tb):
-        logger.critical("Uncaught exception: %s", ''.join(traceback.format_exception(type, value, tb)))
+        logger.critical("Uncaught exception:\n%s\n", ''.join(traceback.format_exception(type, value, tb)))
 
         # Check if we're supposed to keep crashing
         if config.getboolean("suppress_uncaught"):

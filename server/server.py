@@ -1614,108 +1614,115 @@ writer = constantIterable(writeTo)
 readname = nameIterable("reader")
 writename = nameIterable("writer")
 
-# Infinite loop for connection service
-while True:
-    # Make sure the accept socket is in the select list
-    try:
-        selector.register(Connection(sock, False, True), selectors.EVENT_READ)
-        logger.verbose("Accept socket was not already in the selection queue.")
-    except KeyError:
-        pass
-    except:
-        logger.exception("Problem with accept socket.", exc_info=True)
-        raise
+# Main function
+def main():
+    "Infinite loop for connection service"
 
-    # Select sockets to process
-    logger.verbose("Selection...")
-    ready = selector.select(timeout)
+    while True:
+        # Make sure the accept socket is in the select list
+        try:
+            selector.register(Connection(sock, False, True), selectors.EVENT_READ)
+            logger.verbose("Accept socket was not already in the selection queue.")
+        except KeyError:
+            pass
+        except:
+            logger.exception("Problem with accept socket.", exc_info=True)
+            raise
 
-    # Pull socket lists from the list of ready tuples
-    readable=[r[0].fileobj for r in ready if r[1]&selectors.EVENT_READ]
-    writeable=[w[0].fileobj for w in ready if w[1]&selectors.EVENT_WRITE]
+        # Select sockets to process
+        logger.verbose("Selection...")
+        ready = selector.select(timeout)
 
-    # If we're in single-thread mode
-    if maxThreads==0:
-        # Read from the readable sockets
-        logger.verbose("Selected %d readable sockets.", len(readable))
-        for read in readable:
-            selector.unregister(read)
-            readFrom(read)
+        # Pull socket lists from the list of ready tuples
+        readable=[r[0].fileobj for r in ready if r[1]&selectors.EVENT_READ]
+        writeable=[w[0].fileobj for w in ready if w[1]&selectors.EVENT_WRITE]
 
-        # Now, handle the writeable sockets
-        logger.verbose("Selected %d writeable sockets.", len(writeable))
-        for write in writeable:
-            selector.unregister(write)
-            writeTo(write)
+        # If we're in single-thread mode
+        if maxThreads==0:
+            # Read from the readable sockets
+            logger.verbose("Selected %d readable sockets.", len(readable))
+            for read in readable:
+                selector.unregister(read)
+                readFrom(read)
 
-    # We're performing operations on multiple threads
-    # If the maximum number of threads is one, skip over the logic for splitting up the socket arrays
-    elif maxThreads==1:
-        # Read from the readable sockets in a read thread
-        logger.verbose("Selected %d readable sockets.", len(readable))
-        reader = None
-        if len(readable)!=0:
-            reader = createThread(readFrom, next(readname), (readable,))
-            reader.start()
+            # Now, handle the writeable sockets
+            logger.verbose("Selected %d writeable sockets.", len(writeable))
+            for write in writeable:
+                selector.unregister(write)
+                writeTo(write)
 
-        # Make sure we don't double process sockets when we go on to selection
-        # The only thing we need is to remove the sockets from the selector list.
-        # We do that before waiting for any thread joins.
-        list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
+        # We're performing operations on multiple threads
+        # If the maximum number of threads is one, skip over the logic for splitting up the socket arrays
+        elif maxThreads==1:
+            # Read from the readable sockets in a read thread
+            logger.verbose("Selected %d readable sockets.", len(readable))
+            reader = None
+            if len(readable)!=0:
+                reader = createThread(readFrom, next(readname), (readable,))
+                reader.start()
 
-        # Now, handle the writeable sockets in a write thread
-        logger.verbose("Selected %d writeable sockets.", len(writeable))
-        if len(writable)!=0:
-            writer = createThread(writeTo, next(writename), (writeable,))
-            writer.start()
+            # Make sure we don't double process sockets when we go on to selection
+            # The only thing we need is to remove the sockets from the selector list.
+            # We do that before waiting for any thread joins.
+            list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
 
-        if len(readable)!=0 and config.getboolean('block_on_read'):
-            # Wait for the reader to finish
-            reader.join()
+            # Now, handle the writeable sockets in a write thread
+            logger.verbose("Selected %d writeable sockets.", len(writeable))
+            if len(writable)!=0:
+                writer = createThread(writeTo, next(writename), (writeable,))
+                writer.start()
 
-    # We have to use multiple threads per operation
-    else:
-        logger.verbose("Selected %d readable sockets.", len(readable))
-        # Split up the readable sockets and read from them
-        readers=[]
-        # Our work pools start as one socket to one thread
-        rpools=readable
+            if len(readable)!=0 and config.getboolean('block_on_read'):
+                # Wait for the reader to finish
+                reader.join()
 
-        # If we don't have enough threads for that, split the work up into maxThreads pools
-        if maxThreads<len(readable):
-            rpools=splitInto(readable, maxThreads)
+        # We have to use multiple threads per operation
+        else:
+            logger.verbose("Selected %d readable sockets.", len(readable))
+            # Split up the readable sockets and read from them
+            readers=[]
+            # Our work pools start as one socket to one thread
+            rpools=readable
 
-        # Create a list of threads to run reads on
-        if len(readable)>0:
-            readers=list(map(createThread, reader, readname, ((read,) for read in rpools)))
-        # ...and start all of those threads
-        for thread in readers:
-            thread.start()
+            # If we don't have enough threads for that, split the work up into maxThreads pools
+            if maxThreads<len(readable):
+                rpools=splitInto(readable, maxThreads)
 
-        logger.verbose("Selected %d writeable sockets.", len(writeable))
-        # Split up the writeable sockets and write to them
-        writers=[]
-        # Our work pools start as one socket to one thread
-        wpools=writeable
+            # Create a list of threads to run reads on
+            if len(readable)>0:
+                readers=list(map(createThread, reader, readname, ((read,) for read in rpools)))
+            # ...and start all of those threads
+            for thread in readers:
+                thread.start()
 
-        # If we don't have enough threads for that, split the work up into maxThreads pools
-        if maxThreads<len(writeable):
-            wpools=splitInto(writeable, maxThreads)
+            logger.verbose("Selected %d writeable sockets.", len(writeable))
+            # Split up the writeable sockets and write to them
+            writers=[]
+            # Our work pools start as one socket to one thread
+            wpools=writeable
 
-        # Make sure we don't double process sockets when we go on to selection
-        # The only thing we need is to remove the sockets from the selector list.
-        # We do that before waiting for any thread joins.
-        list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
+            # If we don't have enough threads for that, split the work up into maxThreads pools
+            if maxThreads<len(writeable):
+                wpools=splitInto(writeable, maxThreads)
 
-        # Create a list of threads to run writes on
-        if len(writeable)>0:
-            writers=list(map(createThread, writer, writename, ((write,) for write in wpools)))
-        # ...and start all of those threads
-        for thread in writers:
-            thread.start()
+            # Make sure we don't double process sockets when we go on to selection
+            # The only thing we need is to remove the sockets from the selector list.
+            # We do that before waiting for any thread joins.
+            list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
 
-        # By here, all of our readers and writers are running.
-        # If configured to do so, wait for the readers to finish before returning to select
-        if config.getboolean('block_on_read'):
-            for r in readers:
-                r.join()
+            # Create a list of threads to run writes on
+            if len(writeable)>0:
+                writers=list(map(createThread, writer, writename, ((write,) for write in wpools)))
+            # ...and start all of those threads
+            for thread in writers:
+                thread.start()
+
+            # By here, all of our readers and writers are running.
+            # If configured to do so, wait for the readers to finish before returning to select
+            if config.getboolean('block_on_read'):
+                for r in readers:
+                    r.join()
+
+# Run the main code
+if __name__ == "__main__":
+    main()

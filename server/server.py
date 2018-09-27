@@ -51,6 +51,20 @@ config = ConfigParser(defaults=defaultconfig['DEFAULT'], interpolation=None)
 config.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini'))
 config = config['DEFAULT']
 
+# Check whether we're supposed to handle uncaught exceptions
+if config.getboolean("log_uncaught"):
+    def logUncaught(type, value, traceback):
+        logger.critical("Uncaught exception!", exc_info=True)
+
+        # Check if we're supposed to keep crashing
+        if config.getboolean("suppress_uncaught"):
+            main()
+        else:
+            sys.exit(1)
+
+    # Register the handler
+    sys.excepthook=logUncaught
+
 # Set whether the logging module will handle exceptions on its own
 logging.raiseExceptions=config.getboolean("log_raise_exceptions")
 

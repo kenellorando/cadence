@@ -58,7 +58,12 @@ if config.getboolean("log_uncaught"):
 
         # Check if we're supposed to keep crashing
         if config.getboolean("suppress_uncaught"):
-            main()
+            # Recurse if we encounter more uncaught errors
+            try:
+                main()
+            except:
+                info=sys.exc_info()
+                logUncaught(info[0], info[1], info[2])
         else:
             sys.exit(1)
 

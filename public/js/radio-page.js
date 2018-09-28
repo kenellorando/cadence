@@ -122,3 +122,6 @@ function toggleChangelog() {
     document.getElementById("oldToggle").innerHTML = "Hide Full History";
   }
 }
+
+// Execute the load handler whenever the page is ready
+$(document).ready(defaultPlayer);

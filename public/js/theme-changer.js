@@ -158,3 +158,6 @@ function defaultTheme() {
     themeChanger(theme);
   }
 }
+
+// Execute the load handler whenever the page is ready
+$(document).ready(defaultTheme);

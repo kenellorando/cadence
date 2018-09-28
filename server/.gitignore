@@ -105,3 +105,9 @@ venv.bak/
 
 # Don't version control logs
 logs/
+
+# Don't version control the override config file
+config.ini
+
+# Or the requirements.txt file
+requirements.txt

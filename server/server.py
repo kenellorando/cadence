@@ -1636,6 +1636,12 @@ writename = nameIterable("writer")
 # Main function
 def main():
     "Infinite loop for connection service"
+    
+    # Declare globals
+    global reader
+    global writer
+    global readname
+    global writename
 
     while True:
         # Make sure the accept socket is in the select list

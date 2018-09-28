@@ -945,7 +945,7 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
     # Use telnet to connect to the stream client and transmit the request
     connection = Telnet(config['liquidsoap_host'], ariaRequest.liquidsoapPort)
     try:
-        connection.write(("request.push "+path).encode())
+        connection.write(("request.push "+path+"\n").encode())
         response=connection.read_until(b'END', 2).decode()
 
         logger.info("Pushed request. Source client response: %s", response)

@@ -1228,7 +1228,7 @@ def readFrom(read, log=True):
         # If it's GET, we return the file specified via commandline
         # If it's HEAD, we return the headers we'd return for that file
         # If it's something else, return 405 Method Not Allowed
-        method = lines[0]
+        method = parse.unquote_to_bytes(lines[0])
         logger.debug("Method line %s", method.decode())
         if method.startswith(b"POST") and config.getboolean('enable_aria'):
             logger.info("Received POST request to %s.", method.split(b' ')[1].decode())

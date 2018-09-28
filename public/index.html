@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Ken Ellorando's personal online radio" />
-  <meta name="keywords" content="Cadence, Radio, Cadence Radio, CadenceRadio, free radio, open source radio, github, Ken Ellorando radio"
+  <meta name="keywords" content="kenellorando, Ken Ellorando, Cadence, Radio, Cadence Radio, CadenceRadio, free radio, open source radio, github, Ken Ellorando radio"
   />
 
   <!-- Meta-tags for theme colors, etc -->
@@ -19,11 +19,11 @@
 
   <!-- Heading: Rock Salt; Subtitle: Roboto 300i; ARIA Messages: VT232; All else: PT Sans -->
   <!-- CSS preloading technique as described at https://stackoverflow.com/a/40314216 -->
-  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
-  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
-  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet" media="none" onload="if(media!='all') media='all'">
-  
+  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet" class="delayedLoad" media="none">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet" class="delayedLoad" media="none">
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" class="delayedLoad" media="none">
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet" class="delayedLoad" media="none">
+
   <noscript id="scriptless-fonts">
     <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
@@ -47,8 +47,9 @@
     <script src="/js/aria.js" async defer></script>
     <script src="/js/theme-changer.js" async defer></script>
     <script src="/js/radio-page.js" async defer></script>
+    <script src="/js/handlers.js" async defer></script>
   <![endif]-->
-  
+
   <!-- IE later than 10 and other browsers don't understand conditional comments. -->
   <!-- These browsers guarantee the execution order of deferred scripts, so all the scripts can get defers -->
   <!-- [if !IE]> -->
@@ -66,11 +67,13 @@
     <script src="/js/theme-changer.js" defer></script>
     <!-- Radio-page script -->
     <script src="/js/radio-page.js" defer></script>
+    <!-- Event handlers -->
+    <script src="/js/handlers.js" defer></script>
   <!-- <![endif] -->
 </head>
 
 
-<body onload="defaultTheme(); defaultPlayer();">
+<body>
   <main>
     <h1 id="title">CADENCE</h1>
     <p id="subtitle">A Rhythmic Experience</p>
@@ -96,13 +99,13 @@
         </li>
         <li>
           <!-- VOLUME -->
-          <input type="range" id="volume" value="1" min="0" max="1" step="0.01" oninput="volumeToggle(this.value)" onchange="volumeToggle(this.value)">
+          <input type="range" id="volume" value="1" min="0" max="1" step="0.01">
         </li>
       </ul>
 
       <div id="version">
         <p style="margin:0">Cadence/ARIA Development Build</p>
-        <p style="margin:0 0 30px 0;">Ver. 2.0.1</p>
+        <p style="margin:0 0 30px 0;">Ver. 3.0.0</p>
       </div>
 
       <!-- Theme selector -->
@@ -116,7 +119,6 @@
           <button type="button" class="themeChoice" id="spaceStation">Space Station</button>
           <button type="button" class="themeChoice" id="legacy">Legacy</button>
           <!--
-
           <button type="button" class="themeChoice" id="sanFrancisco">San Francisco</button>
           <button type="button" class="themeChoice" id="minimalist">Minimalist</button>
           <button type="button" class="themeChoice" id="minimalistDark">Minimalist Dark</button>
@@ -125,6 +127,7 @@
           <button type="button" class="themeChoice" id="tokyoNight">Tokyo Night</button>
           <button type="button" class="themeChoice" id="mayberry">Mayberry</button>
           <button type="button" class="themeChoice" id="starGuardian">Star Guardian</button>
+          <button type="button" class="themeChoice" id="nebula">Nebula</button>
           <button type="button" class="themeChoice" id="cabin">Cabin</button>
           <button type="button" class="themeChoice" id="lightMage">Light Mage</button>
           -->
@@ -157,39 +160,41 @@
           Originally started as an <a href="/original/">experiment</a> in February 2017, the project
           is my first endeavour to practice a full range of IT-skills.</p>
 
-          <p>Cadence's frontend is served through a Node.js webserver interacting with a Mongo music database, both configured around a Liquidsoap/Icecast stream server. </p>
+        <p>Cadence is served through a Python webserver interacting with a Postgres music database, both configured around a Liquidsoap/Icecast stream server. There is no framework anywhere; everything you see was created using purely original code.</p>
 
         <p>The server typically plays all the genres of music I like, a mix of classic rock, synthpop, and metal. I occasionally
           override the server and play a certain genre, artist, or the same song on an endless loop.</p>
 
         <p>If you're interested in seeing this project's development, nearly everything is available on GitHub:
-          <a href="https://github.com/kenellorando/cadence">source</a>/<a href="https://github.com/kenellorando/cadence/issues">issues</a>.</p>
-
-        <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
+          <a href="https://github.com/kenellorando/cadence">source</a>/<a href="https://github.com/kenellorando/cadence/issues">issues</a>. A <a href="cadenceradio.slack.com">Slack channel</a> is available for direct communication with the development team.</p>
+      </section>
+      <section>
+        <h2>Legal Disclaimer</h2>
+          <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
       </section>
     </div>
 
     <div class="content-right">
       <section>
         <h2>Announcements</h2>
-        <h3 class="announcement">7/30: Tempo Primo</h3>
-        <p>Well, it took two months, but Cadence is finally in the process of coming back online!</p>
-        <p>In the upcoming weeks, get ready for a <a href="https://github.com/za419/cadence-server">new webserver</a>, new music, and of course, more Railgun.</p>
+        <h3 class="announcement">9/26: Cadence 3.0.0</h3>
+        <p>Today, I am pleased to announce the release of Cadence 3.0.0. This historical landmark in the development history of Cadence marks the successful integration of the new Python webserver, as well as the retirement of our first 2.0 Node.js server. You may notice improvements in audio access speed and reduced proneness to crashing.</p>
+
+        <p>Many thanks to the contributions of Ryan Hodin (za419), architect of these new back-end features and stability improvements. Many thanks to him for his dedication, and all our newcoming friends and developers who work towards a more rhythmic experience.</p>
       </section>
       <section id="changelog">
         <h2>Changelog:</h2>
-        <!--
         <ul>
-          <li></li>
+          <li>9/26: Integration of new 3.0 Python server. Retirement of the 2.0 Nodejs server.</li>
+            <li>7/23: Creation of a Slack channel to better facilitate developer and administrator communication. (<a href="cadenceradio.slack.com">cadenceradio.slack.com</a>).</li>
         </ul>
-        -->
-        <h4><a id="oldToggle" onclick="toggleChangelog()">Show Full History</a></h4>
+        <h4><a id="oldToggle">Show Full History</a></h4>
         <div id="old">
           <ul>
             <li>2/26: Cadence's 1 Year Birthday</li>
             <li>2/15: New theme: Cabin</li>
             <li>2/2: New theme: Legacy</li>
-            <li>1/26: Resurected theme: Space Station</li>
+            <li>1/26: Resurrected theme: Space Station</li>
             <li>1/18: New theme: Hawaiian Sunset</li>
             <li>1/12: New theme: Tokyo Night</li>
             <li>11/28: New theme: Minimalist</li>
@@ -225,7 +230,7 @@
     </div>
   </div>
   <!-- /CONTENT -->
-  <footer>A project by Ken Ellorando</footer>
+  <footer>A project by <a href="https://kenellorando.com">Ken Ellorando</a></footer>
 
   <div class="fullscreen-bg">
     <video loop muted autoplay class="fullscreen-bg-video">

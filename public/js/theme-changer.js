@@ -43,8 +43,23 @@ function themeChanger(themeName) {
           // List of theme keys
           var keys=Object.keys(theme)
 
-          // Remove the key for the most rejected theme
+          // Remove the key for the rejected theme, plus all nightmodes
           keys = keys.filter(function(value, index, arr) {
+              // Filter out the nightmodes first
+              if (theme[value].hasNightMode) {
+                  // This theme either is a nightmode or has one.
+                  // Check if it ends in "Night"
+                  if (value.endsWith("Night")) {
+                      // This is probably a nightmode.
+                      // But bugs will happen if a daymode theme is named, for example, tokyoNight.
+                      // Therefore, make sure a theme exists which has the same name without the Night
+                      if (arr.includes(value.substring(0, value.length-5))) {
+                          // This theme is a nightmode. Scratch it.
+                          return false;
+                      }
+                  }
+              }
+
               return value!=themeObj.themeKey;
           });
       }

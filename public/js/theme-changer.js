@@ -38,6 +38,17 @@ function themeChanger(themeName) {
   Object.setPrototypeOf(call, callback.constructor.prototype);
 
   do {
+      // Check if the theme wants us to load a random theme
+      if (t===true) {
+          // List of theme keys
+          var keys=Object.keys(theme)
+
+          // Remove the key for the most rejected theme
+          keys = keys.filter(function(value, index, arr) {
+              return value!=themeObj.themeKey;
+          });
+      }
+
       // If the theme is blocked on mobile, and we're on mobile, default to chicagoEvening
       // Uses the same mobile check as Ken and I used back in the beginning, which is still used for pause
       if (t.blockMobile && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {

@@ -98,6 +98,39 @@ function themeChanger(themeName) {
       themeObj.callback.preUnload(t);
       themeObj.callback.postUnload();
       do {
+          // Check if the theme wants us to load a random theme
+          if (t===true) {
+              // List of theme keys
+              var keys=Object.keys(theme)
+
+              // Remove the key for the rejected theme, plus all nightmodes
+              keys = keys.filter(function(value, index, arr) {
+                  // Filter out the nightmodes first
+                  if (theme[value].hasNightMode) {
+                      // This theme either is a nightmode or has one.
+                      // Check if it ends in "Night"
+                      if (value.endsWith("Night")) {
+                          // This is probably a nightmode.
+                          // But bugs will happen if a daymode theme is named, for example, tokyoNight.
+                          // Therefore, make sure a theme exists which has the same name without the Night
+                          if (arr.includes(value.substring(0, value.length-5))) {
+                              // This theme is a nightmode. Scratch it.
+                              return false;
+                          }
+                      }
+                  }
+
+                  return value!=themeObj.themeKey;
+              });
+
+              // Choose a random themeKey...
+              var index=Math.floor(Math.random()*keys.length)
+
+              // And set that theme as our theme
+              t=theme[keys[index]]
+          }
+
+          // Setup the theme
           themeObjNight = t;
           themeObjNight.callback = themeObjNight.callback || CallbackInterface;
           themeObjNight.callback = new themeObjNight.callback.prototype.constructor(themeObjNight);

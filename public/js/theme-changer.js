@@ -62,6 +62,12 @@ function themeChanger(themeName) {
 
               return value!=themeObj.themeKey;
           });
+
+          // Choose a random themeKey...
+          var index=Math.floor(Math.random()*keys.length)
+
+          // And set that theme as our theme
+          t=theme[keys[index]]
       }
 
       // If the theme is blocked on mobile, and we're on mobile, default to chicagoEvening

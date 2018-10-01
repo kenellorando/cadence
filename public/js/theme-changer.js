@@ -82,7 +82,7 @@ function themeChanger(themeName) {
 
       // Setup the theme's callback
       themeObj.callback = themeObj.callback || CallbackInterface;
-      themeObj.callback = new themeObj.callback.prototype.constructor(themeObj);
+      themeObj.callback = new themeObj.callback.constructor(themeObj);
   } while (t=themeObj.callback.preLoad(callback.theme));
 
   callback.preUnload(themeObj);
@@ -133,7 +133,7 @@ function themeChanger(themeName) {
           // Setup the theme
           themeObjNight = t;
           themeObjNight.callback = themeObjNight.callback || CallbackInterface;
-          themeObjNight.callback = new themeObjNight.callback.prototype.constructor(themeObjNight);
+          themeObjNight.callback = new themeObjNight.callback.constructor(themeObjNight);
       } while (t=themeObjNight.callback.preLoad(callback.theme));
       document.getElementById("selected-css").href = themeObjNight.cssPath;
       document.getElementById("title").innerHTML = themeObjNight.title;

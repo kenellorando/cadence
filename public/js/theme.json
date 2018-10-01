@@ -184,5 +184,14 @@ var theme = {
     "themeColor": "#221B2B",
     "themeColorRead": "#221B2B a very dark purple",
     "themeKey": "nebula"
+  },
+  "random": {
+    "cssPath": "/css/themes/chicago-evening.css",
+    "title": "CADENCE",
+    "subtitle": "A Rhythmic Experience",
+    "themeColor": "#1d2951",
+    "themeColorRead": "#1d2951 dark navy",
+    "callback": RandomCallback,
+    "themeKey": "chicagoEvening"
   }
 }

@@ -50,3 +50,14 @@ LoggingCallback.prototype.nightmodeSwitch=function () {
 LoggingCallback.prototype.daymodeSwitch=function () {
     console.log("Switching theme into daymode...")
 }
+
+// RandomCallback: Never allows the theme to actually load, instead always loading a randomly selected theme.
+function RandomCallback(theme) {
+    CallbackInterface.call(this, theme)
+}
+
+registerCallback(RandomCallback)
+
+RandomCallback.prototype.preLoad=function(c) {
+    return true
+}

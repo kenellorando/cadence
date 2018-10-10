@@ -1653,8 +1653,8 @@ def main():
         ready = selector.select(timeout)
 
         # Pull socket lists from the list of ready tuples
-        readable=[r[0].fileobj for r in ready if r[1]&selectors.EVENT_READ]
-        writeable=[w[0].fileobj for w in ready if w[1]&selectors.EVENT_WRITE]
+        readable=[r[0].fileobj for r in ready if r[1]&selectors.EVENT_READ and r[0].fileobj.fileno()>0]
+        writeable=[w[0].fileobj for w in ready if w[1]&selectors.EVENT_WRITE and w[0].fileobj.fileno()>0]
 
         # If we're in single-thread mode
         if maxThreads==0:

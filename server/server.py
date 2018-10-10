@@ -33,7 +33,7 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default-conf
     hash = hashlib.sha256(agnostic.encode()).hexdigest()
 
     # This variable holds the 'canonical' hash of the default configuration file
-    canonical = "448ca4bec58877468a257756f252e2c137c9bad933515e94d2bc479c3c27fdea"
+    canonical = "ff34d75d2eddae1c695cd7c0d390bd7e896f30e331476b276400c26e02e8ceae"
 
     # Now, the check.
     # Halt startup if the hashes don't match
@@ -50,6 +50,25 @@ defaultconfig.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'def
 config = ConfigParser(defaults=defaultconfig['DEFAULT'], interpolation=None)
 config.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini'))
 config = config['DEFAULT']
+
+# Check whether we're supposed to handle uncaught exceptions
+if config.getboolean("log_uncaught"):
+    def logUncaught(type, value, tb):
+        logger.critical("Uncaught exception:\n%s\n", ''.join(traceback.format_exception(type, value, tb)))
+
+        # Check if we're supposed to keep crashing
+        if config.getboolean("suppress_uncaught") and not issubclass(type, KeyboardInterrupt):
+            # Recurse if we encounter more uncaught errors
+            try:
+                main()
+            except:
+                info=sys.exc_info()
+                logUncaught(info[0], info[1], info[2])
+        else:
+            sys.exit(1)
+
+    # Register the handler
+    sys.excepthook=logUncaught
 
 # Set whether the logging module will handle exceptions on its own
 logging.raiseExceptions=config.getboolean("log_raise_exceptions")
@@ -945,7 +964,7 @@ def ariaRequest(requestBody, conn, allowEncodings=None):
     # Use telnet to connect to the stream client and transmit the request
     connection = Telnet(config['liquidsoap_host'], ariaRequest.liquidsoapPort)
     try:
-        connection.write(("request.push "+path).encode())
+        connection.write(("request.push "+path+"\n").encode())
         response=connection.read_until(b'END', 2).decode()
 
         logger.info("Pushed request. Source client response: %s", response)
@@ -1102,6 +1121,20 @@ def readFrom(read, log=True):
         logger.verbose("Configuring ARIA thread name generators...")
         readFrom.searcherName=nameIterable("ARIA searcher ")
         readFrom.requesterName=nameIterable("ARIA requester ")
+
+        logger.verbose("Configuring connection blacklist...")
+        blacklist = config['connection_blacklist']
+        if blacklist==None:
+            readFrom.blacklist=[]
+        else:
+            blacklist = blacklist.split(',')
+            readFrom.blacklist = [addr.strip() for addr in blacklist]
+
+        readFrom.blacklistResponse = config['blacklist_response']
+        if readFrom.blacklistResponse=="None":
+            readFrom.blacklistResponse=False
+
+        logger.verbose("%d blacklisted addresses.", len(readFrom.blacklist))
         logger.verbose("Done.")
 
     # Log which thread we're on
@@ -1136,6 +1169,17 @@ def readFrom(read, log=True):
             while True:
                 conn, address = read.conn.accept()
                 address = address[0]
+
+                # Check for blacklisting
+                if address in readFrom.blacklist:
+                    # This address is on the blacklist.
+                    # Deny the connection.
+                    logger.info("Denied incoming connection from %s (blacklisted IP address).", address)
+                    if readFrom.blacklistResponse!=False:
+                        conn.sendall(readfrom.blacklistResponse)
+                    conn.close()
+                    continue
+
                 selector.register(Connection(conn, False, IP=address), selectors.EVENT_READ)
                 logger.info("Accepting a new connection, attached socket %d.", conn.fileno())
                 logger.debug("Connection is from %s.", address) # Not the client address per se, but informative in theory nonetheless.
@@ -1184,7 +1228,7 @@ def readFrom(read, log=True):
         # If it's GET, we return the file specified via commandline
         # If it's HEAD, we return the headers we'd return for that file
         # If it's something else, return 405 Method Not Allowed
-        method = lines[0]
+        method = parse.unquote_to_bytes(lines[0])
         logger.debug("Method line %s", method.decode())
         if method.startswith(b"POST") and config.getboolean('enable_aria'):
             logger.info("Received POST request to %s.", method.split(b' ')[1].decode())
@@ -1589,108 +1633,121 @@ writer = constantIterable(writeTo)
 readname = nameIterable("reader")
 writename = nameIterable("writer")
 
-# Infinite loop for connection service
-while True:
-    # Make sure the accept socket is in the select list
-    try:
-        selector.register(Connection(sock, False, True), selectors.EVENT_READ)
-        logger.verbose("Accept socket was not already in the selection queue.")
-    except KeyError:
-        pass
-    except:
-        logger.exception("Problem with accept socket.", exc_info=True)
-        raise
+# Main function
+def main():
+    "Infinite loop for connection service"
+    
+    # Declare globals
+    global reader
+    global writer
+    global readname
+    global writename
 
-    # Select sockets to process
-    logger.verbose("Selection...")
-    ready = selector.select(timeout)
+    while True:
+        # Make sure the accept socket is in the select list
+        try:
+            selector.register(Connection(sock, False, True), selectors.EVENT_READ)
+            logger.verbose("Accept socket was not already in the selection queue.")
+        except KeyError:
+            pass
+        except:
+            logger.exception("Problem with accept socket.", exc_info=True)
+            raise
 
-    # Pull socket lists from the list of ready tuples
-    readable=[r[0].fileobj for r in ready if r[1]&selectors.EVENT_READ]
-    writeable=[w[0].fileobj for w in ready if w[1]&selectors.EVENT_WRITE]
+        # Select sockets to process
+        logger.verbose("Selection...")
+        ready = selector.select(timeout)
 
-    # If we're in single-thread mode
-    if maxThreads==0:
-        # Read from the readable sockets
-        logger.verbose("Selected %d readable sockets.", len(readable))
-        for read in readable:
-            selector.unregister(read)
-            readFrom(read)
+        # Pull socket lists from the list of ready tuples
+        readable=[r[0].fileobj for r in ready if r[1]&selectors.EVENT_READ]
+        writeable=[w[0].fileobj for w in ready if w[1]&selectors.EVENT_WRITE]
 
-        # Now, handle the writeable sockets
-        logger.verbose("Selected %d writeable sockets.", len(writeable))
-        for write in writeable:
-            selector.unregister(write)
-            writeTo(write)
+        # If we're in single-thread mode
+        if maxThreads==0:
+            # Read from the readable sockets
+            logger.verbose("Selected %d readable sockets.", len(readable))
+            for read in readable:
+                selector.unregister(read)
+                readFrom(read)
 
-    # We're performing operations on multiple threads
-    # If the maximum number of threads is one, skip over the logic for splitting up the socket arrays
-    elif maxThreads==1:
-        # Read from the readable sockets in a read thread
-        logger.verbose("Selected %d readable sockets.", len(readable))
-        reader = None
-        if len(readable)!=0:
-            reader = createThread(readFrom, next(readname), (readable,))
-            reader.start()
+            # Now, handle the writeable sockets
+            logger.verbose("Selected %d writeable sockets.", len(writeable))
+            for write in writeable:
+                selector.unregister(write)
+                writeTo(write)
 
-        # Make sure we don't double process sockets when we go on to selection
-        # The only thing we need is to remove the sockets from the selector list.
-        # We do that before waiting for any thread joins.
-        list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
+        # We're performing operations on multiple threads
+        # If the maximum number of threads is one, skip over the logic for splitting up the socket arrays
+        elif maxThreads==1:
+            # Read from the readable sockets in a read thread
+            logger.verbose("Selected %d readable sockets.", len(readable))
+            reader = None
+            if len(readable)!=0:
+                reader = createThread(readFrom, next(readname), (readable,))
+                reader.start()
 
-        # Now, handle the writeable sockets in a write thread
-        logger.verbose("Selected %d writeable sockets.", len(writeable))
-        if len(writable)!=0:
-            writer = createThread(writeTo, next(writename), (writeable,))
-            writer.start()
+            # Make sure we don't double process sockets when we go on to selection
+            # The only thing we need is to remove the sockets from the selector list.
+            # We do that before waiting for any thread joins.
+            list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
 
-        if len(readable)!=0 and config.getboolean('block_on_read'):
-            # Wait for the reader to finish
-            reader.join()
+            # Now, handle the writeable sockets in a write thread
+            logger.verbose("Selected %d writeable sockets.", len(writeable))
+            if len(writable)!=0:
+                writer = createThread(writeTo, next(writename), (writeable,))
+                writer.start()
 
-    # We have to use multiple threads per operation
-    else:
-        logger.verbose("Selected %d readable sockets.", len(readable))
-        # Split up the readable sockets and read from them
-        readers=[]
-        # Our work pools start as one socket to one thread
-        rpools=readable
+            if len(readable)!=0 and config.getboolean('block_on_read'):
+                # Wait for the reader to finish
+                reader.join()
 
-        # If we don't have enough threads for that, split the work up into maxThreads pools
-        if maxThreads<len(readable):
-            rpools=splitInto(readable, maxThreads)
+        # We have to use multiple threads per operation
+        else:
+            logger.verbose("Selected %d readable sockets.", len(readable))
+            # Split up the readable sockets and read from them
+            readers=[]
+            # Our work pools start as one socket to one thread
+            rpools=readable
 
-        # Create a list of threads to run reads on
-        if len(readable)>0:
-            readers=list(map(createThread, reader, readname, ((read,) for read in rpools)))
-        # ...and start all of those threads
-        for thread in readers:
-            thread.start()
+            # If we don't have enough threads for that, split the work up into maxThreads pools
+            if maxThreads<len(readable):
+                rpools=splitInto(readable, maxThreads)
 
-        logger.verbose("Selected %d writeable sockets.", len(writeable))
-        # Split up the writeable sockets and write to them
-        writers=[]
-        # Our work pools start as one socket to one thread
-        wpools=writeable
+            # Create a list of threads to run reads on
+            if len(readable)>0:
+                readers=list(map(createThread, reader, readname, ((read,) for read in rpools)))
+            # ...and start all of those threads
+            for thread in readers:
+                thread.start()
 
-        # If we don't have enough threads for that, split the work up into maxThreads pools
-        if maxThreads<len(writeable):
-            wpools=splitInto(writeable, maxThreads)
+            logger.verbose("Selected %d writeable sockets.", len(writeable))
+            # Split up the writeable sockets and write to them
+            writers=[]
+            # Our work pools start as one socket to one thread
+            wpools=writeable
 
-        # Make sure we don't double process sockets when we go on to selection
-        # The only thing we need is to remove the sockets from the selector list.
-        # We do that before waiting for any thread joins.
-        list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
+            # If we don't have enough threads for that, split the work up into maxThreads pools
+            if maxThreads<len(writeable):
+                wpools=splitInto(writeable, maxThreads)
 
-        # Create a list of threads to run writes on
-        if len(writeable)>0:
-            writers=list(map(createThread, writer, writename, ((write,) for write in wpools)))
-        # ...and start all of those threads
-        for thread in writers:
-            thread.start()
+            # Make sure we don't double process sockets when we go on to selection
+            # The only thing we need is to remove the sockets from the selector list.
+            # We do that before waiting for any thread joins.
+            list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
 
-        # By here, all of our readers and writers are running.
-        # If configured to do so, wait for the readers to finish before returning to select
-        if config.getboolean('block_on_read'):
-            for r in readers:
-                r.join()
+            # Create a list of threads to run writes on
+            if len(writeable)>0:
+                writers=list(map(createThread, writer, writename, ((write,) for write in wpools)))
+            # ...and start all of those threads
+            for thread in writers:
+                thread.start()
+
+            # By here, all of our readers and writers are running.
+            # If configured to do so, wait for the readers to finish before returning to select
+            if config.getboolean('block_on_read'):
+                for r in readers:
+                    r.join()
+
+# Run the main code
+if __name__ == "__main__":
+    main()

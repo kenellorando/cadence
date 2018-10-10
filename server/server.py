@@ -1656,6 +1656,15 @@ def main():
         readable=[r[0].fileobj for r in ready if r[1]&selectors.EVENT_READ and r[0].fileobj.fileno()>0]
         writeable=[w[0].fileobj for w in ready if w[1]&selectors.EVENT_WRITE and w[0].fileobj.fileno()>0]
 
+        # Attempt to unregister objects with negative FDs.
+        erroneous=[e[0].fileobj for e in ready if e[0].fileobj.fileno<=0]
+        logger.verbose("Selected %d sockets with negative descriptors.", len(erroneous))
+        for err in erroneous:
+            try:
+                selector.unregister(err)
+            except:
+                logger.verbose("Unable to unregister FD %d.", err.fileno(), exc_info=True)
+
         # If we're in single-thread mode
         if maxThreads==0:
             # Read from the readable sockets

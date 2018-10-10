@@ -1013,6 +1013,12 @@ class Connection:
         self.content = content
         self.IP=IP
 
+    def __str__(self):
+        return "{0} connection {1} from {2}, with content {3}".format("Write" if self.isWrite else "Read",
+                                                                      self.fileno(),
+                                                                      self.IP,
+                                                                      self.content)
+
     # Follows configured behavior to attempt to get an IP out of request headers
     def setIPFrom(self, requestHeaders):
         try:
@@ -1636,7 +1642,7 @@ writename = nameIterable("writer")
 # Main function
 def main():
     "Infinite loop for connection service"
-    
+
     # Declare globals
     global reader
     global writer

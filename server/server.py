@@ -1269,7 +1269,7 @@ def readFrom(read, log=True):
 
         # Parse the filename out of the request
         # Trim leading slashes to keep Python from thinking that the method refers to the root directory.
-        filename = os.path.join(directory, method.split(b' ')[1].lstrip(b'/'))
+        filename = os.path.join(directory, method.split(b' ')[1].lstrip(b'/').split(b'?')[0])
         dir = False
         # If the filename is a directory, join it to "index.html"
         if os.path.isdir(filename):

@@ -10,6 +10,10 @@ Special functions:
       If this is not set, "chicagoEvening" will be used instead.
       The theme this is set to will be used regardless of setting blockMobile.
       That is, it it your responsibility to make sure the mobile theme supports mobile.
+    Note that if this is set on a nightmode theme, only the property on the daytime theme will be respected.
+  Callbacks
+    set "callback" to the name of a callback class defined in callback/callbacks.js
+      (See callback/prototype.js for specifications regarding the callback class interface)
 */
 
 var theme = {

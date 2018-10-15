@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet" class="delayedLoad" media="none">
   <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" class="delayedLoad" media="none">
   <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet" class="delayedLoad" media="none">
-  
+
   <noscript id="scriptless-fonts">
     <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
@@ -41,18 +41,24 @@
   <!-- Conditionally use special behavior for IE9 (only supported IE with buggy defer) -->
   <!--[if IE]>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/callback/prototype.js"></script>
+    <script type="text/javascript" src="/js/callback/callbacks.js"></script>
     <script type="text/javascript" src="/js/theme.json"></script>
     <script src="/js/aria.js" async defer></script>
     <script src="/js/theme-changer.js" async defer></script>
     <script src="/js/radio-page.js" async defer></script>
     <script src="/js/handlers.js" async defer></script>
   <![endif]-->
-  
+
   <!-- IE later than 10 and other browsers don't understand conditional comments. -->
   <!-- These browsers guarantee the execution order of deferred scripts, so all the scripts can get defers -->
   <!-- [if !IE]> -->
     <!-- jQuery Google CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" defer></script>
+    <!-- Theme callback prototype -->
+    <script type="text/javascript" src="/js/callback/prototype.js" defer></script>
+    <!-- Theme callbacks -->
+    <script type="text/javascript" src="/js/callback/callbacks.js" defer></script>
     <!-- Theme data JSON -->
     <script type="text/javascript" src="/js/theme.json" defer></script>
     <!-- ARIA Front-end -->
@@ -186,7 +192,7 @@
 
         <h3 class="announcement">9/26: Cadence 3.0.0</h3>
         <p>Today, I am pleased to announce the release of Cadence 3.0.0. This historical landmark in the development history of Cadence marks the successful integration of the new Python webserver, as well as the retirement of our first 2.0 Node.js server. You may notice improvements in audio access speed and reduced proneness to crashing.</p>
-        
+
         <p>Many thanks to the contributions of Ryan Hodin (za419), architect of these new back-end features and stability improvements. Many thanks to him for his dedication, and all our newcoming friends and developers who work towards a more rhythmic experience.</p>
       </section>
       <section id="changelog">

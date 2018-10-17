@@ -96,3 +96,9 @@ CodecCallback.prototype.preLoad=function () {
     // The browser may now load the theme.
     return false;
 }
+
+// Remove the source tags from the page before we switch to another theme
+CodecCallback.prototype.preUnload=function(pendingTheme) {
+    document.getElementById("video-hevc").remove();
+    document.getElementById("video-webm").remove();
+}

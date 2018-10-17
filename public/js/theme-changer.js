@@ -85,7 +85,7 @@ function themeChanger(themeName) {
       try {
         themeObj.callback = new themeObj.callback(themeObj);
       }
-      catch {
+      catch(e) {
           themeObj.callback = new themeObj.callback.constructor(themeObj)
       }
   } while (t=themeObj.callback.preLoad(callback.theme));
@@ -141,7 +141,7 @@ function themeChanger(themeName) {
           try {
             themeObjNight.callback = new themeObjNight.callback(themeObjNight);
           }
-          catch {
+          catch(e) {
               themeObjNight.callback = new themeObjNight.callback.constructor(themeObjNight)
           }
       } while (t=themeObjNight.callback.preLoad(callback.theme));

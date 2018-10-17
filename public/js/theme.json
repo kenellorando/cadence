@@ -113,6 +113,7 @@ var theme = {
     "videoPath": "/media/iss.mp4",
     "blockMobile": true,
     "mobileTheme": "earth",
+    "callback": CodecCallback,
     "cssPath": "/css/themes/space-station.css",
     "title": "CADENCE",
     "subtitle": "A Space Odyssey",

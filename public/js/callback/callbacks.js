@@ -50,3 +50,11 @@ LoggingCallback.prototype.nightmodeSwitch=function () {
 LoggingCallback.prototype.daymodeSwitch=function () {
     console.log("Switching theme into daymode...")
 }
+
+// CodecCallback: Automatically generates extra source tags for HEVC (.mkv) and VP9 (.webm) sources
+// For video themes which benefit from these sources.
+function CodecCallback(theme) {
+    CallbackInterface.call(this, theme);
+}
+
+registerCallback(CodecCallback);

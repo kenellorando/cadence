@@ -200,8 +200,6 @@ var theme = {
   },
   "nebulaRotatingLite": {
     "videoPath": "/media/nebula_rotating_mobile.mp4",
-    "blockMobile": true,
-    "mobileTheme": "nebulaRotatingLite",
     "callback": CodecCallback,
     "cssPath": "/css/themes/nebula-rotating.css",
     "title": "C<span>ADENC</span>E",

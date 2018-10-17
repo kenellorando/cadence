@@ -53,8 +53,46 @@ LoggingCallback.prototype.daymodeSwitch=function () {
 
 // CodecCallback: Automatically generates extra source tags for HEVC (.mkv) and VP9 (.webm) sources
 // For video themes which benefit from these sources.
+// Will prevent load if the theme does not have a videoPath.
 function CodecCallback(theme) {
     CallbackInterface.call(this, theme);
 }
 
 registerCallback(CodecCallback);
+
+// Insert the new source tags into the page
+CodecCallback.prototype.preLoad=function () {
+    // Check for null videoPath
+    // (Which breaks this callback)
+    if (this.theme.videoPath===undefined) {
+        // This won't do.
+        // Load some other theme - We don't care which.
+        return true;
+    }
+
+    // Filename except extension
+    var prefix=this.theme.videoPath.substring(0, this.theme.videoPath.lastIndexOf('.'));
+
+    // We want to insert two tags, both before the existing video source
+    // First, we prefer the HEVC media if the browser understands it.
+    var avc=document.getElementById('video-source');
+    var video=avc.parentElement;
+
+    var hevc=document.createElement("source");
+    hevc.id="video-hevc";
+    hevc.src=prefix+".mkv";
+    hevc.type="video/x-matroska; codecs=hevc";
+
+    // If the browser doesn't like HEVC, use VP9 (webm).
+    var webm=document.createElement("source");
+    webm.id="video-webm";
+    webm.src=prefix+".webm";
+    webm.type="video/webm; codecs=vp9";
+
+    // Append both children to the video elementFromPoint
+    video.insertBefore(webm, avc);
+    video.insertBefore(hevc, webm);
+
+    // The browser may now load the theme.
+    return false;
+}

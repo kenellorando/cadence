@@ -72,6 +72,8 @@ CodecCallback.prototype.preLoad=function () {
 
     // Filename except extension
     var prefix=this.theme.videoPath.substring(0, this.theme.videoPath.lastIndexOf('.'));
+    // To conform with video-source, use a full pathname
+    prefix=document.location.origin+prefix;
 
     // We want to insert two tags, both before the existing video source
     // First, we prefer the HEVC media if the browser understands it.

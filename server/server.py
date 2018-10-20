@@ -1657,7 +1657,7 @@ def main():
         writeable=[w[0].fileobj for w in ready if w[1]&selectors.EVENT_WRITE and w[0].fileobj.fileno()>0]
 
         # Attempt to unregister objects with negative FDs.
-        erroneous=[e[0].fileobj for e in ready if e[0].fileobj.fileno<=0]
+        erroneous=[e[0].fileobj for e in ready if e[0].fileobj.fileno()<=0]
         logger.verbose("Selected %d sockets with negative descriptors.", len(erroneous))
         for err in erroneous:
             try:

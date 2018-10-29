@@ -1019,6 +1019,9 @@ class Connection:
                                                                       self.IP,
                                                                       self.content)
 
+    def __repr__(self):
+        return "Connection({!r}, {}, {}, {}, {})".format(self.conn, self.isWrite, self.isAccept, self.content, self.IP)
+
     # Follows configured behavior to attempt to get an IP out of request headers
     def setIPFrom(self, requestHeaders):
         try:

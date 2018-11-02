@@ -49,8 +49,6 @@ body {
   background-color: rgba(0, 0, 0, 0.7);
   padding: 0;
   margin: 0;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 main {
@@ -372,13 +370,18 @@ a:active {
   html {
     font-size: 1.1em;
   }
-  body {
-    padding-left: 13em;
-    padding-right: 12em;
-  }
   main {
     font-size: 1.3em;
     padding-top: 1em;
     padding-bottom: 5em;
+  }
+}
+
+/* Tallest and widest screens */
+
+@media (min-height: 43em) and (min-width: 85em) {
+  body {
+    padding-left: 13em;
+    padding-right: 12em;
   }
 }

@@ -53,6 +53,7 @@ body {
 
 main {
   transition: transform 1s;
+  height: 100vh;
 }
 
 section {

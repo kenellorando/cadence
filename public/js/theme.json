@@ -180,5 +180,13 @@ var theme = {
     "themeColor": "#221B2B",
     "themeColorRead": "#221B2B a very dark purple",
     "themeKey": "nebula"
+  },
+  "disgusting": {
+    "cssPath": "/css/themes/disgusting.css",
+    "title": "CADENCE",
+    "subtitle": "A Disgusting Experience",
+    "themeColor": "#31712A",
+    "themeColorRead": "#31712A a disgusting green",
+    "themeKey": "disgusting"
   }
 }

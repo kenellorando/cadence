@@ -23,9 +23,19 @@ body {
   font-family: 'Comic Sans MS', cursive, sans-serif !important;
 }
 
+#title {
+  padding-top: 0;
+}
+
 #subtitle,
 #volumeLabel,
 .dropbtn,
 .dropdown-content button {
   font-style: italic;
+}
+
+@media (orientation: portrait) {
+  #title {
+    padding-top: .25em;
+  }
 }

@@ -20,7 +20,7 @@ body {
 }
 
 * {
-  font-family: 'Comic Sans', sans-serif;
+  font-family: 'Comic Sans MS', cursive, sans-serif !important;
 }
 
 #subtitle,

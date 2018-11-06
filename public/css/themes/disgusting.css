@@ -1,7 +1,6 @@
-@import url('https://fonts.googleapis.com/css?family=Bellefair');
 html {
   background-color: black;
-  background-image: url('https://i.imgur.com/i4cimqe.png');
+  background-image: url('https://i.imgur.com/zu0h7fF.png');
   background-attachment: fixed;
   background-position: center center;
   background-repeat: no-repeat;
@@ -20,52 +19,13 @@ body {
   text-shadow: 4px 4px 15px #000, 2px 2px 2px #000;
 }
 
-#player {
-  font-family: 'Bellefair', serif;
-  font-style: normal;
-}
-
-#title {
-  font-family: 'Bellefair', serif;
-  font-weight: 500;
-  transform: scale(1.4, 1.6) translateY(-.1em);
-}
-
-#subtitle {
-  font-size: 1.6em;
+* {
+  font-family: 'Comic Sans', sans-serif;
 }
 
 #subtitle,
 #volumeLabel,
 .dropbtn,
 .dropdown-content button {
-  font-family: 'Bellefair', serif;
   font-style: italic;
-}
-
-
-/* Link colors ************************/
-
-a:link {
-  color: lightgrey;
-}
-
-a:visited {
-  color: lightgrey;
-}
-
-a:hover {
-  color: grey;
-}
-
-a:active {
-  color: lightgrey;
-}
-
-#oldToggle {
-  color: lightgrey;
-}
-
-#oldToggle:hover {
-  color: grey;
 }

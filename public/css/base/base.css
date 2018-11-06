@@ -53,6 +53,7 @@ body {
 
 main {
   transition: transform 1s;
+  height: 100vh;
 }
 
 section {
@@ -199,8 +200,9 @@ footer {
 
 /* On the left side **************/
 
-.content-left {
-}
+/*
+.content-left {}
+*/
 
 .announcement {
   line-height: 1.3em;
@@ -209,8 +211,9 @@ footer {
 
 /* On the right side *************/
 
+/*
 .content-right {}
-
+*/
 
 /* Status checker */
 
@@ -343,8 +346,8 @@ a:active {
     column-gap: 4em;
     column-rule-style: solid;
   }
-  .content-right {
-    /* Prevents breaking across the column */
+  /* Prevents breaking across the column */
+  .content-left {
     display: inline-block;
   }
   .content-left p {
@@ -363,7 +366,6 @@ a:active {
 
 
 /* Vertical */
-
 @media (min-height: 43em) {
   html {
     font-size: 1.1em;
@@ -374,7 +376,6 @@ a:active {
     padding-bottom: 5em;
   }
 }
-
 
 /* Tallest and widest screens */
 

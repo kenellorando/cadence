@@ -1014,6 +1014,15 @@ class Connection:
         self.content = content
         self.IP=IP
 
+    def __str__(self):
+        return "{0} connection {1} from {2}, with content {3}".format("Write" if self.isWrite else "Read",
+                                                                      self.fileno(),
+                                                                      self.IP,
+                                                                      self.content)
+
+    def __repr__(self):
+        return "Connection({!r}, {}, {}, {}, {})".format(self.conn, self.isWrite, self.isAccept, self.content, self.IP)
+
     # Follows configured behavior to attempt to get an IP out of request headers
     def setIPFrom(self, requestHeaders):
         try:
@@ -1270,7 +1279,7 @@ def readFrom(read, log=True):
 
         # Parse the filename out of the request
         # Trim leading slashes to keep Python from thinking that the method refers to the root directory.
-        filename = os.path.join(directory, method.split(b' ')[1].lstrip(b'/'))
+        filename = os.path.join(directory, method.split(b' ')[1].lstrip(b'/').split(b'?')[0])
         dir = False
         # If the filename is a directory, join it to "index.html"
         if os.path.isdir(filename):
@@ -1637,7 +1646,7 @@ writename = nameIterable("writer")
 # Main function
 def main():
     "Infinite loop for connection service"
-    
+
     # Declare globals
     global reader
     global writer

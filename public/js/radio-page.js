@@ -74,7 +74,7 @@ $(document).ready(function () {
   if (stream.paused) {
     // Loads up the real stream again if mobile
     if (mobile) {
-      stream.src = "http://stream.cadenceradio.com/cadence1";
+      stream.src = "http://stream.cadenceradio.com:8000/cadence1";
     }
     stream.load();
     stream.play();
@@ -87,7 +87,7 @@ $(document).ready(function () {
     stream.load();
     document.getElementById("playerToggle").innerHTML = "►";
   }
-}, true)
+}, true);
 });
 
 // Focus to the request area
@@ -97,7 +97,7 @@ $(document).ready(function () {
       scrollTop: $("#aria").offset().top
     }, 1500);
     $('input[name=searchInput]').focus();
-  })
+  });
 });
 
 

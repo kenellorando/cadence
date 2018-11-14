@@ -404,8 +404,11 @@ def ETag(content):
     else:
         return base64.urlsafe_b64encode(hashlib.sha256(content).digest())
 
-def HTTP_time(at=time.time()):
+def HTTP_time(at=None):
     "Returns a string formatted as an HTTP time, corresponding to the unix time specified by at (defaults to the present)"
+
+    if at is None:
+        at=time.time()
 
     return time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(at))
 

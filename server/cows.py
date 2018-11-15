@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import random
+
 # Cows from https://www.asciiart.eu/animals/cows
 cows = [
     """
@@ -202,3 +204,10 @@ X#XX#* X*X  *##XX#X     X#         X#     #*#
              **
     """
 ]
+
+def getCow():
+    """
+    Returns a random cow from the above array
+    """
+
+    return random.choice(cows)

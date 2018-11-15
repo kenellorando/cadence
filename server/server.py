@@ -16,6 +16,7 @@ import gzip
 import bz2
 import re
 import lzma
+import cows
 import logging
 import logging.handlers
 from telnetlib import Telnet
@@ -33,7 +34,7 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default-conf
     hash = hashlib.sha256(agnostic.encode()).hexdigest()
 
     # This variable holds the 'canonical' hash of the default configuration file
-    canonical = "ff34d75d2eddae1c695cd7c0d390bd7e896f30e331476b276400c26e02e8ceae"
+    canonical = "3fe14d681ace2e7ff1cdce50de53452b7539fdd74dcd65c0067066bf43b43b6f"
 
     # Now, the check.
     # Halt startup if the hashes don't match
@@ -404,8 +405,11 @@ def ETag(content):
     else:
         return base64.urlsafe_b64encode(hashlib.sha256(content).digest())
 
-def HTTP_time(at=time.time()):
+def HTTP_time(at=None):
     "Returns a string formatted as an HTTP time, corresponding to the unix time specified by at (defaults to the present)"
+
+    if at is None:
+        at=time.time()
 
     return time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(at))
 
@@ -1013,6 +1017,15 @@ class Connection:
         self.content = content
         self.IP=IP
 
+    def __str__(self):
+        return "{0} connection {1} from {2}, with content {3}".format("Write" if self.isWrite else "Read",
+                                                                      self.fileno(),
+                                                                      self.IP,
+                                                                      self.content)
+
+    def __repr__(self):
+        return "Connection({!r}, {}, {}, {}, {})".format(self.conn, self.isWrite, self.isAccept, self.content, self.IP)
+
     # Follows configured behavior to attempt to get an IP out of request headers
     def setIPFrom(self, requestHeaders):
         try:
@@ -1135,6 +1148,9 @@ def readFrom(read, log=True):
             readFrom.blacklistResponse=False
 
         logger.verbose("%d blacklisted addresses.", len(readFrom.blacklist))
+
+        logger.verbose("Compiling cow easter egg regex...")
+        readFrom.cowPattern=re.compile(config['moo_regex'], re.IGNORECASE)
         logger.verbose("Done.")
 
     # Log which thread we're on
@@ -1269,7 +1285,7 @@ def readFrom(read, log=True):
 
         # Parse the filename out of the request
         # Trim leading slashes to keep Python from thinking that the method refers to the root directory.
-        filename = os.path.join(directory, method.split(b' ')[1].lstrip(b'/'))
+        filename = os.path.join(directory, method.split(b' ')[1].lstrip(b'/').split(b'?')[0])
         dir = False
         # If the filename is a directory, join it to "index.html"
         if os.path.isdir(filename):
@@ -1363,6 +1379,42 @@ def readFrom(read, log=True):
                 file = ""
 
             # Not a teapot
+            # Check for the cow easter egg
+            if config.getboolean("enable_cows") and readFrom.cowPattern.fullmatch(method.split(b' ')[1].decode())!=None:
+                cow=cows.getCow()
+
+                # Check if we're returning 200 OK or 404 Not Found
+                status = "404 Not Found"
+                if config.getboolean("cows_ok"):
+                    status = "200 OK"
+
+                # Send the response
+                sendResponse(status,
+                             "text/html",
+                             generateErrorPage(status,
+                                               """
+                                               </p>
+                                               <pre>
+                                                 {0}
+                                               </pre>
+                                               <footer style="background-color: #DDD;
+                                                              padding: 10px 10px 2px 10px;
+                                                              margin: 0;
+                                                              width: 100%;
+                                                              bottom: 0;
+                                                              left: 0;
+                                                              position: fixed">
+                                                  ASCii cow art is from <a href="https://www.asciiart.eu/animals/cows">The ASCii Art Archive</a>. The figures are property of their original creators, who are identified in the art if they chose to include identification in their work.
+                                               </footer>
+                                               """.format(cow)),
+                             read.conn,
+                             allowEncodings=encodings)
+
+                # Log the cow
+                logger.warning("Became a cow in response to request for unfound file %s.", filename.decode())
+
+                file = ""
+            # Not a cow either
             else:
                 # Return 404.
                 sendResponse("404 Not Found",
@@ -1636,7 +1688,7 @@ writename = nameIterable("writer")
 # Main function
 def main():
     "Infinite loop for connection service"
-    
+
     # Declare globals
     global reader
     global writer

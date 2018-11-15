@@ -16,6 +16,7 @@ import gzip
 import bz2
 import re
 import lzma
+import cows
 import logging
 import logging.handlers
 from telnetlib import Telnet

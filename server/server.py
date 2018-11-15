@@ -1399,6 +1399,7 @@ def readFrom(read, log=True):
                                                               margin: 0;
                                                               width: 100%;
                                                               bottom: 0;
+                                                              left: 0;
                                                               position: fixed">
                                                   ASCii cow art is from <a href="https://www.asciiart.eu/animals/cows">The ASCii Art Archive</a>. The figures are property of their original creators, who are identified in the art if they chose to include identification in their work.
                                                </footer>

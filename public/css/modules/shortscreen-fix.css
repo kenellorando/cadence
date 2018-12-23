@@ -1,7 +1,0 @@
-/* File to group together layout changes made to fix short screen overlaps */
-
-@media (max-height: 550px) {
-  main {
-    height: auto;
-  }
-}

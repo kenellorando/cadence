@@ -385,3 +385,10 @@ a:active {
     padding-right: 12em;
   }
 }
+
+/* Fix for #aria overlapping main on short screens - Make sure main takes as much room in the flow as on the screen. */
+@media (max-height: 550px) {
+  main {
+    height: auto;
+  }
+}

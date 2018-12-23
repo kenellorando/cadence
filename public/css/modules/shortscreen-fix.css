@@ -2,13 +2,6 @@
 
 @media (max-height: 550px) {
   main {
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  #aria {
-    margin-top: 550px;
+    height: auto;
   }
 }

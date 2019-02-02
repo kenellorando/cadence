@@ -180,5 +180,13 @@ var theme = {
     "themeColor": "#221B2B",
     "themeColorRead": "#221B2B a very dark purple",
     "themeKey": "nebula"
+  },
+  "psychoPass": {
+    "cssPath": "/css/themes/psycho-pass.css",
+    "title": "<span id='c'>C</span><span id='a'>A</span><span id='d'>D</span><span id='e'>E</span><span id='n'>N</span><span id='c2'>C</span><span id='e2'>E</span>",
+    "subtitle": "! TARGET FOR ENFORCEMENT !",
+    "themeColor": "#1D2951",
+    "themeColorRead": "#1D2951 navy",
+    "themeKey": "psychoPass"
   }
 }

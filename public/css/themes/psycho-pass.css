@@ -22,13 +22,14 @@ main {
 
 #subtitle{
     color:#f2f;
+    color: darkred;
     animation: flash linear 2s infinite;
 }
 
 @keyframes flash {
-    0% { opacity: .9; } 
-    50% { opacity: .1; } 
-    100% { opacity: .9; }
+    0% { opacity: 1; } 
+    50% { opacity: .4; } 
+    100% { opacity: 1; }
 }
 
 #subtitle, #nowPlaying, #volumeLabel, #version, .dropbtn, .dropdown-content button {

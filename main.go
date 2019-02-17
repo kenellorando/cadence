@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/kenellorando/clog"
 )
 
 func main() {
@@ -11,8 +12,17 @@ func main() {
 	initLogger(c.LogLevel)
 	initDatabase(db)
 
+	// Prepare frontend for serving
+
 	r := mux.NewRouter()
-	// Serve the main page
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
-	http.ListenAndServe(":8000", r)
+
+	// Serve other specific routes next
+	r.HandleFunc("/", ServeRoot).Methods("GET")
+
+	// For everything else, serve 404
+	r.NotFoundHandler = http.HandlerFunc(Serve404)
+
+	// Start server
+	clog.Debug("main", "ListenAndServe starting...")
+	clog.Fatal("main", "ListenAndServe failed to start.", http.ListenAndServe(":8000", r))
 }

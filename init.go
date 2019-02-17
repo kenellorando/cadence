@@ -24,23 +24,26 @@ type DBConfig struct {
 // Parses environment variables for configuration
 func getConfig() (CConfig, DBConfig) {
 	// Read general configuration data
-	ws := CConfig{}
-	env.Parse(&ws)
+	c := CConfig{}
+	env.Parse(&c)
 
 	// Read database configuration data
 	db := DBConfig{}
 	env.Parse(&db)
 
-	return ws, db
+	return c, db
 }
 
 // Initializes the logger with a log level
 func initLogger(l int) {
 	// Initialize logging level
 	logLevel := clog.Init(l)
-	clog.Debug("initLogger", "Logging service initialized to level "+strconv.Itoa(logLevel)+".")
+	clog.Debug("initLogger", "Logging service initialized to level <"+strconv.Itoa(logLevel)+">")
 }
 
+// Establishes database connection using configuration
 func initDatabase(db DBConfig) {
+	clog.Debug("initDatabase", "Attempting connection to database...")
 	// ...
+	return
 }

@@ -21,17 +21,22 @@ type DBConfig struct {
 	Name string `env:"CSERVER_DB_NAME"`
 }
 
-// Parses environment variables for configuration
-func getConfig() (CConfig, DBConfig) {
+// Parses environment variables for cserver configuration
+func getCConfig() CConfig {
 	// Read general configuration data
 	c := CConfig{}
 	env.Parse(&c)
 
+	return c
+}
+
+// Parses environment variables for database configuration
+func getDBConfig() DBConfig {
 	// Read database configuration data
 	db := DBConfig{}
 	env.Parse(&db)
 
-	return c, db
+	return db
 }
 
 // Initializes the logger with a log level
@@ -46,4 +51,8 @@ func initDatabase(db DBConfig) {
 	clog.Debug("initDatabase", "Attempting connection to database...")
 	// ...
 	return
+}
+
+func connectDatabase(db DBConfig) {
+
 }

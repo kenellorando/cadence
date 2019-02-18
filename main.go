@@ -3,21 +3,42 @@ package main
 import (
 	"net/http"
 
+	env "github.com/deanishe/go-env"
 	"github.com/gorilla/mux"
 	"github.com/kenellorando/clog"
 )
 
+const (
+	defaultLogLevel = 4
+)
+
+// Init function performs prep work for some configurations
+func init() {
+	// Check the environment variable for a log level
+	logLevel := env.GetInt("CSERVER_LOGLEVEL")
+	logPointer := &logLevel
+	// If no log level is set, default to a value
+	// Else, send the value
+	if logPointer == nil {
+		clog.Init(defaultLogLevel)
+	} else {
+		clog.Init(logLevel)
+	}
+}
+
 func main() {
-	cConf := getCConfig()
-	initLogger(cConf.LogLevel)
+	logLevel := env.GetInt("CSERVER_LOGLEVEL")
+	logPoint := &logLevel
+	if logPoint == nil {
+
+	}
+
+	// Get configuration variables (all set in environment)
+	//c := getConfigs()
+
+	// Initialize logger with
 
 	// Test database connection before launching server
-	clog.Debug("Main", "Performing initial test connection to database...")
-	dbConf := getDBConfig()
-	_, err := connectDatabase(dbConf)
-	if err != nil {
-		clog.Warn("Main", "Initial database connection test failed!")
-	}
 
 	// Handle routes
 	r := mux.NewRouter()

@@ -3,53 +3,52 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"strconv"
 
-	"github.com/caarlos0/env"
+	env "github.com/deanishe/go-env"
 	"github.com/kenellorando/clog"
 )
 
+// Config - Primary configuration object holder
+type Config struct {
+	server CConfig
+	db     DBConfig
+}
+
 // CConfig - CServer configuration
 type CConfig struct {
-	LogLevel int    `env:"CSERVER_LOGLEVEL"`
-	MusicDir string `env:"CSERVER_MUSIC_DIR"`
+	MusicDir string
 }
 
 // DBConfig - Database configuration
 type DBConfig struct {
-	Host string `env:"CSERVER_DB_HOST"`
-	Port string `env:"CSERVER_DB_PORT"`
-	User string `env:"CSERVER_DB_USER"`
-	Pass string `env:"CSERVER_DB_PASS"`
-	Name string `env:"CSERVER_DB_NAME"`
+	Host string
+	Port string
+	User string
+	Pass string
+	Name string
 }
 
-// Parses environment variables for cserver configuration
-func getCConfig() CConfig {
-	// Read general configuration data
-	c := CConfig{}
-	env.Parse(&c)
+func getConfigs() Config {
+	clog.Debug("initConfigs", "Reading environment variables for configuration...")
 
-	return c
-}
+	// Full config object
+	config := Config{}
 
-// Parses environment variables for database configuration
-func getDBConfig() DBConfig {
-	// Read database configuration data
+	// Get server-related configs
+	server := CConfig{}
+	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR")
+	config.server = server
+
+	// Get database related configs
 	db := DBConfig{}
-	err := env.Parse(&db)
-	if err != nil {
-		clog.Error("getDBConfig", "Failed to parse database config data.", err)
-	}
+	db.Host = env.GetString("CSERVER_DB_HOST")
+	db.Port = env.GetString("CSERVER_DB_PORT")
+	db.User = env.GetString("CSERVER_DB_USER")
+	db.Pass = env.GetString("CSERVER_DB_PASS")
+	db.Name = env.GetString("CSERVER_DB_NAME")
+	config.db = db
 
-	return db
-}
-
-// Initializes the logger with a log level
-func initLogger(l int) {
-	// Initialize logging level
-	logLevel := clog.Init(l)
-	clog.Debug("initLogger", "Logging service set to level <"+strconv.Itoa(logLevel)+">")
+	return config
 }
 
 // Establishes database connection using configuration

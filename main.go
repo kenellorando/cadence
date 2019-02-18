@@ -8,14 +8,16 @@ import (
 )
 
 func main() {
-	// Grab configuration
-	// Start the logger and connect to the database
-	c := getCConfig()
-	initLogger(c.LogLevel)
+	cConf := getCConfig()
+	initLogger(cConf.LogLevel)
 
-	// Perform database initialization
-	db := getDBConfig()
-	initDatabase(db)
+	// Test database connection before launching server
+	clog.Debug("Main", "Performing initial test connection to database...")
+	dbConf := getDBConfig()
+	_, err := connectDatabase(dbConf)
+	if err != nil {
+		clog.Warn("Main", "Initial database connection test failed!")
+	}
 
 	// Handle routes
 	r := mux.NewRouter()

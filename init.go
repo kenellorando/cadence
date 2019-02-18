@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"strconv"
 
 	"github.com/caarlos0/env"
@@ -9,15 +11,16 @@ import (
 
 // CConfig - CServer configuration
 type CConfig struct {
-	LogLevel int `env:"CSERVER_LOGLEVEL"`
+	LogLevel int    `env:"CSERVER_LOGLEVEL"`
+	MusicDir string `env:"CSERVER_MUSIC_DIR"`
 }
 
 // DBConfig - Database configuration
 type DBConfig struct {
-	User string `env:"CSERVER_DB_USER"`
-	Pass string `env:"CSERVER_DB_PASS"`
 	Host string `env:"CSERVER_DB_HOST"`
 	Port string `env:"CSERVER_DB_PORT"`
+	User string `env:"CSERVER_DB_USER"`
+	Pass string `env:"CSERVER_DB_PASS"`
 	Name string `env:"CSERVER_DB_NAME"`
 }
 
@@ -34,7 +37,10 @@ func getCConfig() CConfig {
 func getDBConfig() DBConfig {
 	// Read database configuration data
 	db := DBConfig{}
-	env.Parse(&db)
+	err := env.Parse(&db)
+	if err != nil {
+		clog.Error("getDBConfig", "Failed to parse database config data.", err)
+	}
 
 	return db
 }
@@ -43,16 +49,19 @@ func getDBConfig() DBConfig {
 func initLogger(l int) {
 	// Initialize logging level
 	logLevel := clog.Init(l)
-	clog.Debug("initLogger", "Logging service initialized to level <"+strconv.Itoa(logLevel)+">")
+	clog.Debug("initLogger", "Logging service set to level <"+strconv.Itoa(logLevel)+">")
 }
 
 // Establishes database connection using configuration
-func initDatabase(db DBConfig) {
-	clog.Debug("initDatabase", "Attempting connection to database...")
-	// ...
-	return
-}
+func connectDatabase(dbConf DBConfig) (*sql.DB, error) {
+	clog.Debug("connectDatabase", "Attempting connection to database...")
 
-func connectDatabase(db DBConfig) {
+	// Form a connection with the database using config
+	connectInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", dbConf.Host, dbConf.Port, dbConf.User, dbConf.Pass, dbConf.Name)
+	database, err := sql.Open("postgres", connectInfo)
+	if err != nil {
+		clog.Error("connectDatabase", "Connection to the database failed!", err)
+	}
 
+	return database, err
 }

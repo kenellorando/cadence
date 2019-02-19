@@ -113,6 +113,7 @@ var theme = {
     "videoPath": "/media/iss.mp4",
     "blockMobile": true,
     "mobileTheme": "earth",
+    "callback": CodecCallback,
     "cssPath": "/css/themes/space-station.css",
     "title": "CADENCE",
     "subtitle": "A Space Odyssey",
@@ -189,6 +190,7 @@ var theme = {
     "videoPath": "/media/nebula_rotating.mp4",
     "blockMobile": true,
     "mobileTheme": "nebulaRotatingLite",
+    "callback": CodecCallback,
     "cssPath": "/css/themes/nebula-rotating.css",
     "title": "C<span>ADENC</span>E",
     "subtitle": "A Spectacular Experience",
@@ -198,6 +200,7 @@ var theme = {
   },
   "nebulaRotatingLite": {
     "videoPath": "/media/nebula_rotating_mobile.mp4",
+    "callback": CodecCallback,
     "cssPath": "/css/themes/nebula-rotating.css",
     "title": "C<span>ADENC</span>E",
     "subtitle": "A Spectacular Experience",

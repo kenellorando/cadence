@@ -377,6 +377,7 @@ def mimeTypeOf (filename):
             "f4v": "video/x-f4v",
             "flv": "video/x-flv",
             "m4v": "video/x-m4v",
+            "mkv": "video/x-matroska",
             "wmv": "video/x-ms-wmv",
             "avi": "video/x-msvideo",
         }

@@ -23,25 +23,128 @@ $(document).ready(function () {
   });
 });
 
+var callback = new CallbackInterface(null);
+
 // The main theme setter function
 function themeChanger(themeName) {
   // Returns the specific theme as a single object
-  var themeObj = theme[themeName];
+  var themeObj = Object.assign({}, theme[themeName]);
   var currentHour = new Date().getHours();
 
-  // If the theme is blocked on mobile, and we're on mobile, default to chicagoEvening
-  // Uses the same mobile check as Ken and I used back in the beginning, which is still used for pause
-  if (themeObj.blockMobile && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-      var name=themeObj.mobileTheme || 'chicagoEvening';
-      themeObj=theme[name];
-  }
+  var t=themeObj;
+
+  // Copy of callback to be called in posthooks
+  var call=Object.assign({}, callback);
+  Object.setPrototypeOf(call, callback.constructor.prototype);
+
+  do {
+      // Check if the theme wants us to load a random theme
+      if (t===true) {
+          // List of theme keys
+          var keys=Object.keys(theme)
+
+          // Remove the key for the rejected theme, plus all nightmodes
+          keys = keys.filter(function(value, index, arr) {
+              // Filter out the nightmodes first
+              if (theme[value].hasNightMode) {
+                  // This theme either is a nightmode or has one.
+                  // Check if it ends in "Night"
+                  if (value.endsWith("Night")) {
+                      // This is probably a nightmode.
+                      // But bugs will happen if a daymode theme is named, for example, tokyoNight.
+                      // Therefore, make sure a theme exists which has the same name without the Night
+                      if (arr.includes(value.substring(0, value.length-5))) {
+                          // This theme is a nightmode. Scratch it.
+                          return false;
+                      }
+                  }
+              }
+
+              return value!=themeObj.themeKey;
+          });
+
+          // Choose a random themeKey...
+          var index=Math.floor(Math.random()*keys.length)
+
+          // And set that theme as our theme
+          t=theme[keys[index]]
+      }
+
+      // If the theme is blocked on mobile, and we're on mobile, default to chicagoEvening
+      // Uses the same mobile check as Ken and I used back in the beginning, which is still used for pause
+      if (t.blockMobile && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+          var name=t.mobileTheme || 'chicagoEvening';
+          themeObj=theme[name];
+      }
+      else {
+          themeObj=t;
+      }
+
+      // Setup the theme's callback
+      themeObj.callback = themeObj.callback || CallbackInterface;
+      try {
+        themeObj.callback = new themeObj.callback(themeObj);
+      }
+      catch(e) {
+          themeObj.callback = new themeObj.callback.constructor(themeObj)
+      }
+  } while (t=themeObj.callback.preLoad(callback.theme));
+
+  callback.preUnload(themeObj);
 
   // If a nightmode exists
   if (themeObj.hasNightMode == true) {
     // If it is nighttime
     if (currentHour < 8 || currentHour > 22) {
+      themeObj.callback.nightmodeSwitch();
       themeNameNight = themeName + "Night";
-      var themeObjNight = theme[themeNameNight];
+      var themeObjNight;
+      t = Object.assign({}, theme[themeNameNight]);
+      themeObj.callback.preUnload(t);
+      themeObj.callback.postUnload();
+      do {
+          // Check if the theme wants us to load a random theme
+          if (t===true) {
+              // List of theme keys
+              var keys=Object.keys(theme)
+
+              // Remove the key for the rejected theme, plus all nightmodes
+              keys = keys.filter(function(value, index, arr) {
+                  // Filter out the nightmodes first
+                  if (theme[value].hasNightMode) {
+                      // This theme either is a nightmode or has one.
+                      // Check if it ends in "Night"
+                      if (value.endsWith("Night")) {
+                          // This is probably a nightmode.
+                          // But bugs will happen if a daymode theme is named, for example, tokyoNight.
+                          // Therefore, make sure a theme exists which has the same name without the Night
+                          if (arr.includes(value.substring(0, value.length-5))) {
+                              // This theme is a nightmode. Scratch it.
+                              return false;
+                          }
+                      }
+                  }
+
+                  return value!=themeObj.themeKey;
+              });
+
+              // Choose a random themeKey...
+              var index=Math.floor(Math.random()*keys.length)
+
+              // And set that theme as our theme
+              t=theme[keys[index]]
+          }
+
+          // Setup the theme
+          themeObjNight = t;
+          themeObjNight.callback = themeObjNight.callback || CallbackInterface;
+          try {
+            themeObjNight.callback = new themeObjNight.callback(themeObjNight);
+          }
+          catch(e) {
+              themeObjNight.callback = new themeObjNight.callback.constructor(themeObjNight)
+          }
+      } while (t=themeObjNight.callback.preLoad(callback.theme));
       document.getElementById("selected-css").href = themeObjNight.cssPath;
       document.getElementById("title").innerHTML = themeObjNight.title;
       document.getElementById("subtitle").innerHTML = themeObjNight.subtitle;
@@ -64,7 +167,19 @@ function themeChanger(themeName) {
           target.setDate(target.getDate()+1);
       }
       var diff=target-time; // Milliseconds
-      setTimeout(defaultTheme, diff); // Schedule a theme default for one second after 9 AM
+      setTimeout(function() {
+          themeObjNight.callback.daymodeSwitch();
+          defaultTheme();
+      }, diff); // Schedule a theme default for one second after 9 AM
+
+      // Call the post hooks as soon as the thread becomes idle
+      setTimeout(function() {
+          call.postUnload();
+          themeObjNight.callback.postLoad();
+      }, 0)
+
+      callback=themeObjNight.callback;
+      return
     }
     // Else, set daytime and schedule a theme reset shortly after nighttime
     else {
@@ -98,6 +213,14 @@ function themeChanger(themeName) {
       setVideo(themeObj);
     }
   }
+
+  // Call the post hooks as soon as the thread becomes idle
+  setTimeout(function() {
+      call.postUnload();
+      themeObj.callback.postLoad();
+  }, 0);
+
+  callback=themeObj.callback;
 }
 
 

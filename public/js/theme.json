@@ -159,7 +159,7 @@ var theme = {
     "themeColor": "#000000",
     "themeColorRead": "#000000 black",
     "themeKey": "cabin"
-  }, 
+  },
   "yourName": {
     "videoPath": "/media/comet_tiamat.mp4",
     "cssPath": "/css/themes/your-name.css",
@@ -184,6 +184,26 @@ var theme = {
     "themeColor": "#221B2B",
     "themeColorRead": "#221B2B a very dark purple",
     "themeKey": "nebula"
+  },
+  "nebulaRotating": {
+    "videoPath": "/media/nebula_rotating.mp4",
+    "blockMobile": true,
+    "mobileTheme": "nebulaRotatingLite",
+    "cssPath": "/css/themes/nebula-rotating.css",
+    "title": "C<span>ADENC</span>E",
+    "subtitle": "A Spectacular Experience",
+    "themeColor": "#221B2B",
+    "themeColorRead": "#221B2B a very dark purple",
+    "themeKey": "nebulaRotating"
+  },
+  "nebulaRotatingLite": {
+    "videoPath": "/media/nebula_rotating_mobile.mp4",
+    "cssPath": "/css/themes/nebula-rotating.css",
+    "title": "C<span>ADENC</span>E",
+    "subtitle": "A Spectacular Experience",
+    "themeColor": "#221B2B",
+    "themeColorRead": "#221B2B a very dark purple",
+    "themeKey": "nebulaRotating"
   },
   "psychoPass": {
     "cssPath": "/css/themes/psycho-pass.css",

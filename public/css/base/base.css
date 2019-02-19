@@ -210,25 +210,9 @@ footer {
 
 
 /* On the right side *************/
-
 /*
 .content-right {}
 */
-
-/* Status checker */
-
-#statusTable {
-  font-family: 'Roboto', sans-serif;
-  /*display: none;*/
-  font-size: 1.1em;
-  background-color: rgba(0, 0, 0, .2);
-}
-
-.check {
-  color: mediumpurple;
-  text-align: right;
-}
-
 
 /* Changelog general*/
 
@@ -346,12 +330,16 @@ a:active {
     column-gap: 4em;
     column-rule-style: solid;
   }
-  /* Prevents breaking across the column */
   .content-left {
-    display: inline-block;
+    /* Prevents breaking across the column */
+    display: block;
   }
   .content-left p {
     padding-right: 2em;
+  }
+  .content-right {
+    /* Prevents breaking across the column */
+    display: inline-block;
   }
   #content {
     padding: 2em 2em 2em 2em;

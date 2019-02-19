@@ -10,6 +10,10 @@ Special functions:
       If this is not set, "chicagoEvening" will be used instead.
       The theme this is set to will be used regardless of setting blockMobile.
       That is, it it your responsibility to make sure the mobile theme supports mobile.
+    Note that if this is set on a nightmode theme, only the property on the daytime theme will be respected.
+  Callbacks
+    set "callback" to the name of a callback class defined in callback/callbacks.js
+      (See callback/prototype.js for specifications regarding the callback class interface)
 */
 
 var theme = {
@@ -109,6 +113,7 @@ var theme = {
     "videoPath": "/media/iss.mp4",
     "blockMobile": true,
     "mobileTheme": "earth",
+    "callback": CodecCallback,
     "cssPath": "/css/themes/space-station.css",
     "title": "CADENCE",
     "subtitle": "A Space Odyssey",
@@ -155,7 +160,7 @@ var theme = {
     "themeColor": "#000000",
     "themeColorRead": "#000000 black",
     "themeKey": "cabin"
-  }, 
+  },
   "yourName": {
     "videoPath": "/media/comet_tiamat.mp4",
     "cssPath": "/css/themes/your-name.css",
@@ -180,5 +185,35 @@ var theme = {
     "themeColor": "#221B2B",
     "themeColorRead": "#221B2B a very dark purple",
     "themeKey": "nebula"
+  },
+  "nebulaRotating": {
+    "videoPath": "/media/nebula_rotating.mp4",
+    "blockMobile": true,
+    "mobileTheme": "nebulaRotatingLite",
+    "callback": CodecCallback,
+    "cssPath": "/css/themes/nebula-rotating.css",
+    "title": "C<span>ADENC</span>E",
+    "subtitle": "A Spectacular Experience",
+    "themeColor": "#221B2B",
+    "themeColorRead": "#221B2B a very dark purple",
+    "themeKey": "nebulaRotating"
+  },
+  "nebulaRotatingLite": {
+    "videoPath": "/media/nebula_rotating_mobile.mp4",
+    "callback": CodecCallback,
+    "cssPath": "/css/themes/nebula-rotating.css",
+    "title": "C<span>ADENC</span>E",
+    "subtitle": "A Spectacular Experience",
+    "themeColor": "#221B2B",
+    "themeColorRead": "#221B2B a very dark purple",
+    "themeKey": "nebulaRotating"
+  },
+  "psychoPass": {
+    "cssPath": "/css/themes/psycho-pass.css",
+    "title": "<span id='c'>C</span><span id='a'>A</span><span id='d'>D</span><span id='e'>E</span><span id='n'>N</span><span id='c2'>C</span><span id='e2'>E</span>",
+    "subtitle": "! A TARGET FOR ENFORCEMENT !",
+    "themeColor": "#1D2951",
+    "themeColorRead": "#1D2951 navy",
+    "themeKey": "psychoPass"
   }
 }

@@ -16,6 +16,7 @@ type Config struct {
 
 // CConfig - CServer configuration
 type CConfig struct {
+	Port     string
 	MusicDir string
 }
 
@@ -28,14 +29,14 @@ type DBConfig struct {
 	Name string
 }
 
+// Grabs all environment variable configurations
 func getConfigs() Config {
-	clog.Debug("initConfigs", "Reading environment variables for configuration...")
-
 	// Full config object
 	config := Config{}
 
 	// Get server-related configs
 	server := CConfig{}
+	server.Port = env.GetString("CSERVER_WEB_PORT")
 	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR")
 	config.server = server
 
@@ -52,14 +53,16 @@ func getConfigs() Config {
 }
 
 // Establishes database connection using configuration
-func connectDatabase(dbConf DBConfig) (*sql.DB, error) {
+func connectDatabase(db DBConfig) (*sql.DB, error) {
 	clog.Debug("connectDatabase", "Attempting connection to database...")
 
 	// Form a connection with the database using config
-	connectInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", dbConf.Host, dbConf.Port, dbConf.User, dbConf.Pass, dbConf.Name)
+	connectInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", db.Host, db.Port, db.User, db.Pass, db.Name)
 	database, err := sql.Open("postgres", connectInfo)
 	if err != nil {
 		clog.Error("connectDatabase", "Connection to the database failed!", err)
+	} else {
+		clog.Info("connectDatabase", "Connected to the database.")
 	}
 
 	return database, err

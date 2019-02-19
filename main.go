@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	env "github.com/deanishe/go-env"
@@ -8,51 +9,46 @@ import (
 	"github.com/kenellorando/clog"
 )
 
-const (
-	defaultLogLevel = 4
-)
-
-// Init function performs prep work for some configurations
+// Init function performs prep work with configurations that
+// need to be known *before* starting main
 func init() {
-	// Check the environment variable for a log level
+	// Init defaults are declared here
+	// Although all configurations are set into environment variables
+	// We camn declare some defaults here for server initialization purposes
+	const defaultLogLevel = 4
+
+	// Todo:
+	// make a reusable function to check if a value in the environment variable is blank
+
+	// Set logging to log level
 	logLevel := env.GetInt("CSERVER_LOGLEVEL")
 	logPointer := &logLevel
 	// If no log level is set, default to a value
 	// Else, send the value
 	if logPointer == nil {
-		clog.Init(defaultLogLevel)
+		clog.Init(4)
+		clog.Info("init", fmt.Sprintf("No default logging level was found. Using default level 4"))
 	} else {
 		clog.Init(logLevel)
+		clog.Info("init", fmt.Sprintf("Setting logging service verbosity to <%v>", logLevel))
 	}
 }
 
 func main() {
-	logLevel := env.GetInt("CSERVER_LOGLEVEL")
-	logPoint := &logLevel
-	if logPoint == nil {
-
-	}
-
-	// Get configuration variables (all set in environment)
-	//c := getConfigs()
-
-	// Initialize logger with
-
-	// Test database connection before launching server
+	// Get all other configurations
+	c := getConfigs()
 
 	// Handle routes
 	r := mux.NewRouter()
 	// List API routes first
 	r.HandleFunc("/api/aria1/search", ARIA1Search).Methods("POST")
 	r.HandleFunc("/api/aria1/request", ARIA1Request).Methods("POST")
-
 	// Serve other specific routes next
 	r.HandleFunc("/", ServeRoot).Methods("GET")
-
 	// For everything else, serve 404
 	r.NotFoundHandler = http.HandlerFunc(Serve404)
 
 	// Start server
-	clog.Debug("main", "ListenAndServe starting...")
-	clog.Fatal("main", "ListenAndServe failed to start.", http.ListenAndServe(":8000", r))
+	clog.Info("main", fmt.Sprintf("Starting server on port %s ...", c.server.Port))
+	clog.Fatal("main", "Server failed to start!", http.ListenAndServe(c.server.Port, r))
 }

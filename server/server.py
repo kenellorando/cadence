@@ -167,7 +167,7 @@ logger = logging.getLogger(config['logger'])
 logger.setLevel(level)
 
 port = int(sys.argv[1])
-directory = os.path.realpath(sys.argv[2]).encode()
+directory = os.path.realpath(sys.argv[2])
 
 caching=0
 
@@ -227,11 +227,11 @@ def waitingRequest(s, blocksize=4096):
 def mimeTypeOf (filename):
     "Attempts to find the appropriate MIME type for this file by extension (MIME types taken from https://www.freeformatter.com/mime-types-list.html)"
 
-    parts = filename.decode().split(".")
+    parts = filename.split(".")
     if len(parts)<2:
         # The file has no extension.
         # Default to application/octet-stream
-        logger.debug("Assumed file %s was type %s (no extension).", filename.decode(), "application/octet-stream")
+        logger.debug("Assumed file %s was type %s (no extension).", filename, "application/octet-stream")
         return "application/octet-stream"
 
     # The extension is whatever is after the last '.' in the filename
@@ -386,11 +386,11 @@ def mimeTypeOf (filename):
     if not extension in mimeTypeOf.dictionary.keys():
         # We don't recognize this filetype
         # Default to application/octet-stream
-        logger.debug("Assumed file %s was type %s (unknown extension).", filename.decode(), "application/octet-stream")
+        logger.debug("Assumed file %s was type %s (unknown extension).", filename, "application/octet-stream")
         return "application/octet-stream"
 
     # Recognized filetype. Return it.
-    logger.debug("Guessed file %s was type %s.", filename.decode(), mimeTypeOf.dictionary[extension])
+    logger.debug("Guessed file %s was type %s.", filename, mimeTypeOf.dictionary[extension])
     return mimeTypeOf.dictionary[extension]
 
 def requestBody(request):
@@ -1097,7 +1097,7 @@ class Connection:
         return self.conn.fileno()
 
 # Pre-create mimeTypeOf dictionary, basic headers, and error page data
-mimeTypeOf(b"MimeType.precreate.file")
+mimeTypeOf("MimeType.precreate.file")
 generateErrorPage("PRECREATION", "YOU SHOULD NEVER SEE THIS")
 basicHeaders("599 Server Pre-create", "MimeType/precreate.file")
 
@@ -1245,13 +1245,15 @@ def readFrom(read, log=True):
         # If it's GET, we return the file specified via commandline
         # If it's HEAD, we return the headers we'd return for that file
         # If it's something else, return 405 Method Not Allowed
-        method = parse.unquote_to_bytes(lines[0])
-        logger.debug("Method line %s", method.decode())
+        targ = lines[0].split(b' ')[1].decode()
+        targ = parse.unquote(targ)
+        method = lines[0]
+        logger.debug("Method line %s, target %s.", method.decode(), targ)
         if method.startswith(b"POST") and config.getboolean('enable_aria'):
             logger.info("Received POST request to %s.", method.split(b' ')[1].decode())
-            if method.split(b' ')[1]==b"/search":
+            if targ=="/search":
                 createThread(ariaSearch, next(readFrom.searcherName), (requestBody(request), read, encodings)).start()
-            elif method.split(b' ')[1]==b"/request":
+            elif targ=="/request":
                 createThread(ariaRequest, next(readFrom.requesterName), (requestBody(request), read, encodings)).start()
             else:
                 # No other paths can receive a POST.
@@ -1286,12 +1288,12 @@ def readFrom(read, log=True):
 
         # Parse the filename out of the request
         # Trim leading slashes to keep Python from thinking that the method refers to the root directory.
-        filename = os.path.join(directory, method.split(b' ')[1].lstrip(b'/').split(b'?')[0])
+        filename = os.path.join(directory, targ.lstrip('/').split('?')[0])
         dir = False
         # If the filename is a directory, join it to "index.html"
         if os.path.isdir(filename):
             dir = True
-            filename = os.path.join(filename, b"index.html")
+            filename = os.path.join(filename, "index.html")
 
         # Normalize the file path
         filename = os.path.realpath(filename)
@@ -1299,24 +1301,23 @@ def readFrom(read, log=True):
         # Check if the relative path between the file and the service directory includes '..'
         # In other words, if one has to go 'up' in the directory structure to get to the target
         # If this is the case, return an error forbidding access to that file
-        if b".." in os.path.relpath(filename, directory):
+        if ".." in os.path.relpath(filename, directory):
             # Detected attempt to access file outside allowed directory.
             # ACCESS DENIED
             sendResponse("403 Forbidden",
                          "text/html",
                          generateErrorPage("403 Forbidden",
-                                           "You are not permitted to access \""+method.decode().split(' ')[1]+"\" on this server."),
+                                           "You are not permitted to access \""+targ+"\" on this server."),
                          read.conn,
                          ["Warning: 299 Cadence Access to files above the root directory of the served path is forbidden. This incident has been logged."],
                          encodings)
 
             # Log an error, pertaining to the fact that an attempt to access forbidden data has been thwarted.
-            logger.error("Client at %s attempted to access forbidden file %s, but was denied access.", read.IP, filename.decode())
+            logger.error("Client at %s attempted to access forbidden file %s, but was denied access.", read.IP, filename)
 
             return
 
         # Perform redirect of directories that don't end in a separator or slash
-        targ = method.split(b' ')[1].decode()
         if dir and not (targ.endswith(os.path.sep) or targ.endswith('/')):
             sendResponse("301 Moved Permanently",
                          "text/html",
@@ -1333,7 +1334,7 @@ def readFrom(read, log=True):
         mimetype = mimeTypeOf(filename)
 
         # Read the file into memory
-        logger.info("Attempting file read on file %s.", filename.decode())
+        logger.info("Attempting file read on file %s.", filename)
         file = ""
         try:
             with open(filename, 'rb', 0) as f:
@@ -1341,7 +1342,7 @@ def readFrom(read, log=True):
         except FileNotFoundError:
             # The file wasn't found.
             # Check for the 418 easter egg
-            if method.split(b' ')[1].endswith(b"coffee") and config.getboolean('enable_418'):
+            if targ.endswith("coffee") and config.getboolean('enable_418'):
                 # Someone must be trying to get some coffee!
                 # Too bad for them.
                 # Image is, unsurprisingly, a teapot I rendered
@@ -1375,13 +1376,13 @@ def readFrom(read, log=True):
                                  allowEncodings=encodings)
 
                 # Log the teapot
-                logger.warning("Became a teapot in response to request for unfound file %s.", filename.decode())
+                logger.warning("Became a teapot in response to request for unfound file %s.", filename)
 
                 file = ""
 
             # Not a teapot
             # Check for the cow easter egg
-            if config.getboolean("enable_cows") and readFrom.cowPattern.fullmatch(method.split(b' ')[1].decode())!=None:
+            if config.getboolean("enable_cows") and readFrom.cowPattern.fullmatch(targ)!=None:
                 cow=cows.getCow()
 
                 # Check if we're returning 200 OK or 404 Not Found
@@ -1412,7 +1413,7 @@ def readFrom(read, log=True):
                              allowEncodings=encodings)
 
                 # Log the cow
-                logger.warning("Became a cow in response to request for unfound file %s.", filename.decode())
+                logger.warning("Became a cow in response to request for unfound file %s.", filename)
 
                 file = ""
             # Not a cow either
@@ -1421,13 +1422,13 @@ def readFrom(read, log=True):
                 sendResponse("404 Not Found",
                              "text/html",
                              generateErrorPage("404 Not Found",
-                                               "The requested file \""+method.decode().split(' ')[1]+
+                                               "The requested file \""+targ+
                                                "\" was not found on this server."),
                              read.conn,
                              allowEncodings=encodings)
 
                 # Print note on error
-                logger.warning("Could not find file %s.", filename.decode())
+                logger.warning("Could not find file %s.", filename)
                 file = ""
         except:
             # Some unknown error occurred. Return 500.
@@ -1447,7 +1448,7 @@ def readFrom(read, log=True):
                          allowEncodings=encodings)
 
             # Print note on error
-            logger.exception("Could not open file %s.", filename.decode(), exc_info=True)
+            logger.exception("Could not open file %s.", filename, exc_info=True)
             file = ""
 
         if file=="":

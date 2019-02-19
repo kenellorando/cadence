@@ -170,6 +170,7 @@ function themeChanger(themeName) {
       setTimeout(function() {
           themeObjNight.callback.daymodeSwitch();
           defaultTheme();
+      }, diff);
 
       // Call the post hooks as soon as the thread becomes idle
       setTimeout(function() {

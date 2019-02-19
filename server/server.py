@@ -1674,6 +1674,16 @@ def splitInto(arr, n):
     # Use some neat math and our divisions to split the array in a generator statement
     return (arr[i*quotient+min(i, remainder) : (i+1)*quotient+min(i+1, remainder)] for i in range(n))
 
+def unregisterSafely(s):
+    "Unregisters s from selection, absorbing and logging any exceptions"
+
+    try:
+        selector.unregister(s)
+    except KeyError:
+        logger.exception("Double unregister! Already unregistered {!r}.".format(s), exc_info=True)
+    except:
+        logger.exception("Unknown safe unregister failure for {!r}.".format(s), exc_info=True)
+
 # Selector for open connections
 selector = selectors.DefaultSelector()
 
@@ -1728,13 +1738,13 @@ def main():
             # Read from the readable sockets
             logger.verbose("Selected %d readable sockets.", len(readable))
             for read in readable:
-                selector.unregister(read)
+                unregisterSafely(read)
                 readFrom(read)
 
             # Now, handle the writeable sockets
             logger.verbose("Selected %d writeable sockets.", len(writeable))
             for write in writeable:
-                selector.unregister(write)
+                unregisterSafely(write)
                 writeTo(write)
 
         # We're performing operations on multiple threads
@@ -1750,7 +1760,7 @@ def main():
             # Make sure we don't double process sockets when we go on to selection
             # The only thing we need is to remove the sockets from the selector list.
             # We do that before waiting for any thread joins.
-            list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
+            list(map(unregisterSafely, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
 
             # Now, handle the writeable sockets in a write thread
             logger.verbose("Selected %d writeable sockets.", len(writeable))
@@ -1794,7 +1804,7 @@ def main():
             # Make sure we don't double process sockets when we go on to selection
             # The only thing we need is to remove the sockets from the selector list.
             # We do that before waiting for any thread joins.
-            list(map(selector.unregister, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
+            list(map(unregisterSafely, readable+writeable)) # Faster than a for loop, but arguably a bit hacky
 
             # Create a list of threads to run writes on
             if len(writeable)>0:

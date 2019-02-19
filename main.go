@@ -35,8 +35,10 @@ type DBConfig struct {
 	Name string
 }
 
-// Init function performs prep work with configurations that
-// need to be known *before* starting main
+// Init function grabs configuration values for the server
+// All configs are set in environment variables
+// Default values for missing environment variables are set here.
+// Init also initalizes other services with relevant values
 func init() {
 	// Get server-related configs
 	server := CConfig{}
@@ -47,14 +49,25 @@ func init() {
 
 	// Get database related configs
 	db := DBConfig{}
-	db.Host = env.GetString("CSERVER_DB_HOST", "Default_FakeDBHost")
-	db.Port = env.GetString("CSERVER_DB_PORT", "Default_FakeDBPort")
+	db.Host = env.GetString("CSERVER_DB_HOST", "localhost")
+	db.Port = env.GetString("CSERVER_DB_PORT", ":5432")
 	db.User = env.GetString("CSERVER_DB_USER", "Default_FakeDBUser")
 	db.Pass = env.GetString("CSERVER_DB_PASS", "Default_FakeDBPass")
 	db.Name = env.GetString("CSERVER_DB_NAME", "Default_FakeDBName")
 	c.db = db
 
-	clog.Info("init", "Server initialized.")
+	// Initialize logging
+	clog.Init(c.server.LogLevel)
+	clog.Info("init", fmt.Sprintf("Logging service initialized to level <%v>", c.server.LogLevel))
+
+	// Test a connection to the database
+	clog.Info("init", fmt.Sprintf("Testing a connection to database <%s%s>", c.db.Host, c.db.Port))
+	_, err := connectDatabase(c.db)
+	if err != nil {
+		clog.Warn("init", fmt.Sprintf("Initial test connection to the database failed! Future server requests may fail."))
+	} else {
+		clog.Info("init", "Initial test connection to database succeeded.")
+	}
 }
 
 func main() {
@@ -69,13 +82,13 @@ func main() {
 	r.NotFoundHandler = http.HandlerFunc(Serve404)
 
 	// Start server
-	clog.Info("main", fmt.Sprintf("Starting server on port %s ...", c.server.Port))
+	clog.Info("main", fmt.Sprintf("Starting server on port `%s`.", c.server.Port))
 	clog.Fatal("main", "Server failed to start!", http.ListenAndServe(c.server.Port, r))
 }
 
 // Establishes database connection using configuration
 func connectDatabase(db DBConfig) (*sql.DB, error) {
-	clog.Debug("connectDatabase", "Attempting connection to database...")
+	clog.Debug("connectDatabase", "Trying connection to database...")
 
 	// Form a connection with the database using config
 	connectInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", db.Host, db.Port, db.User, db.Pass, db.Name)

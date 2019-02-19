@@ -15,7 +15,13 @@
   <meta name="msapplication-navbutton-color" content="#CCCCCC" id="ie-color">
 
   <title>Cadence Radio ♥</title>
+  <!-- Favicon for default web browsers -->
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+  <!-- Icons and titles for iOS save-page homescreen icons and loading splashes -->
+  <link rel="apple-touch-startup-image" href="/media/misaka_full.png">
+  <link rel="apple-touch-icon" href="/media/misaka_167x167.png">
+  <meta name="apple-mobile-web-app-title" content="Cadence Radio">
 
   <!-- Heading: Rock Salt; Subtitle: Roboto 300i; ARIA Messages: VT232; All else: PT Sans -->
   <!-- CSS preloading technique as described at https://stackoverflow.com/a/40314216 -->
@@ -23,7 +29,7 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet" class="delayedLoad" media="none">
   <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" class="delayedLoad" media="none">
   <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet" class="delayedLoad" media="none">
-  
+
   <noscript id="scriptless-fonts">
     <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
@@ -41,18 +47,24 @@
   <!-- Conditionally use special behavior for IE9 (only supported IE with buggy defer) -->
   <!--[if IE]>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/callback/prototype.js"></script>
+    <script type="text/javascript" src="/js/callback/callbacks.js"></script>
     <script type="text/javascript" src="/js/theme.json"></script>
     <script src="/js/aria.js" async defer></script>
     <script src="/js/theme-changer.js" async defer></script>
     <script src="/js/radio-page.js" async defer></script>
     <script src="/js/handlers.js" async defer></script>
   <![endif]-->
-  
+
   <!-- IE later than 10 and other browsers don't understand conditional comments. -->
   <!-- These browsers guarantee the execution order of deferred scripts, so all the scripts can get defers -->
   <!-- [if !IE]> -->
     <!-- jQuery Google CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" defer></script>
+    <!-- Theme callback prototype -->
+    <script type="text/javascript" src="/js/callback/prototype.js" defer></script>
+    <!-- Theme callbacks -->
+    <script type="text/javascript" src="/js/callback/callbacks.js" defer></script>
     <!-- Theme data JSON -->
     <script type="text/javascript" src="/js/theme.json" defer></script>
     <!-- ARIA Front-end -->
@@ -74,7 +86,7 @@
 
     <div id="player">
       <!-- Connection to source -->
-      <audio id="stream" src="http://stream.cadenceradio.com:8000/cadence1"></audio>
+      <audio id="stream" src="http://stream.cadenceradio.com:8000/cadence1?type=.mp3" type="audio/mp3"></audio>
 
       <!-- Display title/artist, may add more later -->
       <div id="nowPlaying">
@@ -99,7 +111,7 @@
 
       <div id="version">
         <p style="margin:0">Cadence/ARIA Development Build</p>
-        <p style="margin:0 0 30px 0;">Ver. 3.0.2</p>
+        <p style="margin:0 0 30px 0;">Ver. 3.1.0</p>
       </div>
 
       <!-- Theme selector -->
@@ -113,18 +125,20 @@
           <button type="button" class="themeChoice" id="spaceStation">Space Station</button>
           <button type="button" class="themeChoice" id="legacy">Legacy</button>
           <button type="button" class="themeChoice" id="nebulaRotating">Nebula</button>
+          <button type="button" class="themeChoice" id="psychoPass">Psycho-Pass</button>
+
           <!--
           <button type="button" class="themeChoice" id="sanFrancisco">San Francisco</button>
           <button type="button" class="themeChoice" id="minimalist">Minimalist</button>
           <button type="button" class="themeChoice" id="minimalistDark">Minimalist Dark</button>
           <button type="button" class="themeChoice" id="hawaiianSunset">Hawaiian Sunset</button>
+          <button type="button" class="themeChoice" id="lightMage">Light Mage</button>
           <button type="button" class="themeChoice" id="electromaster">Electromaster</button>
           <button type="button" class="themeChoice" id="tokyoNight">Tokyo Night</button>
           <button type="button" class="themeChoice" id="mayberry">Mayberry</button>
           <button type="button" class="themeChoice" id="starGuardian">Star Guardian</button>
           <button type="button" class="themeChoice" id="nebula">Nebula</button>
           <button type="button" class="themeChoice" id="cabin">Cabin</button>
-          <button type="button" class="themeChoice" id="lightMage">Light Mage</button>
           -->
         </div>
       </div>
@@ -151,44 +165,30 @@
     <div class="content-left">
       <section>
         <h2>About Cadence:</h2>
-        <p>Cadence is an online radio whose creation was inspired by the anime-themed <a href="http://r-a-d.io/">R/a/dio</a>. Originally started as an <a href="/original/">experiment</a> in February 2017, the project is my first endeavour to practice a full range of IT-skills.</p>
+        <p>Cadence is an anime-inspired online radio. Originally started as an <a href="/original/">experiment</a> in February 2017, the project is a result of my first endeavour to practice a full range of IT-skills in web server programming, front-end design, Linux administration, databases, networking, and cybersecurity.</p>
 
-        <p>Cadence is served through a Python webserver interacting with a Postgres music database, both configured around a Liquidsoap/Icecast stream server. There is no frontend framework anywhere; everything you see was created using purely original code.</p>
+        <p>Cadence is essentially a web application which interacts with an <i>Icecast</i> stream server. Cadence further provides users with the ability to search through a music database as well as make requests.</p>
 
-        <p>The server typically plays all the genres of music I like, a mix of classic rock, synthpop, and metal. I occasionally override the server and play a certain genre, artist, or the same song on an endless loop.</p>
+        <p>The music library is diverse, with songs inclusive of almost every genre. I occasionally override the server and play a certain genre, artist, or the same song on an endless loop.</p>
 
-        <p>If you're interested in contributing to this project's development, everything is available on GitHub: <a href="https://github.com/kenellorando/cadence">source</a>/<a href="https://github.com/kenellorando/cadence/issues">issues</a>.
-      </section>
-      <section>
-        <h2>Legal Disclaimer</h2>
-          <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
+        <p>Github: <a href="https://github.com/kenellorando/cadence">Code</a>/<a href="https://github.com/kenellorando/cadence/issues">Issues</a>. Diagram: <a href="https://i.imgur.com/NdyxzFH.png">Application Architecture</a></p>
+
+        <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
       </section>
     </div>
 
     <div class="content-right">
       <section>
         <h2>Announcements</h2>
-        <h3 class="announcement">9/30: Music Update</h3>
-        <p>Issues with song requests have been resolved. The original music library has also been restored with some minor changes, including the following new additions:</p>
-        <ul>
-          <li>America - Ventura Highway</li>
-          <li>Astro Bunny - 被你遺忘的森林 (Forgotten Forest)</li>
-          <li>boy pablo - Sick Feeling</li>
-          <li>CHVRCHES - Graffiti, Get Out, My Enemy, Out Of My Head</li>
-          <li>Coheed and Cambria - The Dark Sentencer</li>
-          <li>Disturbed - Are You Ready</li>
-          <li>Kanye West - Runaway, Yikes</li>
-          <li>No Party For Cao Dong - 山海  (Wayfarer)</li>
-          <li>Nothing's Carved In Stone - Out of Control (Live at QUATTRO)</li>
-          <li>Taylor Swift - ...Ready For It?</li>
-          <li>The Who - Eminence Front</li>
-        </ul>
+        <h3 class="announcement">02/01/2019: New Theme - Psycho Pass</h3>
+        <p>This is the first major theme update in a long time. Psycho-Pass was one of the first themes I wanted to do but just never got around to. In comparison to Cyberpunk Bartender, The Psycho-Pass theme is a truer, darker, more dystopian cyberpunk theme. It's heavier in detailing than most themes I've done before. I'm extremely pleased with the way it turned out.</p>
+        <p>As a special event for the new theme, I'll be overriding the server to play from the Psycho-Pass OST. Songs from Cadence's regular programming will still be available for request through ARIA.</p>
 
-        <h3 class="announcement">9/26: Cadence 3.0.0</h3>
-        <p>Today, I am pleased to announce the release of Cadence 3.0.0. This historical landmark in the development history of Cadence marks the successful integration of the new Python webserver, as well as the retirement of our first 2.0 Node.js server. You may notice improvements in audio access speed and reduced proneness to crashing.</p>
-        
-        <p>Many thanks to the contributions of Ryan Hodin (za419), architect of these new back-end features and stability improvements. Many thanks to him for his dedication, and all our newcoming friends and developers who work towards a more rhythmic experience.</p>
+        <h3 class="announcement">12/26: iOS/MacOS Stream Issue</h3>
+        <p>A known <a href="https://github.com/kenellorando/cadence/issues/148">issue</a> is preventing the Cadence stream from playing across iOS devices, as well as the Safari browser on MacOS. If I still had the old issue tagging system, this issue would be "IMPORTANT".</p>
+        <p>At the current time, I have no workaround for iOS users. This issue seems to affect all iOS browsers. If you are using a Mac, the issue seems limited to Safari only, and you can still access the stream on Chrome. I will be working on a permanent fix in the meantime.</p>
       </section>
+
       <section id="changelog">
         <h2>Changelog:</h2>
         <ul>

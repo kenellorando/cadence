@@ -53,6 +53,7 @@ body {
 
 main {
   transition: transform 1s;
+  height: 100vh;
 }
 
 section {
@@ -199,8 +200,9 @@ footer {
 
 /* On the left side **************/
 
-.content-left {
-}
+/*
+.content-left {}
+*/
 
 .announcement {
   line-height: 1.3em;
@@ -208,23 +210,9 @@ footer {
 
 
 /* On the right side *************/
-
+/*
 .content-right {}
-
-
-/* Status checker */
-
-#statusTable {
-  font-family: 'Roboto', sans-serif;
-  /*display: none;*/
-  font-size: 1.1em;
-  background-color: rgba(0, 0, 0, .2);
-}
-
-.check {
-  color: mediumpurple;
-  text-align: right;
-}
+*/
 
 
 /* Changelog general*/
@@ -343,12 +331,16 @@ a:active {
     column-gap: 4em;
     column-rule-style: solid;
   }
-  .content-right {
+  .content-left {
     /* Prevents breaking across the column */
-    display: inline-block;
+    display: block;
   }
   .content-left p {
     padding-right: 2em;
+  }
+  .content-right {
+    /* Prevents breaking across the column */
+    display: inline-block;
   }
   #content {
     padding: 2em 2em 2em 2em;
@@ -363,7 +355,6 @@ a:active {
 
 
 /* Vertical */
-
 @media (min-height: 43em) {
   html {
     font-size: 1.1em;
@@ -375,12 +366,18 @@ a:active {
   }
 }
 
-
 /* Tallest and widest screens */
 
 @media (min-height: 43em) and (min-width: 85em) {
   body {
     padding-left: 13em;
     padding-right: 12em;
+  }
+}
+
+/* Fix for #aria overlapping main on short screens - Make sure main takes as much room in the flow as on the screen. */
+@media (max-height: 550px) {
+  main {
+    height: auto;
   }
 }

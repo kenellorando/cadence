@@ -1,5 +1,0 @@
-# Logging verbosity
-# Levels: 
-## Debug (5) > Info (4) > Warn (3) > Error (2) > Fatal (1) > Logging disabled (0)
-LOG_LEVEL: 5
-

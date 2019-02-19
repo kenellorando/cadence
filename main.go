@@ -1,42 +1,63 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
-	"os"
 
 	env "github.com/deanishe/go-env"
 	"github.com/gorilla/mux"
 	"github.com/kenellorando/clog"
 )
 
+// Declare full config object
+var c = Config{}
+
+// Config - Primary configuration object holder
+type Config struct {
+	server CConfig
+	db     DBConfig
+}
+
+// CConfig - CServer configuration
+type CConfig struct {
+	LogLevel int
+	Port     string
+	MusicDir string
+}
+
+// DBConfig - Database configuration
+type DBConfig struct {
+	Host string
+	Port string
+	User string
+	Pass string
+	Name string
+}
+
 // Init function performs prep work with configurations that
 // need to be known *before* starting main
 func init() {
-	// Init defaults are declared here
-	// Although all configurations are set into environment variables
-	// We can declare some defaults here for server initialization purposes
-	const defaultLogLevel = 5
+	// Get server-related configs
+	server := CConfig{}
+	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL", 5)
+	server.Port = env.GetString("CSERVER_WEB_PORT", ":8000")
+	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR", "/Default/Fake/Music/Dir")
+	c.server = server
 
-	// Set logging level
-	// If there is no data, default to defaultLogLevel
-	// Else, use the value.
-	logLevel := os.Getenv("CSERVER_LOGLEVEL")
-	if len(logLevel) == 0 {
-		clog.Info("init", fmt.Sprintf("No default logging level was found."))
-		clog.Init(defaultLogLevel)
-		clog.Info("init", fmt.Sprintf("Logging level set to hardcoded default level <%v>", defaultLogLevel))
-	} else {
-		logLevel := env.GetInt("CSERVER_WEB_PORT")
-		clog.Init(logLevel)
-		clog.Info("init", fmt.Sprintf("Set logging verbosity to <%v>", logLevel))
-	}
+	// Get database related configs
+	db := DBConfig{}
+	db.Host = env.GetString("CSERVER_DB_HOST", "Default_FakeDBHost")
+	db.Port = env.GetString("CSERVER_DB_PORT", "Default_FakeDBPort")
+	db.User = env.GetString("CSERVER_DB_USER", "Default_FakeDBUser")
+	db.Pass = env.GetString("CSERVER_DB_PASS", "Default_FakeDBPass")
+	db.Name = env.GetString("CSERVER_DB_NAME", "Default_FakeDBName")
+	c.db = db
+
+	clog.Info("init", "Server initialized.")
 }
 
 func main() {
-	// Get all other configurations
-	c := getConfigs()
-
 	// Handle routes
 	r := mux.NewRouter()
 	// List API routes first
@@ -50,4 +71,20 @@ func main() {
 	// Start server
 	clog.Info("main", fmt.Sprintf("Starting server on port %s ...", c.server.Port))
 	clog.Fatal("main", "Server failed to start!", http.ListenAndServe(c.server.Port, r))
+}
+
+// Establishes database connection using configuration
+func connectDatabase(db DBConfig) (*sql.DB, error) {
+	clog.Debug("connectDatabase", "Attempting connection to database...")
+
+	// Form a connection with the database using config
+	connectInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", db.Host, db.Port, db.User, db.Pass, db.Name)
+	database, err := sql.Open("postgres", connectInfo)
+	if err != nil {
+		clog.Error("connectDatabase", "Connection to the database failed!", err)
+	} else {
+		clog.Info("connectDatabase", "Connected to the database.")
+	}
+
+	return database, err
 }

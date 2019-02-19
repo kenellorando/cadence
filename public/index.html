@@ -15,7 +15,13 @@
   <meta name="msapplication-navbutton-color" content="#CCCCCC" id="ie-color">
 
   <title>Cadence Radio ♥</title>
+  <!-- Favicon for default web browsers -->
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+  <!-- Icons and titles for iOS save-page homescreen icons and loading splashes -->
+  <link rel="apple-touch-startup-image" href="/media/misaka_full.png">
+  <link rel="apple-touch-icon" href="/media/misaka_167x167.png">
+  <meta name="apple-mobile-web-app-title" content="Cadence Radio">
 
   <!-- Heading: Rock Salt; Subtitle: Roboto 300i; ARIA Messages: VT232; All else: PT Sans -->
   <!-- CSS preloading technique as described at https://stackoverflow.com/a/40314216 -->
@@ -80,7 +86,7 @@
 
     <div id="player">
       <!-- Connection to source -->
-      <audio id="stream" src="http://stream.cadenceradio.com:8000/cadence1"></audio>
+      <audio id="stream" src="http://stream.cadenceradio.com:8000/cadence1?type=.mp3" type="audio/mp3"></audio>
 
       <!-- Display title/artist, may add more later -->
       <div id="nowPlaying">
@@ -105,7 +111,7 @@
 
       <div id="version">
         <p style="margin:0">Cadence/ARIA Development Build</p>
-        <p style="margin:0 0 30px 0;">Ver. 3.0.2</p>
+        <p style="margin:0 0 30px 0;">Ver. 3.1.0</p>
       </div>
 
       <!-- Theme selector -->
@@ -119,18 +125,20 @@
           <button type="button" class="themeChoice" id="spaceStation">Space Station</button>
           <button type="button" class="themeChoice" id="legacy">Legacy</button>
           <button type="button" class="themeChoice" id="nebulaRotating">Nebula</button>
+          <button type="button" class="themeChoice" id="psychoPass">Psycho-Pass</button>
+
           <!--
           <button type="button" class="themeChoice" id="sanFrancisco">San Francisco</button>
           <button type="button" class="themeChoice" id="minimalist">Minimalist</button>
           <button type="button" class="themeChoice" id="minimalistDark">Minimalist Dark</button>
           <button type="button" class="themeChoice" id="hawaiianSunset">Hawaiian Sunset</button>
+          <button type="button" class="themeChoice" id="lightMage">Light Mage</button>
           <button type="button" class="themeChoice" id="electromaster">Electromaster</button>
           <button type="button" class="themeChoice" id="tokyoNight">Tokyo Night</button>
           <button type="button" class="themeChoice" id="mayberry">Mayberry</button>
           <button type="button" class="themeChoice" id="starGuardian">Star Guardian</button>
           <button type="button" class="themeChoice" id="nebula">Nebula</button>
           <button type="button" class="themeChoice" id="cabin">Cabin</button>
-          <button type="button" class="themeChoice" id="lightMage">Light Mage</button>
           -->
         </div>
       </div>
@@ -172,14 +180,15 @@
     <div class="content-right">
       <section>
         <h2>Announcements</h2>
-        <h3 class="announcement">11/2: Music Update</h3>
-        <p>Three new songs. I especially recommend <i>Blumenkranz</i>.</p>
-        <ul>
-          <li>Hiroyuki Sawano - Blumenkranz (Kill la Kill OST)</li>
-          <li>Mariya Takeuchi - Plastic Love</li>
-          <li>The Seatbelts - The Real Folk Blues (Cowboy Bebop OST)</li>
-        </ul>
+        <h3 class="announcement">02/01/2019: New Theme - Psycho Pass</h3>
+        <p>This is the first major theme update in a long time. Psycho-Pass was one of the first themes I wanted to do but just never got around to. In comparison to Cyberpunk Bartender, The Psycho-Pass theme is a truer, darker, more dystopian cyberpunk theme. It's heavier in detailing than most themes I've done before. I'm extremely pleased with the way it turned out.</p>
+        <p>As a special event for the new theme, I'll be overriding the server to play from the Psycho-Pass OST. Songs from Cadence's regular programming will still be available for request through ARIA.</p>
+
+        <h3 class="announcement">12/26: iOS/MacOS Stream Issue</h3>
+        <p>A known <a href="https://github.com/kenellorando/cadence/issues/148">issue</a> is preventing the Cadence stream from playing across iOS devices, as well as the Safari browser on MacOS. If I still had the old issue tagging system, this issue would be "IMPORTANT".</p>
+        <p>At the current time, I have no workaround for iOS users. This issue seems to affect all iOS browsers. If you are using a Mac, the issue seems limited to Safari only, and you can still access the stream on Chrome. I will be working on a permanent fix in the meantime.</p>
       </section>
+
       <section id="changelog">
         <h2>Changelog:</h2>
         <ul>

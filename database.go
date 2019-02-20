@@ -16,10 +16,13 @@ func databaseTableCheck() {
 	//database, err := databaseConnect()
 }
 
+// Creates a database and tables using configs in c.schema
+// This is only called after a successful connection to the database server
+// but failed ping to the data.
 func databaseCreate(database *sql.DB) error {
-	clog.Info("databaseCreate", fmt.Sprintf("Create database <%s>.", c.db.Name))
+	clog.Info("databaseCreate", fmt.Sprintf("Create database <%s>.", c.schema.Name))
 
-	createDatabase := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", c.db.Name)
+	createDatabase := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", c.schema.Name)
 
 	fmt.Printf("%v", createDatabase)
 	_, err := database.Exec(createDatabase)
@@ -28,6 +31,9 @@ func databaseCreate(database *sql.DB) error {
 		return err
 	}
 
+	/*
+		Todo: Create table using schema, then call populator?
+	*/
 	/*
 		_, err = db.Exec("USE " + name)
 		if err != nil {
@@ -50,7 +56,7 @@ func databaseConnect() (*sql.DB, error) {
 	clog.Info("databaseConnect", fmt.Sprintf("Trying connection to database server as user <%s>.", c.db.User))
 
 	// Form a connection with the database using config
-	database, err := sql.Open(c.db.Driver, fmt.Sprintf("host=%s port=%s user=%s password=%s sslmode=%s", c.db.Host, c.db.Port, c.db.User, c.db.Pass, c.db.SSLMode))
+	database, err := sql.Open(c.db.Driver, c.db.DSN)
 	defer database.Close()
 
 	if err != nil {
@@ -60,14 +66,14 @@ func databaseConnect() (*sql.DB, error) {
 
 	// According to the go wiki, connections are deferred until queries are made
 	// We ping the database here to establish the connection
-	clog.Info("databaseConnect", fmt.Sprintf("Connected to database server. Pinging to open connection to <%s>...", c.db.Name))
+	clog.Info("databaseConnect", fmt.Sprintf("Connected to database server. Pinging to open connection to <%s>...", c.schema.Name))
 	err = database.Ping()
 	if err != nil {
 		clog.Error("databaseConnect", "Ping test failed to confirm open connection.", err)
 		clog.Info("databaseConnect", "Will attempt to create the database and tables defined in configuration.")
 		databaseCreate(database)
 	} else {
-		clog.Info("databaseConnect", fmt.Sprintf("Connected successfully to database <%s>", c.db.Name))
+		clog.Info("databaseConnect", fmt.Sprintf("Connected successfully to database <%s>", c.schema.Name))
 	}
 
 	return database, err

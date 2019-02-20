@@ -8,18 +8,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// Check if the tables specified in the config exist
-// This is only run once by init to confirm the data table
-func databaseTableCheck() {
-	clog.Debug("databaseTableCheck", "Running table check in database...")
-	//database, _ := databaseConnect()
-	//database, err := databaseConnect()
-}
-
 // Creates a database and tables using configs in c.schema
 // This is only called after a successful connection to the database server
-// but failed ping to the data.
-func databaseCreate(database *sql.DB) error {
+// in the init function.
+func databaseCheck() error {
+	clog.Debug("databaseCheck", "Starting database data check...")
 	clog.Info("databaseCreate", fmt.Sprintf("Create database <%s>.", c.schema.Name))
 
 	createDatabase := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", c.schema.Name)
@@ -31,9 +24,8 @@ func databaseCreate(database *sql.DB) error {
 		return err
 	}
 
-	/*
-		Todo: Create table using schema, then call populator?
-	*/
+	//Todo: Create table using schema, then call populator?
+
 	/*
 		_, err = db.Exec("USE " + name)
 		if err != nil {
@@ -44,37 +36,27 @@ func databaseCreate(database *sql.DB) error {
 		if err != nil {
 			panic(err)
 		}
-		return err
 	*/
 	return err
 }
 
-// Establishes database connection using configuration,
+// Establishes connection to database using configuration,
 // Confirms connection with a ping, returns a database session
 // Appropriately handles connection-errors here
 func databaseConnect() (*sql.DB, error) {
-	clog.Info("databaseConnect", fmt.Sprintf("Trying connection to database server as user <%s>.", c.db.User))
+	clog.Info("databaseConnect", fmt.Sprintf("Connecting to database server <%s:%s> with set credentials...", c.db.Host, c.db.Port))
 
-	// Form a connection with the database using config
+	// Initialize connection pool
+	// Note that sql.Open does not actually "connect";
+	// According to the go wiki, connections are deferred until queries are made
+	// We ping the database here to confirm the connection
 	database, err := sql.Open(c.db.Driver, c.db.DSN)
-	defer database.Close()
-
+	err = database.Ping()
 	if err != nil {
-		clog.Error("databaseConnect", "Connection to the database server failed!", err)
+		clog.Error("databaseConnect", fmt.Sprintf("Ping test failed to confirm open connection to <%s:%s>", c.db.Host, c.db.Port), err)
 		return nil, err
 	}
 
-	// According to the go wiki, connections are deferred until queries are made
-	// We ping the database here to establish the connection
-	clog.Info("databaseConnect", fmt.Sprintf("Connected to database server. Pinging to open connection to <%s>...", c.schema.Name))
-	err = database.Ping()
-	if err != nil {
-		clog.Error("databaseConnect", "Ping test failed to confirm open connection.", err)
-		clog.Info("databaseConnect", "Will attempt to create the database and tables defined in configuration.")
-		databaseCreate(database)
-	} else {
-		clog.Info("databaseConnect", fmt.Sprintf("Connected successfully to database <%s>", c.schema.Name))
-	}
-
+	clog.Info("databaseConnect", fmt.Sprintf("Connected successfully to database <%s:%s>", c.db.Host, c.db.Port))
 	return database, err
 }

@@ -170,7 +170,7 @@ function themeChanger(themeName) {
       setTimeout(function() {
           themeObjNight.callback.daymodeSwitch();
           defaultTheme();
-      }, diff);
+      }, diff); // Schedule a theme default for one second after 9 AM
 
       // Call the post hooks as soon as the thread becomes idle
       setTimeout(function() {

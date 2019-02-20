@@ -27,13 +27,14 @@ type CConfig struct {
 
 // DBConfig - Database configuration
 type DBConfig struct {
-	Driver string
-	Host   string
-	Port   string
-	User   string
-	Pass   string
-	Name   string
-	DSN    string
+	Host    string
+	Port    string
+	User    string
+	Pass    string
+	Name    string
+	SSLMode string
+	Driver  string
+	DSN     string
 }
 
 // Init function grabs configuration values for the server
@@ -44,22 +45,23 @@ func init() {
 	// Get server-related configs
 	server := CConfig{}
 	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL", 5)
-	server.Port = env.GetString("CSERVER_WEB_PORT", ":8000")
+	server.Port = env.GetString("CSERVER_WEB_PORT", ":8080")
 	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR", "/Default/Fake/Music/Dir")
 	c.server = server
 
 	// Get database related configs
 	db := DBConfig{}
 	db.Host = env.GetString("CSERVER_DB_HOST", "localhost")
-	db.Port = env.GetString("CSERVER_DB_PORT", ":5432")
-	db.User = env.GetString("CSERVER_DB_USER", "Default_FakeDBUser")
-	db.Pass = env.GetString("CSERVER_DB_PASS", "Default_FakeDBPass")
-	db.Name = env.GetString("CSERVER_DB_NAME", "Default_FakeDBName")
+	db.Port = env.GetString("CSERVER_DB_PORT", "5432")
+	db.User = env.GetString("CSERVER_DB_USER", "Default_DBUser_SetEnvVar!")
+	db.Pass = env.GetString("CSERVER_DB_PASS", "Default_DBPass_SetEnvVar!")
+	db.Name = env.GetString("CSERVER_DB_NAME", "Default_DBName_SetEnvVar!")
+	db.SSLMode = env.GetString("CSERVER_DB_SSLMODE", "disable")
 	// Below, the Driver is the type of database running
-	// DSN (Data Source Name) is a variable of convenience, holding address and auth data in one
+	// The DSN (Data Source Name) is a variable of convenience, holding all required address and auth data in one
 	// You can create a connect to a database using passing only these two fields below in
 	db.Driver = env.GetString("CSERVER_DB_DRIVER", "postgres")
-	db.DSN = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", db.Host, db.Port, db.User, db.Pass, db.Name)
+	db.DSN = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", db.Host, db.Port, db.User, db.Pass, db.Name, db.SSLMode)
 	c.db = db
 
 	// Initialize logging
@@ -67,13 +69,16 @@ func init() {
 	clog.Info("init", fmt.Sprintf("Logging service initialized to level <%v>", c.server.LogLevel))
 
 	// Test a connection to the database
-	clog.Info("init", fmt.Sprintf("Testing a connection to database <%s%s>", c.db.Host, c.db.Port))
+	clog.Info("init", fmt.Sprintf("Testing a connection to database <%s:%s>", c.db.Host, c.db.Port))
+
 	_, err := databaseConnect()
 	if err != nil {
-		clog.Warn("init", fmt.Sprintf("Initial test connection to the database failed! Future server requests may fail."))
+		clog.Warn("init", fmt.Sprintf("Initial test connection to the database server failed! Future server requests may also fail."))
+		clog.Warn("init", "The data table check will be skipped.")
 	} else {
-		clog.Info("init", "Initial test connection to database succeeded.")
+		clog.Info("init", "Initial test connection to database succeeded. Testing existence of data tables...")
 	}
+
 }
 
 func main() {

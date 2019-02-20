@@ -2,22 +2,37 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 
 	"github.com/kenellorando/clog"
+	_ "github.com/lib/pq"
 )
 
-// Establishes database connection using configuration
-func connectDatabase(db DBConfig) (*sql.DB, error) {
-	clog.Debug("connectDatabase", "Trying connection to database...")
+// Check if the tables specified in the
+func databaseTableCheck() {
+	clog.Debug("databaseTableCheck", "Running table check in database...")
+	//database, _ := databaseConnect()
+}
+
+// Establishes database connection using configuration,
+// Confirms connection with a ping, returns a database session
+// Appropriately handles connection-errors here
+func databaseConnect() (*sql.DB, error) {
+	clog.Debug("databaseConnect", "Trying connection to database...")
 
 	// Form a connection with the database using config
-	connectInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", db.Host, db.Port, db.User, db.Pass, db.Name)
-	database, err := sql.Open("postgres", connectInfo)
+	database, err := sql.Open(c.db.Driver, c.db.DSN)
 	if err != nil {
-		clog.Error("connectDatabase", "Connection to the database failed!", err)
-	} else {
-		clog.Info("connectDatabase", "Connected to the database.")
+		clog.Error("databaseConnect", "Connection to the database failed!", err)
+		return nil, err
+	}
+
+	// According to the go wiki, connections are deferred until queries are made
+	// We ping the database here to establish the connection
+	clog.Info("databaseConnect", "Connected to the database. Pinging to confirm open connection.")
+	err = database.Ping()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return database, err

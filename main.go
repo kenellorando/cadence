@@ -27,11 +27,13 @@ type CConfig struct {
 
 // DBConfig - Database configuration
 type DBConfig struct {
-	Host string
-	Port string
-	User string
-	Pass string
-	Name string
+	Driver string
+	Host   string
+	Port   string
+	User   string
+	Pass   string
+	Name   string
+	DSN    string
 }
 
 // Init function grabs configuration values for the server
@@ -53,6 +55,11 @@ func init() {
 	db.User = env.GetString("CSERVER_DB_USER", "Default_FakeDBUser")
 	db.Pass = env.GetString("CSERVER_DB_PASS", "Default_FakeDBPass")
 	db.Name = env.GetString("CSERVER_DB_NAME", "Default_FakeDBName")
+	// Below, the Driver is the type of database running
+	// DSN (Data Source Name) is a variable of convenience, holding address and auth data in one
+	// You can create a connect to a database using passing only these two fields below in
+	db.Driver = env.GetString("CSERVER_DB_DRIVER", "postgres")
+	db.DSN = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", db.Host, db.Port, db.User, db.Pass, db.Name)
 	c.db = db
 
 	// Initialize logging
@@ -61,7 +68,7 @@ func init() {
 
 	// Test a connection to the database
 	clog.Info("init", fmt.Sprintf("Testing a connection to database <%s%s>", c.db.Host, c.db.Port))
-	_, err := connectDatabase(c.db)
+	_, err := databaseConnect()
 	if err != nil {
 		clog.Warn("init", fmt.Sprintf("Initial test connection to the database failed! Future server requests may fail."))
 	} else {

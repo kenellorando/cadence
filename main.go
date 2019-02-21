@@ -54,17 +54,16 @@ func init() {
 	server := ServerConfig{}
 	db := DBConfig{}
 	schema := SchemaConfig{}
-
 	// Webserver configuration
 	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL", 5)
 	server.Port = env.GetString("CSERVER_WEB_PORT", ":8080")
-	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR", "/Default/Fake/Music/Dir")
+	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR", "~/cadence_music")
 	// Database server configuration
 	db.Host = env.GetString("CSERVER_DB_HOST", "localhost")
 	db.Port = env.GetString("CSERVER_DB_PORT", "5432")
 	db.User = env.GetString("CSERVER_DB_USER", "Default_DBUser_SetEnvVar!")
 	db.Pass = env.GetString("CSERVER_DB_PASS", "Default_DBPass_SetEnvVar!")
-	db.Name = env.GetString("CSERVER_DB_NAME", "Default_DBName_SetEnvVar!")
+	db.Name = env.GetString("CSERVER_DB_NAME", "cadence")
 	db.SSLMode = env.GetString("CSERVER_DB_SSLMODE", "disable")
 	db.Driver = env.GetString("CSERVER_DB_DRIVER", "postgres")
 	db.DSN = fmt.Sprintf("host=%s port=%s user=%s password=%s sslmode=%s", db.Host, db.Port, db.User, db.Pass, db.SSLMode)
@@ -96,6 +95,8 @@ func init() {
 			clog.Warn("init", fmt.Sprintf("Auto config failed."))
 		} else {
 			clog.Info("init", "Database auto configurator completed building database.")
+			clog.Info("init", "Starting initial database population...")
+			// databasePopulate()
 		}
 	}
 }

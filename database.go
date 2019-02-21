@@ -17,6 +17,18 @@ func databaseAutoConfig() error {
 	// SQL exec statements here
 	dropDatabase := fmt.Sprintf("DROP DATABASE IF EXISTS %s", c.db.Name)
 	createDatabase := fmt.Sprintf("CREATE DATABASE %s", c.db.Name)
+	createTable := fmt.Sprintf(`CREATE TABLE %s
+	(
+	   id serial PRIMARY KEY,
+	   title character varying(255),
+	   album character varying(255),
+	   artist character varying(255),
+	   genre character varying(255),
+	   path character varying(255)
+	)
+	WITH (
+	   OIDS = FALSE
+	)`, c.schema.Table)
 
 	// Drop the database if it exists
 	clog.Debug("databaseAutoConfig", fmt.Sprintf("Deleting existing databases named <%s>.", c.db.Name))
@@ -48,11 +60,32 @@ func databaseAutoConfig() error {
 	}
 
 	// Build the database tables
-	clog.Debug("databaseAutoConfig", fmt.Sprintf("Building database schema in table <%s>...", c.schema.Table))
+	clog.Debug("databaseAutoConfig", fmt.Sprintf("Building database schema for table <%s>...", c.schema.Table))
+	_, err = database.Exec(createTable)
+	if err != nil {
+		clog.Error("databaseAutoConfig", "Failed to build database table. Skipping remaining autoconfig steps.", err)
+		return err
+	}
+
+	clog.Debug("databaseAutoConfig", fmt.Sprintf("Table <%s> built successfully.", c.schema.Table))
 
 	// TODO: Populate table
 	return err
 }
+
+/*
+func databasePopulate() error {
+	// Check if MUSIC_DIR exists. Return if err
+	if _, err := os.Stat(c.server.MusicDir); err != nil {
+		if os.IsNotExist(err) {
+			clog.Error("databasePopulate", "The defined music directory")
+			return
+		}
+	}
+
+	return err
+}
+*/
 
 // Establishes connection to database using configuration,
 // Confirms connection with a ping, returns a database session

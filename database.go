@@ -15,36 +15,42 @@ func databaseAutoConfig() error {
 	clog.Debug("databaseAutoConfig", "Starting automatic database configuration...")
 
 	// SQL exec statements here
-	createDatabase := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", c.schema.Name)
-	useDatabase := fmt.Sprintf("USE %s", c.schema.Name)
+	dropDatabase := fmt.Sprintf("DROP DATABASE IF EXISTS %s", c.db.Name)
+	createDatabase := fmt.Sprintf("CREATE DATABASE %s", c.db.Name)
 
-	// Create the database if it does not exist
-	clog.Info("databaseAutoConfig", fmt.Sprintf("Creating database <%s> if it does not exist.", c.schema.Name))
-	_, err := database.Exec(createDatabase)
+	// Drop the database if it exists
+	clog.Debug("databaseAutoConfig", fmt.Sprintf("Deleting existing databases named <%s>.", c.db.Name))
+	_, err := database.Exec(dropDatabase)
 	if err != nil {
-		clog.Error("databaseAutoConfig", "Failed to create database. Skipping further creation steps.", err)
+		clog.Error("databaseAutoConfig", "Failed to remove existing database. Skipping remaining autoconfig steps.", err)
 		return err
 	}
 
-	// Set the database in use to the one specified
-	_, err = database.Exec(useDatabase)
+	// Create the database
+	clog.Debug("databaseAutoConfig", fmt.Sprintf("Creating database <%s>.", c.db.Name))
+	_, err = database.Exec(createDatabase)
 	if err != nil {
-		clog.Error("databaseAutoConfig", fmt.Sprintf("Could not switch to database <%s>", c.schema.Name), err)
+		clog.Error("databaseAutoConfig", "Failed to create database. Skipping remaining autoconfig steps.", err)
+		return err
 	}
 
-	//Todo: Create table using schema, then call populator?
+	// Postgres has no 'USE' statements
+	// In order to connect to the newly created database
+	// we redefine the DSN to hold the database name
+	// and reconnect using it.
+	clog.Debug("databaseAutoConfig", fmt.Sprintf("Database <%s> recreated. Reconnecting to newly created database...", c.db.Name))
+	c.db.DSN = fmt.Sprintf("host=%s port=%s user=%s password=%s sslmode=%s dbname=%s", c.db.Host, c.db.Port, c.db.User, c.db.Pass, c.db.SSLMode, c.db.Name)
+	database.Close()
+	database, _ = databaseConnect()
+	if err != nil {
+		clog.Error("databaseAutoConfig", "Failed to connect to newly created database. Skipping remaining autoconfig steps.", err)
+		return err
+	}
 
-	/*
-		_, err = db.Exec("USE " + name)ß
-		if err != nil {
-			panic(err)
-		}
+	// Build the database tables
+	clog.Debug("databaseAutoConfig", fmt.Sprintf("Building database schema in table <%s>...", c.schema.Table))
 
-		_, err = db.Exec("CREATE TABLE example ( id integer, data varchar(32) )")
-		if err != nil {
-			panic(err)
-		}
-	*/
+	// TODO: Populate table
 	return err
 }
 
@@ -52,7 +58,7 @@ func databaseAutoConfig() error {
 // Confirms connection with a ping, returns a database session
 // Appropriately handles connection-errors here
 func databaseConnect() (*sql.DB, error) {
-	clog.Info("databaseConnect", fmt.Sprintf("Connecting to database server <%s:%s> with set credentials...", c.db.Host, c.db.Port))
+	clog.Debug("databaseConnect", fmt.Sprintf("Connecting to database cluster <%s:%s> with set credentials...", c.db.Host, c.db.Port))
 
 	// Initialize connection pool
 	// Note that sql.Open does not actually "connect";
@@ -61,10 +67,10 @@ func databaseConnect() (*sql.DB, error) {
 	database, err := sql.Open(c.db.Driver, c.db.DSN)
 	err = database.Ping()
 	if err != nil {
-		clog.Error("databaseConnect", fmt.Sprintf("Failed to confirm open connection to <%s:%s>", c.db.Host, c.db.Port), err)
+		clog.Error("databaseConnect", fmt.Sprintf("Failed to confirm open connection to cluster <%s:%s>", c.db.Host, c.db.Port), err)
 		return nil, err
 	}
 
-	clog.Info("databaseConnect", fmt.Sprintf("Connected successfully to database <%s:%s>", c.db.Host, c.db.Port))
+	clog.Debug("databaseConnect", fmt.Sprintf("Connected successfully to database cluster <%s:%s>", c.db.Host, c.db.Port))
 	return database, nil
 }

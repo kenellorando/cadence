@@ -12,7 +12,7 @@ import (
 
 // Declare globally accessible data
 var c = Config{}     // Full configuration object
-var database *sql.DB // Database object
+var database *sql.DB // Database abstraction interface
 
 // Config - Primary configuration object holder
 type Config struct {
@@ -34,6 +34,7 @@ type DBConfig struct {
 	Port    string
 	User    string
 	Pass    string
+	Name    string
 	SSLMode string
 	Driver  string
 	DSN     string
@@ -41,7 +42,7 @@ type DBConfig struct {
 
 // SchemaConfig - Database schema configuration
 type SchemaConfig struct {
-	Name string
+	Table string
 }
 
 // Init function grabs configuration values for the server
@@ -63,11 +64,12 @@ func init() {
 	db.Port = env.GetString("CSERVER_DB_PORT", "5432")
 	db.User = env.GetString("CSERVER_DB_USER", "Default_DBUser_SetEnvVar!")
 	db.Pass = env.GetString("CSERVER_DB_PASS", "Default_DBPass_SetEnvVar!")
+	db.Name = env.GetString("CSERVER_DB_NAME", "Default_DBName_SetEnvVar!")
 	db.SSLMode = env.GetString("CSERVER_DB_SSLMODE", "disable")
 	db.Driver = env.GetString("CSERVER_DB_DRIVER", "postgres")
 	db.DSN = fmt.Sprintf("host=%s port=%s user=%s password=%s sslmode=%s", db.Host, db.Port, db.User, db.Pass, db.SSLMode)
 	// Database schema configuration
-	schema.Name = env.GetString("CSERVER_DB_NAME", "Default_DBName_SetEnvVar!")
+	schema.Table = env.GetString("CSERVER_DB_TABLE", "aria")
 
 	// Set the substructs of the global config
 	c.server = server
@@ -79,7 +81,7 @@ func init() {
 	clog.Info("init", fmt.Sprintf("Logging service initialized to level <%v>", c.server.LogLevel))
 
 	// Establish a connection to the database
-	clog.Info("init", fmt.Sprintf("Establishing a connection to database server <%s:%s>", c.db.Host, c.db.Port))
+	clog.Debug("init", fmt.Sprintf("Establishing a connection to database server <%s:%s>", c.db.Host, c.db.Port))
 	newDatabase, err := databaseConnect()
 	if err != nil {
 		clog.Warn("init", fmt.Sprintf("Database server connection test failed! Future database requests will also fail."))
@@ -87,13 +89,13 @@ func init() {
 	} else {
 		// Set the global database object to the newly made pointer
 		// Start the database data check
-		clog.Debug("init", "Database server connection test succeeded. Starting database auto configuration..")
+		clog.Info("init", "Database server connection test successful. Starting database auto configuration..")
 		database = newDatabase
 		err := databaseAutoConfig()
 		if err != nil {
-			clog.Warn("init", fmt.Sprintf("Auto"))
+			clog.Warn("init", fmt.Sprintf("Auto config failed."))
 		} else {
-			clog.Debug("init", "Database auto configurator completed checks on database.")
+			clog.Info("init", "Database auto configurator completed building database.")
 		}
 	}
 }

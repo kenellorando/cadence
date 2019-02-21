@@ -11,23 +11,31 @@ import (
 // Creates a database and tables using configs in c.schema
 // This is only called after a successful connection to the database server
 // in the init function.
-func databaseCheck() error {
-	clog.Debug("databaseCheck", "Starting database data check...")
-	clog.Info("databaseCreate", fmt.Sprintf("Create database <%s>.", c.schema.Name))
+func databaseAutoConfig() error {
+	clog.Debug("databaseAutoConfig", "Starting automatic database configuration...")
 
+	// SQL exec statements here
 	createDatabase := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", c.schema.Name)
+	useDatabase := fmt.Sprintf("USE %s", c.schema.Name)
 
-	fmt.Printf("%v", createDatabase)
+	// Create the database if it does not exist
+	clog.Info("databaseAutoConfig", fmt.Sprintf("Creating database <%s> if it does not exist.", c.schema.Name))
 	_, err := database.Exec(createDatabase)
 	if err != nil {
-		clog.Error("databaseCreate", "Failed to create database. Skipping further creation steps.", err)
+		clog.Error("databaseAutoConfig", "Failed to create database. Skipping further creation steps.", err)
 		return err
+	}
+
+	// Set the database in use to the one specified
+	_, err = database.Exec(useDatabase)
+	if err != nil {
+		clog.Error("databaseAutoConfig", fmt.Sprintf("Could not switch to database <%s>", c.schema.Name), err)
 	}
 
 	//Todo: Create table using schema, then call populator?
 
 	/*
-		_, err = db.Exec("USE " + name)
+		_, err = db.Exec("USE " + name)ß
 		if err != nil {
 			panic(err)
 		}
@@ -53,10 +61,10 @@ func databaseConnect() (*sql.DB, error) {
 	database, err := sql.Open(c.db.Driver, c.db.DSN)
 	err = database.Ping()
 	if err != nil {
-		clog.Error("databaseConnect", fmt.Sprintf("Ping test failed to confirm open connection to <%s:%s>", c.db.Host, c.db.Port), err)
+		clog.Error("databaseConnect", fmt.Sprintf("Failed to confirm open connection to <%s:%s>", c.db.Host, c.db.Port), err)
 		return nil, err
 	}
 
 	clog.Info("databaseConnect", fmt.Sprintf("Connected successfully to database <%s:%s>", c.db.Host, c.db.Port))
-	return database, err
+	return database, nil
 }

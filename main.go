@@ -58,7 +58,7 @@ func init() {
 	// Webserver configuration
 	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL", 5)
 	server.Domain = env.GetString("CSERVER_DOMAIN", "localhost")
-	server.Port = env.GetString("CSERVER_WEB_PORT", ":8080")
+	server.Port = env.GetString("CSERVER_PORT", ":8080")
 	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR", "~/cadence_music")
 	// Database server configuration
 	db.Host = env.GetString("CSERVER_DB_HOST", "localhost")

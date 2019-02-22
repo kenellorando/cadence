@@ -24,6 +24,7 @@ type Config struct {
 // ServerConfig - Webserver configuration
 type ServerConfig struct {
 	LogLevel int
+	Domain   string
 	Port     string
 	MusicDir string
 }
@@ -56,6 +57,7 @@ func init() {
 	schema := SchemaConfig{}
 	// Webserver configuration
 	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL", 5)
+	server.Domain = env.GetString("CSERVER_DOMAIN", "localhost")
 	server.Port = env.GetString("CSERVER_WEB_PORT", ":8080")
 	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR", "~/cadence_music")
 	// Database server configuration
@@ -102,15 +104,22 @@ func init() {
 }
 
 func main() {
-	// Handle routes
+	// Create a new router
 	r := mux.NewRouter()
-	// List API routes first
+
+	// List API routes
 	r.HandleFunc("/api/aria1/search", ARIA1Search).Methods("POST")
 	r.HandleFunc("/api/aria1/request", ARIA1Request).Methods("POST")
 	// Serve other specific routes next
 	r.HandleFunc("/", ServeRoot).Methods("GET")
 	// For everything else, serve 404
 	r.NotFoundHandler = http.HandlerFunc(Serve404)
+
+	// Subdomain 1
+	s := mux.NewRouter()
+	s.Host("docs." + c.server.Domain + c.server.Port)
+	s.PathPrefix("/").Handler(http.FileServer(http.Dir("./docs/")))
+	s.NotFoundHandler = http.HandlerFunc(Serve404)
 
 	// Start server
 	clog.Info("main", fmt.Sprintf("Starting webserver on port <%s>.", c.server.Port))

@@ -24,7 +24,6 @@ type Config struct {
 // ServerConfig - Webserver configuration
 type ServerConfig struct {
 	LogLevel int
-	Domain   string
 	Port     string
 	MusicDir string
 }
@@ -55,22 +54,21 @@ func init() {
 	server := ServerConfig{}
 	db := DBConfig{}
 	schema := SchemaConfig{}
-	// Webserver configuration
-	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL", 5)
-	server.Domain = env.GetString("CSERVER_DOMAIN", "localhost")
-	server.Port = env.GetString("CSERVER_PORT", ":8080")
-	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR", "~/cadence_music")
+	// Webserver configurationi, err := strconv.Atoi(s)
+	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL")
+	server.Port = env.GetString("CSERVER_PORT")
+	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR")
 	// Database server configuration
-	db.Host = env.GetString("CSERVER_DB_HOST", "localhost")
-	db.Port = env.GetString("CSERVER_DB_PORT", "5432")
-	db.User = env.GetString("CSERVER_DB_USER", "Default_DBUser_SetEnvVar!")
-	db.Pass = env.GetString("CSERVER_DB_PASS", "Default_DBPass_SetEnvVar!")
-	db.Name = env.GetString("CSERVER_DB_NAME", "cadence")
-	db.SSLMode = env.GetString("CSERVER_DB_SSLMODE", "disable")
-	db.Driver = env.GetString("CSERVER_DB_DRIVER", "postgres")
-	db.DSN = fmt.Sprintf("host=%s port=%s user=%s password=%s sslmode=%s", db.Host, db.Port, db.User, db.Pass, db.SSLMode)
+	db.Host = env.GetString("CSERVER_DB_HOST")
+	db.Port = env.GetString("CSERVER_DB_PORT")
+	db.User = env.GetString("CSERVER_DB_USER")
+	db.Pass = env.GetString("CSERVER_DB_PASS")
+	db.Name = env.GetString("CSERVER_DB_NAME")
+	db.SSLMode = env.GetString("CSERVER_DB_SSLMODE")
+	db.Driver = env.GetString("CSERVER_DB_DRIVER")
+	db.DSN = fmt.Sprintf("host='%s' port='%s' user='%s' password='%s' sslmode='%s'", db.Host, db.Port, db.User, db.Pass, db.SSLMode)
 	// Database schema configuration
-	schema.Table = env.GetString("CSERVER_DB_TABLE", "aria")
+	schema.Table = env.GetString("CSERVER_DB_TABLE")
 
 	// Set the substructs of the global config
 	c.server = server
@@ -104,22 +102,15 @@ func init() {
 }
 
 func main() {
-	// Create a new router
+	// Handle routes
 	r := mux.NewRouter()
-
-	// List API routes
+	// List API routes first
 	r.HandleFunc("/api/aria1/search", ARIA1Search).Methods("POST")
 	r.HandleFunc("/api/aria1/request", ARIA1Request).Methods("POST")
 	// Serve other specific routes next
 	r.HandleFunc("/", ServeRoot).Methods("GET")
 	// For everything else, serve 404
 	r.NotFoundHandler = http.HandlerFunc(Serve404)
-
-	// Subdomain 1
-	s := mux.NewRouter()
-	s.Host("docs." + c.server.Domain + c.server.Port)
-	s.PathPrefix("/").Handler(http.FileServer(http.Dir("./docs/")))
-	s.NotFoundHandler = http.HandlerFunc(Serve404)
 
 	// Start server
 	clog.Info("main", fmt.Sprintf("Starting webserver on port <%s>.", c.server.Port))

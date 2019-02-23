@@ -1,36 +1,73 @@
 #!/bin/bash
 
-# Prompt for environment variables that have defaults set by the server first
-# Webserver
-read -p "Log level (default: 5): " CSERVER_LOGLEVEL
-CSERVER_LOGLEVEL=${CSERVER_LOGLEVEL:-5}
-read -p "Server domain (default: localhost): " CSERVER_DOMAIN
-CSERVER_DOMAIN=${CSERVER_DOMAIN:-localhost}
-read -p "Server port (default: :8080): " CSERVER_PORT
-CSERVER_PORT=${CSERVER_PORT:-:8080}
-read -p "Music directory absolute path (default: ~/cadence-music/): " CSERVER_MUSIC_DIR
-CSERVER_MUSIC_DIR=${CSERVER_MUSIC_DIR:-~/cadence_music}
-# Database
-read -p "Database domain (default: localhost): " CSERVER_DB_DOMAIN
-CSERVER_DB_DOMAIN=${CSERVER_DB_DOMAIN:-localhost}
-read -p "Database port (default: 5432): " CSERVER_DB_PORT
-CSERVER_DB_PORT=${CSERVER_DB_PORT:-5432}
-read -p "Database name (default: cadence): " CSERVER_DB_NAME
-CSERVER_DB_NAME=${CSERVER_DB_NAME:-cadence}
-read -p "Database SSL mode (default: disable): " CSERVER_DB_SSL
-CSERVER_DB_SSL=${CSERVER_DB_SSL:-disable}
-read -p "Database driver (default: postgres): " CSERVER_DB_DRIVER
-CSERVER_DB_DRIVER=${CSERVER_DB_DRIVER:-postgres}
-read -p "Database user (default: postgres): " CSERVER_DB_USER
-CSERVER_DB_USER=${CSERVER_DB_USER:-postgres}
-# Table schema
-read -p "Database table (default: aria): " CSERVER_DB_TABLE
-CSERVER_DB_TABLE=${CSERVER_DB_TABLE:-aria}
+echo "SETUP.sh"
+
+# Functions
+#############################################################
+
+# Use SetEnvVar for any value that does not need to be hidden.
+# Optionally allows a default value to be set.
+function SetEnvVar() {
+    ENVVAR=$1
+    DEFAULT=$2
+    if [[ -z $DEFAULT ]]
+    then 
+        PROMPT="$ENVVAR: "
+    else 
+        PROMPT="$ENVVAR (default: $DEFAULT): "
+    fi
+
+    read -p "$PROMPT" INPUT
+
+    if [[ -z $INPUT ]]
+    then
+        export $ENVVAR=$DEFAULT
+    else
+        export $ENVVAR=$INPUT
+    fi
+}
+
+# Use SetSecretEnvVar to hide input.
+# Does not allow setting default values.
+function SetSecretEnvVar() {
+    INPUT=null
+    ENVVAR=$1
+    PROMPT="$ENVVAR: "
+
+    read -s -p "$ENVVAR: " INPUT
+
+    if [[ -z $INPUT ]]
+    then
+        echo -e "\n$ENVVAR has no default and cannot be left blank."
+        SetSecretEnvVar "$1"
+    fi
+}
 
 
-# Prompt for essential user-created environment variables next
-echo
-read -s -p "Database password: " CSERVER_DB_PASS
+# Set variables here
+##############################################################
 
-echo
-set | grep 'CSERVER_'
+# List of environment variables that have defaults.
+# These need to be set with SetEnvVar()
+SetEnvVar "CSERVER_LOGLEVEL" "5"
+SetEnvVar "CSERVER_DOMAIN" "localhost"
+SetEnvVar "CSERVER_PORT" ":8080"
+SetEnvVar "CSERVER_MUSIC_DIR" "~/cadence_music"
+SetEnvVar "CSERVER_DB_HOST" "localhost"
+SetEnvVar "CSERVER_DB_PORT" "5432"
+SetEnvVar "CSERVER_DB_NAME" "cadence"
+SetEnvVar "CSERVER_DB_SSLMODE" "disable"
+SetEnvVar "CSERVER_DB_DRIVER" "postgres"
+SetEnvVar "CSERVER_DB_USER" "postgres"
+SetEnvVar "CSERVER_DB_TABLE" "aria"
+
+# List of environment variables with no defaults.
+# Does not necessarily need to be used with SetSecretEnvVar(),
+# though most envvars here would make sense to hide the input.
+SetSecretEnvVar "CSERVER_DB_PASS"
+
+##############################################################
+
+
+echo -e "\nSETUP.sh completed."
+return 0

@@ -1,4 +1,10 @@
 #!/bin/bash
+# SETUP.sh -- sets all environment variables used as 
+# configuration in the Cadence server.
+# Default config values can also be set here.
+
+# Use dot syntax to ensure configs are exported to the right shell.
+# Usage: . ./SETUP.sh
 
 echo "SETUP.sh"
 
@@ -67,7 +73,6 @@ SetEnvVar "CSERVER_DB_TABLE" "aria"
 SetSecretEnvVar "CSERVER_DB_PASS"
 
 ##############################################################
-
 
 echo -e "\nSETUP.sh completed."
 return 0

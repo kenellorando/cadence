@@ -51,8 +51,7 @@ func databaseAutoConfig() error {
 	// we redefine the DSN to hold the database name
 	// and reconnect using it.
 	clog.Debug("databaseAutoConfig", fmt.Sprintf("Database <%s> recreated. Reconnecting to newly created database...", c.db.Name))
-	c.db.DSN = fmt.Sprintf("host=%s port=%s user=%s password=%s sslmode=%s dbname=%s", c.db.Host, c.db.Port, c.db.User, c.db.Pass, c.db.SSLMode, c.db.Name)
-	database.Close()
+	c.db.DSN = fmt.Sprintf(c.db.DSN+" dbname='%s'", c.db.Name)
 	database, _ = databaseConnect()
 	if err != nil {
 		clog.Error("databaseAutoConfig", "Failed to connect to newly created database. Skipping remaining autoconfig steps.", err)

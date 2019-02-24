@@ -54,6 +54,7 @@ func init() {
 	server := ServerConfig{}
 	db := DBConfig{}
 	schema := SchemaConfig{}
+
 	// Webserver configurationi, err := strconv.Atoi(s)
 	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL")
 	server.Port = env.GetString("CSERVER_PORT")

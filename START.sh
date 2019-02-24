@@ -10,4 +10,4 @@
 . ./scripts/config.sh
 
 # Run the server application code
-go run *.go
+go run ./server/*.go

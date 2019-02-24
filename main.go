@@ -23,6 +23,7 @@ type Config struct {
 
 // ServerConfig - Webserver configuration
 type ServerConfig struct {
+	Domain   string
 	LogLevel int
 	Port     string
 	MusicDir string
@@ -56,6 +57,7 @@ func init() {
 	schema := SchemaConfig{}
 
 	// Webserver configurationi, err := strconv.Atoi(s)
+	server.Domain = env.GetString("CSERVER_DOMAIN")
 	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL")
 	server.Port = env.GetString("CSERVER_PORT")
 	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR")
@@ -105,6 +107,11 @@ func init() {
 func main() {
 	// Handle routes
 	r := mux.NewRouter()
+
+	// Subdomain 1
+	s := r.Host("docs." + c.server.Domain + c.server.Port).Subrouter()
+	s.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/docs"))).Methods("GET")
+
 	// List API routes first
 	r.HandleFunc("/api/aria1/search", ARIA1Search).Methods("POST")
 	r.HandleFunc("/api/aria1/request", ARIA1Request).Methods("POST")

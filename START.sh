@@ -1,5 +1,5 @@
 #!/bin/bash
-# START.sh -- 
+# START.sh -- all in one start script
 
 # TODO: Kill and start Icecast
 # TODO: Kill and start Liquidsoap
@@ -10,4 +10,4 @@
 . ./scripts/config.sh
 
 # Run the server application code
-go run ./server/*.go
+go run *.go

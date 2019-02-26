@@ -79,7 +79,7 @@ func init() {
 	c.schema = schema
 
 	// Initialize logging
-	clog.Init(c.server.LogLevel)
+	clog.Level(c.server.LogLevel)
 	clog.Info("init", fmt.Sprintf("Logging service initialized to level <%v>", c.server.LogLevel))
 
 	// Establish a connection to the database

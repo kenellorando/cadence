@@ -1,0 +1,105 @@
+/* Font imports */
+@import url('https://fonts.googleapis.com/css?family=Rock+Salt');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:300');
+@import url('https://fonts.googleapis.com/css?family=Roboto:300');
+@import url('https://fonts.googleapis.com/css?family=Inconsolata');
+
+/* Resets */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+/* Page layout */
+html {
+    background-color: beige;
+    color: black;
+}
+body {
+    font-family: 'Roboto Condensed', sans-serif;
+    background-color: whitesmoke;
+}
+main {
+    background-color: inherit;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+/* Navigation */
+nav {
+    background-color: #1a1a1d;
+
+    font-size: 17px;
+    font-weight: 300;
+
+    padding-left: 20%;
+    padding-right: 20%;
+}
+nav ul {
+    list-style-type: none;
+}
+nav a {
+    color: bisque;
+    text-decoration: none;
+}
+nav #navLeft {
+    color: bisque;
+}
+nav #navRight {
+    color: bisque;
+    float: right;
+    font-size: 16px;
+    font-family: 'Roboto Condensed', sans-serif;
+    padding: 18px;
+}
+nav #navRight a {
+    margin-left: 30px;
+}
+nav #banner {
+    font-family: 'Rock Salt', cursive;
+    font-size: 22px;
+}
+
+/* Player */
+#player {
+    margin-top: 60px;
+}
+#player #status {
+    font-family: 'Inconsolata', monospace;
+    font-size: 13px;
+}
+#player #song {
+    font-size: 38px;
+
+    margin-top: 15px;
+}
+#player #artist {
+    font-size: 24px;
+}
+#player #playButton {
+    background-color: #DBEFEE;
+    color: #454555;
+    
+    font-size: 20px;
+    text-align: center;
+    
+    padding: 10px 23px;
+    width: 110px;
+    border-radius: 10%;
+
+    cursor: pointer;
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+#player #version {
+    font-size: 13px;
+    font-family: 'Inconsolata', monospace;
+}
+
+footer {
+    font-size: 13px;
+    margin-top: 50px;
+    text-align: center;
+}

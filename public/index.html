@@ -2,9 +2,43 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8"/>
-        <title>CSERVER Test Page</title>
-    </head>
+        <title>Cadence Radio ♥</title>
+
+        <link rel="stylesheet" href="/css/base.css">
+        
+         <!-- jQuery Google CDN -->
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+   
+        <!-- Radio frontend scripts -->
+        <script type="text/javascript" src="js/player.js"></script>
+        </head>
     <body>
-        <h1>CSERVER Test Page</h1>
+        <nav>
+            <span id="navLeft">
+                    <a id="banner" href="/">CADENCE</a>
+            </span>
+            <span id="navRight">
+                    <a href="#">Recently Played</a>
+                    <a href="#">Library</a>
+                    <a href="https://github.com/kenellorando/cadence">Source</a>
+                    <a href="#">Docs</a>
+            </span>
+        </nav>
+        <main>
+            <div id="player">
+                <!-- Connection to source -->
+                <audio id="stream" src="http://stream.cadenceradio.com:8000/cadence1?type=.mp3" type="audio/mp3"></audio>
+                <!-- Now playing information -->
+                <div id="status">Disconnected from server.</div>
+                <div id="song">-</div>
+                <div id="artist">-</div>
+                <div id="playButton">►</div>
+                
+                <div id="version">Cadence/ARIA Version 4.0</div>
+            </div>
+        </main>
+        <footer>
+            <span>A project by <a href="https://kenellorando.com/">Ken Ellorando</a></span>
+        </footer>
     </body>
 </html>

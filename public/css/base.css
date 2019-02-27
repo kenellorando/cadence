@@ -63,6 +63,7 @@ nav #banner {
 
 /* Player */
 #player {
+    text-align: center;
     margin-top: 60px;
 }
 #player #status {
@@ -92,6 +93,8 @@ nav #banner {
 
     margin-top: 20px;
     margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
 }
 #player #version {
     font-size: 13px;

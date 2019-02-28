@@ -46,6 +46,8 @@ function SetSecretEnvVar() {
     then
         echo -e "\n$ENVVAR has no default and cannot be left blank."
         SetSecretEnvVar "$1"
+    else
+	export $ENVVAR=$INPUT    
     fi
 }
 
@@ -66,7 +68,6 @@ SetEnvVar "CSERVER_DB_SSLMODE" "disable"
 SetEnvVar "CSERVER_DB_DRIVER" "postgres"
 SetEnvVar "CSERVER_DB_USER" "postgres"
 SetEnvVar "CSERVER_DB_TABLE" "aria"
-
 # List of environment variables with no defaults.
 # Does not necessarily need to be used with SetSecretEnvVar(),
 # though most envvars here would make sense to hide the input.
@@ -75,4 +76,3 @@ SetSecretEnvVar "CSERVER_DB_PASS"
 ##############################################################
 
 echo -e "\nSETUP.sh completed."
-return 0

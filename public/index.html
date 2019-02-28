@@ -6,22 +6,22 @@
 
         <link rel="stylesheet" href="/css/base.css">
         
-         <!-- jQuery Google CDN -->
-         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- jQuery Google CDN -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
    
         <!-- Radio frontend scripts -->
         <script type="text/javascript" src="js/player.js"></script>
-        </head>
+    </head>
     <body>
         <nav>
             <span id="navLeft">
-                    <a id="banner" href="/">CADENCE</a>
+                <a id="banner" href="/">CADENCE</a>
             </span>
             <span id="navRight">
-                    <a href="#">Recently Played</a>
-                    <a href="#">Library</a>
-                    <a href="https://github.com/kenellorando/cadence">Source</a>
-                    <a href="#">Docs</a>
+                <a href="#">Request</a>
+                <a href="#">Library</a>
+                <a href="https://github.com/kenellorando/cadence">Source</a>
+                <a href="#">Docs</a>
             </span>
         </nav>
         <main>
@@ -30,13 +30,27 @@
                 <audio id="stream" src="http://stream.cadenceradio.com:8000/cadence1?type=.mp3" type="audio/mp3"></audio>
                 <!-- Now playing information -->
                 <div id="status">Disconnected from server.</div>
+
                 <div id="song">-</div>
                 <div id="artist">-</div>
                 <div id="playButton">►</div>
                 
                 <div id="version">
                     <div>Cadence/ARIA Version 4.0</div> 
-                    <div>Test Build 2019-02-26/01</div>
+                    <div>Test Build 2019-02-27/01</div>
+                </div>
+            </div>
+           
+            <hr/>
+            <div id="frontContent">
+                <div class="column">
+                    <h1>Announcements</h1>
+                    <a class="twitter-timeline" data-lang="en" data-width="500" data-height="200" data-theme="dark" data-link-color="#19CF86" href="https://twitter.com/CadenceRadio?ref_src=twsrc%5Etfw">Tweets by CadenceRadio</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+                </div>
+                <div class="column">
+                    <h1>Legal</h1>
+                    <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
                 </div>
             </div>
         </main>

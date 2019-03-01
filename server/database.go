@@ -80,7 +80,7 @@ func databaseAutoConfig() error {
 // parses their metadata and inserts them into the table.
 func databasePopulate() error {
 	// SQL exec statements here
-	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6::VARCHAR WHERE NOT EXISTS (SELECT %s FROM %s WHERE %s=$6)", c.schema.Table, "title", "album", "artist", "genre", "year", "path", "path", c.schema.Table, "path")
+	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6::VARCHAR WHERE NOT EXISTS (SELECT %s FROM %s WHERE %s=$6)", c.schema.Table, "title", "album", "artist", "genre", "path", "path", c.schema.Table, "path")
 
 	// Check if music directory exists. Return if err
 	_, err := os.Stat(c.server.MusicDir)

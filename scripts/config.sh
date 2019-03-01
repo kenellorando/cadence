@@ -60,7 +60,7 @@ function SetSecretEnvVar() {
 SetEnvVar "CSERVER_LOGLEVEL" "5"
 SetEnvVar "CSERVER_DOMAIN" "localhost"
 SetEnvVar "CSERVER_PORT" ":8080"
-SetEnvVar "CSERVER_MUSIC_DIR" "~/cadence_music"
+SetEnvVar "CSERVER_MUSIC_DIR" "/home/ken/cadence_music/"
 SetEnvVar "CSERVER_DB_HOST" "localhost"
 SetEnvVar "CSERVER_DB_PORT" "5432"
 SetEnvVar "CSERVER_DB_NAME" "cadence"

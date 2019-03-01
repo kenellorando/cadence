@@ -99,7 +99,7 @@ func init() {
 		} else {
 			clog.Info("init", "Database auto configurator completed building database.")
 			clog.Info("init", "Starting initial database population...")
-			// databasePopulate()
+			databasePopulate()
 		}
 	}
 }

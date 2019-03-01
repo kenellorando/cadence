@@ -3,7 +3,11 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
+	"github.com/dhowden/tag"
 	"github.com/kenellorando/clog"
 	_ "github.com/lib/pq"
 )
@@ -52,39 +56,99 @@ func databaseAutoConfig() error {
 	// and reconnect using it.
 	clog.Debug("databaseAutoConfig", fmt.Sprintf("Database <%s> recreated. Reconnecting to newly created database...", c.db.Name))
 	c.db.DSN = fmt.Sprintf(c.db.DSN+" dbname='%s'", c.db.Name)
-	database, _ = databaseConnect()
+	database, err = databaseConnect()
 	if err != nil {
 		clog.Error("databaseAutoConfig", "Failed to connect to newly created database. Skipping remaining autoconfig steps.", err)
 		return err
 	}
 
 	// Build the database tables
-	clog.Debug("databaseAutoConfig", fmt.Sprintf("Building database schema for table <%s>...", c.schema.Table))
+	clog.Debug("databaseAutoConfig", fmt.Sprintf("Reconnected. Building database schema for table <%s>...", c.schema.Table))
 	_, err = database.Exec(createTable)
 	if err != nil {
 		clog.Error("databaseAutoConfig", "Failed to build database table. Skipping remaining autoconfig steps.", err)
 		return err
 	}
 
-	clog.Debug("databaseAutoConfig", fmt.Sprintf("Table <%s> built successfully.", c.schema.Table))
+	clog.Debug("databaseAutoConfig", fmt.Sprintf("Table <%s> built successfully. Running initial table population...", c.schema.Table))
+	err = databasePopulate()
 
-	// TODO: Populate table
 	return err
 }
 
-/*
+// Scans the env-var set music directory for audio files,
+// parses their metadata and inserts them into the table.
 func databasePopulate() error {
-	// Check if MUSIC_DIR exists. Return if err
-	if _, err := os.Stat(c.server.MusicDir); err != nil {
+	// SQL exec statements here
+	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6::VARCHAR WHERE NOT EXISTS (SELECT %s FROM %s WHERE %s=$6)", c.schema.Table, "title", "album", "artist", "genre", "year", "path", "path", c.schema.Table, "path")
+
+	// Check if music directory exists. Return if err
+	_, err := os.Stat(c.server.MusicDir)
+	if err != nil {
 		if os.IsNotExist(err) {
-			clog.Error("databasePopulate", "The defined music directory")
-			return
+			clog.Error("databasePopulate", "The defined music directory was not found.", err)
+			return err
 		}
 	}
 
+	// Recursive walk on directory
+	err = filepath.Walk(c.server.MusicDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Skip directories
+		if info.IsDir() {
+			return nil
+		}
+
+		// Skip non-music files
+		music := false
+		var extensions = [...]string{".mp3", "m4a", ".ogg", ".flac"}
+		for _, ext := range extensions {
+			if strings.HasSuffix(path, ext) {
+				music = true
+				break
+			}
+		}
+
+		if !music {
+			return nil
+		}
+
+		// Open a file for reading
+		file, e := os.Open(path)
+		if e != nil {
+			return e
+		}
+
+		// Read metadata from the file
+		tags, er := tag.ReadFrom(file)
+		if er != nil {
+			return er
+		}
+
+		fmt.Printf("title %q, album %q, artist %q, genre %q, year %d.\n",
+			tags.Title(),
+			tags.Album(),
+			tags.Artist(),
+			tags.Genre(),
+			tags.Year())
+
+		// Insert into database
+		_, err = database.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(),
+			tags.Genre(), tags.Year(), path)
+		if err != nil {
+			panic(err)
+		}
+
+		// Close the file
+		file.Close()
+		return nil
+	})
+
 	return err
 }
-*/
 
 // Establishes connection to database using configuration,
 // Confirms connection with a ping, returns a database session

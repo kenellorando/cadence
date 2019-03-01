@@ -39,7 +39,6 @@ a {
 nav {
     background-color: #1a1a1d;
 
-    font-size: 17px;
     font-weight: 300;
 
     padding-left: 22%;
@@ -57,7 +56,7 @@ nav #navLeft {
 nav #navRight {
     color: bisque;
     float: right;
-    font-size: 16px;
+    font-size: 18px;
     font-family: 'Roboto Condensed', sans-serif;
     padding: 18px;
 }
@@ -66,7 +65,7 @@ nav #navRight a {
 }
 nav #banner {
     font-family: 'Rock Salt', cursive;
-    font-size: 22px;
+    font-size: 24px;
 }
 
 /* Player */

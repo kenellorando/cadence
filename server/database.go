@@ -66,12 +66,9 @@ func databaseAutoConfig() error {
 	clog.Debug("databaseAutoConfig", fmt.Sprintf("Reconnected. Building database schema for table <%s>...", c.schema.Table))
 	_, err = database.Exec(createTable)
 	if err != nil {
-		clog.Error("databaseAutoConfig", "Failed to build database table. Skipping remaining autoconfig steps.", err)
+		clog.Error("databaseAutoConfig", "Failed to build database table!", err)
 		return err
 	}
-
-	clog.Debug("databaseAutoConfig", fmt.Sprintf("Table <%s> built successfully. Running initial table population...", c.schema.Table))
-	err = databasePopulate()
 
 	return err
 }

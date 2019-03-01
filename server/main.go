@@ -95,11 +95,15 @@ func init() {
 		database = newDatabase
 		err := databaseAutoConfig()
 		if err != nil {
-			clog.Warn("init", fmt.Sprintf("Auto config failed."))
+			clog.Warn("init", fmt.Sprintf("Database auto config failed. Skipping initial database population."))
 		} else {
-			clog.Info("init", "Database auto configurator completed building database.")
-			clog.Info("init", "Starting initial database population...")
-			databasePopulate()
+			clog.Info("init", "Database auto config completed building database. Starting initial database population...")
+			err = databasePopulate()
+			if err != nil {
+				clog.Warn("init", "Initial database population failed.")
+			} else {
+				clog.Info("init", "All initialization tasks completed successfully.")
+			}
 		}
 	}
 }

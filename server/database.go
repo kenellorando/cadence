@@ -168,6 +168,7 @@ func databasePopulate() error {
 	}
 
 	clog.Info("databasePopulate", "Database population complete.")
+	return nil
 }
 
 // Establishes connection to database using configuration,

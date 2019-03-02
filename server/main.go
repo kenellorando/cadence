@@ -120,7 +120,7 @@ func main() {
 	r.HandleFunc("/api/aria1/search", ARIA1Search).Methods("POST")
 	r.HandleFunc("/api/aria1/request", ARIA1Request).Methods("POST")
 	// Serve other specific routes next
-	r.HandleFunc("/library", ServeLibrary).Methods("GET")
+	r.PathPrefix("/library/").Handler(http.StripPrefix("/library/", http.FileServer(http.Dir("./public/library/"))))
 	r.HandleFunc("/", ServeRoot).Methods("GET")
 	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("./public/css/"))))
 	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("./public/js/"))))

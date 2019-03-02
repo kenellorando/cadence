@@ -11,14 +11,16 @@
    
         <!-- Radio frontend scripts -->
         <script type="text/javascript" src="js/player.js"></script>
+        <!-- View switching scripts -->
+        <script type="text/javascript" src="js/views.js"></script>
     </head>
     <body>
         <nav>
             <span id="navLeft">
-                <a id="banner" href="/">CADENCE</a>
+                <a id="banner">CADENCE</a>
             </span>
             <span id="navRight">
-                <a href="#">Request</a>
+                <a id="navRequest">Request</a>
                 <a href="/library/">Library</a>
                 <a href="https://github.com/kenellorando/cadence">Source</a>
                 <a href="#">Docs</a>
@@ -42,8 +44,7 @@
             </div>
            
             <hr/>
-            <div id="frontContent">
-
+            <div id="frontMain">
                 <div class="column">
                     <h2>About Cadence</h2>
                     <p>Cadence is an online radio originally started in February 2017 as my first endeavour to practice a full range of tech skills, from development to server administration.</p>
@@ -57,6 +58,18 @@
                 <div class="column">
                     <h2>Announcements</h2>
                     <a class="twitter-timeline" data-lang="en" data-width="500" data-height="300" data-theme="dark" data-link-color="#19CF86" href="https://twitter.com/CadenceRadio?ref_src=twsrc%5Etfw">Tweets by CadenceRadio</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                </div>
+            </div>
+            <div id="frontRequest">
+                <div class="column">
+                    <h2>Request</h2>
+                    <p>This feature will be built out soon.</p>
+                </div>
+            </div>
+            <div id="frontLibrary">
+                <div class="column">
+                    <h2>Library</h2>
+                    <p>The music library will be viewable here soon.</p>
                 </div>
             </div>
         </main>

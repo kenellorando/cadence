@@ -49,6 +49,7 @@ nav ul {
 }
 nav a {
     color: bisque;
+    cursor: pointer;
 }
 nav #navLeft {
     color: bisque;
@@ -110,9 +111,17 @@ nav #banner {
     font-family: 'Inconsolata', monospace;
 }
 
-#frontContent {
+/* The content underneath the player
+This content is all loaded at once, but some is hidden by default */
+#frontMain {
     column-count: 2;
     column-gap: 70px;
+}
+#frontRequest {
+    display: none;
+}
+#frontLibrary {
+    display: none;
 }
 
 .column {

@@ -21,7 +21,7 @@ func ServeRoot(w http.ResponseWriter, r *http.Request) {
 func ServeLibrary(w http.ResponseWriter, r *http.Request) {
 	clog.Info("ServeLibrary", fmt.Sprintf("Client %s requesting %s%s", r.RemoteAddr, r.Host, r.URL.Path))
 	w.Header().Set("Content-type", "text/plain")
-	http.ServeFile(w, r, path.Dir("./public/library.txt"))
+	http.ServeFile(w, r, c.server.RootPath+"./public/library.txt")
 }
 
 // Serve404 - served for any requests to unknown resources

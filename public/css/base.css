@@ -8,13 +8,13 @@
 html, body {
     margin: 0;
     padding: 0;
-    min-height: 100%;
 }
 
 /* Page layout */
 html {
     background-color: beige;
     color: black;
+    height: 100%;
 }
 body {
     font-family: 'Roboto Condensed', sans-serif;
@@ -22,6 +22,7 @@ body {
 
     background-color: #282726;
     color: beige;
+    min-height: 100%;
 }
 main {
     background-color: inherit;

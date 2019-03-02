@@ -15,6 +15,12 @@ html {
     background-color: beige;
     color: black;
     height: 100%;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+/* We hide the scrollbar for consistency */
+::-webkit-scrollbar {
+    width: 0px;
 }
 body {
     font-family: 'Roboto Condensed', sans-serif;

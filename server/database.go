@@ -90,12 +90,12 @@ func databasePopulate() error {
 	}
 
 	// Check for the music library file
-	_, err = os.Stat(c.server.RootPath + "./public/library/index.html")
+	_, err = os.Stat(c.server.RootPath + "./public/library.txt")
 	if err != nil {
 		// If it does not exist, create it
 		// If it does, remove it and recreate an empty file
 		if os.IsNotExist(err) {
-			os.Create(c.server.RootPath + "./public/library/index.html")
+			os.Create(c.server.RootPath + "./public/library.txt")
 		}
 	} else {
 		os.Remove(c.server.RootPath + "./public/library.txt")
@@ -143,7 +143,7 @@ func databasePopulate() error {
 		}
 
 		// Write song entry to library file
-		libraryFile, _ := os.OpenFile(c.server.RootPath+"./public/library/index.html", os.O_WRONLY|os.O_APPEND, 0644)
+		libraryFile, _ := os.OpenFile(c.server.RootPath+"./public/library.txt", os.O_WRONLY|os.O_APPEND, 0644)
 		libraryFile.WriteString(fmt.Sprintf("%s -- %s\n", tags.Artist(), tags.Title()))
 
 		// Insert into database

@@ -23,6 +23,7 @@ type Config struct {
 
 // ServerConfig - Webserver configuration
 type ServerConfig struct {
+	RootPath string
 	Domain   string
 	LogLevel int
 	Port     string
@@ -57,6 +58,7 @@ func init() {
 	schema := SchemaConfig{}
 
 	// Webserver configurationi, err := strconv.Atoi(s)
+	server.RootPath = env.GetString("CSERVER_ROOTPATH")
 	server.Domain = env.GetString("CSERVER_DOMAIN")
 	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL")
 	server.Port = env.GetString("CSERVER_PORT")
@@ -120,7 +122,7 @@ func main() {
 	r.HandleFunc("/api/aria1/search", ARIA1Search).Methods("POST")
 	r.HandleFunc("/api/aria1/request", ARIA1Request).Methods("POST")
 	// Serve other specific routes next
-	r.PathPrefix("/library/").Handler(http.StripPrefix("/library/", http.FileServer(http.Dir("./public/library/"))))
+	r.HandleFunc("/library", ServeLibrary).Methods("GET")
 	r.HandleFunc("/", ServeRoot).Methods("GET")
 	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("./public/css/"))))
 	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("./public/js/"))))

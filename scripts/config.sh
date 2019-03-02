@@ -57,6 +57,7 @@ function SetSecretEnvVar() {
 
 # List of environment variables that have defaults.
 # These need to be set with SetEnvVar()
+SetEnvVar "CSERVER_ROOTPATH" "/home/ken/cadence/"
 SetEnvVar "CSERVER_LOGLEVEL" "5"
 SetEnvVar "CSERVER_DOMAIN" "localhost"
 SetEnvVar "CSERVER_PORT" ":8080"

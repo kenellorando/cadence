@@ -17,13 +17,6 @@ func ServeRoot(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, path.Dir("./public/index.html"))
 }
 
-// ServeLibrary - serves the library text file
-func ServeLibrary(w http.ResponseWriter, r *http.Request) {
-	clog.Info("ServeLibrary", fmt.Sprintf("Client %s requesting %s%s", r.RemoteAddr, r.Host, r.URL.Path))
-	w.Header().Set("Content-type", "text/plain")
-	http.ServeFile(w, r, c.server.RootPath+"./public/library.txt")
-}
-
 // Serve404 - served for any requests to unknown resources
 func Serve404(w http.ResponseWriter, r *http.Request) {
 	clog.Info("Serve404", fmt.Sprintf("Client %s requesting unknown resource %s%s. Returning 404.", r.RemoteAddr, r.Host, r.URL.Path))
@@ -90,4 +83,13 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	// Telnet to liquidsoap
 	// Forward path in a request command
 	// Disconnect from liquidsoap
+}
+
+// ARIA1Library - serves the library text file
+func ARIA1Library(w http.ResponseWriter, r *http.Request) {
+	clog.Info("ServeLibrary", fmt.Sprintf("Client %s requesting %s%s", r.RemoteAddr, r.Host, r.URL.Path))
+	w.Header().Set("Content-type", "text/plain")
+	http.ServeFile(w, r, c.server.RootPath+"./public/library.txt")
+	// Todo: Let's go back to the populator function and have it build a JSON of the library
+	// This api function will deliver the JSON and the frontend will handle formatting
 }

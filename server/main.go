@@ -114,15 +114,17 @@ func main() {
 	// Handle routes
 	r := mux.NewRouter()
 
-	// Subdomain 1
-	s := r.Host("docs." + c.server.Domain + c.server.Port).Subrouter()
-	s.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/docs"))).Methods("GET")
+	// Subdomains, if needed
+	/*
+		s := r.Host("docs." + c.server.Domain + c.server.Port).Subrouter()
+		s.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/docs"))).Methods("GET")
+	*/
 
 	// List API routes firstther specific routes next
 	r.HandleFunc("/api/aria1/search", ARIA1Search).Methods("POST")
 	r.HandleFunc("/api/aria1/request", ARIA1Request).Methods("POST")
+	r.HandleFunc("/api/aria1/library", ARIA1Library).Methods("GET")
 	// Serve other specific routes next
-	r.HandleFunc("/library/", ServeLibrary).Methods("GET")
 	r.HandleFunc("/", ServeRoot).Methods("GET")
 	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("./public/css/"))))
 	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("./public/js/"))))

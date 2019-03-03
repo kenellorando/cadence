@@ -125,17 +125,13 @@ func databasePopulate() error {
 		}
 
 		// Skip non-music files
-		music := false
 		var extensions = [...]string{".mp3", "m4a", ".ogg", ".flac"}
 		for _, ext := range extensions {
 			if strings.HasSuffix(path, ext) {
-				music = true
 				break
+			} else {
+				return nil
 			}
-		}
-
-		if !music {
-			return nil
 		}
 
 		// Open a file for reading

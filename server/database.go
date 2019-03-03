@@ -106,8 +106,8 @@ func databasePopulate() error {
 	// Here, we define the struct and slice for the library file JSON
 	// We will append to it during the file walk
 	type LibraryEntry struct {
-		Title  string
 		Artist string
+		Title  string
 	}
 	var libraryData []LibraryEntry
 
@@ -157,15 +157,15 @@ func databasePopulate() error {
 			panic(err)
 		}
 
-		// add further value into it
-		libraryData = append(libraryData, LibraryEntry{Title: tags.Title(), Artist: tags.Artist()})
+		// Add song (as LibraryEntry) to full libraryData
+		libraryData = append(libraryData, LibraryEntry{Artist: tags.Artist(), Title: tags.Title()})
 
 		// Close the file
 		file.Close()
 		return nil
 	})
 
-	// Marshal the new JSON data
+	// Marshal the new JSON data and store it on file
 	libraryDataMarshal, _ := json.Marshal(libraryData)
 	err = ioutil.WriteFile(c.server.RootPath+"./public/library.json", libraryDataMarshal, 0644)
 

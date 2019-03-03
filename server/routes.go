@@ -94,6 +94,4 @@ func ARIA1Library(w http.ResponseWriter, r *http.Request) {
 	jsonMarshal, _ := json.Marshal(rawJSON)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonMarshal)
-	// Todo: Let's go back to the populator function and have it build a JSON of the library
-	// This api function will deliver the JSON and the frontend will handle formatting
 }

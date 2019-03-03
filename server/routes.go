@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"path"
 
 	"github.com/kenellorando/clog"
@@ -90,8 +89,9 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 func ARIA1Library(w http.ResponseWriter, r *http.Request) {
 	clog.Info("ServeLibrary", fmt.Sprintf("Client %s requesting %s%s", r.RemoteAddr, r.Host, r.URL.Path))
 	// Open the file, marshall the data and write it
-	fileReader, _ := os.Open(c.server.RootPath + "./public/library.json")
-	jsonMarshal, _ := json.Marshal(fileReader)
+	fileReader, _ := ioutil.ReadFile(c.server.RootPath + "./public/library.json")
+	rawJSON := json.RawMessage(string(fileReader))
+	jsonMarshal, _ := json.Marshal(rawJSON)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonMarshal)
 	// Todo: Let's go back to the populator function and have it build a JSON of the library

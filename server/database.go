@@ -150,10 +150,6 @@ func databasePopulate() error {
 			return er
 		}
 
-		// Write song entry to library file
-		libraryFile, _ := os.OpenFile(c.server.RootPath+"./public/library.json", os.O_WRONLY|os.O_APPEND, 0644)
-		libraryFile.WriteString(fmt.Sprintf("%s : %s\n", tags.Artist(), tags.Title()))
-
 		// Insert into database
 		_, err = database.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(),
 			tags.Genre(), tags.Year(), path)

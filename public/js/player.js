@@ -29,7 +29,7 @@ function radioTitle() {
             $('#artist').text("-");
             document.getElementById("status").innerHTML = "Disconnected from server."
             document.getElementById("artist").innerHTML = "-";
-            document.getElementById("songe").innerHTML = "-";
+            document.getElementById("song").innerHTML = "-";
         }
     })
 };

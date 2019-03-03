@@ -88,8 +88,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 // ARIA1Library - serves the library text file
 func ARIA1Library(w http.ResponseWriter, r *http.Request) {
 	clog.Info("ServeLibrary", fmt.Sprintf("Client %s requesting %s%s", r.RemoteAddr, r.Host, r.URL.Path))
-	w.Header().Set("Content-type", "text/plain")
-	http.ServeFile(w, r, c.server.RootPath+"./public/library.txt")
+	json.NewEncoder(w).Encode(c.server.RootPath + "./public/library.json")
 	// Todo: Let's go back to the populator function and have it build a JSON of the library
 	// This api function will deliver the JSON and the frontend will handle formatting
 }

@@ -28,7 +28,7 @@ $(document).ready(function () {
                         table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td></tr>";
                     })
                 } else {
-                    table += "<div>No song data was returned in the library listing, that's weird./div>";
+                    document.getElementById("library").innerHTML = "<div>Couldn't get full library listing! :(</div>";
                 }
 
                 table += "</table>";

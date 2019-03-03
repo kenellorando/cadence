@@ -5,11 +5,14 @@ $(document).ready(function () {
         console.log("Requesting the full library listing...");
         // GET request to library API endpoint, expected JSON  
         $.ajax({
+            // TODO here: possibly replace .ajax with shorthand jquery getJSON
             type: 'GET',
             url: '/api/aria1/library',
-            dataType: 'application/json',
+            dataType: 'json',
             // On success, format data into table
             success: function (data) {
+                console.log("Successfully retrieved full library listing.")
+                console.log(data)
                 /*
                 // Start the containing table
                 let table = "<table id='libraryTable'>";
@@ -31,9 +34,6 @@ $(document).ready(function () {
                 // Put table into results html
                 document.getElementById("library").innerHTML = table;
                 */
-               console.log("Success.")
-               console.log(data.length)
-               console.log(data)
             },
             error: function () {
                 console.log("Error retrieving full library listing.");

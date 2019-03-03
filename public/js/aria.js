@@ -13,27 +13,25 @@ $(document).ready(function () {
             success: function (data) {
                 console.log("Successfully retrieved full library listing.")
                 console.log(data)
-                /*
+    
                 // Start the containing table
                 let table = "<table id='libraryTable'>";
                 let i = 1;
 
                 if (data.length !== 0) {
-                console.log("CADENCE: Database query completed. " + data.length + " result(s) found.")
-                table += "<tr><th>Title</th><th>Artist</th><th>Availability</th></tr>"
+                    table += "<tr><th>Artist</th><th>Title</th></tr>"
 
-                data.forEach(function (song) {
-                    table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + escape(song.path) + "'>REQUEST</button></td></tr>";
-                })
+                    data.forEach(function (song) {
+                        table += "<tr><td>" + song.artist + "</td><td>" + song.title + "</td></tr>";
+                    })
                 } else {
-                console.log("CADENCE: Database query completed.  0 results found. :(");
-                table += "<div style='padding-top: 2em'>Nothing found for search '"+input+"' :(</div>";
+                    table += "<div>No song data was returned in the library listing, that's weird./div>";
                 }
 
                 table += "</table>";
-                // Put table into results html
+                // Put table into library HTML
                 document.getElementById("library").innerHTML = table;
-                */
+
             },
             error: function () {
                 console.log("Error retrieving full library listing.");

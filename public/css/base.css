@@ -37,6 +37,7 @@ main {
 }
 
 a {
+    cursor: pointer;
     color: orangered;
     text-decoration: none;
 }
@@ -55,7 +56,6 @@ nav ul {
 }
 nav a {
     color: bisque;
-    cursor: pointer;
 }
 nav #navLeft {
     color: bisque;

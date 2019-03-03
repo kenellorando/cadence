@@ -3,6 +3,8 @@ $(document).ready(function () {
     // The api request is a simple GET
     $('#getLibrary').click(function (e) {
         console.log("Requesting the full library listing...");
+        document.getElementById("library").innerHTML = "<div>Getting full library listing...</div>";
+
         // GET request to library API endpoint, expected JSON  
         $.ajax({
             // TODO here: possibly replace .ajax with shorthand jquery getJSON
@@ -14,6 +16,7 @@ $(document).ready(function () {
                 console.log("Successfully retrieved full library listing.")
                 console.log(data)
     
+                
                 // Start the containing table
                 let table = "<table id='libraryTable'>";
                 let i = 1;
@@ -31,10 +34,10 @@ $(document).ready(function () {
                 table += "</table>";
                 // Put table into library HTML
                 document.getElementById("library").innerHTML = table;
-
             },
             error: function () {
                 console.log("Error retrieving full library listing.");
+                document.getElementById("library").innerHTML = "<div>Couldn't get full library listing! :(</div>";
             }
         });
     });

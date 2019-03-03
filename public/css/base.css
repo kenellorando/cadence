@@ -18,7 +18,7 @@ html {
     overflow: scroll;
     overflow-x: hidden;
 }
-/* We hide the scrollbar for consistency */
+/* We hide the scrollbar for width consistency */
 ::-webkit-scrollbar {
     width: 0px;
 }
@@ -117,18 +117,31 @@ nav #banner {
     font-family: 'Inconsolata', monospace;
 }
 
-/* The content underneath the player
-This content is all loaded at once, but some is hidden by default */
+/* The content underneath the player */
 #frontMain {
     column-count: 2;
     column-gap: 70px;
 }
+
 #frontRequest {
     display: none;
 }
+
 #frontLibrary {
     display: none;
 }
+#frontLibrary #library {
+    font-family: 'Inconsolata', monospace;
+}
+#frontLibrary #libraryTable {
+    margin-top: 20px;
+    width: 100%;
+}
+#frontLibrary #libraryTable tr {
+    text-align: left;
+    border-bottom: 1px solid red;
+}
+
 
 .column {
     display: table;

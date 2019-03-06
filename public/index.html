@@ -45,15 +45,13 @@
             </div>
            
             <hr/>
+
             <div id="frontMain">
                 <div class="column">
                     <h2>About Cadence</h2>
                     <p>Cadence is an online radio originally started in February 2017 as my first endeavour to practice a full range of tech skills, from development to server administration.</p>
-
                     <p>The application is a Go web server which interacts with an Icecast stream server and database server. Cadence provides users with the ability to search the library as well as make song requests.</p>
-
                     <p>Active development continues to this day. All source is available on <a href="https://github.com/kenellorando/cadence">GitHub</a>.</p>
-
                     <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
                 </div>
                 <div class="column">
@@ -61,21 +59,27 @@
                     <a class="twitter-timeline" data-lang="en" data-width="500" data-height="300" data-theme="dark" data-link-color="#19CF86" href="https://twitter.com/CadenceRadio?ref_src=twsrc%5Etfw">Tweets by CadenceRadio</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                 </div>
             </div>
+
             <div id="frontRequest">
                 <div class="column">
                     <h2>Request</h2>
-                    <p>This feature will be built out soon.</p>
+                    <p>You can use the request feature to ask Cadence to play certain songs on the music server.</p>
+
+                    <input name="searchInput" id="searchInput" type="text" placeholder="Search for a song or artist!">
+                    <button id="searchButton">Search</button>
+
+                    <div id="searchResults"></div>
                 </div>
             </div>
+
             <div id="frontLibrary">
                 <div class="column">
                     <h2>Library</h2>
                     <p>This is a plain list of all songs held in the music server library, to better help you find what songs are available. To request a song, you can use the 'request' tab.</p>
-                
-                    
                     <div id="library"><a id="getLibrary">Load Song Library</a></div>
                 </div>
             </div>
+
         </main>
         <footer id="footer">
             <span>A project by <a href="https://kenellorando.com/">Ken Ellorando</a></span>

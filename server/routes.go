@@ -55,6 +55,8 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		Artist string
 		Title  string
 	}
+	var searchResults []SongData
+
 	// Run the search query on the database
 	rows, err := database.Query(selectWhereStatement)
 	if err != nil {
@@ -62,20 +64,13 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 	}
 	// Scan the returned data and save the relevant info
 	clog.Debug("ARIA1Search", "Scanning returned data...")
-	songs := make([]*SongData, 0)
+
 	for rows.Next() {
 		song := new(SongData)
-		err := rows.Scan(&song.ID, &song.Artist, &song.Title)
-		if err != nil {
-			clog.Error("ARIA1Search", "Data scan failed.", err)
-			return
-		}
-		songs = append(songs, song)
+		searchResults = append(searchResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title})
 	}
 
-	for _, song := range songs {
-		fmt.Printf("%v, %s, %s", song.ID, song.Artist, song.Title)
-	}
+	fmt.Print(searchResults)
 	// Return data to client
 }
 

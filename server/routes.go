@@ -47,19 +47,33 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 	clog.Info("ARIA1Search", fmt.Sprintf("Querying database for: '%v'", query))
 
 	// Query database
-	selectStatement := fmt.Sprintf("SELECT \"title\", \"artist\", \"id\" FROM %s ", c.schema.Table)
+	selectStatement := fmt.Sprintf("SELECT \"id\", \"artist\", \"title\" FROM %s ", c.schema.Table)
 	selectWhereStatement := fmt.Sprintf(selectStatement+"WHERE title LIKE '%s' OR artist LIKE '%s'", query, query)
-
+	// Declare object for a song
 	type SongData struct {
 		ID     int
-		Title  string
 		Artist string
+		Title  string
 	}
+	// Run the search query on the database
 	rows, err := database.Query(selectWhereStatement)
 	if err != nil {
 		clog.Error("ARIA1Search", "Database search failed.", err)
 	}
-	fmt.Print(rows)
+	// Scan the returned data and save the relevant info
+	clog.Debug("ARIA1Search", "Scanning returned data...")
+	songs := make([]*SongData, 0)
+	for rows.Next() {
+		song := new(SongData)
+		err := rows.Scan(&song.ID, &song.Artist, &song.Title)
+		if err != nil {
+			clog.Error("ARIA1Search", "Data scan failed.", err)
+			return
+		}
+		songs = append(songs, song)
+	}
+
+	fmt.Print(songs)
 	// Return data to client
 }
 

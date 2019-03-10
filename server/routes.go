@@ -47,8 +47,8 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 	clog.Info("ARIA1Search", fmt.Sprintf("Querying database for: '%v'", query))
 
 	// Query database
-	selectStatement := fmt.Sprintf("SELECT title, artist, id FROM %s ", c.schema.Table)
-	selectWhereStatement := fmt.Sprintf(selectStatement+"WHERE title LIKE %s OR artist LIKE %s", query, query)
+	selectStatement := fmt.Sprintf("SELECT \"title\", \"artist\", \"id\" FROM %s ", c.schema.Table)
+	selectWhereStatement := fmt.Sprintf(selectStatement+"WHERE title LIKE '%s' OR artist LIKE '%s'", query, query)
 
 	type SongData struct {
 		ID     int

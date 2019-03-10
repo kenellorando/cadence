@@ -61,7 +61,7 @@ $(document).ready(function () {
             url: '/api/aria1/search',
             /* contentType sends application/json data */
             contentType: 'application/json',
-            data: data,
+            data: JSON.stringify(data),
             /* dataType expects a json response */
             dataType: 'json',
             success: function (data) {

@@ -40,6 +40,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		clog.Error("ARIA1Search", fmt.Sprintf("Failed to read http-request body from %s.", r.RemoteAddr), err)
 		return
 	}
+	fmt.Println(body)
 	err = json.Unmarshal(body, &search)
 	if err != nil {
 		clog.Error("ARIA1Search", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.RemoteAddr), err)

@@ -35,17 +35,15 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 	var search Search
 
 	// Decode json object
-	body, err := ioutil.ReadAll(r.Body)
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&search)
 	if err != nil {
 		clog.Error("ARIA1Search", fmt.Sprintf("Failed to read http-request body from %s.", r.RemoteAddr), err)
 		return
 	}
-	fmt.Println(body)
-	err = json.Unmarshal(body, &search)
-	if err != nil {
-		clog.Error("ARIA1Search", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.RemoteAddr), err)
-		return
-	}
+
+	fmt.Println(search)
+	fmt.Println(search.Query)
 
 	query := search.Query
 	clog.Debug("ARIA1Search", fmt.Sprintf("Search query decoded: '%v'", query))

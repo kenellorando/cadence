@@ -59,8 +59,8 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/api/aria1/search',
-            /* contentType sends application/json data */
-            contentType: 'application/json',
+            /* contentType sends application/x-www-form-urlencoded data */
+            contentType: 'application/x-www-form-urlencoded',
             data: JSON.stringify(data),
             /* dataType expects a json response */
             dataType: 'json',

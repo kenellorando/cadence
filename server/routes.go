@@ -73,7 +73,9 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		songs = append(songs, song)
 	}
 
-	fmt.Print(songs)
+	for _, song := range songs {
+		fmt.Printf("%v, %s, %s", song.ID, song.Artist, song.Title)
+	}
 	// Return data to client
 }
 

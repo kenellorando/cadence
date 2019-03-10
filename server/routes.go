@@ -42,15 +42,24 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(search)
-	fmt.Println(search.Query)
-
 	query := search.Query
 	clog.Debug("ARIA1Search", fmt.Sprintf("Search query decoded: '%v'", query))
 	clog.Info("ARIA1Search", fmt.Sprintf("Querying database for: '%v'", query))
-	// Connect to database for query
+
 	// Query database
-	// Close connection to database
+	selectStatement := fmt.Sprintf("SELECT title, artist, id FROM %s ", c.schema.Table)
+	selectWhereStatement := fmt.Sprintf(selectStatement+"WHERE title ILIKE %s OR artist ILIKE %s", query, query)
+
+	type SongData struct {
+		ID     int
+		Title  string
+		Artist string
+	}
+	rows, err := database.Query(selectWhereStatement)
+	if err != nil {
+		clog.Error("ARIA1Search", "Database search failed.", err)
+	}
+	fmt.Print(rows)
 	// Return data to client
 }
 

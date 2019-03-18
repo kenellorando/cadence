@@ -51,9 +51,9 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 	selectWhereStatement := fmt.Sprintf(selectStatement+"WHERE title LIKE '%%%s%%' OR artist LIKE '%%%s%%'", query, query)
 	// Declare object for a song
 	type SongData struct {
-		ID     int
-		Artist string
-		Title  string
+		id     int
+		artist string
+		title  string
 	}
 	// Run the search query on the database
 	rows, err := database.Query(selectWhereStatement)
@@ -62,21 +62,24 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 	}
 	// Scan the returned data and save the relevant info
 	clog.Debug("ARIA1Search", "Scanning returned data...")
-	songs := make([]*SongData, 0)
+	var searchResults []SongData
 	for rows.Next() {
 		song := new(SongData)
-		err := rows.Scan(&song.ID, &song.Artist, &song.Title)
+		err := rows.Scan(&song.id, &song.artist, &song.title)
 		if err != nil {
 			clog.Error("ARIA1Search", "Data scan failed.", err)
 			return
 		}
-		songs = append(songs, song)
-	}
+		// Add song (as SongData) to full searchResults
+		searchResults = append(searchResults, SongData{id: song.id, artist: song.artist, title: song.title})
 
-	for _, song := range songs {
-		fmt.Printf("%v, %s, %s", song.ID, song.Artist, song.Title)
 	}
+	fmt.Printf("%v", searchResults)
+
 	// Return data to client
+	jsonMarshal, _ := json.Marshal(searchResults)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonMarshal)
 }
 
 // ARIA1Request - song requester

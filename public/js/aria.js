@@ -24,7 +24,7 @@ $(document).ready(function () {
                     table += "<tr><th>Artist</th><th>Title</th></tr>"
 
                     data.forEach(function (song) {
-                        table += "<tr><td>" + song.artist + "</td><td>" + song.title + "</td></tr>";
+                        table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td></tr>";
                     })
                 } else {
                     document.getElementById("library").innerHTML = "<div>Couldn't get full library listing! :(</div>";

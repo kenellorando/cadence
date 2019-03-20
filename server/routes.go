@@ -51,9 +51,9 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 	selectWhereStatement := fmt.Sprintf(selectStatement+"WHERE title LIKE '%%%s%%' OR artist LIKE '%%%s%%'", query, query)
 	// Declare object for a song
 	type SongData struct {
-		id     int
-		artist string
-		title  string
+		ID     int
+		Artist string
+		Title  string
 	}
 	// Run the search query on the database
 	rows, err := database.Query(selectWhereStatement)
@@ -65,13 +65,13 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 	var searchResults []SongData
 	for rows.Next() {
 		song := new(SongData)
-		err := rows.Scan(&song.id, &song.artist, &song.title)
+		err := rows.Scan(&song.ID, &song.Artist, &song.Title)
 		if err != nil {
 			clog.Error("ARIA1Search", "Data scan failed.", err)
 			return
 		}
 		// Add song (as SongData) to full searchResults
-		searchResults = append(searchResults, SongData{id: song.id, artist: song.artist, title: song.title})
+		searchResults = append(searchResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title})
 
 	}
 	fmt.Printf("%v", searchResults)

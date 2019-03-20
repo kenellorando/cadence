@@ -106,8 +106,8 @@ func databasePopulate() error {
 	// Here, we define the struct and slice for the library file JSON
 	// We will append to it during the file walk
 	type LibraryEntry struct {
-		artist string
-		title  string
+		Artist string
+		Title  string
 	}
 	var libraryData []LibraryEntry
 
@@ -154,7 +154,7 @@ func databasePopulate() error {
 		}
 
 		// Add song (as LibraryEntry) to full libraryData
-		libraryData = append(libraryData, LibraryEntry{artist: tags.Artist(), title: tags.Title()})
+		libraryData = append(libraryData, LibraryEntry{Artist: tags.Artist(), Title: tags.Title()})
 
 		// Close the file
 		file.Close()

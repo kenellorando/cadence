@@ -75,7 +75,7 @@ $(document).ready(function () {
                     // Build the results table
                     table += "<tr><th>Artist</th><th>Title</th><th>Availability</th></tr>"
                     data.forEach(function (song) {
-                        table += "<tr><td>" + song.artist + "</td><td>" + song.title + "</td><td><button data-id='" + escape(song.id) + "'>REQUEST</button></td></tr>";
+                        table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button data-id='" + escape(song.ID) + "'>REQUEST</button></td></tr>";
                     })
                 } else {
                     console.log("Search completed:  0 results found. :(");

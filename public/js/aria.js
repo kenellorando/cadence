@@ -70,21 +70,21 @@ $(document).ready(function () {
                 // Create the container table
                 var table = "<table id = 'searchResults'>";
 
-                if (data.length !== 0) {
-                    console.log("Search completed: " + data.length + " result(s) found.")
-                    // Build the results table
-                    table += "<tr><th>Artist</th><th>Title</th><th>Availability</th></tr>"
-                    data.forEach(function (song) {
-                        table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button data-id='" + escape(song.ID) + "'>REQUEST</button></td></tr>";
-                    })
-                } else {
-                    console.log("Search completed:  0 results found. :(");
+                if (data === null) {
+                    console.log("Search completed.  0 results found.");
 
                     // Encode < and >, for error when placed back into no-results message
                     var input = $('#searchInput').val();
                     input = input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                     // No-results message
                     table += "<div>Nothing found for search '"+input+"' :(</div>";
+                } else {
+                    console.log("Search completed. Results found: " + data.length)
+                    // Build the results table
+                    table += "<tr><th>Artist</th><th>Title</th><th>Availability</th></tr>"
+                    data.forEach(function (song) {
+                        table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button data-id='" + escape(song.ID) + "'>REQUEST</button></td></tr>";
+                    })
                 }
 
                 table += "</table>";

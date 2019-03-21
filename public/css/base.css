@@ -142,6 +142,11 @@ nav #banner {
     border-bottom: 1px solid red;
 }
 
+#searchResults table {
+    font-family: 'Inconsolata', monospace;
+    text-align: left;
+    width: 100%;
+}
 
 .column {
     display: table;

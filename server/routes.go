@@ -59,6 +59,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Query(selectWhereStatement)
 	if err != nil {
 		clog.Error("ARIA1Search", "Database search failed.", err)
+		return
 	}
 	// Scan the returned data and save the relevant info
 	clog.Debug("ARIA1Search", "Scanning returned data...")
@@ -106,10 +107,14 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")
 
 	selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id = %v", c.schema.Table, request.ID)
-	path, err := database.Query(selectStatement)
+	row, err := database.Query(selectStatement)
 	if err != nil {
-		clog.Error("ARIA1Search", "Database search failed.", err)
+		clog.Error("ARIA1Search", "Database select failed.", err)
+		return
 	}
+
+	var path string
+	row.Scan(&path)
 
 	fmt.Printf("%v", path)
 	// Telnet to liquidsoap

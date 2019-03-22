@@ -127,19 +127,20 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	clog.Debug("ARIA1Request", fmt.Sprintf("Translated ID %v to path: %s", request.ID, path))
 
 	// Telnet to liquidsoap
-	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")
-
-	// connect to this socket
-	conn, _ := net.Dial("tcp", "localhost:1234")
-	for {
-		// send to socket
-		fmt.Fprintf(conn, "cadence1.skip"+"\n")
-		// listen for reply
-		message, _ := bufio.NewReader(conn).ReadString('\n')
-		fmt.Print("Message from server: " + message)
+	clog.Debug("ARIA1Request", "Connecting to liquidsoap service...")
+	conn, err := net.Dial("tcp", c.server.SourceAddress)
+	if err != nil {
+		clog.Error("ARIA1Request", "Failed to connect to audio source server.", err)
+		return
 	}
-	// Forward path in a request command
+	// Push request over connection
+	fmt.Fprintf(conn, "request.push "+path+"\n")
+	// Listen for reply
+	message, _ := bufio.NewReader(conn).ReadString('\n')
+	clog.Debug("ARIA1Request", fmt.Sprintf("Message from audio source server: %s", message)
+
 	// Disconnect from liquidsoap
+	conn.Close()
 }
 
 // ARIA1Library - serves the library json file

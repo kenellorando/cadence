@@ -1,7 +1,7 @@
 /* Font imports */
 @import url('https://fonts.googleapis.com/css?family=Rock+Salt');
 @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:300');
-@import url('https://fonts.googleapis.com/css?family=Roboto:300');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
 @import url('https://fonts.googleapis.com/css?family=Inconsolata');
 
 /* Resets */
@@ -142,11 +142,56 @@ nav #tabMain {
     border-bottom: 1px solid red;
 }
 
-#searchResults table {
+
+
+
+
+#frontRequest #searchInput {
+    background-color: #f0fbfa;
+    color: black;
+    font-family: 'Roboto', sans-serif;
+    
+    border: none;
+    border-radius: 5%;
+
+    padding: 3px;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+#frontRequest #searchButton {
+    background-color: #c7eac4;
+    font-family: 'Roboto', sans-serif;
+
+    border: none;
+    border-radius: 5%;
+
+    padding: 3px 7px;
+
+    cursor: pointer;
+}
+
+#frontRequest #searchResults {
     font-family: 'Inconsolata', monospace;
     text-align: left;
+
     width: 100%;
+
+    margin-top: 20px;
 }
+
+#frontRequest .requestButton {
+    border: none;
+    border-radius: 5%;
+    padding: 4px 10px;
+
+    cursor: pointer;
+}
+
+
+
+
+
 
 .column {
     display: table;

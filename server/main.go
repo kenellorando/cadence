@@ -23,11 +23,12 @@ type Config struct {
 
 // ServerConfig - Webserver configuration
 type ServerConfig struct {
-	RootPath string
-	Domain   string
-	LogLevel int
-	Port     string
-	MusicDir string
+	RootPath      string
+	Domain        string
+	LogLevel      int
+	Port          string
+	MusicDir      string
+	SourceAddress string
 }
 
 // DBConfig - Database server configuration
@@ -63,6 +64,7 @@ func init() {
 	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL")
 	server.Port = env.GetString("CSERVER_PORT")
 	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR")
+	server.SourceAddress = env.GetString("CSERVER_SOURCEADDRESS")
 	// Database server configuration
 	db.Host = env.GetString("CSERVER_DB_HOST")
 	db.Port = env.GetString("CSERVER_DB_PORT")

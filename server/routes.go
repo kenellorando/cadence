@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"os/exec"
 	"path"
 
 	"github.com/kenellorando/clog"
@@ -127,6 +130,13 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	// Telnet to liquidsoap
 	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")
 
+	cmd := exec.Command("telnet", c.server.SourceAddress, "cadence1.skip")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 	// Forward path in a request command
 	// Disconnect from liquidsoap
 }

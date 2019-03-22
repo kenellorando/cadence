@@ -30,7 +30,7 @@ func databaseAutoConfig() error {
 	   album character varying(255),
 	   artist character varying(255),
 	   genre character varying(255),
-	   year int,
+	   year int4,
 	   path character varying(255)
 	)
 	WITH (

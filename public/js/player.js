@@ -73,3 +73,21 @@ $(document).ready(function () {
         radioTitle();
     }, 10000);
 });
+
+
+// Toggle the stream with the playButton
+$(document).ready(function () {
+    $.ajax({
+        type: 'GET',
+        url: 'https://api.github.com/repos/kenellorando/cadence/releases/latest',
+        // On success, format data into table
+        success: function (data) {
+            document.getElementById("release").innerHTML = data.name;
+            document.getElementById("commitish").innerHTML = data.target_commitish + " @ " + data.published_at;
+        },
+        error: function () {
+            document.getElementById("release").innerHTML = "Could not retrieve version data.";
+            document.getElementById("comittish").innerHTML = "Check <a href='https://github.com/kenellorando/cadence'>Github?</a>";
+        }
+    });
+});

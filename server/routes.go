@@ -88,7 +88,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 
 	// Declare object to hold r body data
 	type Request struct {
-		Path string `json:"path"`
+		ID string `json:"ID"`
 	}
 	var request Request
 
@@ -104,8 +104,8 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := request.Path
-	clog.Debug("ARIA1Request", fmt.Sprintf("Song request decoded: '%v'", path))
+	ID := request.ID
+	clog.Debug("ARIA1Request", fmt.Sprintf("Request received for song ID '%v'.", ID))
 	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")
 	// Telnet to liquidsoap
 	// Forward path in a request command

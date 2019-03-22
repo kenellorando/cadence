@@ -105,7 +105,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ID := request.ID
-	clog.Debug("ARIA1Request", fmt.Sprintf("Request received for song ID '%v'.", ID))
+	clog.Debug("ARIA1Request", fmt.Sprintf("Received a song request for song #'%v'.", ID))
 	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")
 	// Telnet to liquidsoap
 	// Forward path in a request command

@@ -104,12 +104,12 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	clog.Debug("ARIA1Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
+	clog.Debug("ARIA1Request", "Searching database for corresponding path...")
 
-	fmt.Printf("%v", request.ID)
 	selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=%v;", c.schema.Table, request.ID)
 	rows, err := database.Query(selectStatement)
 	if err != nil {
-		clog.Error("ARIA1Search", "Database select failed.", err)
+		clog.Error("ARIA1Request", "Database select failed.", err)
 		return
 	}
 
@@ -118,11 +118,11 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		err := rows.Scan(&path)
 		if err != nil {
-			clog.Error("ARIA1Search", "Data scan failed.", err)
+			clog.Error("ARIA1Request", "Data scan failed.", err)
 			return
 		}
 	}
-	fmt.Printf("Received this path: %s", path)
+	clog.Debug("ARIA1Request", fmt.Sprintf("Translated ID %v to path: %s", request.ID, path))
 
 	// Telnet to liquidsoap
 	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")

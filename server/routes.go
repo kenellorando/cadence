@@ -1,11 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
-	"os/exec"
 	"path"
 
 	"github.com/kenellorando/clog"
@@ -128,8 +129,15 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	// Telnet to liquidsoap
 	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")
 
-	queueCommand := fmt.Sprintf("echo 'request.push %s' | netcat %s", path, c.server.SourceAddress)
-	exec.Command(queueCommand)
+	// connect to this socket
+	conn, _ := net.Dial("tcp", "localhost:1234")
+	for {
+		// send to socket
+		fmt.Fprintf(conn, "cadence1.skip"+"\n")
+		// listen for reply
+		message, _ := bufio.NewReader(conn).ReadString('\n')
+		fmt.Print("Message from server: " + message)
+	}
 	// Forward path in a request command
 	// Disconnect from liquidsoap
 }

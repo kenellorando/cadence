@@ -189,6 +189,45 @@ nav #tabMain {
 }
 
 
+#volume {
+    margin-bottom: 25px;
+}
+
+input[type=range] {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    width: 200px;
+    border: none;
+
+    background-color: beige;
+}
+  
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+    border-radius: 0px;
+    border: 1px solid #000000;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    border: 2px solid beige;
+    height: 13px;
+    width: 13px;
+    border-radius: 50px;
+    background: rgb(47, 151, 52);
+    cursor: pointer;
+    -webkit-appearance: none;
+
+    margin-top: -5px;
+}
+  
 
 
 

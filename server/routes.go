@@ -74,8 +74,6 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		searchResults = append(searchResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title})
 
 	}
-	fmt.Printf("%v", searchResults)
-
 	// Return data to client
 	jsonMarshal, _ := json.Marshal(searchResults)
 	w.Header().Set("Content-Type", "application/json")
@@ -104,9 +102,16 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ID := request.ID
-	clog.Debug("ARIA1Request", fmt.Sprintf("Received a song request for song #'%v'.", ID))
+	clog.Debug("ARIA1Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
 	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")
+
+	selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id = %v", c.schema.Table, request.ID)
+	path, err := database.Query(selectStatement)
+	if err != nil {
+		clog.Error("ARIA1Search", "Database search failed.", err)
+	}
+
+	fmt.Printf("%v", path)
 	// Telnet to liquidsoap
 	// Forward path in a request command
 	// Disconnect from liquidsoap

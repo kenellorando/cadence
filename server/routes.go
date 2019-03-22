@@ -106,17 +106,24 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	clog.Debug("ARIA1Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
 	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")
 
-	selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id = %v", c.schema.Table, request.ID)
-	row, err := database.Query(selectStatement)
+	fmt.Printf("%v", request.ID)
+	selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=%v;", c.schema.Table, request.ID)
+	rows, err := database.Query(selectStatement)
 	if err != nil {
 		clog.Error("ARIA1Search", "Database select failed.", err)
 		return
 	}
 
+	// "Every call to Scan, even the first one, must be preceded by a call to Next."
 	var path string
-	row.Scan(&path)
-
-	fmt.Printf("%v", path)
+	for rows.Next() {
+		err := rows.Scan(&path)
+		if err != nil {
+			clog.Error("ARIA1Search", "Data scan failed.", err)
+			return
+		}
+	}
+	fmt.Printf("Received this path: %s", path)
 	// Telnet to liquidsoap
 	// Forward path in a request command
 	// Disconnect from liquidsoap

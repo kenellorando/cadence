@@ -137,7 +137,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(conn, "request.push "+path+"\n")
 	// Listen for reply
 	message, _ := bufio.NewReader(conn).ReadString('\n')
-	clog.Debug("ARIA1Request", fmt.Sprintf("Message from audio source server: %s", message)
+	clog.Debug("ARIA1Request", fmt.Sprintf("Message from audio source server: %s", message))
 
 	// Disconnect from liquidsoap
 	conn.Close()

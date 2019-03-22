@@ -104,7 +104,6 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	clog.Debug("ARIA1Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
-	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")
 
 	fmt.Printf("%v", request.ID)
 	selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=%v;", c.schema.Table, request.ID)
@@ -124,7 +123,10 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	fmt.Printf("Received this path: %s", path)
+
 	// Telnet to liquidsoap
+	clog.Info("ARIA1Request", "Connecting to liquidsoap service...")
+
 	// Forward path in a request command
 	// Disconnect from liquidsoap
 }

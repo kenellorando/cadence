@@ -101,7 +101,7 @@ $(document).ready(function () {
     // Clicks on song request buttons
     $(document).on('click', '.requestButton', function (e) {
         var data = {};
-        data.ID = unescape(this.dataset.ID);
+        data.ID = unescape(this.dataset.id);
 
         $.ajax({
             type: 'POST',

@@ -83,7 +83,7 @@ $(document).ready(function () {
                     // Build the results table
                     table += "<tr><th>Artist</th><th>Title</th><th>Availability</th></tr>"
                     data.forEach(function (song) {
-                        table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button data-id='" + escape(song.ID) + "'>REQUEST</button></td></tr>";
+                        table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button class='requestButton' data-id='" + escape(song.ID) + "'>REQUEST</button></td></tr>";
                     })
                 }
 
@@ -97,4 +97,26 @@ $(document).ready(function () {
         });
     });
 
+
+    // Clicks on song request buttons
+    $(document).on('click', '.requestButton', function (e) {
+        var data = {};
+        data.ID = unescape(this.dataset.ID);
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/aria1/request',
+            /* contentType sends application/x-www-form-urlencoded data */
+            contentType: 'application/x-www-form-urlencoded',
+            data: JSON.stringify(data),
+            /* dataType expects a text response */
+            dataType: 'text',
+            success: function (data) {
+                console.log("Song request submitted.");
+            },
+            error: function () {
+                console.log("Error. Something went wrong submitting the song request..");
+            }
+        });
+    })
 });

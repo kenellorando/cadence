@@ -1,0 +1,270 @@
+/* Font imports */
+@import url('https://fonts.googleapis.com/css?family=Rock+Salt');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:300');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Inconsolata');
+
+/* Resets */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Page layout */
+html {
+    background-color: beige;
+    color: black;
+    height: 100%;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+/* We hide the scrollbar for width consistency */
+::-webkit-scrollbar {
+    width: 0px;
+}
+body {
+    font-family: 'Roboto Condensed', sans-serif;
+    background-color: whitesmoke;
+
+    background-color: #282726;
+    color: beige;
+    min-height: 100%;
+}
+main {
+    background-color: inherit;
+    margin-left: 30%;
+    margin-right: 30%;
+}
+
+a {
+    cursor: pointer;
+    color: orangered;
+    text-decoration: none;
+}
+
+/* Navigation */
+nav {
+    background-color: #1a1a1d;
+
+    font-weight: 300;
+
+    padding-left: 30%;
+    padding-right: 30%;
+}
+nav ul {
+    list-style-type: none;
+}
+nav a {
+    color: bisque;
+}
+nav #navLeft {
+    color: bisque;
+}
+nav #navRight {
+    color: bisque;
+    float: right;
+    font-size: 17px;
+    font-family: 'Roboto Condensed', sans-serif;
+    padding: 18px;
+}
+nav #navRight a {
+    margin-left: 30px;
+}
+nav #tabMain {
+    font-family: 'Rock Salt', cursive;
+    font-size: 22px;
+}
+
+/* Player */
+#player {
+    text-align: center;
+
+    padding-top: 130px;
+    padding-bottom: 130px;
+}
+#player #status {
+    font-family: 'Inconsolata', monospace;
+    font-size: 13px;
+}
+#player #song {
+    font-size: 40px;
+
+    margin-top: 15px;
+}
+#player #artist {
+    font-size: 27px;
+}
+#player #playButton {
+    background-color: #DBEFEE;
+    color: #454555;
+    
+    font-size: 20px;
+    text-align: center;
+    
+    padding: 10px 23px;
+    width: 110px;
+    border-radius: 10%;
+
+    cursor: pointer;
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+#player #version {
+    font-size: 13px;
+    font-family: 'Inconsolata', monospace;
+}
+
+/* The content underneath the player */
+#frontMain {
+    column-count: 2;
+    column-gap: 70px;
+}
+
+#frontRequest {
+    display: none;
+}
+
+#frontLibrary {
+    display: none;
+}
+#frontLibrary #library {
+    font-family: 'Inconsolata', monospace;
+}
+#frontLibrary #libraryTable {
+    margin-top: 20px;
+    width: 100%;
+}
+#frontLibrary #libraryTable tr {
+    text-align: left;
+    border-bottom: 1px solid red;
+}
+
+
+
+
+
+#frontRequest #searchInput {
+    background-color: #f0fbfa;
+    color: black;
+    font-family: 'Roboto', sans-serif;
+    
+    border: none;
+    border-radius: 5%;
+
+    padding: 3px;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+#frontRequest #searchButton {
+    background-color: #c7eac4;
+    font-family: 'Roboto', sans-serif;
+
+    border: none;
+    border-radius: 5%;
+
+    padding: 3px 7px;
+
+    cursor: pointer;
+}
+
+#frontRequest #searchResults {
+    font-family: 'Inconsolata', monospace;
+    text-align: left;
+
+    width: 100%;
+
+    margin-top: 20px;
+}
+
+#frontRequest .requestButton {
+    border: none;
+    border-radius: 5%;
+    padding: 4px 10px;
+
+    cursor: pointer;
+}
+
+
+#volume {
+    margin-bottom: 25px;
+}
+
+input[type=range] {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    width: 200px;
+    border: none;
+
+    background-color: beige;
+}
+  
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+    border-radius: 0px;
+    border: 1px solid #000000;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    border: 2px solid beige;
+    height: 13px;
+    width: 13px;
+    border-radius: 50px;
+    background: rgb(47, 151, 52);
+    cursor: pointer;
+    -webkit-appearance: none;
+
+    margin-top: -5px;
+}
+  
+
+
+
+
+.column {
+    display: table;
+    -webkit-column-break-inside: avoid;
+}
+
+footer {
+    font-size: 15px;
+    text-align: center;
+
+
+    padding-top: 50px;
+    padding-bottom: 5%;
+}
+
+
+@media (max-width: 1920px) {
+    main {
+        margin-left: 25%;
+        margin-right: 25%;
+    }
+    nav {
+        padding-left: 25%;
+        padding-right: 25%;
+    }
+}
+
+@media (max-width: 1200px) {
+    main {
+        margin-left: 20%;
+        margin-right: 20%;
+    }
+    nav {
+        padding-left: 20%;
+        padding-right: 20%;
+    }
+}

@@ -91,3 +91,22 @@ $(document).ready(function () {
         }
     });
 });
+
+// Volume control
+$(document).ready(function () {
+    // Volume bar listeners
+    $("#volume").change(function() {
+        volumeToggle(this.value);
+    }).on("input", function() {
+        volumeToggle(this.value);
+    });
+
+    // Volume control
+    function volumeToggle(vol) {
+        var volume = document.getElementById("stream");
+        volume.volume = vol;
+    
+        // Sets the new set volume into localstorage
+        localStorage.setItem('volumeKey', vol);
+    }
+});

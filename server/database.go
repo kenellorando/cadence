@@ -126,7 +126,7 @@ func databasePopulate() error {
 		}
 
 		// Skip non-music files
-		var extensions = [...]string{".mp3", "m4a", ".ogg", ".flac"}
+		var extensions = [...]string{".mp3", ".ogg", ".flac"}
 		for _, ext := range extensions {
 			if strings.HasSuffix(path, ext) {
 				break

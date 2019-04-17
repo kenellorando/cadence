@@ -1,6 +1,6 @@
 // Displays currently playing info, from the Icecast xsl
 function radioTitle() {
-    var url = 'http://stream.cadenceradio.com:8000/now-playing.xsl';
+    var url = 'https://stream.cadenceradio.com/now-playing.xsl';
     $.ajax({
         type: 'GET',
         url: url,
@@ -46,7 +46,7 @@ $(document).ready(function () {
         if (stream.paused) {
             // Reload the audio source if on mobile
             if (mobile) {
-                stream.src = "http://stream.cadenceradio.com:8000/cadence1";
+                stream.src = "https://stream.cadenceradio.com/cadence1";
             }
             stream.load();
             stream.play();

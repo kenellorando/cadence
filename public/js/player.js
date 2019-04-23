@@ -18,9 +18,6 @@ function radioTitle() {
             $('#status').text("Connected to server: " + serverName)
             $('#song').text(nowPlayingSong);
             $('#artist').text(nowPlayingArtist);
-            
-            // Set the browser title to the now playing info
-            window.document.title =  "CR♥ | " + nowPlayingArtist + " - " + nowPlayingSong;
         },
         error: function (e) {
             console.log(e.message);

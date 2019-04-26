@@ -187,6 +187,11 @@ nav #tabMain {
     cursor: pointer;
 }
 
+#requestStatus {
+    font-family: 'Inconsolata', monospace;
+    padding-top: 20px;
+}
+
 
 #volume {
     margin-bottom: 25px;

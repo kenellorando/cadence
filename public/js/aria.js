@@ -72,6 +72,7 @@ $(document).ready(function () {
 
                 if (data === null) {
                     console.log("Search completed.  0 results found.");
+                    document.getElementById("requestStatus").innerHTML = "Search completed.  0 results found.";
 
                     // Encode < and >, for error when placed back into no-results message
                     var input = $('#searchInput').val();
@@ -80,6 +81,8 @@ $(document).ready(function () {
                     table += "<div>Nothing found for search '"+input+"' :(</div>";
                 } else {
                     console.log("Search completed. Results found: " + data.length)
+                    document.getElementById("requestStatus").innerHTML = "Search completed. Results found: " + data.length;
+
                     // Build the results table
                     table += "<tr><th>Artist</th><th>Title</th><th>Availability</th></tr>"
                     data.forEach(function (song) {
@@ -113,9 +116,11 @@ $(document).ready(function () {
             dataType: 'text',
             success: function (data) {
                 console.log("Song request submitted.");
+                document.getElementById("requestStatus").innerHTML = "Request submitted!";
             },
             error: function () {
                 console.log("Error. Something went wrong submitting the song request..");
+                document.getElementById("requestStatus").innerHTML = "Error. Something went wrong submitting the song request..";
             }
         });
     })

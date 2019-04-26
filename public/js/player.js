@@ -91,6 +91,13 @@ $(document).ready(function () {
 
 // Volume control
 $(document).ready(function () {
+    // Load cached volume level, or 77%
+    var vol = localStorage.getItem('volumeKey') || 0.77;
+    document.getElementById("volume").value = vol;
+    // Set active volume on audio stream to loaded value
+    var volume = document.getElementById("stream");
+    volume.volume = vol;
+
     // Volume bar listeners
     $("#volume").change(function() {
         volumeToggle(this.value);

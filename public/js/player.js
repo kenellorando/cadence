@@ -13,11 +13,13 @@ function radioTitle() {
             var serverName = json['/cadence1']['server_name'].trim();
             var nowPlayingArtist = json['/cadence1']['artist_name'].trim();
             var nowPlayingSong = json['/cadence1']['song_title'].trim();
-            
+            var listeners = json['/cadence1']['listeners'].trim();
+             
             // Set info in the player
             $('#status').text("Connected to server: " + serverName)
             $('#song').text(nowPlayingSong);
             $('#artist').text(nowPlayingArtist);
+            $('#listeners').text(listeners)
         },
         error: function (e) {
             console.log(e.message);
@@ -80,11 +82,9 @@ $(document).ready(function () {
         // On success, format data into table
         success: function (data) {
             document.getElementById("release").innerHTML = data.name;
-            document.getElementById("commitish").innerHTML = data.target_commitish + " @ " + data.published_at;
         },
         error: function () {
             document.getElementById("release").innerHTML = "Could not retrieve version data.";
-            document.getElementById("comittish").innerHTML = "Check <a href='https://github.com/kenellorando/cadence'>Github?</a>";
         }
     });
 });

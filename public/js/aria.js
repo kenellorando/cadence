@@ -117,6 +117,15 @@ $(document).ready(function () {
             success: function (data) {
                 console.log("Song request submitted.");
                 document.getElementById("requestStatus").innerHTML = "Request submitted!";
+                // Disabled the request button
+                $(".requestButton").prop('disabled', true);
+                document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
+
+                // Enable the request button after five minutes
+                setTimeout(function () {
+                    $(".requestButton").prop('disabled', false);
+                    document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
+                }, 1000*60*5)
             },
             error: function () {
                 console.log("Error. Something went wrong submitting the song request..");

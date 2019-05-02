@@ -1,0 +1,14 @@
+#frontRequest .requestButton {
+    font-family: 'Inconsolata', monospace;
+    font-size: 17px;
+    text-decoration: line-through;
+
+    background-color: rgba(27, 20, 20, 0.8);
+    color: darkred;
+    
+    border: none;
+    border-radius: 5%;
+    padding: 6px 15px;
+
+    cursor: pointer;
+}

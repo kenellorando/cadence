@@ -85,8 +85,8 @@ nav #tabMain {
 #player {
     text-align: center;
 
-    padding-top: 130px;
-    padding-bottom: 130px;
+    padding-top: 100px;
+    padding-bottom: 100px;
 }
 #player #status {
     font-family: 'Inconsolata', monospace;
@@ -177,14 +177,6 @@ nav #tabMain {
     width: 100%;
 
     margin-top: 20px;
-}
-
-#frontRequest .requestButton {
-    border: none;
-    border-radius: 5%;
-    padding: 4px 10px;
-
-    cursor: pointer;
 }
 
 #requestStatus {
@@ -278,6 +270,11 @@ footer {
     }
     nav #tabMain {
         font-size: 22px;
+    }
+    /* Player */
+    #player {
+        padding-top: 130px;
+        padding-bottom: 130px;
     }
 }
 

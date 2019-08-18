@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css?family=VT323');
+
+html {
+    background-image: url("https://i.imgur.com/iXOt37W.gif");
+}
+
+body {
+    background-color: rgba(0, 0, 0, .4);
+    opacity: 1;
+}
+
+nav {
+    background-color: rgb(0, 0, 0);
+}
+
+main {
+    font-family: 'Inconsolata', monospace;
+    font-size: 15px;
+}
+
+h1, h2, h3 {
+    font-weight: 300;
+    font-family: 'VT323', monospace;
+    font-size: 30px;
+    text-transform: uppercase;
+    font-style: italic;
+}
+
+#navLeft a {
+    color: rgb(255, 16, 136);
+    text-shadow: 1px 1px 13px rgb(255, 40, 151);
+}
+
+#navRight a {
+    color: cyan;
+    text-shadow: 1px 1px 12px cyan;
+    font-family: 'VT323', monospace;
+    text-transform: uppercase;
+    font-style: italic;
+    font-size: 20px;
+}
+
+#player #song, #player #artist {
+    font-family: 'VT323', monospace;
+    text-transform: uppercase;
+    font-style: italic;
+}

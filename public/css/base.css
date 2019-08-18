@@ -17,6 +17,11 @@ html {
     height: 100%;
     overflow: scroll;
     overflow-x: hidden;
+
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
 }
 /* We hide the scrollbar for width consistency */
 ::-webkit-scrollbar {
@@ -28,12 +33,12 @@ body {
 
     background-color: #282726;
     color: beige;
-    min-height: 100%;
 }
 main {
     background-color: inherit;
-    margin-left: 5%;
-    margin-right: 5%;
+    padding-left: 5%;
+    padding-right: 5%;
+    min-height: 100vh;
 }
 
 a {
@@ -189,6 +194,22 @@ nav #tabMain {
     margin-bottom: 25px;
 }
 
+.themeButton {
+    font-family: 'Inconsolata', monospace;
+    font-size: 17px;
+    text-decoration: none;
+
+    background-color: rgba(58, 58, 58, 0.8);
+    color: rgb(40, 202, 252);
+    
+    border: none;
+    border-radius: 5%;
+    padding: 6px 15px;
+
+    cursor: pointer;
+    margin: 0px 10px;
+}
+
 input[type=range] {
     appearance: none;
     -moz-appearance: none;
@@ -233,7 +254,7 @@ input[type=range]::-webkit-slider-thumb {
     -webkit-column-break-inside: avoid;
 }
 
-footer {
+#footer {
     font-size: 15px;
     text-align: center;
 
@@ -245,8 +266,8 @@ footer {
 
 @media (min-width: 850px) {
     main {
-        margin-left: 15%;
-        margin-right: 15%;
+        padding-left: 15%;
+        padding-right: 15%;
     }
     nav {
         padding-left: 15%;
@@ -280,8 +301,8 @@ footer {
 
 @media (min-width: 1200px) {
     main {
-        margin-left: 20%;
-        margin-right: 20%;
+        padding-left: 20%;
+        padding-right: 20%;
     }
     nav {
         padding-left: 20%;
@@ -291,8 +312,8 @@ footer {
 
 @media (min-width: 1920px) {
     main {
-        margin-left: 25%;
-        margin-right: 25%;
+        padding-left: 25%;
+        padding-right: 25%;
     }
     nav {
         padding-left: 25%;

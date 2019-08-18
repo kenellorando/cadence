@@ -14,10 +14,13 @@
         
         <!-- jQuery Google CDN -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- Theme changer scripts -->
+        <script type="text/javascript" src="/js/themeMetadata.js"></script>
+        <script type="text/javascript" src="/js/themeChanger.js"></script>
         <!-- Radio player scripts -->
         <script type="text/javascript" src="/js/player.js"></script>
         <!-- UI view switching scripts -->
-        <script type="text/javascript" src="/js/views.js"></script>
+        <script type="text/javascript" src="/js/tabs.js"></script>
         <!-- API (Aria) scripts -->
         <script type="text/javascript" src="/js/aria.js"></script>
     </head>
@@ -28,6 +31,7 @@
             </span>
             <span id="navRight">
                 <a id="tabRequest">Request</a>
+                <a id="tabTheme">Theme</a>
                 <a href="https://github.com/kenellorando/cadence" target="_blank">Source</a>
             </span>
         </nav>
@@ -85,9 +89,18 @@
                     <div id="library"><a id="getLibrary">Load Song Library</a></div>
                 </div>
             </div>
+
+            <div id="frontThemes">
+                <div class="column">
+                    <h2>Themes</h2>
+                    <p>Change the UI theme:</p>
+                    <button type="button" class="themeButton" id="Default">Default</button>
+                    <button type="button" class="themeButton" id="RCB40">RCB40</button>
+                </div>
+            </div>
+            <div id="footer">
+                <span>A project by <a href="https://kenellorando.com/">Ken Ellorando</a></span>
+            </div>
         </main>
-        <footer id="footer">
-            <span>A project by <a href="https://kenellorando.com/">Ken Ellorando</a></span>
-        </footer>
     </body>
 </html>

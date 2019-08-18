@@ -194,7 +194,11 @@ nav #tabMain {
     margin-bottom: 25px;
 }
 
-.themeButton {
+#frontThemes {
+    display: none;
+}
+
+#frontThemes .themeButton {
     font-family: 'Inconsolata', monospace;
     font-size: 17px;
     text-decoration: none;

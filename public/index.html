@@ -9,6 +9,7 @@
         <meta name="keywords" content="cadence, radio, cadence radio, kpop, jpop, cpop, Ken Ellorando"/>
         
         <link rel="stylesheet" href="/css/base.css">
+        <link rel="stylesheet" href="." id="themeStylesheet">
         <link rel="stylesheet" id="moduleRequestButton" href="/css/modules/requestButtonEnabled.css">
         
         <!-- jQuery Google CDN -->
@@ -27,7 +28,6 @@
             </span>
             <span id="navRight">
                 <a id="tabRequest">Request</a>
-                <a id="tabLibrary">Library</a>
                 <a href="https://github.com/kenellorando/cadence" target="_blank">Source</a>
             </span>
         </nav>
@@ -69,7 +69,7 @@
             <div id="frontRequest">
                 <div class="column">
                     <h2>Request</h2>
-                    <p>You can use this tab to ask Cadence to play certain songs on the music server. To find a complete listing of the music library, check out the library tab.</p>
+                    <p>Request Cadence to queue a song. To find a complete listing of the music library, check out the library listing below.</p>
                     <p>Please note that with the new 4.0 release, searches are still extremely sensitive. Please ensure case and spelling are exact.</p>
 
                     <input name="searchInput" id="searchInput" type="text" placeholder="Search for a song or artist!">
@@ -78,16 +78,13 @@
                     <div id="requestStatus"></div>
                     <div id="searchResults"></div>
                 </div>
-            </div>
-
-            <div id="frontLibrary">
+                <hr/>
                 <div class="column">
                     <h2>Library</h2>
-                    <p>This is a plain list of all songs held in the music server library, to better help you find what songs are available. To request a song, try the request tab.</p>
+                    <p>Return a plain listing of all songs in the Cadence rotation, to better help you find what songs are available for request.</p>
                     <div id="library"><a id="getLibrary">Load Song Library</a></div>
                 </div>
             </div>
-
         </main>
         <footer id="footer">
             <span>A project by <a href="https://kenellorando.com/">Ken Ellorando</a></span>

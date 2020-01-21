@@ -5,12 +5,12 @@ html {
 }
 
 body {
-    background-color: rgba(0, 0, 0, .4);
+    background-color: rgba(0, 0, 0, .55);
     opacity: 1;
 }
 
 nav {
-    background-color: rgb(0, 0, 0, .4);
+    background-color: rgb(0, 0, 0, .55);
 }
 
 main { 
@@ -22,16 +22,36 @@ h1, h2, h3 {
     font-family: 'Bellefair', serif;
 }
 
+a {
+    color: rgb(209, 75, 75);
+}
+
 #navLeft a {
-    color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255, .7);
 }
 
 #navRight a {
-    color: white;
+    color: rgb(255, 255, 255, .7);
     font-family: 'Bellefair', serif;
     font-size: 18px;
 }
 
 #player #song, #player #artist {
     color: rgb(255, 255, 255);
+}
+
+#status, #version {
+    color: rgb(255, 255, 255, .8);
+}
+
+#footer {
+    color: rgb(255, 255, 255, .6);
+}
+
+#frontRequest #searchButton {
+    background-color: grey;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    background: rgb(240, 75, 75);
 }

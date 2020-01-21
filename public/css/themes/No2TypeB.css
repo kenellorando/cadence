@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css?family=Bellefair');
+
+html {
+    background-image: url("https://i.imgur.com/UtkSjdK.jpg");
+}
+
+body {
+    background-color: rgba(0, 0, 0, .4);
+    opacity: 1;
+}
+
+nav {
+    background-color: rgb(0, 0, 0, .4);
+}
+
+main { 
+    font-family: 'Bellefair', serif;
+}
+
+h1, h2, h3 {
+    font-weight: 300;
+    font-family: 'Bellefair', serif;
+}
+
+#navLeft a {
+    color: rgb(255, 255, 255);
+}
+
+#navRight a {
+    color: white;
+    font-family: 'Bellefair', serif;
+    font-size: 18px;
+}
+
+#player #song, #player #artist {
+    color: rgb(255, 255, 255);
+}

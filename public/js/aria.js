@@ -1,110 +1,136 @@
-/**
- * ARIA's Async Engine
- */
+$(document).ready(function () {  
+    // Full library list load
+    // This is a GET request to /api/aria1/library
+    $('#getLibrary').click(function (e) {
+        console.log("Requesting the full library listing...");
+        document.getElementById("library").innerHTML = "<div>Getting full library listing...</div>";
 
-$(document).ready(function () {
-  // Place responses from the server into this
-  var ariaSays = document.getElementById("ariaSays");
+        // GET request to library API endpoint, expected JSON  
+        $.ajax({
+            type: 'GET',
+            url: '/api/aria1/library',
+            dataType: 'json',
+            // On success, format data into table
+            success: function (data) {
+                console.log("Successfully retrieved full library listing.")
+                console.log(data)
+    
+                
+                // Start the containing table
+                let table = "<table id='libraryTable'>";
+                let i = 1;
 
-  // Text field, hit 'enter'
-  $("#searchInput").keyup(function (event) {
-    if (event.keyCode == 13) {
-      $("#searchButton").click();
-    }
-  });
-  // Clicking the search button
-  $('#searchButton').click(function (e) {
-    // Create a key 'search' to send in JSON
-    var data = {};
-    data.search = $('#searchInput').val();
+                if (data.length !== 0) {
+                    table += "<tr><th>Artist</th><th>Title</th></tr>"
+
+                    data.forEach(function (song) {
+                        table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td></tr>";
+                    })
+                } else {
+                    document.getElementById("library").innerHTML = "<div>Couldn't get full library listing! :(</div>";
+                }
+
+                table += "</table>";
+                // Put table into library HTML
+                document.getElementById("library").innerHTML = table;
+            },
+            error: function () {
+                console.log("Error retrieving full library listing.");
+                document.getElementById("library").innerHTML = "<div>Couldn't get full library listing! :(</div>";
+            }
+        });
+    });
 
 
-    var input = $('#searchInput').val();
-    // Encode < and >, for error when placed back into error message
-    input = input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-    $.ajax({
-      type: 'POST',
-      url: '/search',
-      dataType: 'application/json',
-      crossDomain: true,
-      data: data,
-      dataType: "json",
-      success: function (data) {
-        // console.log("=================");
-        let i = 1;
-
-        // Create the container table
-        var table = "<table id = 'searchResults'>";
-
-        if (data.length !== 0) {
-          console.log("CADENCE: Database query completed. " + data.length + " result(s) found.")
-          table += "<tr><th>Title</th><th>Artist</th><th>Availability</th></tr>"
-
-          data.forEach(function (song) {
-            /*
-            console.log("RESULT " + i)
-            console.log("Title: " + song.title);
-            console.log("Artist(s): " + song.artist);
-            console.log("Album: " + song.album);
-            i++;
-            console.log("=================");
-            */
-            table += "<tr><td class='dataTitle'>" + song.title + "</td><td class='dataArtist'>" + song.artist + "</td><td class='dataRequest'><button class='requestButton' data-path='" + escape(song.path) + "'>REQUEST</button></td></tr>";
-          })
-        } else {
-          console.log("CADENCE: Database query completed.  0 results found. :(");
-          table += "<div style='padding-top: 2em'>Nothing found for search '"+input+"' :(</div>";
+    // Search box under request tab, handles when the user presses 'enter'
+    $("#searchInput").keyup(function (event) {
+        // Keycode 13 is the return key.
+        if (event.keyCode == 13) {
+            // Simply simulate a click on the search button itself
+            $("#searchButton").click();
         }
-
-        table += "</table>";
-        // Put table into results html
-        document.getElementById("results").innerHTML = table;
-      },
-      error: function () {
-        console.log("CADENCE: Error. Could not execute search.");
-      }
     });
-  });
+    // Search box under request tab, handles when the user clicks the search button
+    $('#searchButton').click(function (e) {
+        // Create a key 'search' to send in JSON
+        var data = {};
+        data.search = $('#searchInput').val();
 
+        $.ajax({
+            type: 'POST',
+            url: '/api/aria1/search',
+            /* contentType sends application/x-www-form-urlencoded data */
+            contentType: 'application/x-www-form-urlencoded',
+            data: JSON.stringify(data),
+            /* dataType expects a json response */
+            dataType: 'json',
+            success: function (data) {
+                let i = 1;
 
+                // Create the container table
+                var table = "<table id = 'searchResults'>";
 
-  // Request buttons
-  $(document).on('click', '.requestButton', function (e) {
-    // console.log(this.dataset.path); // /home/ken/Music/fripSide/01. only my railgun.mp3
+                if (data === null) {
+                    console.log("Search completed.  0 results found.");
+                    document.getElementById("requestStatus").innerHTML = "Search completed.  0 results found.";
 
-    var data = {};
-    data.path = unescape(this.dataset.path);
+                    // Encode < and >, for error when placed back into no-results message
+                    var input = $('#searchInput').val();
+                    input = input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    // No-results message
+                    table += "<div>Nothing found for search '"+input+"' :(</div>";
+                } else {
+                    console.log("Search completed. Results found: " + data.length)
+                    document.getElementById("requestStatus").innerHTML = "Search completed. Results found: " + data.length;
 
-    // so when you click a working button, change it to red and disable it
+                    // Build the results table
+                    table += "<tr><th>Artist</th><th>Title</th><th>Availability</th></tr>"
+                    data.forEach(function (song) {
+                        table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button class='requestButton' data-id='" + escape(song.ID) + "'>REQUEST</button></td></tr>";
+                    })
+                }
 
-    // Disable the request buttons for a certain amount of time
-    $(".requestButton").prop('disabled', true);
-
-    // Switch the request button styles so they appear red for the same amount of time
-    document.getElementById('aria-request-button').href="/css/modules/aria/request-button-disabled.css";
-
-    $.ajax({
-      type: 'POST',
-      url: '/request',
-      data: data,
-      success: function (result) {
-        console.log(result);
-        ariaSays.innerHTML = result;
-        // After five minutes, return functionality to the button and change to green
-        setTimeout(function () {
-          $(".requestButton").prop('disabled', false);
-          document.getElementById('aria-request-button').href="/css/modules/aria/request-button.css";
-        }, 1000 * 60 * 5);
-      },
-      error: function (result) {
-        console.log(result.responseText);
-        ariaSays.innerHTML = result.responseText;
-        setTimeout(function () {
-          $(".requestButton").prop('disabled', false);
-          document.getElementById('aria-request-button').href="/css/modules/aria/request-button.css";
-        }, 1000 * 60 * 5);
-      }
+                table += "</table>";
+                // Put table into results html
+                document.getElementById("searchResults").innerHTML = table;
+            },
+            error: function () {
+                console.log("Error. Could not execute search.");
+            }
+        });
     });
-  });
+
+
+    // Clicks on song request buttons
+    $(document).on('click', '.requestButton', function (e) {
+        var data = {};
+        data.ID = unescape(this.dataset.id);
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/aria1/request',
+            /* contentType sends application/x-www-form-urlencoded data */
+            contentType: 'application/x-www-form-urlencoded',
+            data: JSON.stringify(data),
+            /* dataType expects a text response */
+            dataType: 'text',
+            success: function (data) {
+                console.log("Song request submitted.");
+                document.getElementById("requestStatus").innerHTML = "Request submitted!";
+                // Disabled the request button
+                $(".requestButton").prop('disabled', true);
+                document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
+
+                // Enable the request button after five minutes
+                setTimeout(function () {
+                    $(".requestButton").prop('disabled', false);
+                    document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
+                }, 1000*60*5)
+            },
+            error: function () {
+                console.log("Error. Something went wrong submitting the song request..");
+                document.getElementById("requestStatus").innerHTML = "Error. Something went wrong submitting the song request..";
+            }
+        });
+    })
 });

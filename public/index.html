@@ -1,236 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Ken Ellorando's personal online radio" />
-  <meta name="keywords" content="kenellorando, Ken Ellorando, Cadence, Radio, Cadence Radio, CadenceRadio, free radio, open source radio, github, Ken Ellorando radio"
-  />
+        <title>Cadence Radio ♥ | A Rhythmic Experience</title>
+        <meta name="description" content="Cadence is a online radio specialized in streaming ad-free pop music from Korea, Japan, and China. Start listening now!"/>
+        <meta name="keywords" content="cadence, radio, cadence radio, kpop, jpop, cpop, Ken Ellorando"/>
+        
+        <link rel="stylesheet" href="/css/base.css">
+        <link rel="stylesheet" href="." id="themeStylesheet">
+        <link rel="stylesheet" id="moduleRequestButton" href="/css/modules/requestButtonEnabled.css">
+        
+        <!-- jQuery Google CDN -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- Theme changer scripts -->
+        <script type="text/javascript" src="/js/themeMetadata.js"></script>
+        <script type="text/javascript" src="/js/themeChanger.js"></script>
+        <!-- Radio player scripts -->
+        <script type="text/javascript" src="/js/player.js"></script>
+        <!-- UI view switching scripts -->
+        <script type="text/javascript" src="/js/tabs.js"></script>
+        <!-- API (Aria) scripts -->
+        <script type="text/javascript" src="/js/aria.js"></script>
+    </head>
+    <body>
+        <nav>
+            <span id="navLeft">
+                <a id="tabMain">CADENCE</a>
+            </span>
+            <span id="navRight">
+                <a id="tabRequest">Request</a>
+                <a id="tabTheme">Theme</a>
+                <a href="https://github.com/kenellorando/cadence" target="_blank">Source</a>
+            </span>
+        </nav>
+        <main>
+            <div id="player">
+                <!-- Connection to source -->
+                <audio id="stream" src="https://stream.cadenceradio.com/cadence1" type="audio/mp3"></audio>
+                <!-- Now playing information -->
+                <div id="status">Disconnected from server.</div>
 
-  <!-- Meta-tags for theme colors, etc -->
-  <!-- Chrome mobile's navigation bar -->
-  <meta name="theme-color" content="#CCCCCC" id="chrome-color">
-  <!-- Windows phone -->
-  <meta name="msapplication-navbutton-color" content="#CCCCCC" id="ie-color">
+                <div id="song">-</div>
+                <div id="artist">-</div>
+                <div id="playButton">►</div>
+                
+                <input type="range" id="volume" value="1" min="0" max="1" step="0.01">
 
-  <title>Cadence Radio ♥</title>
-  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+                <div id="version">
+                    <div id="release"></div>
+                    <div>Current Listeners: <span id="listeners">unknown</span></div>
+                </div>
+            </div>
 
-  <!-- Heading: Rock Salt; Subtitle: Roboto 300i; ARIA Messages: VT232; All else: PT Sans -->
-  <!-- CSS preloading technique as described at https://stackoverflow.com/a/40314216 -->
-  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet" class="delayedLoad" media="none">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet" class="delayedLoad" media="none">
-  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" class="delayedLoad" media="none">
-  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet" class="delayedLoad" media="none">
-  
-  <noscript id="scriptless-fonts">
-    <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300i" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
-  </noscript>
+            <hr/>
 
-  <!-- Import base, norm, modules CSS -->
-  <link rel="stylesheet" type="text/css" href="/css/master-import.css">
-  <!-- ARIA request button CSS (not in import so the script can switch back and forth) -->
-  <link rel="stylesheet" type="text/css" id="aria-request-button" href="/css/modules/aria/request-button.css">
-  <!-- Selected style CSS -->
-  <link rel="stylesheet" type="text/css" id="selected-css" href=".">
+            <div id="frontMain">
+                <div class="column">
+                    <h2>About Cadence</h2>
+                    <p>Cadence is an online radio originally started in February 2017 as my first endeavour to practice a full range of tech skills, from development to server administration.</p>
+                    <p>The application is a Go web server which interacts with an Icecast stream server and database server. Cadence provides users with the ability to search the library as well as make song requests.</p>
+                    <p>Active development continues to this day. All source is available on <a href="https://github.com/kenellorando/cadence">GitHub</a>.</p>
+                    <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
+                </div>
+                <div class="column">
+                    <h2>Announcements</h2>
+                    <a class="twitter-timeline" data-lang="en" data-width="500" data-height="300" data-theme="dark" data-link-color="#19CF86" href="https://twitter.com/CadenceRadio?ref_src=twsrc%5Etfw">Tweets by CadenceRadio</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                </div>
+            </div>
 
-  <!-- Conditionally use special behavior for IE9 (only supported IE with buggy defer) -->
-  <!--[if IE]>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type="text/javascript" src="/js/theme.json"></script>
-    <script src="/js/aria.js" async defer></script>
-    <script src="/js/theme-changer.js" async defer></script>
-    <script src="/js/radio-page.js" async defer></script>
-    <script src="/js/handlers.js" async defer></script>
-  <![endif]-->
-  
-  <!-- IE later than 10 and other browsers don't understand conditional comments. -->
-  <!-- These browsers guarantee the execution order of deferred scripts, so all the scripts can get defers -->
-  <!-- [if !IE]> -->
-    <!-- jQuery Google CDN -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" defer></script>
-    <!-- Theme data JSON -->
-    <script type="text/javascript" src="/js/theme.json" defer></script>
-    <!-- ARIA Front-end -->
-    <script src="/js/aria.js" defer></script>
-    <!-- Theme Changer -->
-    <script src="/js/theme-changer.js" defer></script>
-    <!-- Radio-page script -->
-    <script src="/js/radio-page.js" defer></script>
-    <!-- Event handlers -->
-    <script src="/js/handlers.js" defer></script>
-  <!-- <![endif] -->
-</head>
+            <div id="frontRequest">
+                <div class="column">
+                    <h2>Request</h2>
+                    <p>Request Cadence to queue a song. To find a complete listing of the music library, check out the library listing below.</p>
+                    <p>Please note that with the new 4.0 release, searches are still extremely sensitive. Please ensure case and spelling are exact.</p>
 
+                    <input name="searchInput" id="searchInput" type="text" placeholder="Search for a song or artist!">
+                    <button id="searchButton">Search</button>
 
-<body>
-  <main>
-    <h1 id="title">CADENCE</h1>
-    <p id="subtitle">A Rhythmic Experience</p>
+                    <div id="requestStatus"></div>
+                    <div id="searchResults"></div>
+                </div>
+                <hr/>
+                <div class="column">
+                    <h2>Library</h2>
+                    <p>Return a plain listing of all songs in the Cadence rotation, to better help you find what songs are available for request.</p>
+                    <div id="library"><a id="getLibrary">Load Song Library</a></div>
+                </div>
+            </div>
 
-    <div id="player">
-      <!-- Connection to source -->
-      <audio id="stream" src="http://stream.cadenceradio.com:8000/cadence1"></audio>
-
-      <!-- Display title/artist, may add more later -->
-      <div id="nowPlaying">
-        <span id="artist_name">Track data is loading...</span>
-        <span id="song_title"></span>
-      </div>
-
-      <!-- Buttons stacked-->
-      <ul id="playerButtonList">
-        <li>
-          <!-- ON/OFF -->
-          <button type="button" id="playerToggle">►</button>
-        </li>
-        <li id="volumeLabel">
-          <label for="volume">Volume</label>
-        </li>
-        <li>
-          <!-- VOLUME -->
-          <input type="range" id="volume" value="1" min="0" max="1" step="0.01">
-        </li>
-      </ul>
-
-      <div id="version">
-        <p style="margin:0">Cadence/ARIA Development Build</p>
-        <p style="margin:0 0 30px 0;">Ver. 3.0.2</p>
-      </div>
-
-      <!-- Theme selector -->
-      <div class="dropdown">
-        <button class="dropbtn" id="theme-button">Select Theme</button>
-        <div class="dropdown-content">
-          <button type="button" class="themeChoice" id="chicagoEvening">Chicago Evening</button>
-          <button type="button" class="themeChoice" id="cyberpunkBartender">Cyberpunk Bartender</button>
-          <button type="button" class="themeChoice" id="yorha">YoRHa</button>
-          <button type="button" class="themeChoice" id="yourName">Your Name</button>
-          <button type="button" class="themeChoice" id="spaceStation">Space Station</button>
-          <button type="button" class="themeChoice" id="legacy">Legacy</button>
-
-          <!--
-          <button type="button" class="themeChoice" id="sanFrancisco">San Francisco</button>
-          <button type="button" class="themeChoice" id="minimalist">Minimalist</button>
-          <button type="button" class="themeChoice" id="minimalistDark">Minimalist Dark</button>
-          <button type="button" class="themeChoice" id="hawaiianSunset">Hawaiian Sunset</button>
-          <button type="button" class="themeChoice" id="lightMage">Light Mage</button>
-          <button type="button" class="themeChoice" id="electromaster">Electromaster</button>
-          <button type="button" class="themeChoice" id="tokyoNight">Tokyo Night</button>
-          <button type="button" class="themeChoice" id="mayberry">Mayberry</button>
-          <button type="button" class="themeChoice" id="starGuardian">Star Guardian</button>
-          <button type="button" class="themeChoice" id="nebula">Nebula</button>
-          <button type="button" class="themeChoice" id="cabin">Cabin</button>
-          -->
-        </div>
-      </div>
-      <button class="dropbtn" id="playerRequest">Request a Song</button>
-    </div>
-  </main>
-
-  <div id="aria">
-    <h2>Song Requests</h2>
-    <div id="search">
-      <input name="searchInput" id="searchInput" type="text" placeholder="Search for a song or artist!">
-      <button id="searchButton">Search</button>
-    </div>
-
-    <div style="text-align: center">
-      <span id="ariaSays">ARIA: Ask me to play something! You can request one song every five minutes!</span>
-    </div>
-
-    <div id="results">
-    </div>
-  </div>
-
-  <div id="content">
-    <div class="content-left">
-      <section>
-        <h2>About Cadence:</h2>
-        <p>Cadence is an anime-inspired online radio. Originally started as an <a href="/original/">experiment</a> in February 2017, the project is a result of my first endeavour to practice a full range of IT-skills in web server programming, front-end design, Linux administration, databases, networking, and cybersecurity.</p>
-
-        <p>Cadence is essentially a web application which interacts with an <i>Icecast</i> stream server. Cadence further provides users with the ability to search through a music database as well as make requests.</p>
-
-        <p>The music library is diverse, with songs inclusive of almost every genre. I occasionally override the server and play a certain genre, artist, or the same song on an endless loop.</p>
-
-        <p>Github: <a href="https://github.com/kenellorando/cadence">Code</a>/<a href="https://github.com/kenellorando/cadence/issues">Issues</a>. Diagram: <a href="https://i.imgur.com/NdyxzFH.png">Application Architecture</a></p>
-
-        <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
-      </section>
-    </div>
-
-    <div class="content-right">
-      <section>
-        <h2>Announcements</h2>
-        <h3 class="announcement">12/24: <i>SO KEEP YOUR EYES ON ME NOW</i></h3>
-        <p>Five new songs. I hope everyone has a great holiday!</p>
-        <ul>
-          <li>Ariana Grande - thank u, next</li>
-          <li>Grimes - We Appreciate Power</li>
-	        <li>K/DA - POP/STARS</li>
-          <li>SQUARE ENIX - Birth of a Wish</li>
-          <li>SQUARE ENIX - City Ruins - Shade</li>
-        </ul>
-      </section>
-
-      <section id="changelog">
-        <h2>Changelog:</h2>
-        <ul>
-          <li>9/26: Integration of new 3.0 Python server. Retirement of the 2.0 Nodejs server.</li>
-        </ul>
-        <h4><a id="oldToggle">Show Full History</a></h4>
-        <div id="old">
-          <ul>
-            <li>2/26: Cadence's 1 Year Birthday</li>
-            <li>2/15: New theme: Cabin</li>
-            <li>2/2: New theme: Legacy</li>
-            <li>1/26: Resurrected theme: Space Station</li>
-            <li>1/18: New theme: Hawaiian Sunset</li>
-            <li>1/12: New theme: Tokyo Night</li>
-            <li>11/28: New theme: Minimalist</li>
-            <li>9/30: Song requests!!!</li>
-            <li>9/28: Database returning search results</li>
-            <li>9/13: Aria build deployed to <i>cadenceradio.com</i></li>
-            <li>9/12: Switched back-end stream source client</li>
-            <li>7/22: Theme-changing code reoptimized</li>
-            <li>7/11: New theme: YoRHa</li>
-            <li>6/2: New theme: Light Mage</li>
-            <li>5/29: New theme: Star Guardian</li>
-            <li>5/15: New status checker displays live-info of services</li>
-            <li>5/14: Cyberpunk theme changes from a day/night version based on client time (10PM-8AM). </li>
-            <li>5/12: Database populator tool rewritten in Python</li>
-            <li>4/29: Transitions for theme switching added + Two new themes: Mayberry &amp; Electromaster + Sizing correction
-              for all screen sizes</li>
-            <li>4/9: New Server OS + New domain name!</li>
-            <li>3/29: User set volume is now cached</li>
-            <li>3/26: Stream toggle no longer resets theme or volume + user picked themes are now cached + Cyberpunk Bartender
-              updated
-            </li>
-            <li>3/25: Live display of artist and track make Cadence DMCA compliant</li>
-            <li>3/24: Database populator tool completed</li>
-            <li>3/22: Stream/source moved to dedicated server</li>
-            <li>3/3: Changable themes (new theme: Cyberpunk Bartender) + fixed Android Chrome background sizing bug</li>
-            <li>3/2: Custom stream/volume controls + pause desynchronization fixed (unless stream ends)</li>
-            <li>3/1: Front-end prototype design</li>
-            <li>2/28: Auto streaming (until the IP expires)</li>
-            <li>2/26: Streaming client and stream source</li>
-          </ul>
-        </div>
-      </section>
-    </div>
-  </div>
-  <!-- /CONTENT -->
-  <footer>A project by <a href="https://kenellorando.com">Ken Ellorando</a></footer>
-
-  <div class="fullscreen-bg">
-    <video loop muted autoplay class="fullscreen-bg-video">
-      <source id="video-source" src="" type="video/mp4">
-    </video>
-  </div>
-</body>
-
+            <div id="frontThemes">
+                <div class="column">
+                    <h2>Themes</h2>
+                    <p>Change the UI theme:</p>
+                    <button type="button" class="themeButton" id="Default">Default</button>
+                    <button type="button" class="themeButton" id="RCB40">RCB40</button>
+                </div>
+            </div>
+            <div id="footer">
+                <span>A project by <a href="https://kenellorando.com/">Ken Ellorando</a></span>
+            </div>
+        </main>
+    </body>
 </html>

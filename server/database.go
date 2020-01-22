@@ -36,6 +36,7 @@ func databaseAutoConfig() error {
 	WITH (
 	   OIDS = FALSE
 	)`, c.schema.Table)
+	enableExtension := "CREATE EXTENSION fuzzystrmatch"
 
 	// Drop the database if it exists
 	clog.Debug("databaseAutoConfig", fmt.Sprintf("Deleting existing databases named <%s>.", c.db.Name))
@@ -62,6 +63,15 @@ func databaseAutoConfig() error {
 	database, err = databaseConnect()
 	if err != nil {
 		clog.Error("databaseAutoConfig", "Failed to connect to newly created database. Skipping remaining autoconfig steps.", err)
+		return err
+	}
+
+	// Enable fuzzystrmatch for levenshtein sorting
+	// (sorting search results by how close they are to the query)
+	clog.Debug("databaseAutoConfig", "Enabling fuzzystrmatch extension...")
+	_, err = database.Exec(enableExtension)
+	if err != nil {
+		clog.Error("databaseAutoConfig", "Failed to enable fuzzystrmatch!", err)
 		return err
 	}
 

@@ -163,8 +163,9 @@ func databasePopulate() error {
 
 				// Close the file
 				file.Close()
+				return nil
 			} else {
-				continue
+				return nil
 			}
 		}
 		return nil

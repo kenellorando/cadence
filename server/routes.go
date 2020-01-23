@@ -19,7 +19,7 @@ func startsWith(str string, prefix string) bool {
 }
 
 func endsWith(str string, suffix string) bool {
-	return len(str) >= len(suffix) && str[len(s)-len(suffix):] == suffix
+	return len(str) >= len(suffix) && str[len(str)-len(suffix):] == suffix
 }
 
 // ServeRoot - serves the frontend root index page
@@ -68,7 +68,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		// Title search
 		q := query[len("songs named "):]
 		selectWhereStatement := selectStatement + "WHERE title ILIKE $1 ORDER BY levenshtein($2, title) ASC"
-		rows, err := database.Query(selectWhereStatement, "%"+q+"%", q)
+		rows, err = database.Query(selectWhereStatement, "%"+q+"%", q)
 		if err != nil {
 			clog.Error("ARIA1Search", "Database search failed.", err)
 			return
@@ -77,7 +77,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		// Artist search
 		q := query[len("songs by "):]
 		selectWhereStatement := selectStatement + "WHERE artist ILIKE $1 ORDER BY levenshtein($2, artist) ASC"
-		rows, err := database.Query(selectWhereStatement, "%"+q+"%", q)
+		rows, err = database.Query(selectWhereStatement, "%"+q+"%", q)
 		if err != nil {
 			clog.Error("ARIA1Search", "Database search failed.", err)
 			return
@@ -86,7 +86,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		// Genre search
 		q := query[:len(query)-len(" songs")]
 		selectWhereStatement := selectStatement + "WHERE genre ILIKE $1 ORDER BY levenshtein($2, genre) ASC"
-		rows, err := database.Query(selectWhereStatement, "%"+q+"%", q)
+		rows, err = database.Query(selectWhereStatement, "%"+q+"%", q)
 		if err != nil {
 			clog.Error("ARIA1Search", "Database search failed.", err)
 			return
@@ -96,7 +96,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		// Note that the year query doesn't use includes: "Songs from 20" shouldn't return a song made in 2009.
 		q := query[len("songs from "):]
 		selectWhereStatement := selectStatement + "WHERE year LIKE $1 OR ALBUM ILIKE $2 ORDER BY LEAST(levenshtein($3, year), levenshtein($4, album)) ASC"
-		rows, err := database.Query(selectWhereStatement, q, "%"+q+"%", q, q)
+		rows, err = database.Query(selectWhereStatement, q, "%"+q+"%", q, q)
 		if err != nil {
 			clog.Error("ARIA1Search", "Database search failed.", err)
 			return
@@ -106,7 +106,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		// This search also doesn't use an include-style parameter
 		q := query[len("songs released in "):]
 		selectWhereStatement := selectStatement + "WHERE year LIKE $1 ORDER BY levenshtein($2, year) ASC"
-		rows, err := database.Query(selectWhereStatement, q, q)
+		rows, err = database.Query(selectWhereStatement, q, q)
 		if err != nil {
 			clog.Error("ARIA1Search", "Database search failed.", err)
 			return
@@ -115,7 +115,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		// Album search
 		q := query[len("songs in "):]
 		selectWhereStatement := selectStatement + "WHERE album ILIKE $1 ORDER BY levenshtein($2, album) ASC"
-		rows, err := database.Query(selectWhereStatement, "%"+q+"%", q)
+		rows, err = database.Query(selectWhereStatement, "%"+q+"%", q)
 		if err != nil {
 			clog.Error("ARIA1Search", "Database search failed.", err)
 			return
@@ -125,7 +125,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 		// It's been an open question since before v3.0 what exactly we should do for a general search...
 		// But, it's always been the case that either title or artist search works here.
 		selectWhereStatement := selectStatement + "WHERE artist ILIKE $1 OR title ILIKE $2 ORDER BY LEAST(levenshtein($3, artist), levenshtein($4, title)) ASC"
-		rows, err := database.Query(selectWhereStatement, "%"+q+"%", "%"+q+"%", q, q)
+		rows, err = database.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%", query, query)
 		if err != nil {
 			clog.Error("ARIA1Search", "Database search failed.", err)
 			return

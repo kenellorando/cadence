@@ -53,8 +53,8 @@ nav {
 
     font-weight: 300;
 
-    padding-left: 5%;
-    padding-right: 5%;
+    padding-left: 2.5%;
+    padding-right: 2.5%;
 }
 nav ul {
     list-style-type: none;
@@ -65,7 +65,7 @@ nav a {
 nav #navLeft {
     color: bisque;
 
-    padding-top: 15px;
+    padding-top: 4px;
     display: block;
     text-align: center;
 }
@@ -73,9 +73,10 @@ nav #navRight {
     color: bisque;
     display: block;
     text-align: center;
-    font-size: 19px;
+    font-size: 18px;
     font-family: 'Roboto Condensed', sans-serif;
-    padding: 10px;
+    padding-top: 4px;
+    padding-bottom: 10px;
 }
 nav #navRight a {
     margin-left: 15px;
@@ -179,10 +180,21 @@ nav #tabMain {
     font-family: 'Inconsolata', monospace;
     text-align: left;
 
-    width: 100%;
-
     margin-top: 20px;
+
+    font-size: 15px;
+    table-layout: fixed;
+    width: 100%;
 }
+
+#searchResults tr th:last-child {
+    text-align: right;
+}
+
+#searchResults tr td:last-child {
+    text-align: right;
+}
+
 
 #requestStatus {
     font-family: 'Inconsolata', monospace;
@@ -200,18 +212,19 @@ nav #tabMain {
 
 #frontThemes .themeButton {
     font-family: 'Inconsolata', monospace;
-    font-size: 17px;
+    font-size: 16px;
     text-decoration: none;
 
     background-color: rgba(58, 58, 58, 0.8);
-    color: rgb(40, 202, 252);
     
     border: none;
     border-radius: 5%;
     padding: 6px 15px;
 
     cursor: pointer;
-    margin: 0px 10px;
+
+    margin-right: 5px;
+    margin-bottom: 5px;
 }
 
 input[type=range] {
@@ -242,7 +255,7 @@ input[type=range]::-webkit-slider-thumb {
     height: 13px;
     width: 13px;
     border-radius: 50px;
-    background: rgb(47, 151, 52);
+    background: rgb(98, 39, 138);
     cursor: pointer;
     -webkit-appearance: none;
 

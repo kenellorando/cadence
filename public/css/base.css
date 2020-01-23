@@ -65,7 +65,7 @@ nav a {
 nav #navLeft {
     color: bisque;
 
-    padding-top: 7px;
+    padding-top: 4px;
     display: block;
     text-align: center;
 }
@@ -73,9 +73,9 @@ nav #navRight {
     color: bisque;
     display: block;
     text-align: center;
-    font-size: 19px;
+    font-size: 18px;
     font-family: 'Roboto Condensed', sans-serif;
-    padding-top: 8px;
+    padding-top: 4px;
     padding-bottom: 10px;
 }
 nav #navRight a {
@@ -187,9 +187,14 @@ nav #tabMain {
     width: 100%;
 }
 
-.column {
-    width: 100% !important;
+#searchResults tr th:last-child {
+    text-align: right;
 }
+
+#searchResults tr td:last-child {
+    text-align: right;
+}
+
 
 #requestStatus {
     font-family: 'Inconsolata', monospace;

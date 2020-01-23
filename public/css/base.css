@@ -212,18 +212,19 @@ nav #tabMain {
 
 #frontThemes .themeButton {
     font-family: 'Inconsolata', monospace;
-    font-size: 17px;
+    font-size: 16px;
     text-decoration: none;
 
     background-color: rgba(58, 58, 58, 0.8);
-    color: rgb(40, 202, 252);
     
     border: none;
     border-radius: 5%;
     padding: 6px 15px;
 
     cursor: pointer;
-    margin: 0px 10px;
+
+    margin-right: 5px;
+    margin-bottom: 5px;
 }
 
 input[type=range] {

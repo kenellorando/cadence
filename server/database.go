@@ -136,7 +136,7 @@ func databasePopulate() error {
 		}
 
 		// Skip non-music files
-		var extensions = [...]string{".mp3", ".ogg", ".flac"}
+		var extensions = [...]string{".mp3", ".ogg", ".flac", ".m4a"}
 		for _, ext := range extensions {
 			if strings.HasSuffix(path, ext) {
 				// Open a file for reading
@@ -167,6 +167,7 @@ func databasePopulate() error {
 				continue
 			}
 		}
+		return nil
 	})
 
 	// Marshal the new JSON data and store it on file

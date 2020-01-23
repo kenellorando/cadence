@@ -136,39 +136,38 @@ func databasePopulate() error {
 		}
 
 		// Skip non-music files
-		var extensions = [...]string{".mp3", ".ogg", ".flac"}
+		var extensions = [...]string{".mp3", ".ogg", ".flac", ".m4a"}
 		for _, ext := range extensions {
 			if strings.HasSuffix(path, ext) {
-				break
+				// Open a file for reading
+				file, e := os.Open(path)
+				if e != nil {
+					return e
+				}
+
+				// Read metadata from the file
+				tags, er := tag.ReadFrom(file)
+				if er != nil {
+					return er
+				}
+
+				// Insert into database
+				_, err = database.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(),
+					tags.Genre(), tags.Year(), path)
+				if err != nil {
+					panic(err)
+				}
+
+				// Add song (as LibraryEntry) to full libraryData
+				libraryData = append(libraryData, LibraryEntry{Artist: tags.Artist(), Title: tags.Title()})
+
+				// Close the file
+				file.Close()
+				return nil
 			} else {
 				return nil
 			}
 		}
-
-		// Open a file for reading
-		file, e := os.Open(path)
-		if e != nil {
-			return e
-		}
-
-		// Read metadata from the file
-		tags, er := tag.ReadFrom(file)
-		if er != nil {
-			return er
-		}
-
-		// Insert into database
-		_, err = database.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(),
-			tags.Genre(), tags.Year(), path)
-		if err != nil {
-			panic(err)
-		}
-
-		// Add song (as LibraryEntry) to full libraryData
-		libraryData = append(libraryData, LibraryEntry{Artist: tags.Artist(), Title: tags.Title()})
-
-		// Close the file
-		file.Close()
 		return nil
 	})
 

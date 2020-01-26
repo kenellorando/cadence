@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"path"
+	"time"
 
 	"github.com/kenellorando/clog"
 )
@@ -179,7 +180,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create or overwrite existing log times if OK
-	requestTimeoutIPs[requesterIP] = time.Now()
+	requestTimeoutIPs[requesterIP] = now.Unix()
 
 	// Declare object to hold r body data
 	type Request struct {

@@ -168,12 +168,11 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	clog.Debug("ARIA1Request", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
 
 	requesterIP := r.Header.Get("X-Forwarded-For")
-	now := time.Now()
 
 	// If the IP is in the timeout log
 	if _, ok := requestTimeoutIPs[requesterIP]; ok {
 		// If the existing IP was recently logged, deny the request.
-		if requestTimeoutIPs[requesterIP] > now.Unix()-180 {
+		if requestTimeoutIPs[requesterIP] > int64(time.Now().Unix())-180 {
 			clog.Info("ARIA1Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
 			return
 			// Todo: More descriptive return messages from the server.
@@ -181,7 +180,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create or overwrite existing log times if OK
-	requestTimeoutIPs[requesterIP] = now.Unix()
+	requestTimeoutIPs[requesterIP] = int64(time.Now().Unix())
 
 	// Declare object to hold r body data
 	type Request struct {

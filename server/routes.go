@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"path"
+	"time"
 
 	"github.com/kenellorando/clog"
 )
@@ -167,6 +168,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	clog.Debug("ARIA1Request", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
 
 	requesterIP := r.Header.Get("X-Forwarded-For")
+	now := time.Now()
 
 	// If the IP is in the timeout log
 	if _, ok := requestTimeoutIPs[requesterIP]; ok {

@@ -24,14 +24,14 @@ func endsWith(str string, suffix string) bool {
 
 // ServeRoot - serves the frontend root index page
 func ServeRoot(w http.ResponseWriter, r *http.Request) {
-	clog.Info("ServeRoot", fmt.Sprintf("Client %s requesting %s%s", r.RemoteAddr, r.Host, r.URL.Path))
+	clog.Info("ServeRoot", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 	w.Header().Set("Content-type", "text/html")
 	http.ServeFile(w, r, path.Dir("./public/index.html"))
 }
 
 // Serve404 - served for any requests to unknown resources
 func Serve404(w http.ResponseWriter, r *http.Request) {
-	clog.Info("Serve404", fmt.Sprintf("Client %s requesting unknown resource %s%s. Returning 404.", r.RemoteAddr, r.Host, r.URL.Path))
+	clog.Info("Serve404", fmt.Sprintf("Client %s requesting unknown resource %s%s. Returning 404.", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 	w.Header().Set("Content-type", "text/html")
 	http.ServeFile(w, r, path.Dir("./public/404/index.html"))
 }
@@ -39,7 +39,7 @@ func Serve404(w http.ResponseWriter, r *http.Request) {
 // ARIA1Search - database song searcher
 // Request is received as a value in a raw JSON with key 'search'
 func ARIA1Search(w http.ResponseWriter, r *http.Request) {
-	clog.Debug("ARIA1Search", fmt.Sprintf("Decoding http-request data from client %s.", r.RemoteAddr))
+	clog.Debug("ARIA1Search", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
 	// Declare object to hold r body data
 	type Search struct {
 		Query string `json:"search"`
@@ -50,7 +50,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&search)
 	if err != nil {
-		clog.Error("ARIA1Search", fmt.Sprintf("Failed to read http-request body from %s.", r.RemoteAddr), err)
+		clog.Error("ARIA1Search", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 		return
 	}
 
@@ -161,7 +161,7 @@ func ARIA1Search(w http.ResponseWriter, r *http.Request) {
 
 // ARIA1Request - song requester
 func ARIA1Request(w http.ResponseWriter, r *http.Request) {
-	clog.Debug("ARIA1Request", fmt.Sprintf("Decoding http-request data from client %s.", r.RemoteAddr))
+	clog.Debug("ARIA1Request", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
 
 	// Declare object to hold r body data
 	type Request struct {
@@ -172,12 +172,12 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	// Decode json object
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.RemoteAddr), err)
+		clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 		return
 	}
 	err = json.Unmarshal(body, &request)
 	if err != nil {
-		clog.Error("ARIA1Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.RemoteAddr), err)
+		clog.Error("ARIA1Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 		return
 	}
 
@@ -221,7 +221,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 
 // ARIA1Library - serves the library json file
 func ARIA1Library(w http.ResponseWriter, r *http.Request) {
-	clog.Info("ServeLibrary", fmt.Sprintf("Client %s requesting %s%s", r.RemoteAddr, r.Host, r.URL.Path))
+	clog.Info("ServeLibrary", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 	// Open the file, marshall the data and write it
 	fileReader, _ := ioutil.ReadFile(c.server.RootPath + "./public/library.json")
 	rawJSON := json.RawMessage(string(fileReader))

@@ -9,13 +9,12 @@ import (
 	"net"
 	"net/http"
 	"path"
-	"time"
 
 	"github.com/kenellorando/clog"
 )
 
 // Map of requester IPs to be locked out of making requests
-requestTimeoutIPs := make(map[string]string)
+var requestTimeoutIPs = make(map[string]string)
 
 // Utility functions
 func startsWith(str string, prefix string) bool {
@@ -172,7 +171,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	// If the IP is in the timeout log
 	if _, ok := requestTimeoutIPs[requesterIP]; ok {
 		// If the existing IP was recently logged, deny the request.
-		if requestTimeoutIPs[requesterIP] > now.Unix() - 180 {
+		if requestTimeoutIPs[requesterIP] > now.Unix()-180 {
 			clog.Info("ARIA1Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
 			return
 			// Todo: More descriptive return messages from the server.

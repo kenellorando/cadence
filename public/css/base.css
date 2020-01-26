@@ -87,6 +87,10 @@ nav #tabMain {
     font-size: 26px;
 }
 
+img {
+    max-width: 100%;
+}
+
 /* Player */
 #player {
     text-align: center;

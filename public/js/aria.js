@@ -116,6 +116,7 @@ $(document).ready(function () {
             dataType: 'text',
             success: function (data) {
                 console.log("Song request submitted.");
+                console.log(data);
                 document.getElementById("requestStatus").innerHTML = "Request submitted!";
                 // Disabled the request button
                 $(".requestButton").prop('disabled', true);

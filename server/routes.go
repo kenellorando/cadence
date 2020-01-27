@@ -174,8 +174,11 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		// If the existing IP was recently logged, deny the request.
 		if requestTimeoutIPs[requesterIP] > int64(time.Now().Unix())-180 {
 			clog.Info("ARIA1Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
+			// Return 429 Too Many Requests
+			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
+			w.Header().Set("Content-Type", "text/plain")
+			w.Write("Request denied. Client is rate-limited.")
 			return
-			// Todo: More descriptive return messages from the server.
 		}
 	}
 
@@ -192,11 +195,17 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write("Request not completed. Request-body is possibly malformed.")
 		return
 	}
 	err = json.Unmarshal(body, &request)
 	if err != nil {
 		clog.Error("ARIA1Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write("Request not completed. Request-body is possibly malformed.")
 		return
 	}
 
@@ -207,6 +216,9 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Query(selectStatement)
 	if err != nil {
 		clog.Error("ARIA1Request", "Database select failed.", err)
+		w.WriteHeader(http.StatusServiceUnavailable) // 500 Server Error
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write("Request could not be completed.")
 		return
 	}
 
@@ -216,6 +228,9 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		err := rows.Scan(&path)
 		if err != nil {
 			clog.Error("ARIA1Request", "Data scan failed.", err)
+			w.WriteHeader(http.StatusServiceUnavailable) // 500 Server Error
+			w.Header().Set("Content-Type", "text/plain")
+			w.Write("Request could not be completed.")
 			return
 		}
 	}
@@ -226,7 +241,10 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	conn, err := net.Dial("tcp", c.server.SourceAddress)
 	if err != nil {
 		clog.Error("ARIA1Request", "Failed to connect to audio source server.", err)
-		return
+
+		w.WriteHeader(http.StatusServiceUnavailable) // 503 Server Error
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write("Request could not be completed.")
 	}
 	// Push request over connection
 	fmt.Fprintf(conn, "request.push "+path+"\n")
@@ -236,6 +254,11 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 
 	// Disconnect from liquidsoap
 	conn.Close()
+
+	// Return 202 OK to client
+	w.WriteHeader(http.StatusAccepted) // 202 Accepted
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write("Request accepted.")
 }
 
 // ARIA1Library - serves the library json file

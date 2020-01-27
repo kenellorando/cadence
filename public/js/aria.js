@@ -128,8 +128,8 @@ $(document).ready(function () {
                 }, 1000*60*5)
             },
             error: function (data) {
-                console.log("Server response: " + data);
-                document.getElementById("requestStatus").innerHTML = "Server response: " + data;
+                console.log("Server response: " + data.responseText);
+                document.getElementById("requestStatus").innerHTML = "Server response: " + data.responseText;
             }
         });
     })

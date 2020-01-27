@@ -121,15 +121,25 @@ $(document).ready(function () {
                 $(".requestButton").prop('disabled', true);
                 document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
 
-                // Enable the request button after five minutes
+                // Enable the request button after three minutes
                 setTimeout(function () {
                     $(".requestButton").prop('disabled', false);
                     document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
-                }, 1000*60*5)
+                }, 1000*60*3)
             },
             error: function (data) {
                 console.log("Server response: " + data.responseText);
                 document.getElementById("requestStatus").innerHTML = "Server response: " + data.responseText;
+
+                // Disabled the request button
+                $(".requestButton").prop('disabled', true);
+                document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
+
+                // Enable the request button after three minutes
+                setTimeout(function () {
+                    $(".requestButton").prop('disabled', false);
+                    document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
+                }, 1000*60*3)
             }
         });
     })

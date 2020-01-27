@@ -115,9 +115,8 @@ $(document).ready(function () {
             /* dataType expects a text response */
             dataType: 'text',
             success: function (data) {
-                console.log("Song request submitted.");
-                console.log(data);
-                document.getElementById("requestStatus").innerHTML = "Request submitted!";
+                console.log("Server response: " + data);
+                document.getElementById("requestStatus").innerHTML = "Server response: " + data;
                 // Disabled the request button
                 $(".requestButton").prop('disabled', true);
                 document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
@@ -128,9 +127,9 @@ $(document).ready(function () {
                     document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
                 }, 1000*60*5)
             },
-            error: function () {
-                console.log("Error. Something went wrong submitting the song request..");
-                document.getElementById("requestStatus").innerHTML = "Error. Something went wrong submitting the song request..";
+            error: function (data) {
+                console.log("Server response: " + data);
+                document.getElementById("requestStatus").innerHTML = "Server response: " + data;
             }
         });
     })

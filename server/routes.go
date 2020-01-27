@@ -177,7 +177,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 			// Return 429 Too Many Requests
 			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
 			w.Header().Set("Content-Type", "text/plain")
-			w.Write("Request denied. Client is rate-limited.")
+			w.Write([]byte("Request denied. Client is rate-limited."))
 			return
 		}
 	}
@@ -197,7 +197,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write("Request not completed. Request-body is possibly malformed.")
+		w.Write([]byte("Request not completed. Request-body is possibly malformed."))
 		return
 	}
 	err = json.Unmarshal(body, &request)
@@ -205,7 +205,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		clog.Error("ARIA1Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write("Request not completed. Request-body is possibly malformed.")
+		w.Write([]byte("Request not completed. Request-body is possibly malformed."))
 		return
 	}
 
@@ -218,7 +218,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		clog.Error("ARIA1Request", "Database select failed.", err)
 		w.WriteHeader(http.StatusServiceUnavailable) // 500 Server Error
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write("Request could not be completed.")
+		w.Write([]byte("Request could not be completed."))
 		return
 	}
 
@@ -230,7 +230,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 			clog.Error("ARIA1Request", "Data scan failed.", err)
 			w.WriteHeader(http.StatusServiceUnavailable) // 500 Server Error
 			w.Header().Set("Content-Type", "text/plain")
-			w.Write("Request could not be completed.")
+			w.Write([]byte("Request could not be completed."))
 			return
 		}
 	}
@@ -244,7 +244,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusServiceUnavailable) // 503 Server Error
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write("Request could not be completed.")
+		w.Write([]byte("Request could not be completed."))
 	}
 	// Push request over connection
 	fmt.Fprintf(conn, "request.push "+path+"\n")
@@ -258,7 +258,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	// Return 202 OK to client
 	w.WriteHeader(http.StatusAccepted) // 202 Accepted
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write("Request accepted.")
+	w.Write([]byte("Request accepted."))
 }
 
 // ARIA1Library - serves the library json file

@@ -309,7 +309,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 
 	// Return 202 OK to client
 	timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int(time.Now().Unix())
-	message := fmt.Sprintf("Accepted!", timeRemaining)
+	message := fmt.Sprintf("Request accepted!")
 
 	// Return data to client
 	requestResponse := RequestResponse{message, timeRemaining}

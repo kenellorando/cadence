@@ -169,16 +169,29 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 
 	requesterIP := r.Header.Get("X-Forwarded-For")
 
+	// Declare object for a song
+	type RequestResponse struct {
+		Message       string
+		TimeRemaining int64
+	}
+
 	// If the IP is in the timeout log
 	if _, ok := requestTimeoutIPs[requesterIP]; ok {
 		// If the existing IP was recently logged, deny the request.
 		if requestTimeoutIPs[requesterIP] > int64(time.Now().Unix())-180 {
 			clog.Info("ARIA1Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
-			// Return 429 Too Many Requests
+
+			timeRemaining := requestTimeoutIPs[requesterIP] - int64(time.Now().Unix()) - 180
+			message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
+
+			// Return data to client
+			var requestResponse []RequestResponse
+			requestResponse = append(RequestResponse{Message: message, TimeRemaining: timeRemaining})
+			jsonMarshal, _ := json.Marshal(requestResponse)
+
 			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
-			w.Header().Set("Content-Type", "text/plain")
-			w.Write([]byte("Request denied. Client is rate-limited."))
-			return
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonMarshal)
 		}
 	}
 

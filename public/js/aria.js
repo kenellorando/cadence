@@ -112,35 +112,54 @@ $(document).ready(function () {
             /* contentType sends application/x-www-form-urlencoded data */
             contentType: 'application/x-www-form-urlencoded',
             data: JSON.stringify(data),
-            /* dataType expects a text response */
-            dataType: 'text',
-            success: function (data) {
-                console.log("Server response: " + data);
-                document.getElementById("requestStatus").innerHTML = "Server response: " + data;
-                // Disabled the request button
-                $(".requestButton").prop('disabled', true);
-                document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
-
-                // Enable the request button after three minutes
-                setTimeout(function () {
-                    $(".requestButton").prop('disabled', false);
-                    document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
-                }, 1000*60*3)
-            },
-            error: function (data) {
-                console.log("Server response: " + data.responseText);
-                document.getElementById("requestStatus").innerHTML = "Server response: " + data.responseText;
-
-                // Disabled the request button
-                $(".requestButton").prop('disabled', true);
-                document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
-
-                // Enable the request button after three minutes
-                setTimeout(function () {
-                    $(".requestButton").prop('disabled', false);
-                    document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
-                }, 1000*60*3)
+            /* dataType expects a json response */
+            dataType: 'json',
+            statusCode: {
+                429: function(data) {
+                    console.log("Server message: " + data.Message);
+                    console.log("Timeout remaining (s): " + data.TimeRemaining);
+                    
+                    document.getElementById("requestStatus").innerHTML = "Server message: " + data.Message;
+    
+                    // Disabled the request button
+                    $(".requestButton").prop('disabled', true);
+                    document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
+    
+                    // Enable the request button after the timeout remaining has expired
+                    setTimeout(function () {
+                        $(".requestButton").prop('disabled', false);
+                        document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
+                    }, 1000*data.TimeRemaining)
+                }
             }
+
+            // success: function (data) {
+            //     console.log("Server response: " + data);
+            //     document.getElementById("requestStatus").innerHTML = "Server response: " + data;
+            //     // Disabled the request button
+            //     $(".requestButton").prop('disabled', true);
+            //     document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
+
+            //     // Enable the request button after three minutes
+            //     setTimeout(function () {
+            //         $(".requestButton").prop('disabled', false);
+            //         document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
+            //     }, 1000*60*3)
+            // },
+            // error: function (data) {
+            //     console.log("Server response: " + data.responseText);
+            //     document.getElementById("requestStatus").innerHTML = "Server response: " + data.responseText;
+
+            //     // Disabled the request button
+            //     $(".requestButton").prop('disabled', true);
+            //     document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
+
+            //     // Enable the request button after three minutes
+            //     setTimeout(function () {
+            //         $(".requestButton").prop('disabled', false);
+            //         document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
+            //     }, 1000*60*3)
+            // }
         });
     })
 });

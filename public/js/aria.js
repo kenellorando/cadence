@@ -116,8 +116,9 @@ $(document).ready(function () {
             dataType: 'json',
             statusCode: {
                 429: function(data) {
-                    console.log("Server message: " + data['Message']);
-                    console.log("Timeout remaining (s): " + data['TimeRemaining']);
+                    json = JSON.stringify(data)
+                    console.log("Server message: " + json.Message);
+                    console.log("Timeout remaining (s): " + json['TimeRemaining']);
                     
                     document.getElementById("requestStatus").innerHTML = "Server message: " + data['Message'];
     

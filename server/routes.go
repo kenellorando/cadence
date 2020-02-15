@@ -206,7 +206,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
-		timeRemaining := 0
+		timeRemaining := int64(0)
 		message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
 
 		// Return data to client
@@ -222,7 +222,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		clog.Error("ARIA1Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
-		timeRemaining := 0
+		timeRemaining := int64(0)
 		message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
 
 		// Return data to client
@@ -242,7 +242,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Query(selectStatement)
 	if err != nil {
 		clog.Error("ARIA1Request", "Database select failed.", err)
-		timeRemaining := 0
+		timeRemaining := int64(0)
 		message := fmt.Sprintf("Request not completed. Encountered a database error.")
 
 		// Return data to client
@@ -261,7 +261,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		err := rows.Scan(&path)
 		if err != nil {
 			clog.Error("ARIA1Request", "Data scan failed.", err)
-			timeRemaining := 0
+			timeRemaining := int64(0)
 			message := fmt.Sprintf("Request not completed. Encountered a database error.")
 
 			// Return data to client
@@ -282,7 +282,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		clog.Error("ARIA1Request", "Failed to connect to audio source server.", err)
 
-		timeRemaining := 0
+		timeRemaining := int64(0)
 		message := fmt.Sprintf("Request not completed. Could not submit request to stream source service.")
 
 		// Return data to client

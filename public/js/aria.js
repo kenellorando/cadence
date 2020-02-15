@@ -116,10 +116,10 @@ $(document).ready(function () {
             dataType: 'json',
             statusCode: {
                 429: function(data) {
-                    console.log("Server message: " + data.ResponseJSON.Message);
-                    console.log("Timeout remaining (s): " + data.ResponseJSON.TimeRemaining);
+                    console.log("Server message: " + data.responseJSON.Message);
+                    console.log("Timeout remaining (s): " + data.responseJSON.TimeRemaining);
                     
-                    document.getElementById("requestStatus").innerHTML = "Server message: " + data.ResponseJSON.Message;
+                    document.getElementById("requestStatus").innerHTML = "Server message: " + data.responseJSON.Message;
     
                     // Disabled the request button
                     $(".requestButton").prop('disabled', true);
@@ -129,7 +129,7 @@ $(document).ready(function () {
                     setTimeout(function () {
                         $(".requestButton").prop('disabled', false);
                         document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
-                    }, 1000*data.ResponseJSON.TimeRemaining)
+                    }, 1000*data.responseJSON.TimeRemaining)
                 }
             }
 

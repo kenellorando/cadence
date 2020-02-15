@@ -181,7 +181,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		if requestTimeoutIPs[requesterIP] > int64(time.Now().Unix())-180 {
 			clog.Info("ARIA1Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
 
-			timeRemaining := requestTimeoutIPs[requesterIP] - int64(time.Now().Unix()) - 180
+			timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int64(time.Now().Unix())
 			message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
 
 			clog.Debug("aria1request", fmt.Sprintf("Time: %v", timeRemaining))

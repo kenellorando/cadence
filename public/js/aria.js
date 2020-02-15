@@ -116,6 +116,8 @@ $(document).ready(function () {
             dataType: 'json',
             statusCode: {
                 429: function(data) {
+                    console.log("Full message: " + data)
+                    console.log("Full message: " + data.body)
                     console.log("Server message: " + data.Message);
                     console.log("Timeout remaining (s): " + data.TimeRemaining);
                     

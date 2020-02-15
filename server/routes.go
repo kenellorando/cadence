@@ -184,14 +184,17 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 			timeRemaining := requestTimeoutIPs[requesterIP] - int64(time.Now().Unix()) - 180
 			message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
 
+			clog.Debug("aria1request", fmt.Sprintf("Time: %v", timeRemaining))
+			clog.Debug("aria1request", fmt.Sprintf("message: %s", message))
+
 			// Return data to client
-			var requestResponse []RequestResponse
 			requestResponse := RequestResponse{message, timeRemaining}
 			jsonMarshal, _ := json.Marshal(requestResponse)
 
 			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(jsonMarshal)
+			return
 		}
 	}
 

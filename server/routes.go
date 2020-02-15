@@ -184,9 +184,6 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 			timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int64(time.Now().Unix())
 			message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
 
-			clog.Debug("aria1request", fmt.Sprintf("Time: %v", timeRemaining))
-			clog.Debug("aria1request", fmt.Sprintf("message: %s", message))
-
 			// Return data to client
 			requestResponse := RequestResponse{message, timeRemaining}
 			jsonMarshal, _ := json.Marshal(requestResponse)
@@ -198,9 +195,6 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Create or overwrite existing log times if OK
-	requestTimeoutIPs[requesterIP] = int64(time.Now().Unix())
-
 	// Declare object to hold r body data
 	type Request struct {
 		ID string `json:"ID"`
@@ -211,17 +205,33 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+
+		timeRemaining := 0
+		message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
+
+		// Return data to client
+		requestResponse := RequestResponse{message, timeRemaining}
+		jsonMarshal, _ := json.Marshal(requestResponse)
+
 		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("Request not completed. Request-body is possibly malformed."))
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
 		return
 	}
 	err = json.Unmarshal(body, &request)
 	if err != nil {
 		clog.Error("ARIA1Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+
+		timeRemaining := 0
+		message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
+
+		// Return data to client
+		requestResponse := RequestResponse{message, timeRemaining}
+		jsonMarshal, _ := json.Marshal(requestResponse)
+
 		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("Request not completed. Request-body is possibly malformed."))
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
 		return
 	}
 
@@ -232,9 +242,16 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Query(selectStatement)
 	if err != nil {
 		clog.Error("ARIA1Request", "Database select failed.", err)
-		w.WriteHeader(http.StatusServiceUnavailable) // 500 Server Error
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("Request could not be completed."))
+		timeRemaining := 0
+		message := fmt.Sprintf("Request not completed. Encountered a database error.")
+
+		// Return data to client
+		requestResponse := RequestResponse{message, timeRemaining}
+		jsonMarshal, _ := json.Marshal(requestResponse)
+
+		w.WriteHeader(http.StatusInternalServerError) // 500 Server Error
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
 		return
 	}
 
@@ -244,9 +261,16 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		err := rows.Scan(&path)
 		if err != nil {
 			clog.Error("ARIA1Request", "Data scan failed.", err)
-			w.WriteHeader(http.StatusServiceUnavailable) // 500 Server Error
-			w.Header().Set("Content-Type", "text/plain")
-			w.Write([]byte("Request could not be completed."))
+			timeRemaining := 0
+			message := fmt.Sprintf("Request not completed. Encountered a database error.")
+
+			// Return data to client
+			requestResponse := RequestResponse{message, timeRemaining}
+			jsonMarshal, _ := json.Marshal(requestResponse)
+
+			w.WriteHeader(http.StatusInternalServerError) // 500 Server Error
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonMarshal)
 			return
 		}
 	}
@@ -258,10 +282,19 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		clog.Error("ARIA1Request", "Failed to connect to audio source server.", err)
 
+		timeRemaining := 0
+		message := fmt.Sprintf("Request not completed. Could not submit request to stream source service.")
+
+		// Return data to client
+		requestResponse := RequestResponse{message, timeRemaining}
+		jsonMarshal, _ := json.Marshal(requestResponse)
+
 		w.WriteHeader(http.StatusServiceUnavailable) // 503 Server Error
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("Request could not be completed."))
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+		return
 	}
+
 	// Push request over connection
 	fmt.Fprintf(conn, "request.push "+path+"\n")
 	// Listen for reply
@@ -270,6 +303,9 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 
 	// Disconnect from liquidsoap
 	conn.Close()
+
+	// Create or overwrite existing log times if time and request body look OK
+	requestTimeoutIPs[requesterIP] = int64(time.Now().Unix())
 
 	// Return 202 OK to client
 	w.WriteHeader(http.StatusAccepted) // 202 Accepted

@@ -105,32 +105,31 @@ $(document).ready(function () {
     $(document).on('click', '.requestButton', function (e) {
         var data = {};
         data.ID = unescape(this.dataset.id);
-
+    
         $.ajax({
             type: 'POST',
             url: '/api/aria1/request',
             /* contentType sends application/x-www-form-urlencoded data */
             contentType: 'application/x-www-form-urlencoded',
             data: JSON.stringify(data),
-            /* dataType expects a text response */
-            dataType: 'text',
-            success: function (data) {
-                console.log("Song request submitted.");
-                document.getElementById("requestStatus").innerHTML = "Request submitted!";
-                // Disabled the request button
+            /* dataType expects a json response */
+            dataType: 'json',
+            complete: function(data) {
+                console.log("Server message: " + data.responseJSON.Message);
+                console.log("Timeout remaining (s): " + data.responseJSON.TimeRemaining);
+    
+                document.getElementById("requestStatus").innerHTML = "Server message: " + data.responseJSON.Message;
+    
+                // Disable the request button over UI
                 $(".requestButton").prop('disabled', true);
                 document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
-
-                // Enable the request button after five minutes
+    
+                // Enable the request button after X minutes
                 setTimeout(function () {
                     $(".requestButton").prop('disabled', false);
                     document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
-                }, 1000*60*5)
-            },
-            error: function () {
-                console.log("Error. Something went wrong submitting the song request..");
-                document.getElementById("requestStatus").innerHTML = "Error. Something went wrong submitting the song request..";
+                }, 1000*data.responseJSON.TimeRemaining)
             }
-        });
+        })
     })
 });

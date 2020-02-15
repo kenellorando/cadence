@@ -186,7 +186,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 
 			// Return data to client
 			var requestResponse []RequestResponse
-			requestResponse = RequestResponse{message, timeRemaining}
+			requestResponse := RequestResponse{Message: message, TimeRemaining: timeRemaining}
 			jsonMarshal, _ := json.Marshal(requestResponse)
 
 			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests

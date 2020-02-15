@@ -172,16 +172,16 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	// Declare object for a song
 	type RequestResponse struct {
 		Message       string
-		TimeRemaining int64
+		TimeRemaining int
 	}
 
 	// If the IP is in the timeout log
 	if _, ok := requestTimeoutIPs[requesterIP]; ok {
 		// If the existing IP was recently logged, deny the request.
-		if requestTimeoutIPs[requesterIP] > int64(time.Now().Unix())-180 {
+		if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-180 {
 			clog.Info("ARIA1Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
 
-			timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int64(time.Now().Unix())
+			timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int(time.Now().Unix())
 			message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
 
 			// Return data to client
@@ -206,7 +206,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
-		timeRemaining := int64(0)
+		timeRemaining := 0
 		message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
 
 		// Return data to client
@@ -222,7 +222,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		clog.Error("ARIA1Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
-		timeRemaining := int64(0)
+		timeRemaining := 0
 		message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
 
 		// Return data to client
@@ -242,7 +242,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Query(selectStatement)
 	if err != nil {
 		clog.Error("ARIA1Request", "Database select failed.", err)
-		timeRemaining := int64(0)
+		timeRemaining := 0
 		message := fmt.Sprintf("Request not completed. Encountered a database error.")
 
 		// Return data to client
@@ -261,7 +261,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 		err := rows.Scan(&path)
 		if err != nil {
 			clog.Error("ARIA1Request", "Data scan failed.", err)
-			timeRemaining := int64(0)
+			timeRemaining := 0
 			message := fmt.Sprintf("Request not completed. Encountered a database error.")
 
 			// Return data to client
@@ -282,7 +282,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		clog.Error("ARIA1Request", "Failed to connect to audio source server.", err)
 
-		timeRemaining := int64(0)
+		timeRemaining := 0
 		message := fmt.Sprintf("Request not completed. Could not submit request to stream source service.")
 
 		// Return data to client
@@ -305,7 +305,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	conn.Close()
 
 	// Create or overwrite existing log times if time and request body look OK
-	requestTimeoutIPs[requesterIP] = int64(time.Now().Unix())
+	requestTimeoutIPs[requesterIP] = int(time.Now().Unix())
 
 	// Return 202 OK to client
 	w.WriteHeader(http.StatusAccepted) // 202 Accepted

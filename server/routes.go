@@ -308,9 +308,17 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	requestTimeoutIPs[requesterIP] = int(time.Now().Unix())
 
 	// Return 202 OK to client
+	timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int(time.Now().Unix())
+	message := fmt.Sprintf("Accepted!", timeRemaining)
+
+	// Return data to client
+	requestResponse := RequestResponse{message, timeRemaining}
+	jsonMarshal, _ := json.Marshal(requestResponse)
+
 	w.WriteHeader(http.StatusAccepted) // 202 Accepted
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte("Request accepted."))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonMarshal)
+	return
 }
 
 // ARIA1Library - serves the library json file

@@ -105,7 +105,7 @@ $(document).ready(function () {
     $(document).on('click', '.requestButton', function (e) {
         var data = {};
         data.ID = unescape(this.dataset.id);
-
+    
         $.ajax({
             type: 'POST',
             url: '/api/aria1/request',
@@ -114,52 +114,22 @@ $(document).ready(function () {
             data: JSON.stringify(data),
             /* dataType expects a json response */
             dataType: 'json',
-            statusCode: {
-                429: function(data) {
-                    console.log("Server message: " + data.responseJSON.Message);
-                    console.log("Timeout remaining (s): " + data.responseJSON.TimeRemaining);
-                    
-                    document.getElementById("requestStatus").innerHTML = "Server message: " + data.responseJSON.Message;
+            complete: function(data) {
+                console.log("Server message: " + data.responseJSON.Message);
+                console.log("Timeout remaining (s): " + data.responseJSON.TimeRemaining);
     
-                    // Disabled the request button
-                    $(".requestButton").prop('disabled', true);
-                    document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
+                document.getElementById("requestStatus").innerHTML = "Server message: " + data.responseJSON.Message;
     
-                    // Enable the request button after the timeout remaining has expired
-                    setTimeout(function () {
-                        $(".requestButton").prop('disabled', false);
-                        document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
-                    }, 1000*data.responseJSON.TimeRemaining)
-                }
+                // Disable the request button over UI
+                $(".requestButton").prop('disabled', true);
+                document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
+    
+                // Enable the request button after X minutes
+                setTimeout(function () {
+                    $(".requestButton").prop('disabled', false);
+                    document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
+                }, 1000*data.responseJSON.TimeRemaining)
             }
-
-            // success: function (data) {
-            //     console.log("Server response: " + data);
-            //     document.getElementById("requestStatus").innerHTML = "Server response: " + data;
-            //     // Disabled the request button
-            //     $(".requestButton").prop('disabled', true);
-            //     document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
-
-            //     // Enable the request button after three minutes
-            //     setTimeout(function () {
-            //         $(".requestButton").prop('disabled', false);
-            //         document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
-            //     }, 1000*60*3)
-            // },
-            // error: function (data) {
-            //     console.log("Server response: " + data.responseText);
-            //     document.getElementById("requestStatus").innerHTML = "Server response: " + data.responseText;
-
-            //     // Disabled the request button
-            //     $(".requestButton").prop('disabled', true);
-            //     document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
-
-            //     // Enable the request button after three minutes
-            //     setTimeout(function () {
-            //         $(".requestButton").prop('disabled', false);
-            //         document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"    
-            //     }, 1000*60*3)
-            // }
-        });
+        })
     })
 });

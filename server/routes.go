@@ -15,7 +15,7 @@ import (
 )
 
 // Map of requester IPs to be locked out of making requests
-var requestTimeoutIPs = make(map[string]int64)
+var requestTimeoutIPs = make(map[string]int)
 
 // Utility functions
 func startsWith(str string, prefix string) bool {

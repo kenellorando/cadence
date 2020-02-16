@@ -1,0 +1,8 @@
+#frontThemes .activeTheme {
+    color: rgb(103, 211, 100);
+    background-color: rgb(43, 43, 38);
+}
+
+#frontThemes .inactiveTheme {
+    color: rgb(96, 175, 221);
+}

@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 
-	env "github.com/deanishe/go-env"
 	"github.com/gorilla/mux"
 	"github.com/kenellorando/clog"
 )
@@ -59,23 +60,23 @@ func init() {
 	schema := SchemaConfig{}
 
 	// Webserver configuration
-	server.RootPath = env.GetString("CSERVER_ROOTPATH")
-	server.Domain = env.GetString("CSERVER_DOMAIN")
-	server.LogLevel = env.GetInt("CSERVER_LOGLEVEL")
-	server.Port = env.GetString("CSERVER_PORT")
-	server.MusicDir = env.GetString("CSERVER_MUSIC_DIR")
-	server.SourceAddress = env.GetString("CSERVER_SOURCEADDRESS")
+	server.RootPath = os.Getenv("CSERVER_ROOTPATH")
+	server.Domain = os.Getenv("CSERVER_DOMAIN")
+	server.LogLevel, _ = strconv.Atoi(os.Getenv("CSERVER_LOGLEVEL"))
+	server.Port = os.Getenv("CSERVER_PORT")
+	server.MusicDir = os.Getenv("CSERVER_MUSIC_DIR")
+	server.SourceAddress = os.Getenv("CSERVER_SOURCEADDRESS")
 	// Database server configuration
-	db.Host = env.GetString("CSERVER_DB_HOST")
-	db.Port = env.GetString("CSERVER_DB_PORT")
-	db.User = env.GetString("CSERVER_DB_USER")
-	db.Pass = env.GetString("CSERVER_DB_PASS")
-	db.Name = env.GetString("CSERVER_DB_NAME")
-	db.SSLMode = env.GetString("CSERVER_DB_SSLMODE")
-	db.Driver = env.GetString("CSERVER_DB_DRIVER")
+	db.Host = os.Getenv("CSERVER_DB_HOST")
+	db.Port = os.Getenv("CSERVER_DB_PORT")
+	db.User = os.Getenv("CSERVER_DB_USER")
+	db.Pass = os.Getenv("CSERVER_DB_PASS")
+	db.Name = os.Getenv("CSERVER_DB_NAME")
+	db.SSLMode = os.Getenv("CSERVER_DB_SSLMODE")
+	db.Driver = os.Getenv("CSERVER_DB_DRIVER")
 	db.DSN = fmt.Sprintf("host='%s' port='%s' user='%s' password='%s' sslmode='%s'", db.Host, db.Port, db.User, db.Pass, db.SSLMode)
 	// Database schema configuration
-	schema.Table = env.GetString("CSERVER_DB_TABLE")
+	schema.Table = os.Getenv("CSERVER_DB_TABLE")
 
 	// Set the substructs of the global config
 	c.server = server
@@ -128,6 +129,7 @@ func main() {
 	r.HandleFunc("/api/aria1/library", ARIA1Library).Methods("GET")
 	// Serve other specific routes next
 	r.HandleFunc("/", ServeRoot).Methods("GET")
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./public/static/"))))
 	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("./public/css/"))))
 	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("./public/js/"))))
 

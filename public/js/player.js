@@ -91,8 +91,9 @@ $(document).ready(function () {
 
 // Volume control
 $(document).ready(function () {
-    // Load cached volume level, or 77%
-    var vol = localStorage.getItem('volumeKey') || 0.77;
+    // Load cached volume level, or 30%
+    // Frontend default maximum volume is 60% max source volume
+    var vol = localStorage.getItem('volumeKey') || 0.30;
     document.getElementById("volume").value = vol;
     // Set active volume on audio stream to loaded value
     var volume = document.getElementById("stream");

@@ -5,13 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <title>Cadence Radio ♥ | A Rhythmic Experience</title>
-        <meta name="description" content="Cadence is a online radio specialized in streaming ad-free pop music from Korea, Japan, and China. Start listening now!"/>
+        <meta name="description" content="Cadence is a free anime we(e)b radio. Start listening now!"/>
         <meta name="keywords" content="cadence, radio, cadence radio, kpop, jpop, cpop, Ken Ellorando"/>
         
+        <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
         <link rel="stylesheet" href="/css/base.css">
         <link rel="stylesheet" href="." id="themeStylesheet">
         <link rel="stylesheet" id="moduleRequestButton" href="/css/modules/requestButtonEnabled.css">
-        
+        <link rel="stylesheet" href="/css/modules/themeButton.css">
+
         <!-- jQuery Google CDN -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <!-- Theme changer scripts -->
@@ -46,7 +49,7 @@
                 <div id="artist">-</div>
                 <div id="playButton">►</div>
                 
-                <input type="range" id="volume" value="1" min="0" max="1" step="0.01">
+                <input type="range" id="volume" value=".3" min="0" max=".6" step="0.006">
 
                 <div id="version">
                     <div id="release"></div>
@@ -59,8 +62,8 @@
             <div id="frontMain">
                 <div class="column">
                     <h2>About Cadence</h2>
-                    <p>Cadence is an online radio originally started in February 2017 as my first endeavour to practice a full range of tech skills, from development to server administration.</p>
-                    <p>The application is a Go web server which interacts with an Icecast stream server and database server. Cadence provides users with the ability to search the library as well as make song requests.</p>
+                    <p>Cadence is an online radio with a heavy focus on anime and Asian music.</p>
+                    <p>This project was originally started in February 2017 as my first endeavour to practice a full range of tech skills, from development to server administration. The current iteration (4.x) of Cadence is written in Go without any frameworks. Cadence provides users with the ability to search the library as well as make song requests.</p>
                     <p>Active development continues to this day. All source is available on <a href="https://github.com/kenellorando/cadence">GitHub</a>.</p>
                     <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
                 </div>
@@ -74,7 +77,6 @@
                 <div class="column">
                     <h2>Request</h2>
                     <p>Request Cadence to queue a song. To find a complete listing of the music library, check out the library listing below.</p>
-                    <p>Please note that with the new 4.0 release, searches are still extremely sensitive. Please ensure case and spelling are exact.</p>
 
                     <input name="searchInput" id="searchInput" type="text" placeholder="Search for a song or artist!">
                     <button id="searchButton">Search</button>
@@ -85,7 +87,7 @@
                 <hr/>
                 <div class="column">
                     <h2>Library</h2>
-                    <p>Return a plain listing of all songs in the Cadence rotation, to better help you find what songs are available for request.</p>
+                    <p>Retrieve a listing of all songs in the Cadence rotation, to help you better find what songs are available for request.</p>
                     <div id="library"><a id="getLibrary">Load Song Library</a></div>
                 </div>
             </div>
@@ -93,9 +95,9 @@
             <div id="frontThemes">
                 <div class="column">
                     <h2>Themes</h2>
-                    <p>Change the UI theme:</p>
                     <button type="button" class="themeButton" id="Default">Default</button>
                     <button type="button" class="themeButton" id="RCB40">RCB40</button>
+                    <button type="button" class="themeButton" id="No2TypeB">No. 2 Type B</button>
                 </div>
             </div>
             <div id="footer">

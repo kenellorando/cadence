@@ -17,14 +17,16 @@ function themeChanger(themeChoice) {
 
 // Theme button functionality
 function colorButton(themeChoice) {
-    // Change all theme buttons colors to blue
+    // Change all theme buttons colors to the inactive style
     var buttons = document.getElementsByClassName("themeButton");
     for(var i =0, il = buttons.length;i<il;i++){
-       buttons[i].style.color = "rgb(40, 202, 252)";
+       buttons[i].classList.remove("activeTheme");
+       buttons[i].classList.add("inactiveTheme");
     }
 
-    // Override the selected theme button to yellow
-    document.getElementById(themeChoice).style.color = "rgb(219, 233, 90)";
+    // Override the selected theme button the active style
+    document.getElementById(themeChoice).classList.remove("inactiveTheme");
+    document.getElementById(themeChoice).classList.add("activeTheme");
 }
 
 // Retrieve themeKey in localStoprage

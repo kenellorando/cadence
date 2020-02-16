@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"path"
+	"strconv"
 	"time"
 
 	"github.com/kenellorando/clog"
@@ -190,6 +191,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 
 			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
 			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Retry-After", strconv.Itoa(timeRemaining))
 			w.Write(jsonMarshal)
 			return
 		}

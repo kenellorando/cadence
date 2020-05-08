@@ -91,9 +91,10 @@ $(document).ready(function () {
 
 // Display page warning on iOS or Safari devices
 $(document).ready(function () {
-    let appleUA = /iOS|Safari/i.test(navigator.userAgent);
+    let safariUA = /Apple/i.test(navigator.vendor);
+    let iOSUA = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    if (appleUA) {
+    if (iOSUA || safariUA) {
         alert("You appear to be using an iOS device or a Safari browser. Cadence stream playback may not be compatible with your platform.")
     }
 });

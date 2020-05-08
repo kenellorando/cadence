@@ -74,7 +74,7 @@ $(document).ready(function () {
 });
 
 
-// Toggle the stream with the playButton
+// Get latest source release title
 $(document).ready(function () {
     $.ajax({
         type: 'GET',
@@ -87,6 +87,15 @@ $(document).ready(function () {
             document.getElementById("release").innerHTML = "Could not retrieve version data.";
         }
     });
+});
+
+// Display page warning on iOS or Safari devices
+$(document).ready(function () {
+    let appleUA = /iOS|Safari/i.test(navigator.userAgent);
+
+    if (appleUA) {
+        alert("You appear to be using an iOS device or a Safari browser. Cadence stream playback may not be compatible with your platform.")
+    }
 });
 
 // Volume control

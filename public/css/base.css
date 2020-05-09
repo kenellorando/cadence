@@ -117,8 +117,8 @@ img {
     font-size: 20px;
     text-align: center;
     
-    padding: 10px 23px;
-    width: 110px;
+    padding: 11px;
+    width: 100px;
     border-radius: 10%;
 
     cursor: pointer;
@@ -127,6 +127,8 @@ img {
     margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
+    
+    line-height: 100%;
 }
 #player #version {
     font-size: 13px;

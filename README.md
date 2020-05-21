@@ -1,7 +1,10 @@
 # Cadence ♥
+![GitHub issues](https://img.shields.io/github/issues/kenellorando/cadence?style=flat-square)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/kenellorando/cadence?style=flat-square)
+
 Cadence is a web radio originally started as a personal project back when I was a student in February 2017. Its goal: practice a full range of tech skills, from development to server administration. Development continues to this day.
 
-The application is a Go webserver which exposes an API for interaction with a Postgres database, Liquidsoap music client, and Icecast stream server. The website acts as an interface to this API, providing users with the ability to search the music library and even make song requests. Cadence is not built with any frameworks.
+The application is a Go webserver which exposes an API for interaction with a Postgres database, Liquidsoap music client, and Icecast stream server. The API provides users with the ability to search the music library and even make song requests. Cadence is not built with any frameworks.
 
 [cadenceradio.com](https://cadenceradio.com)
 

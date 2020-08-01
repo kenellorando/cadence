@@ -16,7 +16,7 @@ function radioTitle() {
             var listeners = json['/cadence1']['listeners'].trim();
              
             // Set info in the player
-            $('#status').text("Connected to server: " + serverName)
+            $('#status').html("Connected to server: <a href='https://melody.systems' target='_blank'>" + serverName + "</a>");
             $('#song').text(nowPlayingSong);
             $('#artist').text(nowPlayingArtist);
             $('#listeners').text(listeners)

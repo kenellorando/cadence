@@ -17,11 +17,6 @@ html {
     height: 100%;
     overflow: scroll;
     overflow-x: hidden;
-
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
 }
 /* We hide the scrollbar for width consistency */
 ::-webkit-scrollbar {
@@ -31,30 +26,30 @@ body {
     font-family: 'Roboto Condensed', sans-serif;
     background-color: whitesmoke;
 
-    background-color: #282726;
-    color: beige;
+    background-color:#1e2020;
+    color:#ebecd5;
+    min-height: 100%;
 }
 main {
     background-color: inherit;
-    padding-left: 5%;
-    padding-right: 5%;
-    min-height: 100vh;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 a {
     cursor: pointer;
-    color: orangered;
+    color:#ad5a41;
     text-decoration: none;
 }
 
 /* Navigation */
 nav {
-    background-color: #1a1a1d;
+    background-color:#151616;
 
     font-weight: 300;
 
-    padding-left: 2.5%;
-    padding-right: 2.5%;
+    padding-left: 5%;
+    padding-right: 5%;
 }
 nav ul {
     list-style-type: none;
@@ -65,7 +60,7 @@ nav a {
 nav #navLeft {
     color: bisque;
 
-    padding-top: 4px;
+    padding-top: 15px;
     display: block;
     text-align: center;
 }
@@ -73,10 +68,9 @@ nav #navRight {
     color: bisque;
     display: block;
     text-align: center;
-    font-size: 18px;
+    font-size: 19px;
     font-family: 'Roboto Condensed', sans-serif;
-    padding-top: 4px;
-    padding-bottom: 10px;
+    padding: 10px;
 }
 nav #navRight a {
     margin-left: 15px;
@@ -85,10 +79,6 @@ nav #navRight a {
 nav #tabMain {
     font-family: 'Rock Salt', cursive;
     font-size: 26px;
-}
-
-img {
-    max-width: 100%;
 }
 
 /* Player */
@@ -111,14 +101,14 @@ img {
     font-size: 27px;
 }
 #player #playButton {
-    background-color: #DBEFEE;
-    color: #454555;
+    background-color:#263635;
+    color:#b4b1ad;
     
     font-size: 20px;
     text-align: center;
     
-    padding: 11px;
-    width: 100px;
+    padding: 10px 18px;
+    width: 110px;
     border-radius: 10%;
 
     cursor: pointer;
@@ -127,8 +117,6 @@ img {
     margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
-    
-    line-height: 100%;
 }
 #player #version {
     font-size: 13px;
@@ -186,21 +174,10 @@ img {
     font-family: 'Inconsolata', monospace;
     text-align: left;
 
-    margin-top: 20px;
-
-    font-size: 15px;
-    table-layout: fixed;
     width: 100%;
-}
 
-#searchResults tr th:last-child {
-    text-align: right;
+    margin-top: 20px;
 }
-
-#searchResults tr td:last-child {
-    text-align: right;
-}
-
 
 #requestStatus {
     font-family: 'Inconsolata', monospace;
@@ -212,27 +189,6 @@ img {
     margin-bottom: 25px;
 }
 
-#frontThemes {
-    display: none;
-}
-
-#frontThemes .themeButton {
-    font-family: 'Inconsolata', monospace;
-    font-size: 16px;
-    text-decoration: none;
-
-    background-color: rgba(58, 58, 58, 0.8);
-    
-    border: none;
-    border-radius: 5%;
-    padding: 6px 15px;
-
-    cursor: pointer;
-
-    margin-right: 5px;
-    margin-bottom: 5px;
-}
-
 input[type=range] {
     appearance: none;
     -moz-appearance: none;
@@ -240,7 +196,7 @@ input[type=range] {
     width: 200px;
     border: none;
 
-    background-color: beige;
+    background-color: #3b3b26;
 }
   
 input[type=range]:focus {
@@ -261,7 +217,7 @@ input[type=range]::-webkit-slider-thumb {
     height: 13px;
     width: 13px;
     border-radius: 50px;
-    background: rgb(98, 39, 138);
+    background: #3e254d;
     cursor: pointer;
     -webkit-appearance: none;
 
@@ -277,7 +233,7 @@ input[type=range]::-webkit-slider-thumb {
     -webkit-column-break-inside: avoid;
 }
 
-#footer {
+footer {
     font-size: 15px;
     text-align: center;
 
@@ -289,8 +245,8 @@ input[type=range]::-webkit-slider-thumb {
 
 @media (min-width: 850px) {
     main {
-        padding-left: 15%;
-        padding-right: 15%;
+        margin-left: 15%;
+        margin-right: 15%;
     }
     nav {
         padding-left: 15%;
@@ -324,8 +280,8 @@ input[type=range]::-webkit-slider-thumb {
 
 @media (min-width: 1200px) {
     main {
-        padding-left: 20%;
-        padding-right: 20%;
+        margin-left: 20%;
+        margin-right: 20%;
     }
     nav {
         padding-left: 20%;
@@ -335,8 +291,8 @@ input[type=range]::-webkit-slider-thumb {
 
 @media (min-width: 1920px) {
     main {
-        padding-left: 25%;
-        padding-right: 25%;
+        margin-left: 25%;
+        margin-right: 25%;
     }
     nav {
         padding-left: 25%;

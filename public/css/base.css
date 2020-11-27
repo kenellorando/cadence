@@ -31,8 +31,8 @@ body {
     font-family: 'Roboto Condensed', sans-serif;
     background-color: whitesmoke;
 
-    background-color: #282726;
-    color: beige;
+    background-color: #1e2020;
+    color:#e2e9cc;
 }
 main {
     background-color: inherit;
@@ -43,13 +43,13 @@ main {
 
 a {
     cursor: pointer;
-    color: orangered;
+    color: #d37d5b;
     text-decoration: none;
 }
 
 /* Navigation */
 nav {
-    background-color: #1a1a1d;
+    background-color:#151616;
 
     font-weight: 300;
 
@@ -111,8 +111,8 @@ img {
     font-size: 27px;
 }
 #player #playButton {
-    background-color: #DBEFEE;
-    color: #454555;
+    background-color: #263635;
+    color: #dddad4;
     
     font-size: 20px;
     text-align: center;
@@ -240,7 +240,7 @@ input[type=range] {
     width: 200px;
     border: none;
 
-    background-color: beige;
+    background-color: #313535;
 }
   
 input[type=range]:focus {
@@ -257,11 +257,11 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 input[type=range]::-webkit-slider-thumb {
-    border: 2px solid beige;
+    border: 2px solid #dddad4;
     height: 13px;
     width: 13px;
     border-radius: 50px;
-    background: rgb(98, 39, 138);
+    background: rgb(95, 84, 105);
     cursor: pointer;
     -webkit-appearance: none;
 
@@ -289,19 +289,18 @@ input[type=range]::-webkit-slider-thumb {
 
 @media (min-width: 850px) {
     main {
-        padding-left: 15%;
-        padding-right: 15%;
+        padding-left: 8%;
+        padding-right: 8%;
     }
     nav {
-        padding-left: 15%;
-        padding-right: 15%;
+        padding-left: 4%;
+        padding-right: 4%;
     }
     #frontMain {
         column-count: 2;
         column-gap: 70px;
     }
     nav #navLeft {
-        padding-top: 0px;
         display: inline-block;
         text-align: left;
     }
@@ -324,22 +323,47 @@ input[type=range]::-webkit-slider-thumb {
 
 @media (min-width: 1200px) {
     main {
-        padding-left: 20%;
-        padding-right: 20%;
+        padding-left: 16%;
+        padding-right: 16%;
     }
     nav {
-        padding-left: 20%;
-        padding-right: 20%;
+        padding-left: 11%;
+        padding-right: 11%;
+        height: 100%;
+    }
+    #navLeft a {
+        font-size: 24px
+    }
+    #navRight a {
+        font-size: 18px;
+    }
+    #player {
+        transform: scale(1.02);
     }
 }
 
 @media (min-width: 1920px) {
     main {
-        padding-left: 25%;
-        padding-right: 25%;
+        padding-left: 26%;
+        padding-right: 26%;
+        font-size: 18px;
     }
     nav {
-        padding-left: 25%;
-        padding-right: 25%;
+        padding-left: 21%;
+        padding-right: 21%;
+    }
+    #player {
+        transform: scale(1.05);
+    }
+}
+
+@media (min-width: 2400px) {
+    main {
+        padding-left: 32%;
+        padding-right: 32%;
+    }
+    nav {
+        padding-left: 27%;
+        padding-right: 27%;
     }
 }

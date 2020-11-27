@@ -87,7 +87,6 @@ nav #tabMain {
     font-family: 'Rock Salt', cursive;
     font-size: 26px;
 }
-
 img {
     max-width: 100%;
 }
@@ -217,11 +216,11 @@ img {
     margin-bottom: 25px;
 }
 
-#frontThemes {
+#frontTheme {
     display: none;
 }
 
-#frontThemes .themeButton {
+#frontTheme .themeButton {
     font-family: 'Inconsolata', monospace;
     font-size: 16px;
     text-decoration: none;

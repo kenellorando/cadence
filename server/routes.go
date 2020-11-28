@@ -346,7 +346,7 @@ func ARIA2Check(token string) bool {
 		return false
 	}
 
-	b, err := ioutil.ReadFile(c.server.WhitelistPath + "whitelist.txt")
+	b, err := ioutil.ReadFile(c.server.WhitelistPath)
 	if err != nil {
 		panic(err)
 		return false

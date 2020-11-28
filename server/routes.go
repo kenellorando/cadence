@@ -339,7 +339,7 @@ func ARIA1Library(w http.ResponseWriter, r *http.Request) {
 // Aria2 ////////////////////
 
 // API Token Checker -- gatekeeps unlimited requests
-func ARIA2Check(token String) bool {
+func ARIA2Check(token string) bool {
 	clog.Info("ARIA2Check", fmt.Sprintf("Checking token %s", token))
 
 	b, err := ioutil.ReadFile("../whitelist.txt")
@@ -408,8 +408,8 @@ func ARIA2Request(w http.ResponseWriter, r *http.Request) {
 
 	// Perform a check on the token
 	tokenValid := false
-	if request.Token != nil {
-		tokenValid = Aria2Check(request.Token)
+	if request.Token !== "" {
+		tokenValid = ARIA2Check(request.Token)
 	}
 
 	if tokenValid == true {

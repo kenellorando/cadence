@@ -340,22 +340,25 @@ func ARIA1Library(w http.ResponseWriter, r *http.Request) {
 
 // API Token Checker -- gatekeeps unlimited requests
 func ARIA2Check(token string) bool {
-	clog.Info("ARIA2Check", fmt.Sprintf("Checking token %s", token))
+	clog.Info("ARIA2Check", fmt.Sprintf("Checking token %s...", token))
 
 	if len(token) != 26 {
+		clog.Debug("ARIA2Check", fmt.Sprintf("Token %s does not satisfy length requirements.", token))
 		return false
 	}
 
+	// Check the whitelist. If this fails, the whitelist is not configured. No panic is thrown, but the bypass is denied.
 	b, err := ioutil.ReadFile(c.server.WhitelistPath)
 	if err != nil {
-		panic(err)
 		return false
 	}
 	s := string(b)
 
 	if strings.Contains(s, token) {
+		clog.Info("ARIA2Check", fmt.Sprintf("Token %s is valid.", token))
 		return true
 	}
+	clog.Info("ARIA2Check", fmt.Sprintf("Token %s is invalid.", token))
 	return false
 }
 
@@ -417,7 +420,7 @@ func ARIA2Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if tokenValid == true {
-		clog.Info("ARIA2Request", fmt.Sprintf("Client %s using valid token to bypass timeout.", r.Header.Get("X-Forwarded-For")))
+		clog.Info("ARIA2Request", fmt.Sprintf("Client %s bypassing rate limiter using token %s.", r.Header.Get("X-Forwarded-For"), request.Token))
 	} else { // Perform check on timeout log in memory
 		if _, ok := requestTimeoutIPs[requesterIP]; ok {
 			// If the existing IP was recently logged, deny the request.

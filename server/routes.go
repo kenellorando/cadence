@@ -398,7 +398,7 @@ func ARIA2Request(w http.ResponseWriter, r *http.Request) {
 	}
 	err = json.Unmarshal(body, &request)
 	if err != nil {
-		clog.Error("ARIA1Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+		clog.Error("ARIA2Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
 		timeRemaining := 0
 		message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
@@ -425,7 +425,7 @@ func ARIA2Request(w http.ResponseWriter, r *http.Request) {
 		if _, ok := requestTimeoutIPs[requesterIP]; ok {
 			// If the existing IP was recently logged, deny the request.
 			if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-180 {
-				clog.Info("ARIA1Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
+				clog.Info("ARIA2Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
 
 				timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int(time.Now().Unix())
 				message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
@@ -449,7 +449,7 @@ func ARIA2Request(w http.ResponseWriter, r *http.Request) {
 	selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=%v;", c.schema.Table, request.ID)
 	rows, err := database.Query(selectStatement)
 	if err != nil {
-		clog.Error("ARIA1Request", "Database select failed.", err)
+		clog.Error("ARIA2Request", "Database select failed.", err)
 		timeRemaining := 0
 		message := fmt.Sprintf("Request not completed. Encountered a database error.")
 
@@ -468,7 +468,7 @@ func ARIA2Request(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		err := rows.Scan(&path)
 		if err != nil {
-			clog.Error("ARIA1Request", "Data scan failed.", err)
+			clog.Error("ARIA2Request", "Data scan failed.", err)
 			timeRemaining := 0
 			message := fmt.Sprintf("Request not completed. Encountered a database error.")
 
@@ -482,13 +482,13 @@ func ARIA2Request(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	clog.Debug("ARIA1Request", fmt.Sprintf("Translated ID %v to path: %s", request.ID, path))
+	clog.Debug("ARIA2Request", fmt.Sprintf("Translated ID %v to path: %s", request.ID, path))
 
 	// Telnet to liquidsoap
-	clog.Debug("ARIA1Request", "Connecting to liquidsoap service...")
+	clog.Debug("ARIA2Request", "Connecting to liquidsoap service...")
 	conn, err := net.Dial("tcp", c.server.SourceAddress)
 	if err != nil {
-		clog.Error("ARIA1Request", "Failed to connect to audio source server.", err)
+		clog.Error("ARIA2Request", "Failed to connect to audio source server.", err)
 
 		timeRemaining := 0
 		message := fmt.Sprintf("Request not completed. Could not submit request to stream source service.")
@@ -507,7 +507,7 @@ func ARIA2Request(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(conn, "request.push "+path+"\n")
 	// Listen for reply
 	sourceServiceResponse, _ := bufio.NewReader(conn).ReadString('\n')
-	clog.Debug("ARIA1Request", fmt.Sprintf("Message from audio source server: %s", sourceServiceResponse))
+	clog.Debug("ARIA2Request", fmt.Sprintf("Message from audio source server: %s", sourceServiceResponse))
 
 	// Disconnect from liquidsoap
 	conn.Close()

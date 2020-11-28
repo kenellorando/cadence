@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"path"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/kenellorando/clog"
@@ -177,6 +178,7 @@ func ARIA1Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If the IP is in the timeout log
+
 	if _, ok := requestTimeoutIPs[requesterIP]; ok {
 		// If the existing IP was recently logged, deny the request.
 		if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-180 {
@@ -332,4 +334,197 @@ func ARIA1Library(w http.ResponseWriter, r *http.Request) {
 	jsonMarshal, _ := json.Marshal(rawJSON)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonMarshal)
+}
+
+// Aria2 ////////////////////
+
+// API Token Checker -- gatekeeps unlimited requests
+func ARIA2Check(token string) bool {
+	clog.Info("ARIA2Check", fmt.Sprintf("Checking token %s...", token))
+
+	if len(token) != 26 {
+		clog.Debug("ARIA2Check", fmt.Sprintf("Token %s does not satisfy length requirements.", token))
+		return false
+	}
+
+	// Check the whitelist. If this fails, the whitelist is not configured. No panic is thrown, but the bypass is denied.
+	b, err := ioutil.ReadFile(c.server.WhitelistPath)
+	if err != nil {
+		return false
+	}
+	s := string(b)
+
+	if strings.Contains(s, token) {
+		clog.Info("ARIA2Check", fmt.Sprintf("Token %s is valid.", token))
+		return true
+	}
+	clog.Info("ARIA2Check", fmt.Sprintf("Token %s is invalid.", token))
+	return false
+}
+
+func ARIA2Request(w http.ResponseWriter, r *http.Request) {
+	clog.Debug("ARIA2Request", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
+	requesterIP := r.Header.Get("X-Forwarded-For")
+
+	// Declare object for a song
+	type RequestResponse struct {
+		Message       string
+		TimeRemaining int
+	}
+
+	// Declare object to hold r body data
+	type Request struct {
+		ID    string `json:"ID"`
+		Token string `json:"Token"`
+	}
+	var request Request
+
+	// Decode json object
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+
+		timeRemaining := 0
+		message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
+
+		// Return data to client
+		requestResponse := RequestResponse{message, timeRemaining}
+		jsonMarshal, _ := json.Marshal(requestResponse)
+
+		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+		return
+	}
+	err = json.Unmarshal(body, &request)
+	if err != nil {
+		clog.Error("ARIA2Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+
+		timeRemaining := 0
+		message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
+
+		// Return data to client
+		requestResponse := RequestResponse{message, timeRemaining}
+		jsonMarshal, _ := json.Marshal(requestResponse)
+
+		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+		return
+	}
+
+	// Perform a check on the token
+	var tokenValid bool
+	if request.Token != "" {
+		tokenValid = ARIA2Check(request.Token)
+	}
+
+	if tokenValid == true {
+		clog.Info("ARIA2Request", fmt.Sprintf("Client %s bypassing rate limiter using token %s.", r.Header.Get("X-Forwarded-For"), request.Token))
+	} else { // Perform check on timeout log in memory
+		if _, ok := requestTimeoutIPs[requesterIP]; ok {
+			// If the existing IP was recently logged, deny the request.
+			if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-180 {
+				clog.Info("ARIA2Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
+
+				timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int(time.Now().Unix())
+				message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
+
+				// Return data to client
+				requestResponse := RequestResponse{message, timeRemaining}
+				jsonMarshal, _ := json.Marshal(requestResponse)
+
+				w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
+				w.Header().Set("Content-Type", "application/json")
+				w.Header().Set("Retry-After", strconv.Itoa(timeRemaining))
+				w.Write(jsonMarshal)
+				return
+			}
+		}
+	}
+
+	clog.Debug("ARIA2Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
+	clog.Debug("ARIA2Request", "Searching database for corresponding path...")
+
+	selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=%v;", c.schema.Table, request.ID)
+	rows, err := database.Query(selectStatement)
+	if err != nil {
+		clog.Error("ARIA2Request", "Database select failed.", err)
+		timeRemaining := 0
+		message := fmt.Sprintf("Request not completed. Encountered a database error.")
+
+		// Return data to client
+		requestResponse := RequestResponse{message, timeRemaining}
+		jsonMarshal, _ := json.Marshal(requestResponse)
+
+		w.WriteHeader(http.StatusInternalServerError) // 500 Server Error
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+		return
+	}
+
+	// "Every call to Scan, even the first one, must be preceded by a call to Next."
+	var path string
+	for rows.Next() {
+		err := rows.Scan(&path)
+		if err != nil {
+			clog.Error("ARIA2Request", "Data scan failed.", err)
+			timeRemaining := 0
+			message := fmt.Sprintf("Request not completed. Encountered a database error.")
+
+			// Return data to client
+			requestResponse := RequestResponse{message, timeRemaining}
+			jsonMarshal, _ := json.Marshal(requestResponse)
+
+			w.WriteHeader(http.StatusInternalServerError) // 500 Server Error
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jsonMarshal)
+			return
+		}
+	}
+	clog.Debug("ARIA2Request", fmt.Sprintf("Translated ID %v to path: %s", request.ID, path))
+
+	// Telnet to liquidsoap
+	clog.Debug("ARIA2Request", "Connecting to liquidsoap service...")
+	conn, err := net.Dial("tcp", c.server.SourceAddress)
+	if err != nil {
+		clog.Error("ARIA2Request", "Failed to connect to audio source server.", err)
+
+		timeRemaining := 0
+		message := fmt.Sprintf("Request not completed. Could not submit request to stream source service.")
+
+		// Return data to client
+		requestResponse := RequestResponse{message, timeRemaining}
+		jsonMarshal, _ := json.Marshal(requestResponse)
+
+		w.WriteHeader(http.StatusServiceUnavailable) // 503 Server Error
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+		return
+	}
+
+	// Push request over connection
+	fmt.Fprintf(conn, "request.push "+path+"\n")
+	// Listen for reply
+	sourceServiceResponse, _ := bufio.NewReader(conn).ReadString('\n')
+	clog.Debug("ARIA2Request", fmt.Sprintf("Message from audio source server: %s", sourceServiceResponse))
+
+	// Disconnect from liquidsoap
+	conn.Close()
+
+	// Create or overwrite existing log times if time and request body look OK
+	requestTimeoutIPs[requesterIP] = int(time.Now().Unix())
+
+	// Return 202 OK to client
+	timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int(time.Now().Unix())
+	message := fmt.Sprintf("Request accepted!")
+
+	// Return data to client
+	requestResponse := RequestResponse{message, timeRemaining}
+	jsonMarshal, _ := json.Marshal(requestResponse)
+
+	w.WriteHeader(http.StatusAccepted) // 202 Accepted
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonMarshal)
+	return
 }

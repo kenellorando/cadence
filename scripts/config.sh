@@ -70,11 +70,15 @@ SetEnvVar "CSERVER_DB_SSLMODE" "disable"
 SetEnvVar "CSERVER_DB_DRIVER" "postgres"
 SetEnvVar "CSERVER_DB_USER" "postgres"
 SetEnvVar "CSERVER_DB_TABLE" "aria"
+SetEnvVar "CSERVER_WHITELIST_PATH" "/home/cadence/cadence/whitelist.txt"
 # List of environment variables with no defaults.
 # Does not necessarily need to be used with SetSecretEnvVar(),
 # though most envvars here would make sense to hide the input.
 SetSecretEnvVar "CSERVER_DB_PASS"
 
 ##############################################################
+
+touch $CSERVER_WHITELIST_PATH
+chmod 755 $CSERVER_WHITELIST_PATH
 
 echo -e "\nSETUP.sh completed."

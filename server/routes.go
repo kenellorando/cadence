@@ -342,7 +342,11 @@ func ARIA1Library(w http.ResponseWriter, r *http.Request) {
 func ARIA2Check(token string) bool {
 	clog.Info("ARIA2Check", fmt.Sprintf("Checking token %s", token))
 
-	b, err := ioutil.ReadFile("../whitelist.txt")
+	if len(token) != 26 {
+		return false
+	}
+
+	b, err := ioutil.ReadFile(c.server.WhitelistPath + "whitelist.txt")
 	if err != nil {
 		panic(err)
 		return false
@@ -407,8 +411,8 @@ func ARIA2Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Perform a check on the token
-	tokenValid := false
-	if request.Token !== "" {
+	var tokenValid bool
+	if request.Token != "" {
 		tokenValid = ARIA2Check(request.Token)
 	}
 

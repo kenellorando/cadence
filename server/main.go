@@ -30,6 +30,7 @@ type ServerConfig struct {
 	Port          string
 	MusicDir      string
 	SourceAddress string
+	WhitelistPath string
 }
 
 // DBConfig - Database server configuration
@@ -66,6 +67,7 @@ func init() {
 	server.Port = os.Getenv("CSERVER_PORT")
 	server.MusicDir = os.Getenv("CSERVER_MUSIC_DIR")
 	server.SourceAddress = os.Getenv("CSERVER_SOURCEADDRESS")
+	server.WhitelistPath = os.Getenv("CSERVER_WHITELIST_PATH")
 	// Database server configuration
 	db.Host = os.Getenv("CSERVER_DB_HOST")
 	db.Port = os.Getenv("CSERVER_DB_PORT")

@@ -59,7 +59,6 @@ $(document).ready(function () {
                 stream.src = "";
             }
             stream.load();
-            stream.pause();
             // Replace the ► in the button when paused
             document.getElementById("playButton").innerHTML = "►";
         }

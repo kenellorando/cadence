@@ -57,11 +57,11 @@ function SetSecretEnvVar() {
 
 # List of environment variables that have defaults.
 # These need to be set with SetEnvVar()
-SetEnvVar "CSERVER_ROOTPATH" "/home/ken/cadence/"
+SetEnvVar "CSERVER_ROOTPATH" "/home/cadence/cadence/"
 SetEnvVar "CSERVER_LOGLEVEL" "5"
 SetEnvVar "CSERVER_DOMAIN" "localhost"
 SetEnvVar "CSERVER_PORT" ":8080"
-SetEnvVar "CSERVER_MUSIC_DIR" "/home/ken/cadence_music/"
+SetEnvVar "CSERVER_MUSIC_DIR" "/home/cadence/cadence_music/"
 SetEnvVar "CSERVER_SOURCEADDRESS" "localhost:1234"
 SetEnvVar "CSERVER_DB_HOST" "localhost"
 SetEnvVar "CSERVER_DB_PORT" "5432"
@@ -70,11 +70,15 @@ SetEnvVar "CSERVER_DB_SSLMODE" "disable"
 SetEnvVar "CSERVER_DB_DRIVER" "postgres"
 SetEnvVar "CSERVER_DB_USER" "postgres"
 SetEnvVar "CSERVER_DB_TABLE" "aria"
+SetEnvVar "CSERVER_WHITELIST_PATH" "/home/cadence/cadence/whitelist.txt"
 # List of environment variables with no defaults.
 # Does not necessarily need to be used with SetSecretEnvVar(),
 # though most envvars here would make sense to hide the input.
 SetSecretEnvVar "CSERVER_DB_PASS"
 
 ##############################################################
+
+touch $CSERVER_WHITELIST_PATH
+chmod 755 $CSERVER_WHITELIST_PATH
 
 echo -e "\nSETUP.sh completed."

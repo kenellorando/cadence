@@ -16,7 +16,7 @@ function radioTitle() {
             var listeners = json['/cadence1']['listeners'].trim();
              
             // Set info in the player
-            $('#status').text("Connected to server: " + serverName)
+            $('#status').html("Connected to server: <a href='https://melody.systems' target='_blank'>" + serverName + "</a>");
             $('#song').text(nowPlayingSong);
             $('#artist').text(nowPlayingArtist);
             $('#listeners').text(listeners)
@@ -35,24 +35,26 @@ function radioTitle() {
 
 // Toggle the stream with the playButton
 $(document).ready(function () {
-    document.getElementById("playButton").addEventListener('click', function(){
-        var stream = document.getElementById("stream");
-        var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+    var stream = document.getElementById("stream");
+    var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 
-        // Here, we pause and play the stream
-        // If the device is mobile, we remove the stream source entirely
-        // so music data stops loading in the background.
+    if (!mobile) {
+        stream.src = "https://stream.cadenceradio.com/cadence1";
+        stream.load();
+    }
+
+    document.getElementById("playButton").addEventListener('click', function(){
         if (stream.paused) {
-            // Reload the audio source if on mobile
+            // Reload the audio source
             if (mobile) {
                 stream.src = "https://stream.cadenceradio.com/cadence1";
+                stream.load();
             }
-            stream.load();
             stream.play();
             // Replace the ❙❙ in the button when playing
             document.getElementById("playButton").innerHTML = "❙❙";
         } else {
-            // If mobile, clear the audio source
+            // Clear the audio source
             if (mobile) {
                 stream.src = "";
             }
@@ -74,7 +76,7 @@ $(document).ready(function () {
 });
 
 
-// Toggle the stream with the playButton
+// Get latest source release title
 $(document).ready(function () {
     $.ajax({
         type: 'GET',
@@ -87,6 +89,16 @@ $(document).ready(function () {
             document.getElementById("release").innerHTML = "Could not retrieve version data.";
         }
     });
+});
+
+// Display page warning on iOS or Safari devices
+$(document).ready(function () {
+    let safariUA = /Apple/i.test(navigator.vendor);
+    let iOSUA = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (iOSUA || safariUA) {
+        alert("You appear to be using an iOS device or a Safari browser. Cadence stream playback may not be compatible with your platform.")
+    }
 });
 
 // Volume control

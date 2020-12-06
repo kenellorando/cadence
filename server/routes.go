@@ -21,11 +21,11 @@ var requestTimeoutIPs = make(map[string]int)
 
 // Utility functions
 func startsWith(str string, prefix string) bool {
-	return len(str) >= len(prefix) && str[:len(prefix)] == prefix
+	return len(str) >= len(prefix) && strings.EqualFold(str[:len(prefix)], prefix)
 }
 
 func endsWith(str string, suffix string) bool {
-	return len(str) >= len(suffix) && str[len(str)-len(suffix):] == suffix
+	return len(str) >= len(suffix) && strings.EqualFold(str[len(str)-len(suffix):], suffix)
 }
 
 // ServeRoot - serves the frontend root index page

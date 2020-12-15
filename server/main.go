@@ -10,7 +10,7 @@ import (
 )
 
 // Declare globally accessible data
-var c = Config{} // Full configuration object
+var c = Config{}
 
 // Config - Primary configuration object holder
 type Config struct {
@@ -113,7 +113,6 @@ func init() {
 }
 
 func main() {
-	// Start server
 	clog.Info("main", fmt.Sprintf("Starting webserver on port <%s>.", c.server.Port))
 	clog.Fatal("main", "Server failed to start!", http.ListenAndServe(c.server.Port, routes()))
 }

@@ -1,3 +1,6 @@
+// database.go
+// Database initialization and configuration
+
 package main
 
 import (

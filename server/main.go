@@ -1,19 +1,16 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 
-	"github.com/gorilla/mux"
 	"github.com/kenellorando/clog"
 )
 
 // Declare globally accessible data
-var c = Config{}     // Full configuration object
-var database *sql.DB // Database abstraction interface
+var c = Config{} // Full configuration object
 
 // Config - Primary configuration object holder
 type Config struct {
@@ -116,33 +113,7 @@ func init() {
 }
 
 func main() {
-	// Handle routes
-	r := mux.NewRouter()
-
-	// Subdomains, if needed
-	/*
-		s := r.Host("docs." + c.server.Domain + c.server.Port).Subrouter()
-		s.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/docs"))).Methods("GET")
-	*/
-
-	// List API routes first
-	r.HandleFunc("/api/aria1/search", ARIA1Search).Methods("POST")
-	r.HandleFunc("/api/aria1/request", ARIA1Request).Methods("POST")
-	r.HandleFunc("/api/aria1/library", ARIA1Library).Methods("GET")
-
-	// Aria2
-	r.HandleFunc("/api/aria2/request", ARIA2Request).Methods("POST")
-
-	// Serve other specific routes next
-	r.HandleFunc("/", ServeRoot).Methods("GET")
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./public/static/"))))
-	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("./public/css/"))))
-	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("./public/js/"))))
-
-	// For everything else, serve 404
-	r.NotFoundHandler = http.HandlerFunc(Serve404)
-
 	// Start server
 	clog.Info("main", fmt.Sprintf("Starting webserver on port <%s>.", c.server.Port))
-	clog.Fatal("main", "Server failed to start!", http.ListenAndServe(c.server.Port, r))
+	clog.Fatal("main", "Server failed to start!", http.ListenAndServe(c.server.Port, routes()))
 }

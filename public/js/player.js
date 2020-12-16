@@ -37,28 +37,19 @@ function radioTitle() {
 $(document).ready(function () {
     var stream = document.getElementById("stream");
     var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
-
-    if (!mobile) {
-        stream.src = "https://stream.cadenceradio.com/cadence1";
-        stream.load();
-    }
-
+    
     document.getElementById("playButton").addEventListener('click', function(){
         if (stream.paused) {
-            // Reload the audio source
-            if (mobile) {
-                stream.src = "https://stream.cadenceradio.com/cadence1";
-                stream.load();
-            }
+            stream.src = "https://stream.cadenceradio.com/cadence1";
+            stream.load();
             stream.play();
             // Replace the ❙❙ in the button when playing
             document.getElementById("playButton").innerHTML = "❙❙";
         } else {
             // Clear the audio source
-            if (mobile) {
-                stream.src = "";
-            }
+            stream.src = "";
             stream.load();
+            stream.pause();
             // Replace the ► in the button when paused
             document.getElementById("playButton").innerHTML = "►";
         }

@@ -1,3 +1,6 @@
+// database.go
+// Database initialization and configuration
+
 package main
 
 import (
@@ -13,6 +16,8 @@ import (
 	"github.com/kenellorando/clog"
 	_ "github.com/lib/pq"
 )
+
+var database *sql.DB // Database abstraction interface
 
 // Creates a database and tables using configs in c.schema
 // This is only called after a successful connection to the database server

@@ -1,7 +1,6 @@
 /* Font imports */
 @import url('https://fonts.googleapis.com/css?family=Rock+Salt');
 @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:300');
-@import url('https://fonts.googleapis.com/css?family=Roboto');
 @import url('https://fonts.googleapis.com/css?family=Inconsolata');
 
 /* Resets */
@@ -164,7 +163,6 @@ img {
 #frontRequest #searchInput {
     background-color: #f0fbfa;
     color: black;
-    font-family: 'Roboto', sans-serif;
     
     border: none;
     border-radius: 5%;
@@ -176,7 +174,6 @@ img {
 
 #frontRequest #searchButton {
     background-color: #c7eac4;
-    font-family: 'Roboto', sans-serif;
 
     border: none;
     border-radius: 5%;

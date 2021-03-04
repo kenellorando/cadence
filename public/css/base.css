@@ -1,7 +1,5 @@
 /* Font imports */
-@import url('https://fonts.googleapis.com/css?family=Rock+Salt');
-@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:300');
-@import url('https://fonts.googleapis.com/css?family=Inconsolata');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Roboto+Condensed:wght@300;400&family=Rock+Salt&display=swap');
 
 /* Resets */
 html, body {

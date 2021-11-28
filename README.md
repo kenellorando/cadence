@@ -17,6 +17,8 @@ This project was originally started while I was a student in February 2017 as an
 
 Optional: Run `git submodule update --init --recursive` to update the `public/static` directory with image and video media.
 
+Cadence comes with a start script `START.sh` which interactively prompts for **all backend** necessary configurations like connection addresses and target directories, making setup a little bit easier provided relevant supporting services are available. This script stores all configuration data as shell variables. An empty database will be automatically configured and populated by the webserver on startup.
+
 ```
 $ ./START.sh
 ```

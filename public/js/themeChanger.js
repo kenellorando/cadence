@@ -7,11 +7,27 @@ $(document).ready(function() {
 });
 // Change theme
 function themeChanger(themeChoice) {
+	var video = document.getElementById("videoSource");
 	// theme object is from themeMetadata.js
 	var targetTheme = theme[themeChoice];
 	document.getElementById("themeStylesheet").href = targetTheme.css;
+	if (targetTheme.videoSource) {
+		setVideo(targetTheme)
+	} else {
+		video.src = "#";
+		video.parentElement.load();
+	}
 	localStorage.setItem('themeKey', targetTheme.key);
 	colorButton(themeChoice);
+}
+function setVideo(themeObj) {
+	var video = document.getElementById("videoSource");
+	var filename = document.location + themeObj.videoSource;
+	// Loads the video source
+	if (video.src !== filename) {
+	  video.src = filename;
+	  video.parentElement.load(); // The parent element of video is the div "fullscreen-bg"
+	}
 }
 // Theme button functionality
 function colorButton(themeChoice) {

@@ -7,13 +7,15 @@ $(document).ready(function() {
 });
 // Change theme
 function themeChanger(themeChoice) {
+	var video = document.getElementById("videoSource");
 	// theme object is from themeMetadata.js
 	var targetTheme = theme[themeChoice];
 	document.getElementById("themeStylesheet").href = targetTheme.css;
 	if (targetTheme.videoSource) {
 		setVideo(targetTheme)
 	} else {
-		document.getElementById("videoSource").src = "."
+		video.src = "#";
+		video.parentElement.load();
 	}
 	localStorage.setItem('themeKey', targetTheme.key);
 	colorButton(themeChoice);

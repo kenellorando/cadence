@@ -31,31 +31,6 @@ a {
 #player #song, #player #artist {
 	text-shadow: 1px 1px 12px rgb(255, 255, 255);
 }
-
-div.fullscreen-bg {
-	display: inline-block;
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	overflow: hidden;
-	z-index: -100;
-}
-
-.fullscreen-bg-video {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: auto;
-	height: auto;
-	min-width: 100%;
-	min-height: 100%;
-	-webkit-transform: translate(-50%, -50%);
-	-moz-transform: translate(-50%, -50%);
-	-ms-transform: translate(-50%, -50%);
-	transform: translate(-50%, -50%);
-  }
   
 #player #playButton {
 	background-color: rgba(49, 183, 216, 0.438);

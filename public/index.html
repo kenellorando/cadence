@@ -26,9 +26,10 @@
         <link rel="stylesheet" href="." id="themeStylesheet">
         <link rel="stylesheet" id="moduleRequestButton" href="/css/modules/requestButtonEnabled.css">
         <link rel="stylesheet" href="/css/modules/themeButton.css">
+        <link rel="stylesheet" href="/css/modules/videoBackground.css">
 
         <!-- jQuery Google CDN -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>        
         <!-- Theme changer scripts -->
         <script type="text/javascript" src="/js/themeMetadata.js"></script>
         <script type="text/javascript" src="/js/themeChanger.js"></script>
@@ -48,7 +49,7 @@
                 <a id="tabRequest">Request</a>
                 <a id="tabAbout">About</a>
                 <a id="tabTheme">Theme</a>
-                <a href="https://github.com/kenellorando/cadence" target="_blank">(➜ Github)</a>
+                <a href="https://github.com/kenellorando/cadence" target="_blank">Github ↗</a>
             </span>
         </nav>
         <main>
@@ -93,13 +94,16 @@
 
             <div id="frontAbout">
                 <h2>About Cadence</h2>
-                <p>Cadence is an online radio with a heavy focus on anime and Asian music.</p>
-                <p>This project was originally started in February 2017 as my first endeavour to practice a full range of tech skills, from development to server administration. The current iteration (4.x) of Cadence is written in Go without any frameworks. Cadence provides users with the ability to search the library as well as make song requests.</p>
-                <p>Active development continues to this day. All source is available on <a href="https://github.com/kenellorando/cadence">GitHub</a>.</p>
-                <p><b>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</b></p>
+                <p>Cadence is a web radio with a heavy focus on anime music. Streaming 24/7, Cadence provides interaction with a song metadata database and open-source stream software <i>Icecast</i>. As this allows users the ability to search a song library and make song requests, Cadence effectively simulates a song request taking virtual DJ. </p>
+
+                <p>Over two thousand lines of code written from scratch compose this application. In the current iteration (4.x) of Cadence, no frontend framework is employed and the backend is written in Go. Originally hosted from a dorm room homelab, all Cadence services now run on AWS.</p>
+
+                <p>This project was originally started while I was a student in February 2017 as an endeavour to practice a full range of tech skills, from development to server administration. In 2019, the experience I gained building Cadence were directly responsible for landing my first job as a DevOps Engineer. Today, I continue to run Cadence and make occasional improvements. For questions and comments, please feel to reach out on the <a href="https://github.com/kenellorando/cadence">Cadence Github repository</a>.</p>
+
                 <hr/>
-                <h2>Updates</h2>
-                <a class="twitter-timeline" data-lang="en" data-width="500" data-height="300" data-theme="dark" data-link-color="#19CF86" href="https://twitter.com/CadenceRadio?ref_src=twsrc%5Etfw">Tweets by CadenceRadio</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+                <h2>Legal</h2>
+                <p>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</p>
             </div>
 
             <div id="frontTheme">
@@ -108,11 +112,19 @@
                     <button type="button" class="themeButton" id="Default">Default</button>
                     <button type="button" class="themeButton" id="RCB40">RCB40</button>
                     <button type="button" class="themeButton" id="No2TypeB">No. 2 Type B</button>
+                    <button type="button" class="themeButton" id="SpaceGroove">Space Groove</button>
                 </div>
             </div>
             <div id="footer">
                 <span>A project by <a href="https://kenellorando.com/">Ken Ellorando</a></span>
             </div>
+
         </main>
+
     </body>
+    <div class="fullscreen-bg">
+        <video loop muted autoplay class="fullscreen-bg-video">
+            <source id="videoSource" src="" type="video/mp4">
+        </video>
+    </div>
 </html>

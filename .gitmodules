@@ -1,0 +1,3 @@
+[submodule "public/static"]
+	path = public/static
+	url = https://github.com/kenellorando/cadence_static.git

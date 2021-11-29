@@ -10,10 +10,5 @@ const theme = {
     "No2TypeB": {
         "css": "/css/themes/No2TypeB.css",
         "key": "No2TypeB"
-    },
-    "SpaceGroove": {
-        "css": "/css/themes/SpaceGroove.css",
-        "key": "SpaceGroove",
-        "videoSource": "/static/spacegroove.mp4"
-    },
+    }
 }

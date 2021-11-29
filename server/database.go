@@ -36,7 +36,7 @@ func databaseAutoConfig() error {
 	   artist character varying(255),
 	   genre character varying(255),
 	   year character varying(4),
-	   path character varying(510)
+	   path character varying(255)
 	)
 	WITH (
 	   OIDS = FALSE

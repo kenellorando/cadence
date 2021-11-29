@@ -1,374 +1,369 @@
 /* Font imports */
-
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Roboto+Condensed:wght@300&family=Rock+Salt&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Rock+Salt');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:300');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Inconsolata');
 
 /* Resets */
-
 html, body {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 /* Page layout */
-
 html {
-	background-color: beige;
-	color: black;
-	height: 100%;
-	overflow: scroll;
-	overflow-x: hidden;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
-	background-position: center;
-}
+    background-color: beige;
+    color: black;
+    height: 100%;
+    overflow: scroll;
+    overflow-x: hidden;
 
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
 /* We hide the scrollbar for width consistency */
-
 ::-webkit-scrollbar {
-	width: 0px;
+    width: 0px;
 }
-
 body {
-	font-family: 'Roboto Condensed', sans-serif;
-	background-color: whitesmoke;
-	background-color: #1e2020;
-	color: #e2e9cc;
-}
+    font-family: 'Roboto Condensed', sans-serif;
+    background-color: whitesmoke;
 
+    background-color: #1e2020;
+    color:#e2e9cc;
+}
 main {
-	background-color: inherit;
-	padding-left: 5%;
-	padding-right: 5%;
-	min-height: 100vh;
+    background-color: inherit;
+    padding-left: 5%;
+    padding-right: 5%;
+    min-height: 100vh;
 }
 
 a {
-	cursor: pointer;
-	color: #d37d5b;
-	text-decoration: none;
+    cursor: pointer;
+    color: #d37d5b;
+    text-decoration: none;
 }
 
 /* Navigation */
-
 nav {
-	background-color: #151616;
-	font-weight: 300;
-	padding-left: 2.5%;
-	padding-right: 2.5%;
-}
+    background-color:#151616;
 
+    font-weight: 300;
+
+    padding-left: 2.5%;
+    padding-right: 2.5%;
+}
 nav ul {
-	list-style-type: none;
+    list-style-type: none;
 }
-
 nav a {
-	color: bisque;
+    color: bisque;
 }
-
 nav #navLeft {
-	color: bisque;
-	padding-top: 4px;
-	display: block;
-	text-align: center;
-}
+    color: bisque;
 
+    padding-top: 4px;
+    display: block;
+    text-align: center;
+}
 nav #navRight {
-	color: bisque;
-	display: block;
-	text-align: center;
-	font-size: 18px;
-	font-family: 'Roboto Condensed', sans-serif;
-	padding-top: 4px;
-	padding-bottom: 10px;
-	white-space: nowrap;
+    color: bisque;
+    display: block;
+    text-align: center;
+    font-size: 18px;
+    font-family: 'Roboto Condensed', sans-serif;
+    padding-top: 4px;
+    padding-bottom: 10px;
+    white-space: nowrap;
 }
-
 nav #navRight a {
-	margin-left: 14px;
-	margin-right: 14px;
+    margin-left: 14px;
+    margin-right: 14px;
 }
-
 nav #tabMain {
-	font-family: 'Rock Salt', cursive;
-	font-size: 26px;
+    font-family: 'Rock Salt', cursive;
+    font-size: 26px;
 }
-
 img {
-	max-width: 100%;
+    max-width: 100%;
 }
 
 /* Player */
-
 #player {
-	text-align: center;
-	padding-top: 100px;
-	padding-bottom: 100px;
-}
+    text-align: center;
 
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
 #player #status {
-	font-family: 'Inconsolata', monospace;
-	font-size: 13px;
+    font-family: 'Inconsolata', monospace;
+    font-size: 13px;
 }
-
 #player #song {
-	font-size: 40px;
-	margin-top: 15px;
-}
+    font-size: 40px;
 
+    margin-top: 15px;
+}
 #player #artist {
-	font-size: 27px;
+    font-size: 27px;
 }
-
 #player #playButton {
-	background-color: #263635;
-	color: #dddad4;
-	font-size: 20px;
-	text-align: center;
-	padding: 11px;
-	width: 100px;
-	border-radius: 10%;
-	cursor: pointer;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	margin-left: auto;
-	margin-right: auto;
-	line-height: 100%;
-}
+    background-color: #263635;
+    color: #dddad4;
+    
+    font-size: 20px;
+    text-align: center;
+    
+    padding: 11px;
+    width: 100px;
+    border-radius: 10%;
 
+    cursor: pointer;
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    
+    line-height: 100%;
+}
 #player #version {
-	font-size: 13px;
-	font-family: 'Inconsolata', monospace;
+    font-size: 13px;
+    font-family: 'Inconsolata', monospace;
 }
 
 /* The content underneath the player */
 
+
 #frontRequest {
-	display: block;
+    display: block;
 }
 
 #frontAbout {
-	display: none;
+    display: none;
 }
 
 #frontLibrary {
-	display: none;
+    display: none;
 }
-
 #frontLibrary #library {
-	font-family: 'Inconsolata', monospace;
+    font-family: 'Inconsolata', monospace;
 }
-
 #frontLibrary #libraryTable {
-	margin-top: 20px;
-	width: 100%;
+    margin-top: 20px;
+    width: 100%;
 }
-
 #frontLibrary #libraryTable tr {
-	text-align: left;
-	border-bottom: 1px solid red;
+    text-align: left;
+    border-bottom: 1px solid red;
 }
 
 #frontRequest #searchInput {
-	background-color: #f0fbfa;
-	color: black;
-	border: none;
-	border-radius: 5%;
-	padding: 3px;
-	margin-top: 20px;
-	margin-right: 10px;
+    background-color: #f0fbfa;
+    color: black;
+    font-family: 'Roboto', sans-serif;
+    
+    border: none;
+    border-radius: 5%;
+
+    padding: 3px;
+    margin-top: 20px;
+    margin-right: 10px;
 }
 
 #frontRequest #searchButton {
-	background-color: #c7eac4;
-	border: none;
-	border-radius: 5%;
-	padding: 3px 7px;
-	cursor: pointer;
+    background-color: #c7eac4;
+    font-family: 'Roboto', sans-serif;
+
+    border: none;
+    border-radius: 5%;
+
+    padding: 3px 7px;
+
+    cursor: pointer;
 }
 
 #frontRequest #searchResults {
-	font-family: 'Inconsolata', monospace;
-	text-align: left;
-	margin-top: 20px;
-	font-size: 15px;
-	table-layout: fixed;
-	width: 100%;
+    font-family: 'Inconsolata', monospace;
+    text-align: left;
+
+    margin-top: 20px;
+
+    font-size: 15px;
+    table-layout: fixed;
+    width: 100%;
 }
 
 #searchResults tr th:last-child {
-	text-align: right;
+    text-align: right;
 }
 
 #searchResults tr td:last-child {
-	text-align: right;
+    text-align: right;
 }
+
 
 #requestStatus {
-	font-family: 'Inconsolata', monospace;
-	padding-top: 20px;
+    font-family: 'Inconsolata', monospace;
+    padding-top: 20px;
 }
 
+
 #volume {
-	margin-bottom: 25px;
+    margin-bottom: 25px;
 }
 
 #frontTheme {
-	display: none;
+    display: none;
 }
 
 #frontTheme .themeButton {
-	font-family: 'Inconsolata', monospace;
-	font-size: 16px;
-	text-decoration: none;
-	background-color: rgba(58, 58, 58, 0.8);
-	border: none;
-	border-radius: 5%;
-	padding: 6px 15px;
-	cursor: pointer;
-	margin-right: 5px;
-	margin-bottom: 5px;
+    font-family: 'Inconsolata', monospace;
+    font-size: 16px;
+    text-decoration: none;
+
+    background-color: rgba(58, 58, 58, 0.8);
+    
+    border: none;
+    border-radius: 5%;
+    padding: 6px 15px;
+
+    cursor: pointer;
+
+    margin-right: 5px;
+    margin-bottom: 5px;
 }
 
 input[type=range] {
-	appearance: none;
-	-moz-appearance: none;
-	-webkit-appearance: none;
-	width: 200px;
-	border: none;
-	background-color: rgba(0,0,0,0);
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    width: 200px;
+    border: none;
 
+    background-color: #313535;
 }
-
+  
 input[type=range]:focus {
-	outline: none;
+    outline: none;
 }
 
 input[type=range]::-webkit-slider-runnable-track {
-	width: 100%;
-	height: 5px;
-	cursor: pointer;
-	transition: 0.2s;
-	border-radius: 0px;
-	border: 1px solid #000000;
-	background-color: #313535;
-}
-
-input[type=range]::-moz-range-track {
-	cursor: pointer;
-	transition: 0.2s;
-	border-radius: 0px;
-	border: 1px solid #000000;
-	background-color: #313535;
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+    border-radius: 0px;
+    border: 1px solid #000000;
 }
 
 input[type=range]::-webkit-slider-thumb {
-	border: 2px solid #dddad4;
-	height: 13px;
-	width: 13px;
-	border-radius: 50px;
-	background: rgb(95, 84, 105);
-	cursor: pointer;
-	-webkit-appearance: none;
-	margin-top: -5px;
-}
+    border: 2px solid #dddad4;
+    height: 13px;
+    width: 13px;
+    border-radius: 50px;
+    background: rgb(95, 84, 105);
+    cursor: pointer;
+    -webkit-appearance: none;
 
-input[type=range]::-moz-range-thumb {
-	border: 2px solid #dddad4;
-	height: 13px;
-	width: 13px;
-	border-radius: 50px;
-	background: rgb(95, 84, 105);
-	cursor: pointer;
-	-moz-appearance: none;
-	margin-top: -5px;
+    margin-top: -5px;
 }
+  
+
+
+
 
 .column {
-	display: table;
-	-webkit-column-break-inside: avoid;
+    display: table;
+    -webkit-column-break-inside: avoid;
 }
 
 #footer {
-	font-size: 15px;
-	text-align: center;
-	padding-top: 50px;
-	padding-bottom: 5%;
+    font-size: 15px;
+    text-align: center;
+
+
+    padding-top: 50px;
+    padding-bottom: 5%;
 }
 
+
 @media (min-width: 850px) {
-	main {
-		padding-left: 8%;
-		padding-right: 8%;
-	}
-	nav {
-		padding-left: 4%;
-		padding-right: 4%;
-	}
-	nav #navLeft {
-		display: inline-block;
-		text-align: left;
-	}
-	nav #navRight {
-		color: bisque;
-		float: right;
-		padding: 18px;
-		font-size: 17px;
-		font-family: 'Roboto Condensed', sans-serif;
-	}
-	nav #tabMain {
-		font-size: 22px;
-	}
-	/* Player */
-	#player {
-		padding-top: 130px;
-		padding-bottom: 130px;
-	}
+    main {
+        padding-left: 8%;
+        padding-right: 8%;
+    }
+    nav {
+        padding-left: 4%;
+        padding-right: 4%;
+    }
+    nav #navLeft {
+        display: inline-block;
+        text-align: left;
+    }
+    nav #navRight {
+        color: bisque;
+        float: right;
+        padding: 18px;
+        font-size: 17px;
+        font-family: 'Roboto Condensed', sans-serif;
+    }
+    nav #tabMain {
+        font-size: 22px;
+    }
+    /* Player */
+    #player {
+        padding-top: 130px;
+        padding-bottom: 130px;
+    }
 }
 
 @media (min-width: 1200px) {
-	main {
-		padding-left: 16%;
-		padding-right: 16%;
-	}
-	nav {
-		padding-left: 11%;
-		padding-right: 11%;
-		height: 100%;
-	}
-	#navLeft a {
-		font-size: 24px
-	}
-	#navRight a {
-		font-size: 20px;
-	}
-	#player {
-		transform: scale(1.02);
-	}
+    main {
+        padding-left: 16%;
+        padding-right: 16%;
+    }
+    nav {
+        padding-left: 11%;
+        padding-right: 11%;
+        height: 100%;
+    }
+    #navLeft a {
+        font-size: 24px
+    }
+    #navRight a {
+        font-size: 18px;
+    }
+    #player {
+        transform: scale(1.02);
+    }
 }
 
 @media (min-width: 1920px) {
-	main {
-		padding-left: 26%;
-		padding-right: 26%;
-		font-size: 18px;
-	}
-	nav {
-		padding-left: 21%;
-		padding-right: 21%;
-	}
-	#player {
-		transform: scale(1.05);
-	}
+    main {
+        padding-left: 26%;
+        padding-right: 26%;
+        font-size: 18px;
+    }
+    nav {
+        padding-left: 21%;
+        padding-right: 21%;
+    }
+    #player {
+        transform: scale(1.05);
+    }
 }
 
 @media (min-width: 2400px) {
-	main {
-		padding-left: 32%;
-		padding-right: 32%;
-	}
-	nav {
-		padding-left: 27%;
-		padding-right: 27%;
-	}
+    main {
+        padding-left: 32%;
+        padding-right: 32%;
+    }
+    nav {
+        padding-left: 27%;
+        padding-right: 27%;
+    }
 }

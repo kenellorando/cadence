@@ -9,6 +9,10 @@ In the current iteration (4.x) of Cadence, no frontend framework is employed and
 
 Check it out in action: [https://cadenceradio.com/](https://cadenceradio.com/).
 
+## Feature Architecture
+
+![cadence arch](https://user-images.githubusercontent.com/17265041/164131724-00f9a1a3-59bd-4301-947b-56cb526d3f5b.png)
+
 ## Discord Bot
 
-_CadenceBot_, maintained by [Ryan Hodin](https://github.com/za419), is an configurable Discord interface to Cadence API servers. The bot accepts commands through Discord text channels, and relays music into voice channels!
+_[CadenceBot](https://github.com/za419/CadenceBot/issues)_, maintained by [Ryan Hodin](https://github.com/za419), is an configurable Discord interface to Cadence API servers. The bot accepts commands through Discord text channels, and relays music into voice channels!

@@ -16,3 +16,7 @@ Check it out in action: [https://cadenceradio.com/](https://cadenceradio.com/).
 ## Discord Bot
 
 _[CadenceBot](https://github.com/za419/CadenceBot/issues)_, maintained by [Ryan Hodin](https://github.com/za419), is an configurable Discord interface to Cadence API servers. The bot accepts commands through Discord text channels, and relays music into voice channels!
+
+## Contributors
+
+![GitHub Contributors Image](https://contrib.rocks/image?repo=kenellorando/cadence)

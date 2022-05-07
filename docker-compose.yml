@@ -1,0 +1,21 @@
+version: "3"
+services:
+  cadence:
+    build: 
+      context: ./cadence/ 
+    image: kenellorando/cadence
+    container_name: cadence
+    restart: always
+    env_file:
+      - ./cadence/config/cadence.env
+    # volumes:
+    #   - ./liquidsoap/config/cadence.liq:/etc/liquidsoap/cadence.liq
+    #   - ./liquidsoap/music/:/music/
+    # depends_on:
+    #   - icecast2
+    #   - liquidsoap
+    networks:
+      - radio
+networks:
+  radio:
+    driver: bridge

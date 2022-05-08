@@ -12,12 +12,16 @@ import (
 func routes() *mux.Router {
 	r := mux.NewRouter()
 
+	// API
 	r.HandleFunc("/api/aria1/search", handleARIA1Search()).Methods("POST")
 	r.HandleFunc("/api/aria1/request", handleARIA1Request()).Methods("POST")
 	//r.HandleFunc("/api/aria1/library", handleARIA1Library()).Methods("GET")
 	r.HandleFunc("/api/aria1/nowplaying", handleARIA1NowPlaying()).Methods("GET")
-	r.HandleFunc("/api/aria1/nowplaying/socket", socketNowPlaying()).Methods("GET")
 	r.HandleFunc("/api/aria2/request", handleARIA2Request()).Methods("POST")
+	r.HandleFunc("/api/aria1/nowplaying/socket", socketNowPlaying()).Methods("GET")
+	r.HandleFunc("/api/aria1/streamurl/socket", socketStreamURL()).Methods("GET")
+	r.HandleFunc("/api/aria1/streamlisteners/socket", socketStreamListeners()).Methods("GET")
+
 	r.HandleFunc("/", handleServeRoot()).Methods("GET")
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./public/static/")))).Methods("GET")

@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jeffail/gabs"
 	"github.com/kenellorando/clog"
 )
 
@@ -332,6 +334,43 @@ func handleARIA1Library() http.HandlerFunc {
 		jsonMarshal, _ := json.Marshal(rawJSON)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
+	}
+}
+
+func handleARIA1NowPlaying() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		clog.Debug("ARIA1NowPlaying", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
+
+		resp, err := http.Get("http://icecast2:8000/status-json.xsl")
+		if err != nil {
+			clog.Error("ARIA1NowPlaying", "Failed to connect to audio stream server.", err)
+			return
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			clog.Error("ARIA1NowPlaying", "Audio stream server returned bad status", err)
+			return
+		}
+
+		body, _ := io.ReadAll(resp.Body)
+		jsonParsed, _ := gabs.ParseJSON([]byte(body))
+
+		var artist, _ = jsonParsed.Path("icestats.source.artist").Data().(string)
+		var title, _ = jsonParsed.Path("icestats.source.title").Data().(string)
+
+		clog.Info("ARIA1NowPlaying", fmt.Sprintf("Now playing: '%s' by '%s'.", title, artist))
+
+		// Return data to client
+		type NowPlayingResponse struct {
+			Artist string
+			Title  string
+		}
+		nowPlayingResponse := NowPlayingResponse{artist, title}
+		jsonMarshal, _ := json.Marshal(nowPlayingResponse)
+		w.WriteHeader(http.StatusAccepted) // 202 Accepted
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+		return
 	}
 }
 

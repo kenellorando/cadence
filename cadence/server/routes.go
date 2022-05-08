@@ -15,6 +15,7 @@ func routes() *mux.Router {
 	r.HandleFunc("/api/aria1/search", handleARIA1Search()).Methods("POST")
 	r.HandleFunc("/api/aria1/request", handleARIA1Request()).Methods("POST")
 	r.HandleFunc("/api/aria1/library", handleARIA1Library()).Methods("GET")
+	r.HandleFunc("/api/aria1/nowplaying", handleARIA1NowPlaying()).Methods("GET")
 	r.HandleFunc("/api/aria2/request", handleARIA2Request()).Methods("POST")
 	r.HandleFunc("/", handleServeRoot()).Methods("GET")
 

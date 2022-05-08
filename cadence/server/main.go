@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/kenellorando/clog"
 )
@@ -52,6 +53,10 @@ type SchemaConfig struct {
 // Default values for missing environment variables are set here.
 // Init also initalizes other services with relevant values
 func init() {
+	// TODO: Make this better (do service connection retries at intervals?)
+	// this pauses initialization so the postgres service may start first-- version 4C
+	time.Sleep(2 * time.Second)
+
 	// Declare substructs of the global config
 	server := ServerConfig{}
 	db := DBConfig{}

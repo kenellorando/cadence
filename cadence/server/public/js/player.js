@@ -1,35 +1,56 @@
-// Displays currently playing info, from the Icecast xsl
+// Hook into the cadence nowPlaying socket
 function radioTitle() {
-	var url = 'https://stream.cadenceradio.com/now-playing.xsl';
-	$.ajax({
-		type: 'GET',
-		url: url,
-		async: true,
-		jsonpCallback: 'parseMusic',
-		contentType: "application/json",
-		dataType: 'jsonp',
-		success: function(json) {
-			// Grab and trim song data
-			var serverName = json['/cadence1']['server_name'].trim();
-			var nowPlayingArtist = json['/cadence1']['artist_name'].trim();
-			var nowPlayingSong = json['/cadence1']['song_title'].trim();
-			var listeners = json['/cadence1']['listeners'].trim();
-			// Set info in the player
-			$('#status').html("Connected to server: <a href='https://melody.systems' target='_blank'>" + serverName + "</a>");
-			$('#song').text(nowPlayingSong);
+	var url =  nowPlayingSocketURL;
+
+	var socket = new WebSocket("ws://" + location.host + "/api/aria1/nowplaying/socket")
+
+	socket.onopen = () => {
+		console.log("socket opened")
+	}
+	socket.onmessage = (ServerMessage) => {
+		console.log("server reports song change")
+		updateNowPlaying(ServerMessage)
+	}
+
+	function updateNowPlaying(ServerMessage) {
+		let update = JSON.parse(ServerMessage.data)
+			var nowPlayingArtist = json['Artist'].trim();
+			var nowPlayingTitle = json['Title'].trim();
+	// 		$('#status').html("Connected to server: <a href='https://melody.systems' target='_blank'>" + serverName + "</a>");
 			$('#artist').text(nowPlayingArtist);
-			$('#listeners').text(listeners)
-		},
-		error: function(e) {
-			console.log(e.message);
-			$('#status').text("Disconnected from server.")
-			$('#song').text("-");
-			$('#artist').text("-");
-			document.getElementById("status").innerHTML = "Disconnected from server."
-			document.getElementById("artist").innerHTML = "-";
-			document.getElementById("song").innerHTML = "-";
-		}
-	})
+			$('#song').text(nowPlayingTitle);
+	// 		$('#listeners').text(listeners)
+	}
+
+	// $.ajax({
+	// 	type: 'GET',
+	// 	url: url,
+	// 	async: true,
+	// 	jsonpCallback: 'parseMusic',
+	// 	contentType: "application/json",
+	// 	dataType: 'jsonp',
+	// 	success: function(json) {
+	// 		// Grab and trim song data
+	// 		var serverName = json['/cadence1']['server_name'].trim();
+	// 		var nowPlayingArtist = json['/cadence1']['artist_name'].trim();
+	// 		var nowPlayingSong = json['/cadence1']['song_title'].trim();
+	// 		var listeners = json['/cadence1']['listeners'].trim();
+	// 		// Set info in the player
+	// 		$('#status').html("Connected to server: <a href='https://melody.systems' target='_blank'>" + serverName + "</a>");
+	// 		$('#song').text(nowPlayingSong);
+	// 		$('#artist').text(nowPlayingArtist);
+	// 		$('#listeners').text(listeners)
+	// 	},
+	// 	error: function(e) {
+	// 		console.log(e.message);
+	// 		$('#status').text("Disconnected from server.")
+	// 		$('#song').text("-");
+	// 		$('#artist').text("-");
+	// 		document.getElementById("status").innerHTML = "Disconnected from server."
+	// 		document.getElementById("artist").innerHTML = "-";
+	// 		document.getElementById("song").innerHTML = "-";
+	// 	}
+	// })
 };
 // Toggle the stream with the playButton
 $(document).ready(function() {
@@ -37,7 +58,7 @@ $(document).ready(function() {
 	var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 	document.getElementById("playButton").addEventListener('click', function() {
 		if (stream.paused) {
-			stream.src = "https://stream.cadenceradio.com/cadence1";
+			stream.src = streamSrcURL;
 			stream.load();
 			stream.play();
 			// Replace the ❙❙ in the button when playing

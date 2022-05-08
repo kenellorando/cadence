@@ -325,17 +325,17 @@ func handleARIA1Request() http.HandlerFunc {
 	}
 }
 
-func handleARIA1Library() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Info("ServeLibrary", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
-		// Open the file, marshall the data and write it
-		fileReader, _ := ioutil.ReadFile(c.server.RootPath + "./public/library.json")
-		rawJSON := json.RawMessage(string(fileReader))
-		jsonMarshal, _ := json.Marshal(rawJSON)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
-	}
-}
+// func handleARIA1Library() http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		clog.Info("ServeLibrary", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
+// 		// Open the file, marshall the data and write it
+// 		fileReader, _ := ioutil.ReadFile(c.server.RootPath + "./public/library.json")
+// 		rawJSON := json.RawMessage(string(fileReader))
+// 		jsonMarshal, _ := json.Marshal(rawJSON)
+// 		w.Header().Set("Content-Type", "application/json")
+// 		w.Write(jsonMarshal)
+// 	}
+// }
 
 func handleARIA1NowPlaying() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -370,7 +370,6 @@ func handleARIA1NowPlaying() http.HandlerFunc {
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
-		return
 	}
 }
 

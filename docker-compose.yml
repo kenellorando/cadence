@@ -1,21 +1,71 @@
 version: "3"
 services:
+
+  icecast2:
+    build: 
+      context: ./icecast2/ 
+    image: kenellorando/icecast2
+    container_name: icecast2
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - ./icecast2/config/cadence.xml:/etc/icecast2/cadence.xml
+    networks:
+      - radio_services
+
+  liquidsoap:
+    build: 
+      context: ./liquidsoap/ 
+    image: kenellorando/liquidsoap
+    container_name: liquidsoap
+    restart: always
+    volumes:
+      - ./liquidsoap/config/cadence.liq:/etc/liquidsoap/cadence.liq
+      - /music:/music
+    depends_on:
+      - icecast2
+    ports:
+      - 1234:1234
+    networks:
+      - radio_services
+
+  postgres:
+    image: postgres:14.2-alpine
+    container_name: postgres
+    restart: always
+    depends_on:
+      - icecast2
+    environment:
+      POSTGRES_PASSWORD: hackme
+    expose:
+      - "5432"
+    networks:
+      - metadata_services
+
   cadence:
     build: 
       context: ./cadence/ 
     image: kenellorando/cadence
     container_name: cadence
     restart: always
+    ports:
+      - 8080:8080
     env_file:
       - ./cadence/config/cadence.env
-    # volumes:
-    #   - ./liquidsoap/config/cadence.liq:/etc/liquidsoap/cadence.liq
-    #   - ./liquidsoap/music/:/music/
-    # depends_on:
-    #   - icecast2
-    #   - liquidsoap
+    volumes:
+      - /music:/music
+    depends_on:
+      - icecast2
+      - liquidsoap
+      - postgres
     networks:
-      - radio
+      - radio_services
+      - metadata_services
+
+
 networks:
-  radio:
+  radio_services:
+    driver: bridge
+  metadata_services:
     driver: bridge

@@ -5,9 +5,7 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -106,18 +104,18 @@ func databasePopulate() error {
 		}
 	}
 
-	// Check for the music library file
-	_, err = os.Stat(c.server.RootPath + "./public/library.json")
-	if err != nil {
-		// If it does not exist, create it
-		// If it does, remove it and recreate an empty file
-		if os.IsNotExist(err) {
-			os.Create(c.server.RootPath + "./public/library.json")
-		}
-	} else {
-		os.Remove(c.server.RootPath + "./public/library.json")
-		os.Create(c.server.RootPath + "./public/library.json")
-	}
+	// // Check for the music library file
+	// _, err = os.Stat(c.server.RootPath + "public/library.json")
+	// if err != nil {
+	// 	// If it does not exist, create it
+	// 	// If it does, remove it and recreate an empty file
+	// 	if os.IsNotExist(err) {
+	// 		os.Create(c.server.RootPath + "public/library.json")
+	// 	}
+	// } else {
+	// 	os.Remove(c.server.RootPath + "public/library.json")
+	// 	os.Create(c.server.RootPath + "public/library.json")
+	// }
 
 	// Here, we define the struct and slice for the library file JSON
 	// We will append to it during the file walk
@@ -175,9 +173,9 @@ func databasePopulate() error {
 		return nil
 	})
 
-	// Marshal the new JSON data and store it on file
-	libraryDataMarshal, _ := json.Marshal(libraryData)
-	err = ioutil.WriteFile(c.server.RootPath+"./public/library.json", libraryDataMarshal, 0644)
+	// // Marshal the new JSON data and store it on file
+	// libraryDataMarshal, _ := json.Marshal(libraryData)
+	// err = ioutil.WriteFile(c.server.RootPath+"public/library.json", libraryDataMarshal, 0644)
 
 	if err != nil {
 		clog.Error("databasePopulate", "Examination of music file metadata failed!", err)

@@ -373,6 +373,22 @@ func handleARIA1NowPlaying() http.HandlerFunc {
 	}
 }
 
+func handleARIA1Version() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		clog.Debug("ARIA1Version", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
+
+		// Return data to client
+		type CadenceVersion struct {
+			Version string
+		}
+		version := CadenceVersion{Version: c.server.Version}
+		jsonMarshal, _ := json.Marshal(version)
+		w.WriteHeader(http.StatusAccepted) // 202 Accepted
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+	}
+}
+
 // ARIA2 API ////////////////////////////////////////////////////////////////////
 func handleARIA2Request() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

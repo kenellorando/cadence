@@ -3,19 +3,22 @@ $(document).ready(function() {
 	var socket = new WebSocket("ws://" + location.host + "/api/aria1/nowplaying/socket")
 
 	socket.onopen = () => {
-		console.log("Connected to Cadence nowPlaying socket.")
+		console.log("Connected to Cadence nowplaying socket.")
 	}
 	socket.onmessage = (ServerMessage) => {
-		console.log("Now playing: " + ServerMessage)
 		updateNowPlaying(ServerMessage)
+	}
+	socket.onerror = (ServerMessage) => {
+		console.warn("Could not reach the Cadence nowplaying socket: " + ServerMessage.data)
 	}
 
 	function updateNowPlaying(ServerMessage) {
+		//console.log("Now playing: " + ServerMessage.data)
 		let song = JSON.parse(ServerMessage.data)
-			var nowPlayingArtist = song['Artist'].trim();
-			var nowPlayingTitle = song['Title'].trim();
-			$('#artist').text(nowPlayingArtist);
-			$('#song').text(nowPlayingTitle);
+		var nowPlayingArtist = song['Artist'].trim();
+		var nowPlayingTitle = song['Title'].trim();
+		$('#artist').text(nowPlayingArtist);
+		$('#song').text(nowPlayingTitle);
 	}
 });
 
@@ -25,14 +28,17 @@ $(document).ready(function() {
 	var socket = new WebSocket("ws://" + location.host + "/api/aria1/streamurl/socket")
 
 	socket.onopen = () => {
-		console.log("Connected to Cadence streamURL socket.")
+		console.log("Connected to Cadence streamurl socket.")
 	}
 	socket.onmessage = (ServerMessage) => {
-		console.log("New stream URL: " + ServerMessage.data)
 		updateStreamURL(ServerMessage)
+	}
+	socket.onerror = (ServerMessage) => {
+		console.warn("Could not reach the Cadence streamurl socket: " + ServerMessage.data)
 	}
 
 	function updateStreamURL(ServerMessage) {
+		//console.log("Stream connections: " + ServerMessage.data)
 		let stat = JSON.parse(ServerMessage.data)
 		var currentListenURL = stat['ListenURL'].trim();
 		var currentMountpoint = stat['Mountpoint'].trim();
@@ -40,7 +46,6 @@ $(document).ready(function() {
 		var stream = document.getElementById("stream");
 		stream.src = currentListenURL;
 		streamSrcURL = currentListenURL // set global URL
-	
 		if (currentListenURL != "unknown") {
 			$('#status').html("Connected to stream: <a href='"+ streamSrcURL + "'>" + currentMountpoint + "</a>");
 		} else {
@@ -54,14 +59,17 @@ $(document).ready(function() {
 	var socket = new WebSocket("ws://" + location.host + "/api/aria1/streamlisteners/socket")
 
 	socket.onopen = () => {
-		console.log("Connected to Cadence streamListeners socket.")
+		console.log("Connected to Cadence streamlisteners socket.")
 	}
 	socket.onmessage = (ServerMessage) => {
-		console.log("Listener count update: " + ServerMessage.data)
 		updateStreamListeners(ServerMessage)
+	}
+	socket.onerror = (ServerMessage) => {
+		console.warn("Could not reach the Cadence streamlisteners socket: " + ServerMessage.data)
 	}
 
 	function updateStreamListeners(ServerMessage) {
+		//console.log("Listener update: " + ServerMessage.data)
 		let stat = JSON.parse(ServerMessage.data)
 		var currentListeners = stat['Listeners'];
 		var listeners = document.getElementById("listeners");
@@ -99,13 +107,14 @@ $(document).ready(function() {
 $(document).ready(function() {
 	$.ajax({
 		type: 'GET',
-		url: 'https://api.github.com/repos/kenellorando/cadence/releases/latest',
+		url: "/api/aria1/version",
+		dataType: "json",
 		// On success, format data into table
 		success: function(data) {
-			document.getElementById("release").innerHTML = data.name;
+			document.getElementById("release").innerHTML = data.Version;
 		},
 		error: function() {
-			document.getElementById("release").innerHTML = "Could not retrieve version data.";
+			document.getElementById("release").innerHTML = "(N/A)";
 		}
 	});
 });

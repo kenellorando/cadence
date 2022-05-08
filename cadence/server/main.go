@@ -22,6 +22,7 @@ type Config struct {
 
 // ServerConfig - Webserver configuration
 type ServerConfig struct {
+	Version       string
 	RootPath      string
 	Domain        string
 	LogLevel      int
@@ -63,6 +64,7 @@ func init() {
 	schema := SchemaConfig{}
 
 	// Webserver configuration
+	server.Version = os.Getenv("CSERVER_VERSION")
 	server.RootPath = os.Getenv("CSERVER_ROOTPATH")
 	server.Domain = os.Getenv("CSERVER_DOMAIN")
 	server.LogLevel, _ = strconv.Atoi(os.Getenv("CSERVER_LOGLEVEL"))

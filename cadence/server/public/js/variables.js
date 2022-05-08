@@ -1,2 +1,0 @@
-const nowPlayingSocketURL = location.protocol + location.hostname + ":8080/api/aria1/nowplaying/socket"
-const streamStatusSocketURL =  location.protocol + location.hostname + ":8080/api/aria1/streamstatus/socket"

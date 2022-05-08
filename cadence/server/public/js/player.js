@@ -16,38 +16,7 @@ $(document).ready(function() {
 			var nowPlayingTitle = song['Title'].trim();
 			$('#artist').text(nowPlayingArtist);
 			$('#song').text(nowPlayingTitle);
-	// 		$('#listeners').text(listeners)
 	}
-
-	// $.ajax({
-	// 	type: 'GET',
-	// 	url: url,
-	// 	async: true,
-	// 	jsonpCallback: 'parseMusic',
-	// 	contentType: "application/json",
-	// 	dataType: 'jsonp',
-	// 	success: function(json) {
-	// 		// Grab and trim song data
-	// 		var serverName = json['/cadence1']['server_name'].trim();
-	// 		var nowPlayingArtist = json['/cadence1']['artist_name'].trim();
-	// 		var nowPlayingSong = json['/cadence1']['song_title'].trim();
-	// 		var listeners = json['/cadence1']['listeners'].trim();
-	// 		// Set info in the player
-	// 		$('#status').html("Connected to server: <a href='https://melody.systems' target='_blank'>" + serverName + "</a>");
-	// 		$('#song').text(nowPlayingSong);
-	// 		$('#artist').text(nowPlayingArtist);
-	// 		$('#listeners').text(listeners)
-	// 	},
-	// 	error: function(e) {
-	// 		console.log(e.message);
-	// 		$('#status').text("Disconnected from server.")
-	// 		$('#song').text("-");
-	// 		$('#artist').text("-");
-	// 		document.getElementById("status").innerHTML = "Disconnected from server."
-	// 		document.getElementById("artist").innerHTML = "-";
-	// 		document.getElementById("song").innerHTML = "-";
-	// 	}
-	// })
 });
 
 streamSrcURL = "" // this gets used by the stream playButton function
@@ -77,7 +46,6 @@ $(document).ready(function() {
 		} else {
 			$('#status').html("Disconnected from stream.");
 		}
-
 	}
 });
 
@@ -127,17 +95,6 @@ $(document).ready(function() {
 	}, true);
 });
 
-// TODO: Remove after socket works
-
-// // Update now playing info at an interval
-// $(document).ready(function() {
-// 	setTimeout(function() {
-// 		radioTitle();
-// 	}, 0);
-// 	setInterval(function() {
-// 		radioTitle();
-// 	}, 10000);
-// });
 // Get latest source release title
 $(document).ready(function() {
 	$.ajax({

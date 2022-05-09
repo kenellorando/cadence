@@ -12,6 +12,12 @@ RUN go build -o /cadence-server
 
 EXPOSE 8080
 
+RUN apt update
+RUN apt install telnet -y
+RUN apt install net-tools -y
+RUN apt install iputils-ping -y
+RUN apt install traceroute -y
+
 # create a user named 'cadence', which owns the binary
 RUN useradd -s /bin/bash cadence
 RUN chown cadence /cadence-server

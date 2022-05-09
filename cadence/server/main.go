@@ -66,7 +66,7 @@ func init() {
 	// Webserver configuration
 	server.Version = os.Getenv("CSERVER_VERSION")
 	server.RootPath = os.Getenv("CSERVER_ROOTPATH")
-	server.Domain = os.Getenv("CSERVER_DOMAIN")
+	//server.Domain = os.Getenv("CSERVER_DOMAIN")
 	server.LogLevel, _ = strconv.Atoi(os.Getenv("CSERVER_LOGLEVEL"))
 	server.Port = os.Getenv("CSERVER_PORT")
 	server.MusicDir = os.Getenv("CSERVER_MUSIC_DIR")

@@ -3,8 +3,8 @@ services:
 
   icecast2:
     build: 
-      context: ./icecast2/ 
-    image: kenellorando/icecast2
+      context: ./cadence_icecast2/ 
+    image: kenellorando/cadence_icecast2
     container_name: icecast2
     restart: always
     ports:
@@ -12,12 +12,12 @@ services:
     volumes:
       - ./icecast2/config/cadence.xml:/etc/icecast2/cadence.xml
     networks:
-      - radio_services
+      - external_services
 
   liquidsoap:
     build: 
-      context: ./liquidsoap/ 
-    image: kenellorando/liquidsoap
+      context: ./cadence_liquidsoap/ 
+    image: kenellorando/cadence_liquidsoap
     container_name: liquidsoap
     restart: always
     volumes:
@@ -25,10 +25,10 @@ services:
       - /music:/music
     depends_on:
       - icecast2
-    ports:
-      - 1234:1234
+    expose:
+      - 1234
     networks:
-      - radio_services
+      internal_services:
 
   postgres:
     image: postgres:14.2-alpine
@@ -39,9 +39,9 @@ services:
     environment:
       POSTGRES_PASSWORD: hackme
     expose:
-      - "5432"
+      - 5432
     networks:
-      - metadata_services
+      - internal_services
 
   cadence:
     build: 
@@ -49,6 +49,8 @@ services:
     image: kenellorando/cadence
     container_name: cadence
     restart: always
+    expose:
+      - 1234
     ports:
       - 8080:8080
     env_file:
@@ -60,9 +62,8 @@ services:
       - liquidsoap
       - postgres
     networks:
-      - radio_services
-      - metadata_services
-
+      internal_services:
+      external_services:
 
 networks:
   radio_services:

@@ -19,9 +19,11 @@ func routes() *mux.Router {
 	r.HandleFunc("/api/aria1/nowplaying", handleARIA1NowPlaying()).Methods("GET")
 	r.HandleFunc("/api/aria2/request", handleARIA2Request()).Methods("POST")
 	r.HandleFunc("/api/aria1/version", handleARIA1Version()).Methods("GET")
-	r.HandleFunc("/api/aria1/nowplaying/socket", socketNowPlaying()).Methods("GET")
-	r.HandleFunc("/api/aria1/streamurl/socket", socketStreamURL()).Methods("GET")
-	r.HandleFunc("/api/aria1/streamlisteners/socket", socketStreamListeners()).Methods("GET")
+
+	r.HandleFunc("/api/aria1/radiodata/socket", socketRadioData()).Methods("GET")
+	// r.HandleFunc("/api/aria1/nowplaying/socket", socketNowPlaying()).Methods("GET")
+	// r.HandleFunc("/api/aria1/streamurl/socket", socketStreamURL()).Methods("GET")
+	// r.HandleFunc("/api/aria1/streamlisteners/socket", socketStreamListeners()).Methods("GET")
 
 	r.HandleFunc("/", handleServeRoot()).Methods("GET")
 

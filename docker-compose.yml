@@ -10,9 +10,10 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./icecast2/config/cadence.xml:/etc/icecast2/cadence.xml
+      - ./cadence_icecast2/config/cadence.xml:/etc/icecast2/cadence.xml
     networks:
-      - external_services
+      external_services:
+      stream_delivery:
 
   liquidsoap:
     build: 
@@ -21,7 +22,7 @@ services:
     container_name: liquidsoap
     restart: always
     volumes:
-      - ./liquidsoap/config/cadence.liq:/etc/liquidsoap/cadence.liq
+      - ./cadence_liquidsoap/config/cadence.liq:/etc/liquidsoap/cadence.liq
       - /music:/music
     depends_on:
       - icecast2
@@ -29,6 +30,7 @@ services:
       - 1234
     networks:
       internal_services:
+      stream_delivery:
 
   postgres:
     image: postgres:14.2-alpine
@@ -41,7 +43,7 @@ services:
     expose:
       - 5432
     networks:
-      - internal_services
+      internal_services:
 
   cadence:
     build: 
@@ -49,8 +51,6 @@ services:
     image: kenellorando/cadence
     container_name: cadence
     restart: always
-    expose:
-      - 1234
     ports:
       - 8080:8080
     env_file:
@@ -66,7 +66,9 @@ services:
       external_services:
 
 networks:
-  radio_services:
+  external_services:
     driver: bridge
-  metadata_services:
+  internal_services:
+    driver: bridge
+  stream_delivery:
     driver: bridge

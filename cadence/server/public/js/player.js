@@ -1,82 +1,50 @@
-// Hook into the cadence nowPlaying socket
-$(document).ready(function() {
-	var socket = new WebSocket("ws://" + location.host + "/api/aria1/nowplaying/socket")
-
-	socket.onopen = () => {
-		console.log("Connected to Cadence nowplaying socket.")
-	}
-	socket.onmessage = (ServerMessage) => {
-		updateNowPlaying(ServerMessage)
-	}
-	socket.onerror = (ServerMessage) => {
-		console.warn("Could not reach the Cadence nowplaying socket: " + ServerMessage.data)
-	}
-
-	function updateNowPlaying(ServerMessage) {
-		//console.log("Now playing: " + ServerMessage.data)
-		let song = JSON.parse(ServerMessage.data)
-		var nowPlayingArtist = song['Artist'].trim();
-		var nowPlayingTitle = song['Title'].trim();
-		$('#artist').text(nowPlayingArtist);
-		$('#song').text(nowPlayingTitle);
-	}
-});
 
 streamSrcURL = "" // this gets used by the stream playButton function
-// Hook into the cadence streamURL socket
+
+// Hook into the cadence radio data socket
 $(document).ready(function() {
-	var socket = new WebSocket("ws://" + location.host + "/api/aria1/streamurl/socket")
+	var socket = new WebSocket("ws://" + location.host + "/api/aria1/radiodata/socket")
 
 	socket.onopen = () => {
-		console.log("Connected to Cadence streamurl socket.")
+		console.log("Established connection with Cadence radiodata socket.")
 	}
 	socket.onmessage = (ServerMessage) => {
-		updateStreamURL(ServerMessage)
+		handle(ServerMessage)
 	}
 	socket.onerror = (ServerMessage) => {
-		console.warn("Could not reach the Cadence streamurl socket: " + ServerMessage.data)
+		console.warn("Could not reach the Cadence radio data socket: " + ServerMessage.data)
 	}
 
-	function updateStreamURL(ServerMessage) {
-		//console.log("Stream connections: " + ServerMessage.data)
-		let stat = JSON.parse(ServerMessage.data)
-		var currentListenURL = stat['ListenURL'].trim();
-		var currentMountpoint = stat['Mountpoint'].trim();
-
-		var stream = document.getElementById("stream");
-		stream.src = currentListenURL;
-		streamSrcURL = currentListenURL // set global URL
-		if (currentListenURL != "unknown") {
-			$('#status').html("Connected to stream: <a href='"+ streamSrcURL + "'>" + currentMountpoint + "</a>");
-		} else {
-			$('#status').html("Disconnected from stream.");
-		}
-	}
-});
-
-// Hook into the cadence streamListeners socket
-$(document).ready(function() {
-	var socket = new WebSocket("ws://" + location.host + "/api/aria1/streamlisteners/socket")
-
-	socket.onopen = () => {
-		console.log("Connected to Cadence streamlisteners socket.")
-	}
-	socket.onmessage = (ServerMessage) => {
-		updateStreamListeners(ServerMessage)
-	}
-	socket.onerror = (ServerMessage) => {
-		console.warn("Could not reach the Cadence streamlisteners socket: " + ServerMessage.data)
-	}
-
-	function updateStreamListeners(ServerMessage) {
-		//console.log("Listener update: " + ServerMessage.data)
-		let stat = JSON.parse(ServerMessage.data)
-		var currentListeners = stat['Listeners'];
-		var listeners = document.getElementById("listeners");
-		if (currentListeners == -1) {
-			listeners.innerHTML = "(stream unreachable)"
-		} else {
-			listeners.innerHTML = currentListeners;
+	function handle(ServerMessage) {
+		let message = JSON.parse(ServerMessage.data)
+		switch (message.Type) {
+			case "NowPlaying":
+				var nowPlayingArtist = message.Artist.trim();
+				var nowPlayingTitle = message.Title.trim();
+				$('#artist').text(nowPlayingArtist);
+				$('#song').text(nowPlayingTitle);
+				console.log("Now playing: " + nowPlayingArtist + ", '" + nowPlayingTitle + "'")
+				break;
+			case "Listeners":
+				var currentListeners =  message.Listeners;
+				if (currentListeners == -1) {
+					document.getElementById("listeners").innerHTML = "(stream unreachable)"
+				} else {
+					document.getElementById("listeners").innerHTML = currentListeners;
+				}
+				break;
+			case "StreamConnection":
+				var currentListenURL =  message.ListenURL.trim();
+				var currentMountpoint = message.Mountpoint.trim();
+				
+				if (currentListenURL != "unknown") {
+					$('#status').html("Connected to stream: <a href='"+ streamSrcURL + "'>" + currentMountpoint + "</a>");
+				} else {
+					$('#status').html("Disconnected from stream.");
+				}
+				document.getElementById("stream").src = currentListenURL
+				streamSrcURL = currentListenURL // set global URL
+				break;
 		}
 	}
 });

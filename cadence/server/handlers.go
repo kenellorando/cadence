@@ -180,10 +180,10 @@ func handleARIA1Request() http.HandlerFunc {
 
 		if _, ok := requestTimeoutIPs[requesterIP]; ok {
 			// If the existing IP was recently logged, deny the request.
-			if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-180 {
+			if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.server.RequestRateLimit {
 				clog.Info("ARIA1Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
 
-				timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int(time.Now().Unix())
+				timeRemaining := requestTimeoutIPs[requesterIP] + c.server.RequestRateLimit - int(time.Now().Unix())
 				message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
 
 				// Return data to client
@@ -311,7 +311,7 @@ func handleARIA1Request() http.HandlerFunc {
 		requestTimeoutIPs[requesterIP] = int(time.Now().Unix())
 
 		// Return 202 OK to client
-		timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int(time.Now().Unix())
+		timeRemaining := requestTimeoutIPs[requesterIP] + c.server.RequestRateLimit - int(time.Now().Unix())
 		message := fmt.Sprintf("Request accepted!")
 
 		// Return data to client
@@ -453,10 +453,10 @@ func handleARIA2Request() http.HandlerFunc {
 		} else { // Perform check on timeout log in memory
 			if _, ok := requestTimeoutIPs[requesterIP]; ok {
 				// If the existing IP was recently logged, deny the request.
-				if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-180 {
+				if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.server.RequestRateLimit {
 					clog.Info("ARIA2Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
 
-					timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int(time.Now().Unix())
+					timeRemaining := requestTimeoutIPs[requesterIP] + c.server.RequestRateLimit - int(time.Now().Unix())
 					message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
 
 					// Return data to client
@@ -545,7 +545,7 @@ func handleARIA2Request() http.HandlerFunc {
 		requestTimeoutIPs[requesterIP] = int(time.Now().Unix())
 
 		// Return 202 OK to client
-		timeRemaining := requestTimeoutIPs[requesterIP] + 180 - int(time.Now().Unix())
+		timeRemaining := requestTimeoutIPs[requesterIP] + c.server.RequestRateLimit - int(time.Now().Unix())
 		message := fmt.Sprintf("Request accepted!")
 
 		// Return data to client

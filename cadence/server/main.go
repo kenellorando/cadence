@@ -22,14 +22,15 @@ type Config struct {
 
 // ServerConfig - Webserver configuration
 type ServerConfig struct {
-	Version       string
-	RootPath      string
-	Domain        string
-	LogLevel      int
-	Port          string
-	MusicDir      string
-	SourceAddress string
-	WhitelistPath string
+	Version          string
+	RootPath         string
+	Domain           string
+	RequestRateLimit int
+	LogLevel         int
+	Port             string
+	MusicDir         string
+	SourceAddress    string
+	WhitelistPath    string
 }
 
 // DBConfig - Database server configuration
@@ -66,8 +67,8 @@ func init() {
 	// Webserver configuration
 	server.Version = os.Getenv("CSERVER_VERSION")
 	server.RootPath = os.Getenv("CSERVER_ROOTPATH")
-	//server.Domain = os.Getenv("CSERVER_DOMAIN")
 	server.LogLevel, _ = strconv.Atoi(os.Getenv("CSERVER_LOGLEVEL"))
+	server.RequestRateLimit, _ = strconv.Atoi(os.Getenv("CSERVER_REQRATELIMIT"))
 	server.Port = os.Getenv("CSERVER_PORT")
 	server.MusicDir = os.Getenv("CSERVER_MUSIC_DIR")
 	server.SourceAddress = os.Getenv("CSERVER_SOURCEADDRESS")

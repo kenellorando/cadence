@@ -94,19 +94,6 @@ func init() {
 	clog.Level(c.server.LogLevel)
 	clog.Info("init", fmt.Sprintf("Logging service initialized to level <%v>", c.server.LogLevel))
 
-	// // Configure the metadata database
-	// newdatabase, err := dbAutoConfig()
-	// if err != nil {
-	// 	clog.Warn("init", fmt.Sprintf("Database server auto-configuration failed! Future database requests will also fail."))
-	// } else {
-	// 	database = newdatabase
-	// }
-	// err = dbPopulate()
-	// if err != nil {
-	// 	clog.Warn("init", "Initial database population failed.")
-	// } else {
-	// 	clog.Info("init", "All initialization tasks completed successfully.")
-	// }
 	clog.Debug("init", fmt.Sprintf("Establishing a connection to database server <%s:%s>", c.db.Host, c.db.Port))
 	newDatabase, err := databaseConnect()
 	if err != nil {

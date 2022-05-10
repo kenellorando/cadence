@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM debian:stable
+LABEL maintainer="Ken Ellorando (kenellorando.com)"
+LABEL source="github.com/kenellorando/cadence"
 RUN apt update
 RUN apt install icecast2 -y
 RUN apt clean

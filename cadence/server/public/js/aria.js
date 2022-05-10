@@ -39,6 +39,70 @@ $(document).ready(function() {
 	})
 });
 
+// Get latest source release title
+$(document).ready(function() {
+	$.ajax({
+		type: 'GET',
+		url: "/api/aria1/version",
+		dataType: "json",
+		// On success, format data into table
+		success: function(data) {
+			document.getElementById("release").innerHTML = data.Version;
+		},
+		error: function() {
+			document.getElementById("release").innerHTML = "(N/A)";
+		}
+	});
+});
+
+streamSrcURL = "" // this gets used by the stream playButton function
+// Hook into the cadence radio data socket
+$(document).ready(function() {
+	var socket = new WebSocket("ws://" + location.host + "/api/aria1/radiodata/socket")
+
+	socket.onopen = () => {
+		console.log("Established connection with Cadence radiodata socket.")
+	}
+	socket.onmessage = (ServerMessage) => {
+		handle(ServerMessage)
+	}
+	socket.onerror = (ServerMessage) => {
+		console.warn("Could not reach the Cadence radio data socket: " + ServerMessage.data)
+	}
+
+	function handle(ServerMessage) {
+		let message = JSON.parse(ServerMessage.data)
+		switch (message.Type) {
+			case "NowPlaying":
+				var nowPlayingArtist = message.Artist.trim();
+				var nowPlayingTitle = message.Title.trim();
+				$('#artist').text(nowPlayingArtist);
+				$('#song').text(nowPlayingTitle);
+				console.log("Now playing: " + nowPlayingArtist + ", '" + nowPlayingTitle + "'")
+				break;
+			case "Listeners":
+				var currentListeners =  message.Listeners;
+				if (currentListeners == -1) {
+					document.getElementById("listeners").innerHTML = "(stream unreachable)"
+				} else {
+					document.getElementById("listeners").innerHTML = currentListeners;
+				}
+				break;
+			case "StreamConnection":
+				var currentListenURL =  message.ListenURL.trim();
+				var currentMountpoint = message.Mountpoint.trim();
+				
+				if (currentListenURL != "unknown") {
+					$('#status').html("Connected to stream: <a href='"+ streamSrcURL + "'>" + currentMountpoint + "</a>");
+				} else {
+					$('#status').html("Disconnected from stream.");
+				}
+				document.getElementById("stream").src = currentListenURL
+				streamSrcURL = currentListenURL // set global URL
+				break;
+		}
+	}
+});
 
 function postSearch() {
 	// Create a key 'search' to send in JSON

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM debian:stable
+FROM debian:11.3-slim
 LABEL maintainer="Ken Ellorando (kenellorando.com)"
 LABEL source="github.com/kenellorando/cadence"
 RUN apt update

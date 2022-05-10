@@ -10,3 +10,5 @@ github.com/kenellorando/clog v0.0.0-20210106004332-a84b97ab3940 h1:n6u/IX8qxLg5D
 github.com/kenellorando/clog v0.0.0-20210106004332-a84b97ab3940/go.mod h1:6+JdbVdzZr1fkpBAOqcPs04K3ajpn5cgLOvp1fIh5n0=
 github.com/lib/pq v1.9.0 h1:L8nSXQQzAYByakOFMTwpjRoHsMJklur4Gi59b6VivR8=
 github.com/lib/pq v1.9.0/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
+github.com/mattn/go-sqlite3 v1.14.12 h1:TJ1bhYJPV44phC+IMu1u2K/i5RriLTPe+yc68XDJ1Z0=
+github.com/mattn/go-sqlite3 v1.14.12/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=

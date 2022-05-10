@@ -9,4 +9,5 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/kenellorando/clog v0.0.0-20210106004332-a84b97ab3940
 	github.com/lib/pq v1.9.0
+	github.com/mattn/go-sqlite3 v1.14.12
 )

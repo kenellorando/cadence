@@ -97,7 +97,7 @@ func init() {
 	clog.Debug("init", fmt.Sprintf("Establishing a connection to database server <%s:%s>", c.db.Host, c.db.Port))
 	newDatabase, err := databaseConnect()
 	if err != nil {
-		clog.Warn("init", fmt.Sprintf("Database server connection test failed! Future database requests will also fail."))
+		clog.Warn("init", "Database server connection test failed! Future database requests will also fail.")
 		clog.Debug("init", "Skipping data check.")
 	} else {
 		// Set the global database object to the newly made pointer
@@ -106,7 +106,7 @@ func init() {
 		database = newDatabase
 		err := databaseAutoConfig()
 		if err != nil {
-			clog.Warn("init", fmt.Sprintf("Database auto config failed. Skipping initial database population."))
+			clog.Warn("init", "Database auto config failed. Skipping initial database population.")
 		} else {
 			clog.Info("init", "Database auto config completed building database. Starting initial database population...")
 			err = databasePopulate()

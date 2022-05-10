@@ -177,7 +177,6 @@ func handleARIA1Request() http.HandlerFunc {
 		}
 
 		// If the IP is in the timeout log
-
 		if _, ok := requestTimeoutIPs[requesterIP]; ok {
 			// If the existing IP was recently logged, deny the request.
 			if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.server.RequestRateLimit {
@@ -210,7 +209,7 @@ func handleARIA1Request() http.HandlerFunc {
 			clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
 			timeRemaining := 0
-			message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
+			message := "Request not completed. Request-body is possibly malformed."
 
 			// Return data to client
 			requestResponse := RequestResponse{message, timeRemaining}
@@ -226,7 +225,7 @@ func handleARIA1Request() http.HandlerFunc {
 			clog.Error("ARIA1Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
 			timeRemaining := 0
-			message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
+			message := "Request not completed. Request-body is possibly malformed."
 
 			// Return data to client
 			requestResponse := RequestResponse{message, timeRemaining}
@@ -246,7 +245,7 @@ func handleARIA1Request() http.HandlerFunc {
 		if err != nil {
 			clog.Error("ARIA1Request", "Database select failed.", err)
 			timeRemaining := 0
-			message := fmt.Sprintf("Request not completed. Encountered a database error.")
+			message := "Request not completed. Encountered a database error."
 
 			// Return data to client
 			requestResponse := RequestResponse{message, timeRemaining}
@@ -265,7 +264,7 @@ func handleARIA1Request() http.HandlerFunc {
 			if err != nil {
 				clog.Error("ARIA1Request", "Data scan failed.", err)
 				timeRemaining := 0
-				message := fmt.Sprintf("Request not completed. Encountered a database error.")
+				message := "Request not completed. Encountered a database error."
 
 				// Return data to client
 				requestResponse := RequestResponse{message, timeRemaining}
@@ -286,7 +285,7 @@ func handleARIA1Request() http.HandlerFunc {
 			clog.Error("ARIA1Request", "Failed to connect to audio source server.", err)
 
 			timeRemaining := 0
-			message := fmt.Sprintf("Request not completed. Could not submit request to stream source service.")
+			message := "Request not completed. Could not submit request to stream source service."
 
 			// Return data to client
 			requestResponse := RequestResponse{message, timeRemaining}
@@ -312,7 +311,7 @@ func handleARIA1Request() http.HandlerFunc {
 
 		// Return 202 OK to client
 		timeRemaining := requestTimeoutIPs[requesterIP] + c.server.RequestRateLimit - int(time.Now().Unix())
-		message := fmt.Sprintf("Request accepted!")
+		message := "Request accepted!"
 
 		// Return data to client
 		requestResponse := RequestResponse{message, timeRemaining}
@@ -321,21 +320,8 @@ func handleARIA1Request() http.HandlerFunc {
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
-		return
 	}
 }
-
-// func handleARIA1Library() http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		clog.Info("ServeLibrary", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
-// 		// Open the file, marshall the data and write it
-// 		fileReader, _ := ioutil.ReadFile(c.server.RootPath + "./public/library.json")
-// 		rawJSON := json.RawMessage(string(fileReader))
-// 		jsonMarshal, _ := json.Marshal(rawJSON)
-// 		w.Header().Set("Content-Type", "application/json")
-// 		w.Write(jsonMarshal)
-// 	}
-// }
 
 func handleARIA1NowPlaying() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -414,7 +400,7 @@ func handleARIA2Request() http.HandlerFunc {
 			clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
 			timeRemaining := 0
-			message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
+			message := "Request not completed. Request-body is possibly malformed."
 
 			// Return data to client
 			requestResponse := RequestResponse{message, timeRemaining}
@@ -430,7 +416,7 @@ func handleARIA2Request() http.HandlerFunc {
 			clog.Error("ARIA2Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
 			timeRemaining := 0
-			message := fmt.Sprintf("Request not completed. Request-body is possibly malformed.")
+			message := "Request not completed. Request-body is possibly malformed."
 
 			// Return data to client
 			requestResponse := RequestResponse{message, timeRemaining}
@@ -448,7 +434,7 @@ func handleARIA2Request() http.HandlerFunc {
 			tokenValid = tokenCheck(request.Token)
 		}
 
-		if tokenValid == true {
+		if tokenValid {
 			clog.Info("ARIA2Request", fmt.Sprintf("Client %s bypassing rate limiter using token %s.", r.Header.Get("X-Forwarded-For"), request.Token))
 		} else { // Perform check on timeout log in memory
 			if _, ok := requestTimeoutIPs[requesterIP]; ok {
@@ -480,7 +466,7 @@ func handleARIA2Request() http.HandlerFunc {
 		if err != nil {
 			clog.Error("ARIA2Request", "Database select failed.", err)
 			timeRemaining := 0
-			message := fmt.Sprintf("Request not completed. Encountered a database error.")
+			message := "Request not completed. Encountered a database error."
 
 			// Return data to client
 			requestResponse := RequestResponse{message, timeRemaining}
@@ -499,7 +485,7 @@ func handleARIA2Request() http.HandlerFunc {
 			if err != nil {
 				clog.Error("ARIA2Request", "Data scan failed.", err)
 				timeRemaining := 0
-				message := fmt.Sprintf("Request not completed. Encountered a database error.")
+				message := "Request not completed. Encountered a database error."
 
 				// Return data to client
 				requestResponse := RequestResponse{message, timeRemaining}
@@ -520,7 +506,7 @@ func handleARIA2Request() http.HandlerFunc {
 			clog.Error("ARIA2Request", "Failed to connect to audio source server.", err)
 
 			timeRemaining := 0
-			message := fmt.Sprintf("Request not completed. Could not submit request to stream source service.")
+			message := "Request not completed. Could not submit request to stream source service."
 
 			// Return data to client
 			requestResponse := RequestResponse{message, timeRemaining}
@@ -546,7 +532,7 @@ func handleARIA2Request() http.HandlerFunc {
 
 		// Return 202 OK to client
 		timeRemaining := requestTimeoutIPs[requesterIP] + c.server.RequestRateLimit - int(time.Now().Unix())
-		message := fmt.Sprintf("Request accepted!")
+		message := "Request accepted!"
 
 		// Return data to client
 		requestResponse := RequestResponse{message, timeRemaining}
@@ -555,6 +541,5 @@ func handleARIA2Request() http.HandlerFunc {
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
-		return
 	}
 }

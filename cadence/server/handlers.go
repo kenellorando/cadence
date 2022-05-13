@@ -63,7 +63,7 @@ func handleARIA1Search() http.HandlerFunc {
 		clog.Info("ARIA1Search", fmt.Sprintf("Querying database for: '%v'", query))
 
 		// Query database
-		selectStatement := fmt.Sprintf("SELECT \"id\", \"artist\", \"title\" FROM %s ", c.schema.Table)
+		selectStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\" FROM %s ", c.schema.Table)
 		var rows *sql.Rows
 
 		// Decide based on the format of the query if this is a special form.
@@ -71,8 +71,8 @@ func handleARIA1Search() http.HandlerFunc {
 		if startsWith(query, "songs named ") {
 			// Title search
 			q := query[len("songs named "):]
-			selectWhereStatement := selectStatement + "WHERE title ILIKE $1 ORDER BY levenshtein($2, title) ASC"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%", q)
+			selectWhereStatement := selectStatement + "WHERE title LIKE $1 ORDER BY rank"
+			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("ARIA1Search", "Database search failed.", err)
 				return
@@ -80,8 +80,8 @@ func handleARIA1Search() http.HandlerFunc {
 		} else if startsWith(query, "songs by ") {
 			// Artist search
 			q := query[len("songs by "):]
-			selectWhereStatement := selectStatement + "WHERE artist ILIKE $1 ORDER BY levenshtein($2, artist) ASC"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%", q)
+			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 ORDER BY rank"
+			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("ARIA1Search", "Database search failed.", err)
 				return
@@ -89,8 +89,8 @@ func handleARIA1Search() http.HandlerFunc {
 		} else if endsWith(query, " songs") {
 			// Genre search
 			q := query[:len(query)-len(" songs")]
-			selectWhereStatement := selectStatement + "WHERE genre ILIKE $1 ORDER BY levenshtein($2, genre) ASC"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%", q)
+			selectWhereStatement := selectStatement + "WHERE genre LIKE $1 ORDER BY rank"
+			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("ARIA1Search", "Database search failed.", err)
 				return
@@ -99,8 +99,8 @@ func handleARIA1Search() http.HandlerFunc {
 			// Joint year/album search
 			// Note that the year query doesn't use includes: "Songs from 20" shouldn't return a song made in 2009.
 			q := query[len("songs from "):]
-			selectWhereStatement := selectStatement + "WHERE year LIKE $1 OR ALBUM ILIKE $2 ORDER BY LEAST(levenshtein($3, year), levenshtein($4, album)) ASC"
-			rows, err = database.Query(selectWhereStatement, q, "%"+q+"%", q, q)
+			selectWhereStatement := selectStatement + "WHERE year LIKE $1 OR ALBUM LIKE $2 ORDER BY rank"
+			rows, err = database.Query(selectWhereStatement, q, "%"+q+"%")
 			if err != nil {
 				clog.Error("ARIA1Search", "Database search failed.", err)
 				return
@@ -109,8 +109,8 @@ func handleARIA1Search() http.HandlerFunc {
 			// Year search
 			// This search also doesn't use an include-style parameter
 			q := query[len("songs released in "):]
-			selectWhereStatement := selectStatement + "WHERE year LIKE $1 ORDER BY levenshtein($2, year) ASC"
-			rows, err = database.Query(selectWhereStatement, q, q)
+			selectWhereStatement := selectStatement + "WHERE year LIKE $1 ORDER BY rank"
+			rows, err = database.Query(selectWhereStatement, q)
 			if err != nil {
 				clog.Error("ARIA1Search", "Database search failed.", err)
 				return
@@ -118,8 +118,8 @@ func handleARIA1Search() http.HandlerFunc {
 		} else if startsWith(query, "songs in ") {
 			// Album search
 			q := query[len("songs in "):]
-			selectWhereStatement := selectStatement + "WHERE album ILIKE $1 ORDER BY levenshtein($2, album) ASC"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%", q)
+			selectWhereStatement := selectStatement + "WHERE album LIKE $1 ORDER BY rank"
+			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("ARIA1Search", "Database search failed.", err)
 				return
@@ -128,8 +128,8 @@ func handleARIA1Search() http.HandlerFunc {
 			// After all that work, we've concluded we don't have a special form.
 			// It's been an open question since before v3.0 what exactly we should do for a general search...
 			// But, it's always been the case that either title or artist search works here.
-			selectWhereStatement := selectStatement + "WHERE artist ILIKE $1 OR title ILIKE $2 ORDER BY LEAST(levenshtein($3, artist), levenshtein($4, title)) ASC"
-			rows, err = database.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%", query, query)
+			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
+			rows, err = database.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
 			if err != nil {
 				clog.Error("ARIA1Search", "Database search failed.", err)
 				return

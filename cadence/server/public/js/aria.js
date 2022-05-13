@@ -1,11 +1,13 @@
 $(document).ready(function() {
 	// Initial search on load
 	postSearch()
-	// Handles when the user keys "Return"
+	// When the user presses the return key
 	$("#searchInput").keyup(function(event) {
-		$("#searchButton").click();
+		if (event.keyCode == 13) {
+			postSearch()
+		}
 	});
-	// Handles when the user clicks the search button
+	// User clicks the search button
 	$('#searchButton').click(function(e) {
 		postSearch()
 	});

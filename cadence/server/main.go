@@ -94,29 +94,43 @@ func init() {
 	clog.Level(c.server.LogLevel)
 	clog.Info("init", fmt.Sprintf("Logging service initialized to level <%v>", c.server.LogLevel))
 
-	clog.Debug("init", fmt.Sprintf("Establishing a connection to database server <%s:%s>", c.db.Host, c.db.Port))
-	newDatabase, err := databaseConnect()
+	newDatabase, err := dbAutoConfig()
 	if err != nil {
-		clog.Warn("init", "Database server connection test failed! Future database requests will also fail.")
+		clog.Warn("init", "Database setup failed! Future database requests will also fail.")
 		clog.Debug("init", "Skipping data check.")
 	} else {
-		// Set the global database object to the newly made pointer
-		// Start the database data check
-		clog.Info("init", "Database server connection test successful. Starting database auto configuration..")
 		database = newDatabase
-		err := databaseAutoConfig()
+		err = dbPopulate()
 		if err != nil {
-			clog.Warn("init", "Database auto config failed. Skipping initial database population.")
+			clog.Warn("init", "Initial database population failed.")
 		} else {
-			clog.Info("init", "Database auto config completed building database. Starting initial database population...")
-			err = databasePopulate()
-			if err != nil {
-				clog.Warn("init", "Initial database population failed.")
-			} else {
-				clog.Info("init", "All initialization tasks completed successfully.")
-			}
+			clog.Debug("init", "Database population OK.")
 		}
 	}
+
+	// clog.Debug("init", fmt.Sprintf("Establishing a connection to database server <%s:%s>", c.db.Host, c.db.Port))
+	// newDatabase, err := databaseConnect()
+	// if err != nil {
+	// 	clog.Warn("init", "Database server connection test failed! Future database requests will also fail.")
+	// 	clog.Debug("init", "Skipping data check.")
+	// } else {
+	// 	// Set the global database object to the newly made pointer
+	// 	// Start the database data check
+	// 	clog.Info("init", "Database server connection test successful. Starting database auto configuration..")
+	// 	database = newDatabase
+	// 	err := databaseAutoConfig()
+	// 	if err != nil {
+	// 		clog.Warn("init", "Database auto config failed. Skipping initial database population.")
+	// 	} else {
+	// 		clog.Info("init", "Database auto config completed building database. Starting initial database population...")
+	// 		err = databasePopulate()
+	// 		if err != nil {
+	// 			clog.Warn("init", "Initial database population failed.")
+	// 		} else {
+	// 			clog.Info("init", "All initialization tasks completed successfully.")
+	// 		}
+	// 	}
+	// }
 }
 
 func main() {

@@ -240,7 +240,7 @@ func handleARIA1Request() http.HandlerFunc {
 		clog.Debug("ARIA1Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
 		clog.Debug("ARIA1Request", "Searching database for corresponding path...")
 
-		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=%v;", c.schema.Table, request.ID)
+		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v;", c.schema.Table, request.ID)
 		rows, err := database.Query(selectStatement)
 		if err != nil {
 			clog.Error("ARIA1Request", "Database select failed.", err)
@@ -461,7 +461,7 @@ func handleARIA2Request() http.HandlerFunc {
 		clog.Debug("ARIA2Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
 		clog.Debug("ARIA2Request", "Searching database for corresponding path...")
 
-		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=%v;", c.schema.Table, request.ID)
+		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v;", c.schema.Table, request.ID)
 		rows, err := database.Query(selectStatement)
 		if err != nil {
 			clog.Error("ARIA2Request", "Database select failed.", err)

@@ -28,7 +28,7 @@ func tokenCheck(token string) bool {
 	}
 
 	// Check the whitelist. If this fails, the whitelist is not configured. No panic is thrown, but the bypass is denied.
-	b, err := ioutil.ReadFile(c.server.WhitelistPath)
+	b, err := ioutil.ReadFile(c.WhitelistPath)
 	if err != nil {
 		return false
 	}

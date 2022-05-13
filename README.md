@@ -5,7 +5,7 @@
 
 **Cadence** is a fully-featured web radio application suite. 
 
-Cadence provides an API server, web-frontend, and music-metadata database bundled with stream services _Icecast_ and _Liquidsoap_. Users may search for music and make song requests through the browser. You are minutes away from starting your own web radio. Check it out in action: [https://cadenceradio.com/](https://cadenceradio.com/).
+Cadence is an API server, web-frontend, and built-in music-metadata database bundled with custom-built stream service containers _Icecast_ and _Liquidsoap_. The features provided by Cadence allow users to search for music and make song requests through the browser. You are minutes away from starting your own web radio. Check it out in action: [https://cadenceradio.com/](https://cadenceradio.com/).
 
 For questions and comments, you are invited to [open a discussion](https://github.com/kenellorando/cadence/discussions) on Github.
 
@@ -17,17 +17,14 @@ For questions and comments, you are invited to [open a discussion](https://githu
 > **Warning**: The way this repo handles configuration is early and primitive. Building locally involves adding passwords to files which you may accidentally commit, so be careful.
 
 1. Configure the `cadence/config/cadence.env` file.
-   1. Change all instances of `hackme` to a new password.
-   2. Configure the `CSERVER_MUSIC_DIR` to an absolute path of a directory on your local system which you want to play music. The default location is `/music/`.
-   3. (optional) Configure the rate limiter by setting the `CSERVER_REQRATELIMIT` to the number of seconds you wish to timeout users after they make song requests. Setting this value to `0` will disable rate limiting.
+   1. Configure the `CSERVER_MUSIC_DIR` to an absolute path of a directory on your local system which you want to play music. The default location is `/music/`.
+   2. (optional) Configure the rate limiter by setting the `CSERVER_REQRATELIMIT` to the number of seconds you wish to timeout users after they make song requests. Setting this value to `0` will disable rate limiting.
 2. Configure the `cadence_icecast2/config/cadence.xml` file.
    1. Change all instances of `hackme` to a new password.
    2. Set the `<hostname>` value to the endpoint you expect your audience to connect to. This can be a DNS name, an IP address, or "localhost" (if you are running locally).
 3. Configure the `cadence_liquidsoap/config/cadence.liq` file.
    1. Change all instances of `hackme` to a new password.
-4. Configure the `docker-compose.yml` file.
-   1. Change the `POSTGRES_PASSWORD` to the one you set in `cadence.env`.
-5. `docker-compose up`
+4. `docker-compose up --build`
 
 That's it. Cadence's web interface will be available at `localhost:8080`. Icecast web will be available at `localhost:8000`, and the default stream mountpoint will play on `localhost:8000/cadence1`.
 

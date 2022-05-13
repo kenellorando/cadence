@@ -63,7 +63,7 @@ func handleARIA1Search() http.HandlerFunc {
 		clog.Info("ARIA1Search", fmt.Sprintf("Querying database for: '%v'", query))
 
 		// Query database
-		selectStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\" FROM %s ", c.schema.Table)
+		selectStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\" FROM %s ", c.MetadataTable)
 		var rows *sql.Rows
 
 		// Decide based on the format of the query if this is a special form.
@@ -179,10 +179,10 @@ func handleARIA1Request() http.HandlerFunc {
 		// If the IP is in the timeout log
 		if _, ok := requestTimeoutIPs[requesterIP]; ok {
 			// If the existing IP was recently logged, deny the request.
-			if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.server.RequestRateLimit {
+			if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.RequestRateLimit {
 				clog.Info("ARIA1Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
 
-				timeRemaining := requestTimeoutIPs[requesterIP] + c.server.RequestRateLimit - int(time.Now().Unix())
+				timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
 				message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
 
 				// Return data to client
@@ -240,7 +240,7 @@ func handleARIA1Request() http.HandlerFunc {
 		clog.Debug("ARIA1Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
 		clog.Debug("ARIA1Request", "Searching database for corresponding path...")
 
-		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v;", c.schema.Table, request.ID)
+		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v;", c.MetadataTable, request.ID)
 		rows, err := database.Query(selectStatement)
 		if err != nil {
 			clog.Error("ARIA1Request", "Database select failed.", err)
@@ -280,7 +280,7 @@ func handleARIA1Request() http.HandlerFunc {
 
 		// Telnet to liquidsoap
 		clog.Debug("ARIA1Request", "Connecting to liquidsoap service...")
-		conn, err := net.Dial("tcp", c.server.SourceAddress)
+		conn, err := net.Dial("tcp", c.SourceAddress)
 		if err != nil {
 			clog.Error("ARIA1Request", "Failed to connect to audio source server.", err)
 
@@ -310,7 +310,7 @@ func handleARIA1Request() http.HandlerFunc {
 		requestTimeoutIPs[requesterIP] = int(time.Now().Unix())
 
 		// Return 202 OK to client
-		timeRemaining := requestTimeoutIPs[requesterIP] + c.server.RequestRateLimit - int(time.Now().Unix())
+		timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
 		message := "Request accepted!"
 
 		// Return data to client
@@ -367,7 +367,7 @@ func handleARIA1Version() http.HandlerFunc {
 		type CadenceVersion struct {
 			Version string
 		}
-		version := CadenceVersion{Version: c.server.Version}
+		version := CadenceVersion{Version: c.Version}
 		jsonMarshal, _ := json.Marshal(version)
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
 		w.Header().Set("Content-Type", "application/json")
@@ -439,10 +439,10 @@ func handleARIA2Request() http.HandlerFunc {
 		} else { // Perform check on timeout log in memory
 			if _, ok := requestTimeoutIPs[requesterIP]; ok {
 				// If the existing IP was recently logged, deny the request.
-				if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.server.RequestRateLimit {
+				if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.RequestRateLimit {
 					clog.Info("ARIA2Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
 
-					timeRemaining := requestTimeoutIPs[requesterIP] + c.server.RequestRateLimit - int(time.Now().Unix())
+					timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
 					message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
 
 					// Return data to client
@@ -461,7 +461,7 @@ func handleARIA2Request() http.HandlerFunc {
 		clog.Debug("ARIA2Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
 		clog.Debug("ARIA2Request", "Searching database for corresponding path...")
 
-		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v;", c.schema.Table, request.ID)
+		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v;", c.MetadataTable, request.ID)
 		rows, err := database.Query(selectStatement)
 		if err != nil {
 			clog.Error("ARIA2Request", "Database select failed.", err)
@@ -501,7 +501,7 @@ func handleARIA2Request() http.HandlerFunc {
 
 		// Telnet to liquidsoap
 		clog.Debug("ARIA2Request", "Connecting to liquidsoap service...")
-		conn, err := net.Dial("tcp", c.server.SourceAddress)
+		conn, err := net.Dial("tcp", c.SourceAddress)
 		if err != nil {
 			clog.Error("ARIA2Request", "Failed to connect to audio source server.", err)
 
@@ -531,7 +531,7 @@ func handleARIA2Request() http.HandlerFunc {
 		requestTimeoutIPs[requesterIP] = int(time.Now().Unix())
 
 		// Return 202 OK to client
-		timeRemaining := requestTimeoutIPs[requesterIP] + c.server.RequestRateLimit - int(time.Now().Unix())
+		timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
 		message := "Request accepted!"
 
 		// Return data to client

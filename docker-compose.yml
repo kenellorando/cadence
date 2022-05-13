@@ -32,19 +32,6 @@ services:
       internal_services:
       stream_delivery:
 
-  postgres:
-    image: postgres:14.2-alpine
-    container_name: cadence_postgres
-    restart: always
-    depends_on:
-      - icecast2
-    environment:
-      POSTGRES_PASSWORD: hackme
-    expose:
-      - 5432
-    networks:
-      internal_services:
-
   cadence:
     build: 
       context: ./cadence/ 
@@ -60,7 +47,6 @@ services:
     depends_on:
       - icecast2
       - liquidsoap
-      - postgres
     networks:
       internal_services:
       external_services:

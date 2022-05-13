@@ -6,14 +6,11 @@ WORKDIR /cadence
 COPY ./* ./
 RUN go mod download
 RUN go build -o /cadence-server --tags "linux sqlite_fts5"
-RUN useradd -s /bin/bash cadence
-RUN chown cadence /cadence-server
 
+RUN useradd -s /bin/bash cadence
 RUN touch /cadence/music-metadata.db
-RUN chown cadence:cadence /cadence/
-RUN chown cadence:cadence /cadence/*
-RUN chmod u+wrx /cadence/*
-RUN chmod u+wrx /cadence/
+RUN chown cadence:cadence /cadence/ /cadence/* /cadence-server
+RUN chmod u+wrx /cadence/* /cadence/
 
 EXPOSE 8080
 USER cadence

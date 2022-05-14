@@ -27,7 +27,7 @@ func dbAutoConfig() (*sql.DB, error) {
 
 	// Build the database tables
 	clog.Debug("dbAutoConfig", fmt.Sprintf("Reconnected. Building database schema for table <%s>...", c.MetadataTable))
-	_, err = newdatabase.Exec(`CREATE VIRTUAL TABLE aria USING FTS5(title,album,artist,genre,year,path)`)
+	_, err = newdatabase.Exec(`CREATE VIRTUAL TABLE IF NOT EXISTS aria USING FTS5(title,album,artist,genre,year,path)`)
 	if err != nil {
 		clog.Error("dbAutoConfig", "Failed to build database table!", err)
 		return nil, err

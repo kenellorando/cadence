@@ -5,14 +5,22 @@
 
 **Cadence** is a fully-featured web radio application suite. 
 
-Cadence is an API server, web-frontend, and built-in music-metadata database bundled with custom-built stream service containers _Icecast_ and _Liquidsoap_. The features provided by Cadence allow users to search for music and make song requests through the browser. You are minutes away from starting your own web radio. Check it out in action: [https://cadenceradio.com/](https://cadenceradio.com/).
+Cadence is an API server, web-frontend, and built-in music-metadata database bundled with custom-built stream service containers _Icecast_ and _Liquidsoap_. 
+
+Stream music over the internet and allow users to search for songs and make requests through the browser. You are minutes away from starting your own web radio. Check it out in action: [https://cadenceradio.com/](https://cadenceradio.com/).
 
 For questions and comments, you are invited to [open a discussion](https://github.com/kenellorando/cadence/discussions) on Github.
 
 
-## Setup and Installation
+## Get Started
 
-### Using Docker Compose
+### Running the Stack
+
+1. `docker compose up`
+
+Running the above will pull pre-built images (with working default configurations) for each of the services and start them. Running Cadence like this is perfectly fine for local usage, but if you plan to expose Cadence beyond your local machine, you'll need to tweak a few configuration files.
+
+### Running the Stack (Custom Config)
 
 > **Warning**: The way this repo handles configuration is early and primitive. Building locally involves adding passwords to files which you may accidentally commit, so be careful.
 
@@ -24,9 +32,13 @@ For questions and comments, you are invited to [open a discussion](https://githu
    2. Set the `<hostname>` value to the endpoint you expect your audience to connect to. This can be a DNS name, an IP address, or "localhost" (if you are running locally).
 3. Configure the `cadence_liquidsoap/config/cadence.liq` file.
    1. Change all instances of `hackme` to a new password.
-4. `docker-compose up --build`
+4. `docker compose up`
 
-That's it. Cadence's web interface will be available at `localhost:8080`. Icecast web will be available at `localhost:8000`, and the default stream mountpoint will play on `localhost:8000/cadence1`.
+### Building the Stack
+
+If you are developing for Cadence and need to build exactly what you have without pulling pre-built images:
+
+1. `docker compose up --build`
 
 
 ## Discord Bot

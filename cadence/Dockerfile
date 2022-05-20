@@ -1,17 +1,15 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.18.1-bullseye
+FROM golang:1.18.1-bullseye as builder
 LABEL maintainer="Ken Ellorando (kenellorando.com)"
 LABEL source="github.com/kenellorando/cadence"
-WORKDIR /cadence
+WORKDIR /cadence/server
 COPY ./* ./
 RUN go mod download
-RUN go build -o /cadence-server --tags "linux sqlite_fts5"
+RUN go build -o ./cadence-server --tags "linux sqlite_fts5"
 
-RUN useradd -s /bin/bash cadence
-RUN touch /cadence/music-metadata.db
-RUN chown cadence:cadence /cadence/ /cadence/* /cadence-server
-RUN chmod u+wrx /cadence/* /cadence/
 
+FROM alpine:latest
+WORKDIR /cadence/server
+COPY --from=builder /cadence/server .
 EXPOSE 8080
-USER cadence
-CMD [ "/cadence-server" ]
+CMD [ "./cadence-server" ]

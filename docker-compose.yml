@@ -10,7 +10,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./cadence_icecast2/config/cadence.xml:/etc/icecast2/cadence.xml
+      - ./cadence_icecast2/config/cadence.xml:/etc/icecast/cadence.xml
     networks:
       external_services:
       stream_delivery:

@@ -28,7 +28,7 @@ func handleServeRoot() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Info("ServeRoot", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 		w.Header().Set("Content-type", "text/html")
-		http.ServeFile(w, r, path.Dir("./public/index.html"))
+		http.ServeFile(w, r, path.Dir(c.RootPath+"./public/index.html"))
 	}
 }
 
@@ -36,7 +36,7 @@ func handleServe404() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Info("Serve404", fmt.Sprintf("Client %s requesting unknown resource %s%s. Returning 404.", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 		w.Header().Set("Content-type", "text/html")
-		http.ServeFile(w, r, path.Dir("./public/404/index.html"))
+		http.ServeFile(w, r, path.Dir(c.RootPath+"./public/404/index.html"))
 	}
 }
 
@@ -541,5 +541,11 @@ func handleARIA2Request() http.HandlerFunc {
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
+	}
+}
+
+func handleReady() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusAccepted) // 202 Accepted
 	}
 }

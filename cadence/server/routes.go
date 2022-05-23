@@ -25,11 +25,12 @@ func routes() *mux.Router {
 	// r.HandleFunc("/api/aria1/streamurl/socket", socketStreamURL()).Methods("GET")
 	// r.HandleFunc("/api/aria1/streamlisteners/socket", socketStreamListeners()).Methods("GET")
 
+	r.HandleFunc("/ready", handleReady()).Methods("GET")
 	r.HandleFunc("/", handleServeRoot()).Methods("GET")
 
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./public/static/")))).Methods("GET")
-	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("./public/css/")))).Methods("GET")
-	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("./public/js/")))).Methods("GET")
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(c.RootPath+"./public/static/")))).Methods("GET")
+	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir(c.RootPath+"./public/css/")))).Methods("GET")
+	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir(c.RootPath+"./public/js/")))).Methods("GET")
 	r.NotFoundHandler = http.HandlerFunc(handleServe404())
 
 	return r

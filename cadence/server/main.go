@@ -48,8 +48,7 @@ func init() {
 
 	newDatabase, err := dbAutoConfig()
 	if err != nil {
-		clog.Warn("init", "Database setup failed! Future database requests will also fail.")
-		clog.Debug("init", "Skipping data check.")
+		clog.Warn("init", "Database setup failed! Future database requests will also fail. Data check will be skipped.")
 	} else {
 		database = newDatabase
 		err = dbPopulate()

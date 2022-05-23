@@ -12,14 +12,13 @@ import (
 
 	"github.com/dhowden/tag"
 	"github.com/kenellorando/clog"
-	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var database *sql.DB // Database abstraction interface
 
 func dbAutoConfig() (*sql.DB, error) {
-	clog.Debug("dbAutoConfig", "Starting automatic database configuration and population.")
+	clog.Debug("dbAutoConfig", "Starting automatic database configuration.")
 	newdatabase, err := sql.Open("sqlite3", "/cadence/music-metadata.db")
 	if err != nil {
 		panic(err)

@@ -33,10 +33,10 @@
     <fileserve>0</fileserve>
 
     <paths>
-        <basedir>/usr/share/icecast2</basedir>
-        <logdir>/var/log/icecast2</logdir>
-        <webroot>/usr/share/icecast2/web</webroot>
-        <adminroot>/usr/share/icecast2/admin</adminroot>
+        <basedir>/usr/share/icecast</basedir>
+        <logdir>/var/log/icecast</logdir>
+        <webroot>/usr/share/icecast/web</webroot>
+        <adminroot>/usr/share/icecast/admin</adminroot>
         <alias source="/" destination="/status.xsl"/>
     </paths>
 

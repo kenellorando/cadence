@@ -60,7 +60,12 @@ $(document).ready(function() {
 streamSrcURL = "" // this gets used by the stream playButton function
 // Hook into the cadence radio data socket
 $(document).ready(function() {
-	var socket = new WebSocket("wss://" + location.host + "/api/aria1/radiodata/socket")
+	if (location.protocol == "https:") {
+		var socket = new WebSocket("wss://" + location.host + "/api/aria1/radiodata/socket")
+	} else {
+		// This is necessary for local testing. All public ingress is https.
+		var socket = new WebSocket("ws://" + location.host + "/api/aria1/radiodata/socket")
+	}
 
 	socket.onopen = () => {
 		console.log("Established connection with Cadence radiodata socket.")

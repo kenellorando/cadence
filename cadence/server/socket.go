@@ -49,7 +49,7 @@ func socketRadioData() http.HandlerFunc {
 		var lastListeners float64
 
 		for {
-			resp, err := http.Get("http://icecast2:8000/status-json.xsl")
+			resp, err := http.Get("http://" + c.StreamAddress + "/status-json.xsl")
 			if err != nil {
 				clog.Error("socketNowPlaying", "Failed to connect to audio stream server.", err)
 				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-"})                  // Write message to client

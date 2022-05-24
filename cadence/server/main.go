@@ -22,6 +22,7 @@ type ServerConfig struct {
 	Port             string
 	MusicDir         string
 	SourceAddress    string
+	StreamAddress    string
 	WhitelistPath    string
 	MetadataTable    string
 }
@@ -39,6 +40,7 @@ func init() {
 	c.Port = os.Getenv("CSERVER_PORT")
 	c.MusicDir = os.Getenv("CSERVER_MUSIC_DIR")
 	c.SourceAddress = os.Getenv("CSERVER_SOURCEADDRESS")
+	c.StreamAddress = os.Getenv("CSERVER_STREAMADDRESS")
 	c.WhitelistPath = os.Getenv("CSERVER_WHITELIST_PATH")
 	c.MetadataTable = os.Getenv("CSERVER_DB_METADATA_TABLE")
 

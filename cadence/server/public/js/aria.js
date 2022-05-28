@@ -57,11 +57,11 @@ $(document).ready(function() {
 	});
 });
 
-streamSrcURL = "" // this gets used by the stream playButton function
+var streamSrcURL = "" // this gets used by the stream playButton function
 // Hook into the cadence radio data socket
 $(document).ready(function() {
 	if (location.protocol == "https:") {
-		var socket = new WebSocket("wss://" + location.host + "/api/aria1/radiodata/socket")
+		var socket = new WebSocket("wss://" +  location.host + "/api/aria1/radiodata/socket")
 	} else {
 		// This is necessary for local testing. All public ingress is https.
 		var socket = new WebSocket("ws://" + location.host + "/api/aria1/radiodata/socket")
@@ -96,11 +96,11 @@ $(document).ready(function() {
 				}
 				break;
 			case "StreamConnection":
-				var currentListenURL =  message.ListenURL.trim();
+				var currentListenURL = location.protocol + "//" + message.ListenURL.trim();
 				var currentMountpoint = message.Mountpoint.trim();
 				
-				if (currentListenURL != "unknown") {
-					$('#status').html("Connected to stream: <a href='"+ streamSrcURL + "'>" + currentMountpoint + "</a>");
+				if (currentListenURL !== "N/A") {
+					$('#status').html("Connected to stream: <a href='"+ currentListenURL + "'>" + currentMountpoint + "</a>");
 				} else {
 					$('#status').html("Disconnected from stream.");
 				}

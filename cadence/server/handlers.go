@@ -280,7 +280,7 @@ func handleARIA1Request() http.HandlerFunc {
 
 		// Telnet to liquidsoap
 		clog.Debug("ARIA1Request", "Connecting to liquidsoap service...")
-		conn, err := net.Dial("tcp", c.SourceAddress)
+		conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
 		if err != nil {
 			clog.Error("ARIA1Request", "Failed to connect to audio source server.", err)
 
@@ -501,7 +501,7 @@ func handleARIA2Request() http.HandlerFunc {
 
 		// Telnet to liquidsoap
 		clog.Debug("ARIA2Request", "Connecting to liquidsoap service...")
-		conn, err := net.Dial("tcp", c.SourceAddress)
+		conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
 		if err != nil {
 			clog.Error("ARIA2Request", "Failed to connect to audio source server.", err)
 

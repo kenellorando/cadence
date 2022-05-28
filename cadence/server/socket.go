@@ -49,12 +49,12 @@ func socketRadioData() http.HandlerFunc {
 		var lastListeners float64
 
 		for {
-			resp, err := http.Get("http://" + c.StreamAddress + "/status-json.xsl")
+			resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
 			if err != nil {
 				clog.Error("socketNowPlaying", "Failed to connect to audio stream server.", err)
-				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-"})                  // Write message to client
-				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})                // Write message to client
-				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "unknown"}) // Write message to client
+				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-"})              // Write message to client
+				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})            // Write message to client
+				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A"}) // Write message to client
 				return
 			}
 			defer resp.Body.Close()
@@ -68,9 +68,11 @@ func socketRadioData() http.HandlerFunc {
 
 			var currentArtist = fmt.Sprintf(jsonParsed.Path("icestats.source.artist").Data().(string))
 			var currentTitle = fmt.Sprintf(jsonParsed.Path("icestats.source.title").Data().(string))
-			var currentListenURL = fmt.Sprintf(jsonParsed.Path("icestats.source.listenurl").Data().(string))
+			var currentHost = fmt.Sprintf(jsonParsed.Path("icestats.host").Data().(string))
 			var currentMountpoint = fmt.Sprintf(jsonParsed.Path("icestats.source.server_name").Data().(string))
 			var currentListeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
+
+			var currentListenURL = currentHost + "/" + currentMountpoint
 
 			if (lastArtist != currentArtist) || (lastTitle != currentTitle) {
 				conn.WriteJSON(Message{Type: "NowPlaying", Artist: currentArtist, Title: currentTitle})

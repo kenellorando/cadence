@@ -83,6 +83,11 @@ $(document).ready(function() {
 			case "NowPlaying":
 				var nowPlayingArtist = message.Artist.trim();
 				var nowPlayingTitle = message.Title.trim();
+
+				var nowPlayingArtwork = message.Picture;
+				$('#artwork').attr("src", "data:image/jpeg;base64,"+ nowPlayingArtwork)
+				console.log(nowPlayingArtwork)
+
 				$('#artist').text(nowPlayingArtist);
 				$('#song').text(nowPlayingTitle);
 				console.log("Now playing: " + nowPlayingArtist + ", '" + nowPlayingTitle + "'")

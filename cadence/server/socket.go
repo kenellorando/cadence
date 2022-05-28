@@ -5,9 +5,11 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/Jeffail/gabs"
+	"github.com/dhowden/tag"
 	"github.com/gorilla/websocket"
 	"github.com/kenellorando/clog"
 )
@@ -28,15 +30,11 @@ func socketRadioData() http.HandlerFunc {
 		}
 		log.Print("New socket connected.", conn.RemoteAddr())
 
-		// type NowPlaying struct {
-		// 	Artist string
-		// 	Title  string
-		// }
-
 		type Message struct {
 			Type       string
 			Artist     string
 			Title      string
+			Picture    []byte
 			ListenURL  string
 			Mountpoint string
 			Listeners  float64
@@ -75,7 +73,9 @@ func socketRadioData() http.HandlerFunc {
 			var currentListenURL = currentHost + "/" + currentMountpoint
 
 			if (lastArtist != currentArtist) || (lastTitle != currentTitle) {
-				conn.WriteJSON(Message{Type: "NowPlaying", Artist: currentArtist, Title: currentTitle})
+				currentPicture := getAlbumArt(currentArtist, currentTitle)
+
+				conn.WriteJSON(Message{Type: "NowPlaying", Artist: currentArtist, Title: currentTitle, Picture: currentPicture})
 				lastArtist = currentArtist
 				lastTitle = currentTitle
 			}
@@ -91,4 +91,63 @@ func socketRadioData() http.HandlerFunc {
 			time.Sleep(1 * time.Second)
 		}
 	}
+}
+
+// This queries for the currently playing song path, then reads the data of the file directly.
+func getAlbumArt(currentArtist string, currentTitle string) []byte {
+	clog.Debug("getAlbumArt", "1")
+	log.Printf("%s %s", currentArtist, currentTitle)
+	//selectStatement := fmt.Sprintf("SELECT path FROM %s WHERE title=\"%s\" AND artist=\"%v\"", c.MetadataTable, currentTitle, currentArtist)
+
+	selectStatement := fmt.Sprintf("SELECT path FROM %s WHERE artist=\"%v\" AND title=\"%v\";", c.MetadataTable, currentArtist, currentTitle)
+	//selectStatement := fmt.Sprintf("SELECT path FROM %s WHERE rowid=1", c.MetadataTable)
+
+	rows, err := database.Query(selectStatement)
+
+	log.Printf("%s", selectStatement)
+	log.Printf("%v", rows)
+	if err != nil {
+		clog.Error("getAlbumArt", "Could not query the DB for a path.", err)
+		return nil
+	}
+
+	clog.Debug("getAlbumArt", "2")
+	if err != nil {
+		clog.Error("getAlbumArt", "Could not query the DB for a path.", err)
+		return nil
+	}
+	var pic []byte
+	var path string
+
+	for rows.Next() {
+
+		clog.Debug("getAlbumArt", path)
+		clog.Debug("getAlbumArt", "rowsnextrun")
+		err := rows.Scan(&path)
+		clog.Debug("getAlbumArt", path)
+		if err != nil {
+			clog.Debug("getAlbumArt", "ae")
+			return nil
+		}
+		clog.Debug("getAlbumArt", "3")
+		// Open a file for reading
+		file, e := os.Open(path)
+		clog.Debug("getAlbumArt", "4")
+		if e != nil {
+			clog.Debug("getAlbumArt", "4e")
+			clog.Error("getAlbumArt", "4e", e)
+			return nil
+		}
+
+		// Read metadata from the file
+		tags, err := tag.ReadFrom(file)
+
+		clog.Debug("getAlbumArt", "5")
+		if err != nil {
+			clog.Debug("getAlbumArt", "5e")
+			return nil
+		}
+		pic = tags.Picture().Data
+	}
+	return pic
 }

@@ -1,0 +1,47 @@
+
+/* @import url('https://fonts.googleapis.com/css2?family=family=Rock+Salt&display=swap'); */
+
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Roboto+Condensed:wght@300&family=Rock+Salt&display=swap');
+
+/* Resets */
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: 'Roboto Condensed', sans-serif;
+	padding-left: 5%;
+	padding-right: 5%;
+}
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+footer .title {
+    line-height: 200%;
+}
+
+.rocksalt {
+	font-family: 'Rock Salt', cursive;
+}
+
+#player {
+    margin-top: 2%;
+    text-align: center;
+}
+#artwork {
+    width: 300px;
+    height: 300px;
+}
+
+
+
+@media (min-width: 1200px) {
+	body {
+		padding-left: 16%;
+		padding-right: 16%;
+	}
+}

@@ -164,58 +164,6 @@ func Search() http.HandlerFunc {
 	}
 }
 
-func NowPlaying() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("NowPlaying", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
-
-		resp, err := http.Get("http://icecast2:8000/status-json.xsl")
-		if err != nil {
-			clog.Error("NowPlaying", "Failed to connect to audio stream server.", err)
-			return
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode != http.StatusOK {
-			clog.Error("NowPlaying", "Audio stream server returned bad status", err)
-			return
-		}
-
-		body, _ := io.ReadAll(resp.Body)
-		jsonParsed, _ := gabs.ParseJSON([]byte(body))
-
-		var artist, _ = jsonParsed.Path("icestats.source.artist").Data().(string)
-		var title, _ = jsonParsed.Path("icestats.source.title").Data().(string)
-
-		clog.Info("NowPlaying", fmt.Sprintf("Now playing: '%s' by '%s'.", title, artist))
-
-		// Return data to client
-		type NowPlayingResponse struct {
-			Artist string
-			Title  string
-		}
-		nowPlayingResponse := NowPlayingResponse{artist, title}
-		jsonMarshal, _ := json.Marshal(nowPlayingResponse)
-		w.WriteHeader(http.StatusAccepted) // 202 Accepted
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
-	}
-}
-
-func Version() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("Version", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
-
-		// Return data to client
-		type CadenceVersion struct {
-			Version string
-		}
-		version := CadenceVersion{Version: c.Version}
-		jsonMarshal, _ := json.Marshal(version)
-		w.WriteHeader(http.StatusAccepted) // 202 Accepted
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
-	}
-}
-
 func Request() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Debug("Request", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
@@ -378,6 +326,58 @@ func Request() http.HandlerFunc {
 		requestResponse := RequestResponse{message, timeRemaining}
 		jsonMarshal, _ := json.Marshal(requestResponse)
 
+		w.WriteHeader(http.StatusAccepted) // 202 Accepted
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+	}
+}
+
+func NowPlaying() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		clog.Debug("NowPlaying", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
+
+		resp, err := http.Get("http://icecast2:8000/status-json.xsl")
+		if err != nil {
+			clog.Error("NowPlaying", "Failed to connect to audio stream server.", err)
+			return
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			clog.Error("NowPlaying", "Audio stream server returned bad status", err)
+			return
+		}
+
+		body, _ := io.ReadAll(resp.Body)
+		jsonParsed, _ := gabs.ParseJSON([]byte(body))
+
+		var artist, _ = jsonParsed.Path("icestats.source.artist").Data().(string)
+		var title, _ = jsonParsed.Path("icestats.source.title").Data().(string)
+
+		clog.Info("NowPlaying", fmt.Sprintf("Now playing: '%s' by '%s'.", title, artist))
+
+		// Return data to client
+		type NowPlayingResponse struct {
+			Artist string
+			Title  string
+		}
+		nowPlayingResponse := NowPlayingResponse{artist, title}
+		jsonMarshal, _ := json.Marshal(nowPlayingResponse)
+		w.WriteHeader(http.StatusAccepted) // 202 Accepted
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+	}
+}
+
+func Version() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		clog.Debug("Version", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
+
+		// Return data to client
+		type CadenceVersion struct {
+			Version string
+		}
+		version := CadenceVersion{Version: c.Version}
+		jsonMarshal, _ := json.Marshal(version)
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)

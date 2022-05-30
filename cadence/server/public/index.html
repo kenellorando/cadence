@@ -25,10 +25,15 @@
 
         <!-- Bulma CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+        <link rel="stylesheet" href="./css/5.0.css">
+        <link rel="stylesheet" href="./css/5.0tabs.css">
+
+
         <!-- HTMX JS -->
         <script src="https://unpkg.com/htmx.org@1.7.0"></script>
+        <!-- <link rel="stylesheet" href="/css/base.css"> -->
 
-        <!-- <link rel="stylesheet" href="/css/base.css">
+        <!--
         <link rel="stylesheet" href="." id="themeStylesheet">
         <link rel="stylesheet" id="moduleRequestButton" href="/css/modules/requestButtonEnabled.css">
         <link rel="stylesheet" href="/css/modules/themeButton.css"> -->
@@ -39,87 +44,118 @@
         <!-- <script type="text/javascript" src="/js/themeMetadata.js"></script>
         <script type="text/javascript" src="/js/themeChanger.js"></script> -->
         <!-- API (Aria) scripts -->
-        <script type="text/javascript" src="/js/aria.js"></script>
+        <script type="text/javascript" src="./js/aria.js"></script>
         <!-- Radio player scripts -->
-        <script type="text/javascript" src="/js/player.js"></script>
+        <script type="text/javascript" src="./js/player.js"></script>
+
+
+        <!-- 5.0 new -->
+        <script type="text/javascript" src="./js/5.0.js"></script>
+
+
         <!-- UI view switching scripts -->
         <!-- <script type="text/javascript" src="/js/tabs.js"></script> -->
     </head>
     <body>
-        <nav>
-            <span id="navLeft">
-                <a id="tabMain">CADENCE</a>
-            </span>
-            <span id="navRight">
-                <a id="tabRequest">Request</a>
-                <a id="tabAbout">About</a>
-                <a id="tabTheme">Theme</a>
-                <a href="https://github.com/kenellorando/cadence" target="_blank">Github ↗</a>
-            </span>
-        </nav>
-        <main>
-            <div id="player">
-                <!-- <img id="artwork" src=""/> -->
-
+        <div id="player" class="columns box">
+            <div class="column is-5">
+                <figure class="image is-square is-1by1">
+                    <img id="artwork" src=""/>
+                </figure>
+            </div>
+            <div class="column">
                 <!-- Connection to source -->
                 <audio id="stream" src="" type="audio/mp3"></audio>
                 <!-- Now playing information -->
-                <div id="status">Disconnected from server.</div>
+                <div id="status" class="block">Disconnected from server.</div>
 
                 <div id="song">-</div>
                 <div id="artist">-</div>
                 <div id="playButton">►</div>
                 
-                <input type="range" id="volume" value=".3" min="0" max=".8" step="0.006">
+                <input type="range" id="volume" value=".3" min="0" max=".8" step="0.006" class="block">
 
-                <div id="version">
+                <div id="version" class="block">
                     <div>Cadence Version: <span id="release">-</span></div>
                     <div>Current Listeners: <span id="listeners">-</span></div>
                 </div>
             </div>
+        </div>
+        
+        <div id="tabs" class="tabs is-centered is-boxed">
+            <ul>
+              <li data-tab="request"><a>Request</a></li>
+              <li data-tab="theme"><a>Theme</a></li>
+              <li data-tab="about"><a>About</a></li>
+              <li data-tab="api"><a>API</a></li>
+            </ul>
+        </div>
 
-            <hr/>
-
-            <div id="frontRequest">
-                <div class="column">
-                    <h2>Request</h2>
-                    <p>Submit a song request to enter the play queue.</p>
-
-                    <input name="searchInput" id="searchInput" type="text" placeholder="Filter for a song or artist!">
-                    <button id="searchButton">Filter</button>
-
-                    <div id="requestStatus"></div>
-                    <div id="searchResults"></div>
-                </div>
+        <div id="tab-content">
+            <div data-content="request">
+                <table class="table">
+                    <thead></thead>
+                </table>
             </div>
+            <div data-content="theme">
+                <button type="button" class="themeButton" id="Default">Default</button>
+                <button type="button" class="themeButton" id="RCB40">RCB40</button>
+                <button type="button" class="themeButton" id="No2TypeB">No. 2 Type B</button>
+            </div>
+            <div data-content="about" class="content">
+                <p><b>Cadence</b> is a fully-featured web radio application suite.</p>
 
-            <div id="frontAbout">
-                <h2>About Cadence</h2>
-                <p>Cadence is a web radio with a heavy focus on anime music. Streaming 24/7, Cadence provides interaction with a song metadata database and open-source stream software <i>Icecast</i>. As this allows users the ability to search a song library and make song requests, Cadence effectively simulates a song request taking virtual DJ. </p>
-
-                <p>Over two thousand lines of code written from scratch compose this application. In the current iteration (4.x) of Cadence, no frontend framework is employed and the backend is written in Go. Originally hosted from a dorm room homelab, all Cadence services now run on AWS.</p>
-
-                <p>This project was originally started while I was a student in February 2017 as an endeavour to practice a full range of tech skills, from development to server administration. In 2019, the experience I gained building Cadence were directly responsible for landing my first job as a DevOps Engineer. Today, I continue to run Cadence and make occasional improvements. For questions and comments, please feel to reach out on the <a href="https://github.com/kenellorando/cadence">Cadence Github repository</a>.</p>
+                <p>The Cadence project is multi-component, featuring: 1. an API server providing search and request functionality, 2. an interactive web frontend, 3. a built-in auto-populating music-metadata database 4. custom-built <i>Icecast</i> and <i>Liquidsoap</i> containers. In the latest iteration, <code>5.x</code>, the API is written in Go, uses an SQLite database to store music data, and leverages Bulma and HTMX on the frontend.</p>
+            </div>
+            <div data-content="api" class="content">
+                <h2 class="title is-2">POST /api/search</h2>
+                <h3 class="title is-6">Request (JSON)</h3>
+                <code>{ "search": "railgun" }</code>
+                <h3 class="title is-6">Response (JSON)</h3>
+                <code>[ {ID: "1", Artist: "fripSide", Title: "only my railgun"}, ...]</code>
 
                 <hr/>
 
-                <h2>Legal</h2>
-                <p>Cadence Radio is a DMCA compliant, "non-commercial educational" (NCE) broadcast. As an NCE, Cadence Radio is non-profit and does not accept advertisements for its webpages or broadcasts.</p>
-            </div>
+                <h2 class="title is-2">POST /api/request</h2>
+                <h3 class="title is-6">Request (JSON)</h3>
+                <code>{ "ID": "1", "Token", "abcdefghijk" }</code>
+                <ul>
+                    <li><code>"Token"</code> is an optional string provided by the radio administrator which allows the requesting entity to bypass any rate limiters enabled on Cadence.</li>
+                </ul>
+                <h3 class="title is-6">Response (JSON)</h3>
+                <code>{ Message: "Request accepted!", TimeRemaining: 300 }</code>
 
-            <div id="frontTheme">
-                <div class="column">
-                    <h2>Themes</h2>
-                    <button type="button" class="themeButton" id="Default">Default</button>
-                    <button type="button" class="themeButton" id="RCB40">RCB40</button>
-                    <button type="button" class="themeButton" id="No2TypeB">No. 2 Type B</button>
-                </div>
-            </div>
-            <div id="footer">
-                <span>A project by <a href="https://kenellorando.com/">Ken Ellorando</a></span>
-            </div>
 
-        </main>
+                <hr/>
+
+                <h2 class="title is-2">GET /api/nowplaying</h2>
+                <h3 class="title is-6">Response (JSON)</h3>
+                <code>{ Artist: "fripSide", Title: "only my railgun" }</code>
+
+                <hr/>
+                
+                <h2 class="title is-2">GET /api/version</h2>
+                <h3 class="title is-6">Response (JSON)</h3>
+                <code>{ Version: "5.0.0" }</code>
+
+
+                <hr/>
+
+
+                <h2 class="title is-2">WS /socket/radiodata</h2>
+                <p>Once a connection is established, the server will will continue to push data to the client in near-real-time as it changes on the backend.</p>
+                <h3 class="title is-6">Type: NowPlaying</h4>
+                <code> { Type: "NowPlaying", Artist: "fripSide", Title: "only my railgun", Picture: "(base64 encoding of album art)" }</code>
+                <h3 class="title is-6">Type: Listeners</h4>
+                <code>{ Type: "Listeners", Listeners: 2 }</code>
+                <h3 class="title is-6">Type: StreamConnection</h4>
+                <code>{ Type: "StreamConnection", ListenURL: "stream.cadenceradio.com", Mountpoint: "/cadence1" }</code>
+            </div>
+        </div>
+        <footer>
+            <div class="title rocksalt is-2">CADENCE</div>
+            <div class="subtitle is-6">A project by <a href="https://kenellorando.com/">Ken Ellorando</a></div>
+        </footer>
 
     </body>
 </html>

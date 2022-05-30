@@ -16,7 +16,6 @@ var c = ServerConfig{}
 type ServerConfig struct {
 	Version          string
 	RootPath         string
-	Domain           string
 	RequestRateLimit int
 	LogLevel         int
 	Port             string
@@ -31,8 +30,6 @@ type ServerConfig struct {
 
 // Init function grabs configuration values for the server
 // All configs are set in environment variables
-// Default values for missing environment variables are set here.
-// Init also initalizes other services with relevant values
 func init() {
 	// Webserver configuration
 	c.Version = os.Getenv("CSERVER_VERSION")

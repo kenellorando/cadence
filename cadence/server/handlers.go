@@ -1,5 +1,5 @@
 // handlers.go
-// HTTP request function returns
+// REST API
 
 package main
 
@@ -24,7 +24,7 @@ import (
 var requestTimeoutIPs = make(map[string]int)
 
 // Fileservers ////////////////////////////////////////////////////////////////////
-func handleServeRoot() http.HandlerFunc {
+func SiteRoot() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Info("ServeRoot", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 		w.Header().Set("Content-type", "text/html")
@@ -32,7 +32,7 @@ func handleServeRoot() http.HandlerFunc {
 	}
 }
 
-func handleServe404() http.HandlerFunc {
+func Site404() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Info("Serve404", fmt.Sprintf("Client %s requesting unknown resource %s%s. Returning 404.", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 		w.Header().Set("Content-type", "text/html")
@@ -40,10 +40,10 @@ func handleServe404() http.HandlerFunc {
 	}
 }
 
-// ARIA1 API ////////////////////////////////////////////////////////////////////
-func handleARIA1Search() http.HandlerFunc {
+// Default API ////////////////////////////////////////////////////////////////////
+func Search() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("ARIA1Search", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
+		clog.Debug("Search", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
 		// Declare object to hold r body data
 		type Search struct {
 			Query string `json:"search"`
@@ -54,13 +54,13 @@ func handleARIA1Search() http.HandlerFunc {
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&search)
 		if err != nil {
-			clog.Error("ARIA1Search", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+			clog.Error("Search", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 			return
 		}
 
 		query := search.Query
-		clog.Debug("ARIA1Search", fmt.Sprintf("Search query decoded: '%v'", query))
-		clog.Info("ARIA1Search", fmt.Sprintf("Querying database for: '%v'", query))
+		clog.Debug("Search", fmt.Sprintf("Search query decoded: '%v'", query))
+		clog.Info("Search", fmt.Sprintf("Querying database for: '%v'", query))
 
 		// Query database
 		selectStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\" FROM %s ", c.MetadataTable)
@@ -74,7 +74,7 @@ func handleARIA1Search() http.HandlerFunc {
 			selectWhereStatement := selectStatement + "WHERE title LIKE $1 ORDER BY rank"
 			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
-				clog.Error("ARIA1Search", "Database search failed.", err)
+				clog.Error("Search", "Database search failed.", err)
 				return
 			}
 		} else if startsWith(query, "songs by ") {
@@ -83,7 +83,7 @@ func handleARIA1Search() http.HandlerFunc {
 			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 ORDER BY rank"
 			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
-				clog.Error("ARIA1Search", "Database search failed.", err)
+				clog.Error("Search", "Database search failed.", err)
 				return
 			}
 		} else if endsWith(query, " songs") {
@@ -92,7 +92,7 @@ func handleARIA1Search() http.HandlerFunc {
 			selectWhereStatement := selectStatement + "WHERE genre LIKE $1 ORDER BY rank"
 			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
-				clog.Error("ARIA1Search", "Database search failed.", err)
+				clog.Error("Search", "Database search failed.", err)
 				return
 			}
 		} else if startsWith(query, "songs from ") {
@@ -102,7 +102,7 @@ func handleARIA1Search() http.HandlerFunc {
 			selectWhereStatement := selectStatement + "WHERE year LIKE $1 OR ALBUM LIKE $2 ORDER BY rank"
 			rows, err = database.Query(selectWhereStatement, q, "%"+q+"%")
 			if err != nil {
-				clog.Error("ARIA1Search", "Database search failed.", err)
+				clog.Error("Search", "Database search failed.", err)
 				return
 			}
 		} else if startsWith(query, "songs released in ") {
@@ -112,7 +112,7 @@ func handleARIA1Search() http.HandlerFunc {
 			selectWhereStatement := selectStatement + "WHERE year LIKE $1 ORDER BY rank"
 			rows, err = database.Query(selectWhereStatement, q)
 			if err != nil {
-				clog.Error("ARIA1Search", "Database search failed.", err)
+				clog.Error("Search", "Database search failed.", err)
 				return
 			}
 		} else if startsWith(query, "songs in ") {
@@ -121,7 +121,7 @@ func handleARIA1Search() http.HandlerFunc {
 			selectWhereStatement := selectStatement + "WHERE album LIKE $1 ORDER BY rank"
 			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
-				clog.Error("ARIA1Search", "Database search failed.", err)
+				clog.Error("Search", "Database search failed.", err)
 				return
 			}
 		} else {
@@ -131,7 +131,7 @@ func handleARIA1Search() http.HandlerFunc {
 			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
 			rows, err = database.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
 			if err != nil {
-				clog.Error("ARIA1Search", "Database search failed.", err)
+				clog.Error("Search", "Database search failed.", err)
 				return
 			}
 		}
@@ -144,13 +144,13 @@ func handleARIA1Search() http.HandlerFunc {
 		}
 
 		// Scan the returned data and save the relevant info
-		clog.Debug("ARIA1Search", "Scanning returned data...")
+		clog.Debug("Search", "Scanning returned data...")
 		var searchResults []SongData
 		for rows.Next() {
 			song := new(SongData)
 			err := rows.Scan(&song.ID, &song.Artist, &song.Title)
 			if err != nil {
-				clog.Error("ARIA1Search", "Data scan failed.", err)
+				clog.Error("Search", "Data scan failed.", err)
 				return
 			}
 			// Add song (as SongData) to full searchResults
@@ -164,177 +164,18 @@ func handleARIA1Search() http.HandlerFunc {
 	}
 }
 
-func handleARIA1Request() http.HandlerFunc {
+func NowPlaying() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("ARIA1Request", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
-
-		requesterIP := r.Header.Get("X-Forwarded-For")
-
-		// Declare object for a song
-		type RequestResponse struct {
-			Message       string
-			TimeRemaining int
-		}
-
-		// If the IP is in the timeout log
-		if _, ok := requestTimeoutIPs[requesterIP]; ok {
-			// If the existing IP was recently logged, deny the request.
-			if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.RequestRateLimit {
-				clog.Info("ARIA1Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
-
-				timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
-				message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
-
-				// Return data to client
-				requestResponse := RequestResponse{message, timeRemaining}
-				jsonMarshal, _ := json.Marshal(requestResponse)
-
-				w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
-				w.Header().Set("Content-Type", "application/json")
-				w.Header().Set("Retry-After", strconv.Itoa(timeRemaining))
-				w.Write(jsonMarshal)
-				return
-			}
-		}
-
-		// Declare object to hold r body data
-		type Request struct {
-			ID string `json:"ID"`
-		}
-		var request Request
-
-		// Decode json object
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
-
-			timeRemaining := 0
-			message := "Request not completed. Request-body is possibly malformed."
-
-			// Return data to client
-			requestResponse := RequestResponse{message, timeRemaining}
-			jsonMarshal, _ := json.Marshal(requestResponse)
-
-			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonMarshal)
-			return
-		}
-		err = json.Unmarshal(body, &request)
-		if err != nil {
-			clog.Error("ARIA1Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
-
-			timeRemaining := 0
-			message := "Request not completed. Request-body is possibly malformed."
-
-			// Return data to client
-			requestResponse := RequestResponse{message, timeRemaining}
-			jsonMarshal, _ := json.Marshal(requestResponse)
-
-			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonMarshal)
-			return
-		}
-
-		clog.Debug("ARIA1Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
-		clog.Debug("ARIA1Request", "Searching database for corresponding path...")
-
-		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v;", c.MetadataTable, request.ID)
-		rows, err := database.Query(selectStatement)
-		if err != nil {
-			clog.Error("ARIA1Request", "Database select failed.", err)
-			timeRemaining := 0
-			message := "Request not completed. Encountered a database error."
-
-			// Return data to client
-			requestResponse := RequestResponse{message, timeRemaining}
-			jsonMarshal, _ := json.Marshal(requestResponse)
-
-			w.WriteHeader(http.StatusInternalServerError) // 500 Server Error
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonMarshal)
-			return
-		}
-
-		// "Every call to Scan, even the first one, must be preceded by a call to Next."
-		var path string
-		for rows.Next() {
-			err := rows.Scan(&path)
-			if err != nil {
-				clog.Error("ARIA1Request", "Data scan failed.", err)
-				timeRemaining := 0
-				message := "Request not completed. Encountered a database error."
-
-				// Return data to client
-				requestResponse := RequestResponse{message, timeRemaining}
-				jsonMarshal, _ := json.Marshal(requestResponse)
-
-				w.WriteHeader(http.StatusInternalServerError) // 500 Server Error
-				w.Header().Set("Content-Type", "application/json")
-				w.Write(jsonMarshal)
-				return
-			}
-		}
-		clog.Debug("ARIA1Request", fmt.Sprintf("Translated ID %v to path: %s", request.ID, path))
-
-		// Telnet to liquidsoap
-		clog.Debug("ARIA1Request", "Connecting to liquidsoap service...")
-		conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
-		if err != nil {
-			clog.Error("ARIA1Request", "Failed to connect to audio source server.", err)
-
-			timeRemaining := 0
-			message := "Request not completed. Could not submit request to stream source service."
-
-			// Return data to client
-			requestResponse := RequestResponse{message, timeRemaining}
-			jsonMarshal, _ := json.Marshal(requestResponse)
-
-			w.WriteHeader(http.StatusServiceUnavailable) // 503 Server Error
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonMarshal)
-			return
-		}
-
-		// Push request over connection
-		fmt.Fprintf(conn, "request.push "+path+"\n")
-		// Listen for reply
-		sourceServiceResponse, _ := bufio.NewReader(conn).ReadString('\n')
-		clog.Debug("ARIA1Request", fmt.Sprintf("Message from audio source server: %s", sourceServiceResponse))
-
-		// Disconnect from liquidsoap
-		conn.Close()
-
-		// Create or overwrite existing log times if time and request body look OK
-		requestTimeoutIPs[requesterIP] = int(time.Now().Unix())
-
-		// Return 202 OK to client
-		timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
-		message := "Request accepted!"
-
-		// Return data to client
-		requestResponse := RequestResponse{message, timeRemaining}
-		jsonMarshal, _ := json.Marshal(requestResponse)
-
-		w.WriteHeader(http.StatusAccepted) // 202 Accepted
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
-	}
-}
-
-func handleARIA1NowPlaying() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("ARIA1NowPlaying", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
+		clog.Debug("NowPlaying", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 
 		resp, err := http.Get("http://icecast2:8000/status-json.xsl")
 		if err != nil {
-			clog.Error("ARIA1NowPlaying", "Failed to connect to audio stream server.", err)
+			clog.Error("NowPlaying", "Failed to connect to audio stream server.", err)
 			return
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
-			clog.Error("ARIA1NowPlaying", "Audio stream server returned bad status", err)
+			clog.Error("NowPlaying", "Audio stream server returned bad status", err)
 			return
 		}
 
@@ -344,7 +185,7 @@ func handleARIA1NowPlaying() http.HandlerFunc {
 		var artist, _ = jsonParsed.Path("icestats.source.artist").Data().(string)
 		var title, _ = jsonParsed.Path("icestats.source.title").Data().(string)
 
-		clog.Info("ARIA1NowPlaying", fmt.Sprintf("Now playing: '%s' by '%s'.", title, artist))
+		clog.Info("NowPlaying", fmt.Sprintf("Now playing: '%s' by '%s'.", title, artist))
 
 		// Return data to client
 		type NowPlayingResponse struct {
@@ -359,9 +200,9 @@ func handleARIA1NowPlaying() http.HandlerFunc {
 	}
 }
 
-func handleARIA1Version() http.HandlerFunc {
+func Version() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("ARIA1Version", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
+		clog.Debug("Version", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 
 		// Return data to client
 		type CadenceVersion struct {
@@ -375,10 +216,9 @@ func handleARIA1Version() http.HandlerFunc {
 	}
 }
 
-// ARIA2 API ////////////////////////////////////////////////////////////////////
-func handleARIA2Request() http.HandlerFunc {
+func Request() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("ARIA2Request", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
+		clog.Debug("Request", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
 		requesterIP := r.Header.Get("X-Forwarded-For")
 
 		// Declare object for a song
@@ -397,7 +237,7 @@ func handleARIA2Request() http.HandlerFunc {
 		// Decode json object
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			clog.Error("ARIA1Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+			clog.Error("Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
 			timeRemaining := 0
 			message := "Request not completed. Request-body is possibly malformed."
@@ -413,7 +253,7 @@ func handleARIA2Request() http.HandlerFunc {
 		}
 		err = json.Unmarshal(body, &request)
 		if err != nil {
-			clog.Error("ARIA2Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+			clog.Error("Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 
 			timeRemaining := 0
 			message := "Request not completed. Request-body is possibly malformed."
@@ -435,12 +275,12 @@ func handleARIA2Request() http.HandlerFunc {
 		}
 
 		if tokenValid {
-			clog.Info("ARIA2Request", fmt.Sprintf("Client %s bypassing rate limiter using token %s.", r.Header.Get("X-Forwarded-For"), request.Token))
+			clog.Info("Request", fmt.Sprintf("Client %s bypassing rate limiter using token %s.", r.Header.Get("X-Forwarded-For"), request.Token))
 		} else { // Perform check on timeout log in memory
 			if _, ok := requestTimeoutIPs[requesterIP]; ok {
 				// If the existing IP was recently logged, deny the request.
 				if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.RequestRateLimit {
-					clog.Info("ARIA2Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
+					clog.Info("Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
 
 					timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
 					message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
@@ -458,13 +298,13 @@ func handleARIA2Request() http.HandlerFunc {
 			}
 		}
 
-		clog.Debug("ARIA2Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
-		clog.Debug("ARIA2Request", "Searching database for corresponding path...")
+		clog.Debug("Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
+		clog.Debug("Request", "Searching database for corresponding path...")
 
 		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v;", c.MetadataTable, request.ID)
 		rows, err := database.Query(selectStatement)
 		if err != nil {
-			clog.Error("ARIA2Request", "Database select failed.", err)
+			clog.Error("Request", "Database select failed.", err)
 			timeRemaining := 0
 			message := "Request not completed. Encountered a database error."
 
@@ -483,7 +323,7 @@ func handleARIA2Request() http.HandlerFunc {
 		for rows.Next() {
 			err := rows.Scan(&path)
 			if err != nil {
-				clog.Error("ARIA2Request", "Data scan failed.", err)
+				clog.Error("Request", "Data scan failed.", err)
 				timeRemaining := 0
 				message := "Request not completed. Encountered a database error."
 
@@ -497,13 +337,13 @@ func handleARIA2Request() http.HandlerFunc {
 				return
 			}
 		}
-		clog.Debug("ARIA2Request", fmt.Sprintf("Translated ID %v to path: %s", request.ID, path))
+		clog.Debug("Request", fmt.Sprintf("Translated ID %v to path: %s", request.ID, path))
 
 		// Telnet to liquidsoap
-		clog.Debug("ARIA2Request", "Connecting to liquidsoap service...")
+		clog.Debug("Request", "Connecting to liquidsoap service...")
 		conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
 		if err != nil {
-			clog.Error("ARIA2Request", "Failed to connect to audio source server.", err)
+			clog.Error("Request", "Failed to connect to audio source server.", err)
 
 			timeRemaining := 0
 			message := "Request not completed. Could not submit request to stream source service."
@@ -522,7 +362,7 @@ func handleARIA2Request() http.HandlerFunc {
 		fmt.Fprintf(conn, "request.push "+path+"\n")
 		// Listen for reply
 		sourceServiceResponse, _ := bufio.NewReader(conn).ReadString('\n')
-		clog.Debug("ARIA2Request", fmt.Sprintf("Message from audio source server: %s", sourceServiceResponse))
+		clog.Debug("Request", fmt.Sprintf("Message from audio source server: %s", sourceServiceResponse))
 
 		// Disconnect from liquidsoap
 		conn.Close()
@@ -544,7 +384,8 @@ func handleARIA2Request() http.HandlerFunc {
 	}
 }
 
-func handleReady() http.HandlerFunc {
+// Status Checks ////////////////////////////////////////////////////////////////////
+func Ready() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
 	}

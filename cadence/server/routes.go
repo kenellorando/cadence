@@ -12,26 +12,20 @@ import (
 func routes() *mux.Router {
 	r := mux.NewRouter()
 
-	// API
-	r.HandleFunc("/api/aria1/search", handleARIA1Search()).Methods("POST")
-	r.HandleFunc("/api/aria1/request", handleARIA1Request()).Methods("POST")
-	//r.HandleFunc("/api/aria1/library", handleARIA1Library()).Methods("GET")
-	r.HandleFunc("/api/aria1/nowplaying", handleARIA1NowPlaying()).Methods("GET")
-	r.HandleFunc("/api/aria2/request", handleARIA2Request()).Methods("POST")
-	r.HandleFunc("/api/aria1/version", handleARIA1Version()).Methods("GET")
+	// REST
+	r.HandleFunc("/api/search", Search()).Methods("POST")
+	r.HandleFunc("/api/request", Request()).Methods("POST")
+	r.HandleFunc("/api/nowplaying", NowPlaying()).Methods("GET")
+	r.HandleFunc("/api/version", Version()).Methods("GET")
+	r.HandleFunc("/api/ready", Ready()).Methods("GET")
+	// WebSocket
+	r.HandleFunc("/socket/radiodata", RadioData()).Methods("GET")
 
-	r.HandleFunc("/api/aria1/radiodata/socket", socketRadioData()).Methods("GET")
-	// r.HandleFunc("/api/aria1/nowplaying/socket", socketNowPlaying()).Methods("GET")
-	// r.HandleFunc("/api/aria1/streamurl/socket", socketStreamURL()).Methods("GET")
-	// r.HandleFunc("/api/aria1/streamlisteners/socket", socketStreamListeners()).Methods("GET")
-
-	r.HandleFunc("/ready", handleReady()).Methods("GET")
-	r.HandleFunc("/", handleServeRoot()).Methods("GET")
-
+	// Site
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(c.RootPath+"./public/static/")))).Methods("GET")
 	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir(c.RootPath+"./public/css/")))).Methods("GET")
 	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir(c.RootPath+"./public/js/")))).Methods("GET")
-	r.NotFoundHandler = http.HandlerFunc(handleServe404())
-
+	r.HandleFunc("/", SiteRoot()).Methods("GET")
+	r.NotFoundHandler = http.HandlerFunc(Site404())
 	return r
 }

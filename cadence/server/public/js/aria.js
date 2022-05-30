@@ -18,7 +18,7 @@ $(document).ready(function() {
 		data.ID = unescape(this.dataset.id);
 		$.ajax({
 			type: 'POST',
-			url: '/api/aria1/request',
+			url: '/api/request',
 			/* contentType sends application/x-www-form-urlencoded data */
 			contentType: 'application/x-www-form-urlencoded',
 			data: JSON.stringify(data),
@@ -45,7 +45,7 @@ $(document).ready(function() {
 $(document).ready(function() {
 	$.ajax({
 		type: 'GET',
-		url: "/api/aria1/version",
+		url: "/api/version",
 		dataType: "json",
 		// On success, format data into table
 		success: function(data) {
@@ -61,10 +61,10 @@ var streamSrcURL = "" // this gets used by the stream playButton function
 // Hook into the cadence radio data socket
 $(document).ready(function() {
 	if (location.protocol == "https:") {
-		var socket = new WebSocket("wss://" +  location.host + "/api/aria1/radiodata/socket")
+		var socket = new WebSocket("wss://" +  location.host + "/socket/radiodata")
 	} else {
 		// This is necessary for local testing. All public ingress is https.
-		var socket = new WebSocket("ws://" + location.host + "/api/aria1/radiodata/socket")
+		var socket = new WebSocket("ws://" + location.host + "/socket/radiodata")
 	}
 
 	socket.onopen = () => {
@@ -86,10 +86,9 @@ $(document).ready(function() {
 
 				var nowPlayingArtwork = message.Picture;
 				$('#artwork').attr("src", "data:image/jpeg;base64,"+ nowPlayingArtwork)
-				console.log(nowPlayingArtwork)
-
 				$('#artist').text(nowPlayingArtist);
 				$('#song').text(nowPlayingTitle);
+				
 				console.log("Now playing: " + nowPlayingArtist + ", '" + nowPlayingTitle + "'")
 				break;
 			case "Listeners":
@@ -122,7 +121,7 @@ function postSearch() {
 	data.search = $('#searchInput').val();
 	$.ajax({
 		type: 'POST',
-		url: '/api/aria1/search',
+		url: '/api/search',
 		/* contentType sends application/x-www-form-urlencoded data */
 		contentType: 'application/x-www-form-urlencoded',
 		data: JSON.stringify(data),

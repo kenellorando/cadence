@@ -92,10 +92,19 @@
         </div>
 
         <div id="tab-content">
-            <div data-content="request">
-                <table class="table">
-                    <thead></thead>
-                </table>
+            <div data-content="request" >
+                <div id="frontRequest">
+                    <div>
+                        <h2>Request</h2>
+                        <p>Submit a song request to enter the play queue.</p>
+    
+                        <input name="searchInput" id="searchInput" type="text" placeholder="Filter for a song or artist!">
+                        <button id="searchButton">Filter</button>
+    
+                        <div id="requestStatus"></div>
+                        <div id="searchResults"></div>
+                    </div>
+                </div>
             </div>
             <div data-content="theme">
                 <button type="button" class="themeButton" id="Default">Default</button>
@@ -143,12 +152,10 @@
 
 
                 <h2 class="title is-2">WS /socket/radiodata</h2>
-                <p>Once a connection is established, the server will will continue to push data to the client in near-real-time as it changes on the backend.</p>
-                <h3 class="title is-6">Type: NowPlaying</h4>
-                <code> { Type: "NowPlaying", Artist: "fripSide", Title: "only my railgun", Picture: "(base64 encoding of album art)" }</code>
-                <h3 class="title is-6">Type: Listeners</h4>
+                <p>Once a connection is established, the server will will continue to push data to the client in near-real-time as it changes on the backend. All data comes through one socket, but is differentiated by the key <code>Type</code>.</p>
+                <h3 class="title is-6">Message (JSON)</h4>
+                <code>{ Type: "NowPlaying", Artist: "fripSide", Title: "only my railgun", Picture: "(base64 encoding of album art)" }</code>
                 <code>{ Type: "Listeners", Listeners: 2 }</code>
-                <h3 class="title is-6">Type: StreamConnection</h4>
                 <code>{ Type: "StreamConnection", ListenURL: "stream.cadenceradio.com", Mountpoint: "/cadence1" }</code>
             </div>
         </div>

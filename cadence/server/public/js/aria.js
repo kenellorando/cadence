@@ -18,7 +18,7 @@ $(document).ready(function() {
 		data.ID = unescape(this.dataset.id);
 		$.ajax({
 			type: 'POST',
-			url: '/api/request',
+			url: '/api/request/id',
 			/* contentType sends application/x-www-form-urlencoded data */
 			contentType: 'application/x-www-form-urlencoded',
 			data: JSON.stringify(data),
@@ -28,14 +28,14 @@ $(document).ready(function() {
 				console.log("Server message: " + data.responseJSON.Message);
 				console.log("Timeout remaining (s): " + data.responseJSON.TimeRemaining);
 				document.getElementById("requestStatus").innerHTML = "Server message: " + data.responseJSON.Message;
-				// Disable the request button over UI
-				$(".requestButton").prop('disabled', true);
-				document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
-				// Enable the request button after X minutes
-				setTimeout(function() {
-					$(".requestButton").prop('disabled', false);
-					document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"
-				}, 1000 * data.responseJSON.TimeRemaining)
+				// // Disable the request button over UI
+				// $(".requestButton").prop('disabled', true);
+				// document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
+				// // Enable the request button after X minutes
+				// setTimeout(function() {
+				// 	$(".requestButton").prop('disabled', false);
+				// 	document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"
+				// }, 1000 * data.responseJSON.TimeRemaining)
 			}
 		})
 	})
@@ -81,17 +81,18 @@ $(document).ready(function() {
 		let message = JSON.parse(ServerMessage.data)
 		switch (message.Type) {
 			case "NowPlaying":
+				console.log("NowPlaying update received: " + message.Artist.trim() + message.Title.trim())
 				var nowPlayingArtist = message.Artist.trim();
 				var nowPlayingTitle = message.Title.trim();
 
-				var nowPlayingArtwork = message.Picture;
-				$('#artwork').attr("src", "data:image/jpeg;base64,"+ nowPlayingArtwork)
-				$('#artist').text(nowPlayingArtist);
+				setAlbumArt()
 				$('#song').text(nowPlayingTitle);
+				$('#artist').text(nowPlayingArtist);
 				
 				console.log("Now playing: " + nowPlayingArtist + ", '" + nowPlayingTitle + "'")
 				break;
 			case "Listeners":
+				console.log("Listener update received: " + message.Listeners)
 				var currentListeners =  message.Listeners;
 				if (currentListeners == -1) {
 					document.getElementById("listeners").innerHTML = "(stream unreachable)"
@@ -130,7 +131,7 @@ function postSearch() {
 		success: function(data) {
 			let i = 1;
 			// Create the container table
-			var table = "<table id = 'searchResults'>";
+			var table = "<table class='table is-striped is-hoverable' id='searchResults'>";
 			if (data === null) {
 				console.log("Search completed.  0 results found.");
 				document.getElementById("requestStatus").innerHTML = "Search completed.  0 results found.";
@@ -143,10 +144,12 @@ function postSearch() {
 				console.log("Search completed. Results found: " + data.length)
 				document.getElementById("requestStatus").innerHTML = "Search completed. Results found: " + data.length;
 				// Build the results table
-				table += "<tr><th>Artist</th><th>Title</th><th>Availability</th></tr>"
+				table += "<thead><tr><th>Artist</th><th>Title</th><th>Availability</th></tr></thead><tbody>"
 				data.forEach(function(song) {
-					table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button class='requestButton' data-id='" + escape(song.ID) + "'>REQUEST</button></td></tr>";
+					table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button class='button requestButton' data-id='" + escape(song.ID) + "'>REQUEST</button></td></tr>";
 				})
+				table += "</tbody>"
+
 			}
 			table += "</table>";
 			// Put table into results html
@@ -154,6 +157,24 @@ function postSearch() {
 		},
 		error: function() {
 			console.log("Error. Could not execute search.");
+		}
+	});
+}
+
+
+// Get currently playing album art
+function setAlbumArt() {
+	$.ajax({
+		type: 'GET',
+		url: "/api/nowplaying/albumart",
+		dataType: "json",
+		// On success, switch the source of the artwork tag
+		success: function(data) {
+			var nowPlayingArtwork = data.Picture;
+			$('#artwork').attr("src", "data:image/jpeg;base64,"+ nowPlayingArtwork);
+		},
+		error: function() {
+			$('#artwork').attr("src", "");
 		}
 	});
 }

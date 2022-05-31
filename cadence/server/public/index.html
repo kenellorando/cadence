@@ -27,7 +27,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
         <link rel="stylesheet" href="./css/5.0.css">
         <link rel="stylesheet" href="./css/5.0tabs.css">
-
+        <link rel="stylesheet" href="./css/5.0mq.css">
 
         <!-- HTMX JS -->
         <script src="https://unpkg.com/htmx.org@1.7.0"></script>
@@ -57,111 +57,147 @@
         <!-- <script type="text/javascript" src="/js/tabs.js"></script> -->
     </head>
     <body>
-        <div id="player" class="columns box">
-            <div class="column is-5">
-                <figure class="image is-square is-1by1">
+        <div id="player" class="columns is-centered is-vcentered box">
+            <div class="column is-narrow is-offset-2-desktop is-4-desktop-only">
+                <div id="artworkcontainer">
                     <img id="artwork" src=""/>
-                </figure>
+                </div>
             </div>
-            <div class="column">
-                <!-- Connection to source -->
+            <div class="column" id="playerinfo">
                 <audio id="stream" src="" type="audio/mp3"></audio>
-                <!-- Now playing information -->
-                <div id="status" class="block">Disconnected from server.</div>
-
                 <div id="song">-</div>
                 <div id="artist">-</div>
                 <div id="playButton">►</div>
-                
-                <input type="range" id="volume" value=".3" min="0" max=".8" step="0.006" class="block">
-
-                <div id="version" class="block">
-                    <div>Cadence Version: <span id="release">-</span></div>
-                    <div>Current Listeners: <span id="listeners">-</span></div>
-                </div>
+                <input type="range" id="volume" value=".3" min="0" max=".8" step="0.006" class="block" >
+                <div id="status">Disconnected from server.</div>
+                <div id="version" class="block">Current Listeners: <span id="listeners">-</span></div>
             </div>
         </div>
         
         <div id="tabs" class="tabs is-centered is-boxed">
             <ul>
+            <li data-tab="about" class="is-active"><a>About</a></li>
               <li data-tab="request"><a>Request</a></li>
               <li data-tab="theme"><a>Theme</a></li>
-              <li data-tab="about"><a>About</a></li>
               <li data-tab="api"><a>API</a></li>
             </ul>
         </div>
 
         <div id="tab-content">
-            <div data-content="request" >
-                <div id="frontRequest">
-                    <div>
-                        <h2>Request</h2>
-                        <p>Submit a song request to enter the play queue.</p>
-    
-                        <input name="searchInput" id="searchInput" type="text" placeholder="Filter for a song or artist!">
-                        <button id="searchButton">Filter</button>
-    
-                        <div id="requestStatus"></div>
-                        <div id="searchResults"></div>
-                    </div>
-                </div>
-            </div>
-            <div data-content="theme">
-                <button type="button" class="themeButton" id="Default">Default</button>
-                <button type="button" class="themeButton" id="RCB40">RCB40</button>
-                <button type="button" class="themeButton" id="No2TypeB">No. 2 Type B</button>
-            </div>
-            <div data-content="about" class="content">
+            <section data-content="about" class="content is-active">
                 <p><b>Cadence</b> is a fully-featured web radio application suite.</p>
 
-                <p>The Cadence project is multi-component, featuring: 1. an API server providing search and request functionality, 2. an interactive web frontend, 3. a built-in auto-populating music-metadata database 4. custom-built <i>Icecast</i> and <i>Liquidsoap</i> containers. In the latest iteration, <code>5.x</code>, the API is written in Go, uses an SQLite database to store music data, and leverages Bulma and HTMX on the frontend.</p>
-            </div>
-            <div data-content="api" class="content">
-                <h2 class="title is-2">POST /api/search</h2>
-                <h3 class="title is-6">Request (JSON)</h3>
-                <code>{ "search": "railgun" }</code>
-                <h3 class="title is-6">Response (JSON)</h3>
-                <code>[ {ID: "1", Artist: "fripSide", Title: "only my railgun"}, ...]</code>
+                <p>The Cadence project is multi-component, featuring: 1. an API server providing search and request functionality, 2. an interactive web frontend, 3. a built-in auto-populating music-metadata database 4. integration with <i>Icecast</i> and <i>Liquidsoap</i>. In the latest iteration, <code>5.x</code>, the API is written in Go, uses Bulma on the frontend, and uses an SQLite database to store music data.</p>
+            </section>
+            <section data-content="request" class="content">
+                <p>Submit a song request to enter the play queue.</p>
 
-                <hr/>
+                <input name="searchInput" id="searchInput" class="input is-medium" type="text" placeholder="Filter for a song or artist!">
+                <!-- <button id="searchButton">Filter</button> -->
+                <div id="requestStatus"></div>
+                <div id="searchResults"></div>
+            </section>
+            <section data-content="theme">
+                        <div class="tag block">Light</div>
+                        <div class="buttons has-addons">
+                            <button type="button is-white" class="button themeButton" id="Default">Default</button>
+                        </div>
+                        <div class="tag is-black block">Dark</div>
+                        <div class="buttons has-addons">
+                            <button type="button" class="button is-dark themeButton" id="RCB40">RCB40</button>
+                            <button type="button" class="button is-black themeButton" id="No2TypeB">No. 2 Type B</button>
+                        </div>
+            </section>
+            <section data-content="api" class="content">
+                <p>All requests, responses, and messages shall be transmitted as raw JSON.</p>
+                <div class="columns">
+                    <div class="column">
+                        <h2 class="title is-3">POST /api/search</h2>
+                        <p>Search the server's music library for any song or artist. Cadence additionally is aware of audio file metadata for album, year, and genre, meaning you may also try to search by any of those parameters.</p>
+                        <p>This API call returns a list of results ordered by relevance.</p>
+                        <h3 class="title is-6">Request</h3>
+                        <code>{ "search": "railgun" }</code>
+                        <h3 class="title is-6">Response</h3>
+                        <code>[ {ID: "1", Artist: "fripSide", Title: "only my railgun"}, ...]</code>
+        
+                        <hr/>
+        
+                        <h2 class="title is-3">POST /api/request/id</h2>
+                        <p>Submit a request for a specific song to be played. This call accepts a song ID, which is an impermanent label Cadence applies to each song and is not an inherent attribute of the song file itself. Therefore, you should execute a search for an ID as a prerequisite to request.</p>
+                        <h3 class="title is-6">Request</h3>
+                        <code>{ ID: "1", Token, "abcdefghijk" }</code>
+                        <ul>
+                            <li><code>"Token"</code> is an optional string provided by the radio administrator which allows the requesting entity to bypass any rate limiters enabled on Cadence.</li>
+                        </ul>
+                        <h3 class="title is-6">Response</h3>
+                        <code>{ Message: "Request accepted!", TimeRemaining: 300 }</code>
+        
+                        <hr/>
+        
+                        <h2 class="title is-3">POST /api/request/bestmatch</h2>
+                        <p>In contrast to <code>/api/request/id</code>, this call essentially executes a search, selects the number one result (the most relevant result to the search), and submits a request for it.</p>
 
-                <h2 class="title is-2">POST /api/request</h2>
-                <h3 class="title is-6">Request (JSON)</h3>
-                <code>{ "ID": "1", "Token", "abcdefghijk" }</code>
-                <ul>
-                    <li><code>"Token"</code> is an optional string provided by the radio administrator which allows the requesting entity to bypass any rate limiters enabled on Cadence.</li>
-                </ul>
-                <h3 class="title is-6">Response (JSON)</h3>
-                <code>{ Message: "Request accepted!", TimeRemaining: 300 }</code>
+                        <h3 class="title is-6">Request</h3>
+                        <code>{ Search: "only my railgun fripSide", Token, "abcdefghijk"  }</code>
+                        <ul>
+                            <li><code>"Token"</code> is an optional string provided by the radio administrator which allows the requesting entity to bypass any rate limiters enabled on Cadence.</li>
+                        </ul>
+                        <h3 class="title is-6">Response</h3>
+                        <code>{ Message: "Request accepted!", TimeRemaining: 300 }</code>
+        
+                        <hr/>
+                    </div>
+                    <div class="column">
+                        <h2 class="title is-3">GET /api/nowplaying/metadata</h2>
+                        <p>Gets all text metadata on the currently playing song.</p>
+                        <p>Does not return album art. To get album art, use <code>/api/nowplaying/albumart</code></p>
+                        <h3 class="title is-6">Response</h3>
+                        <code>
+                        { 
+                            ID: 1, 
+                            Artist: "fripSide", 
+                            Title: "only my railgun", 
+                            Album: "only my railgun - Single", 
+                            Genre: "J-Pop", 
+                            Year: 2009 
+                        }
+                        </code>
 
+                        <hr/>
+                        
+                        <h2 class="title is-3">GET /api/nowplaying/albumart</h2>
+                        <p>Gets the base64-encoded album art of the currently playing song.</p>
+                        <h3 class="title is-6">Response</h3>
+                        <code>
+                        { 
+                            Picture: "(base64 encoding of album art)" 
+                        }
+                        </code>
 
-                <hr/>
+                        <hr/>
 
-                <h2 class="title is-2">GET /api/nowplaying</h2>
-                <h3 class="title is-6">Response (JSON)</h3>
-                <code>{ Artist: "fripSide", Title: "only my railgun" }</code>
+                        <h2 class="title is-3">GET /api/version</h2>
+                        <p>Returns the server version.</p>
+                        <h3 class="title is-6">Response</h3>
+                        <code>{ Version: "5.0.0" }</code>
 
-                <hr/>
-                
-                <h2 class="title is-2">GET /api/version</h2>
-                <h3 class="title is-6">Response (JSON)</h3>
-                <code>{ Version: "5.0.0" }</code>
+                        <hr/>
 
-
-                <hr/>
-
-
-                <h2 class="title is-2">WS /socket/radiodata</h2>
-                <p>Once a connection is established, the server will will continue to push data to the client in near-real-time as it changes on the backend. All data comes through one socket, but is differentiated by the key <code>Type</code>.</p>
-                <h3 class="title is-6">Message (JSON)</h4>
-                <code>{ Type: "NowPlaying", Artist: "fripSide", Title: "only my railgun", Picture: "(base64 encoding of album art)" }</code>
-                <code>{ Type: "Listeners", Listeners: 2 }</code>
-                <code>{ Type: "StreamConnection", ListenURL: "stream.cadenceradio.com", Mountpoint: "/cadence1" }</code>
-            </div>
+                        <h2 class="title is-3">WS /socket/radiodata</h2>
+                        <p>When a connection is established, the server will continue to push data to the client as it changes on the backend. The data is updated within two seconds after a change is observed. There is only one socket for data transfer, but is differentiated by the three different <code>Type</code>s.</p>
+                        <p>As an example, if the playing song changes, all connected clients receive a <code>Type: "NowPlaying"</code> message from the server.</p>
+                        <h3 class="title is-6">Messages</h4>
+                        <div><code>{ Type: "NowPlaying", Artist: "fripSide", Title: "only my railgun" }</code></div>
+                        <div><code>{ Type: "Listeners", Listeners: 2 }</code></div>
+                        <div><code>{ Type: "StreamConnection", ListenURL: "stream.cadenceradio.com", Mountpoint: "/cadence1" }</code></div>
+                    </div>
+                </div>
+            </section>
         </div>
         <footer>
-            <div class="title rocksalt is-2">CADENCE</div>
-            <div class="subtitle is-6">A project by <a href="https://kenellorando.com/">Ken Ellorando</a></div>
+            <div class="title rocksalt is-3">CADENCE</div>
+            <div>Version: <span id="release">-</span></div>
+            <div>Created by <a href="https://kenellorando.com/">Ken Ellorando</a></div>
         </footer>
 
     </body>

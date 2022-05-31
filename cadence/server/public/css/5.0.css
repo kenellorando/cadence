@@ -1,13 +1,7 @@
 
-/* @import url('https://fonts.googleapis.com/css2?family=family=Rock+Salt&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=family=Rock+Salt&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Roboto+Condensed:wght@300&family=Rock+Salt&display=swap');
-
-/* Resets */
-html, body {
-	margin: 0;
-	padding: 0;
-}
 
 body {
 	font-family: 'Roboto Condensed', sans-serif;
@@ -17,11 +11,8 @@ body {
 
 footer {
     text-align: center;
-    margin-top: 40px;
+    margin-top: 50px;
     margin-bottom: 30px;
-}
-footer .title {
-    line-height: 200%;
 }
 
 .rocksalt {
@@ -32,16 +23,52 @@ footer .title {
     margin-top: 2%;
     text-align: center;
 }
-#artwork {
-    width: 300px;
-    height: 300px;
+#artworkcontainer {
+    margin: 0 auto;
+    border: 1px solid black;
+    width: 50vw;
+    height: 50vw;
+    max-width: 260px;
+    max-height: 260px;
+}
+#player #song {
+	font-size: 30px;
+}
+#player #artist {
+	font-size: 27px;
+}
+#player #playButton {
+	/* background-color: #263635;
+	color: #dddad4; */
+    border: 1px solid black;
+	font-size: 20px;
+	text-align: center;
+	padding: 11px;
+
+	width: 80px;
+	height: 45px;
+
+	border-radius: 10%;
+
+	cursor: pointer;
+    
+	margin-top: 20px;
+	margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+	line-height: 100%;
 }
 
-
-
-@media (min-width: 1200px) {
-	body {
-		padding-left: 16%;
-		padding-right: 16%;
-	}
+#searchResults tr th, #searchResults tr td{
+	text-align: left;
+	margin-top: 20px;
+	font-size: 15px;
+	/* table-layout: fixed;
+	width: 100%; */
 }
+/* #searchResults tr th:last-child {
+	text-align: right;
+}
+#searchResults tr td:last-child {
+	text-align: right;
+} */

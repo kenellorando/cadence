@@ -1,6 +1,6 @@
-#tab-content div {
+#tab-content section {
     display: none;
 }
-#tab-content div.is-active {
+#tab-content section.is-active {
     display: block;
 }

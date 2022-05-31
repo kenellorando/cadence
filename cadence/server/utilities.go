@@ -45,7 +45,7 @@ func tokenCheck(token string) bool {
 	return false
 }
 
-// Queries the metadata DB for the path of the currently playing song, then returns artwork data from the file directly.
+// Queries the metadata DB for the path of a given song, reads the file data for artwork, then returns artwork directly.
 func getAlbumArt(currentArtist string, currentTitle string) []byte {
 	log.Printf("%s %s", currentArtist, currentTitle)
 

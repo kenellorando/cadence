@@ -29,13 +29,12 @@ func RadioData() http.HandlerFunc {
 			log.Print("Error upgrading socket connection.", err)
 			return
 		}
-		log.Print("New socket connected.", conn.RemoteAddr())
+		clog.Debug("RadioData", fmt.Sprintf("New socket connected: %s", conn.RemoteAddr()))
 
 		type Message struct {
 			Type       string
 			Artist     string
 			Title      string
-			Picture    []byte
 			ListenURL  string
 			Mountpoint string
 			Listeners  float64
@@ -43,17 +42,19 @@ func RadioData() http.HandlerFunc {
 
 		var lastArtist string
 		var lastTitle string
-		var lastListenURL string
+		var lastHost string
 		var lastMountpoint string
 		var lastListeners float64
 
 		for {
+			clog.Debug("RadioData", "Loop start")
+
 			resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
 			if err != nil {
 				clog.Error("RadioData", "Failed to connect to audio stream server.", err)
-				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-"})
+				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-", Artist: "-"})
 				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})
-				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A"})
+				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A", ListenURL: "N/A"})
 				return
 			}
 			defer resp.Body.Close()
@@ -62,8 +63,22 @@ func RadioData() http.HandlerFunc {
 				return
 			}
 
-			body, _ := io.ReadAll(resp.Body)
-			jsonParsed, _ := gabs.ParseJSON([]byte(body))
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				clog.Error("RadioData", "Failed to read stream server response.", err)
+				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-"})
+				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})
+				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A"})
+				return
+			}
+			jsonParsed, err := gabs.ParseJSON([]byte(body))
+			if err != nil {
+				clog.Error("RadioData", "Failed to parse stream server response.", err)
+				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-"})
+				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})
+				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A"})
+				return
+			}
 
 			var currentArtist = fmt.Sprintf(jsonParsed.Path("icestats.source.artist").Data().(string))
 			var currentTitle = fmt.Sprintf(jsonParsed.Path("icestats.source.title").Data().(string))
@@ -74,22 +89,34 @@ func RadioData() http.HandlerFunc {
 			var currentListenURL = currentHost + "/" + currentMountpoint
 
 			if (lastArtist != currentArtist) || (lastTitle != currentTitle) {
-				currentPicture := getAlbumArt(currentArtist, currentTitle)
 
-				conn.WriteJSON(Message{Type: "NowPlaying", Artist: currentArtist, Title: currentTitle, Picture: currentPicture})
+				clog.Debug("RadioData", "artist or title change detected")
+				//currentPicture := getAlbumArt(currentArtist, currentTitle)
+
+				//clog.Debug("RadioData", string(currentPicture))
+				clog.Debug("RadioData", currentArtist)
+				clog.Debug("RadioData", currentTitle)
+				clog.Debug("RadioData", "Writing connection")
+
+				err = conn.WriteJSON(Message{Type: "NowPlaying", Artist: currentArtist, Title: currentTitle})
+				if err != nil {
+					clog.Error("RadioData", "There was a problem writing the connection", err)
+				}
 				lastArtist = currentArtist
 				lastTitle = currentTitle
 			}
-			if (lastListenURL != currentListenURL) || (lastMountpoint != currentMountpoint) {
+			if (lastHost != currentHost) || (lastMountpoint != currentMountpoint) {
+				currentListenURL = currentHost + "/" + currentMountpoint
+
 				conn.WriteJSON(Message{Type: "StreamConnection", ListenURL: currentListenURL, Mountpoint: currentMountpoint})
-				lastListenURL = currentListenURL
+				lastHost = currentHost
 				lastMountpoint = currentMountpoint
 			}
 			if lastListeners != currentListeners {
 				conn.WriteJSON(Message{Type: "Listeners", Listeners: currentListeners})
 				lastListeners = currentListeners
 			}
-			time.Sleep(1 * time.Second)
+			time.Sleep(2 * time.Second)
 		}
 	}
 }

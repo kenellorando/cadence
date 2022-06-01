@@ -85,9 +85,15 @@
 
         <div id="tab-content">
             <section data-content="about" class="content is-active">
-                <p><b>Cadence</b> is a fully-featured web radio application suite.</p>
-
-                <p>The Cadence project is multi-component, featuring: 1. an API server providing search and request functionality, 2. an interactive web frontend, 3. a built-in auto-populating music-metadata database 4. integration with <i>Icecast</i> and <i>Liquidsoap</i>. In the latest iteration, <code>5.x</code>, the API is written in Go, uses Bulma on the frontend, and uses an SQLite database to store music data.</p>
+                <p><b>Cadence</b> is a fully-featured web radio application suite. The project is multi-component and features:</p>
+                <ol>
+                    <li>an API server providing music search and request functionality.</li>
+                    <li>an interactive web frontend.</li>
+                    <li>a built-in, auto-populating music metadata database.</li>
+                    <li>full integration with <i>Icecast</i> and <i>Liquidsoap</i> deployments, custom-tuned for use with a Cadence API.</li>
+                    <li>full containerization of all components and deployment to Kubernetes cluster infrastructure.</li>
+                </ol> 
+                <p>For questions about the project, please email the author.</p>
             </section>
             <section data-content="request" class="content">
                 <p>Submit a song request to enter the play queue.</p>
@@ -113,7 +119,7 @@
                 <p>All requests, responses, and messages shall be transmitted as raw JSON.</p>
                 <div class="columns">
                     <div class="column">
-                        <h2 class="title is-3">POST /api/search</h2>
+                        <h2 class="title is-3"><span class="tag is-success block">Stable</span> POST /api/search</h2>
                         <p>Search the server's music library for any song or artist. Cadence additionally is aware of audio file metadata for album, year, and genre, meaning you may also try to search by any of those parameters.</p>
                         <p>This API call returns a list of results ordered by relevance.</p>
                         <h3 class="title is-6">Request</h3>
@@ -123,7 +129,7 @@
         
                         <hr/>
         
-                        <h2 class="title is-3">POST /api/request/id</h2>
+                        <h2 class="title is-3"><span class="tag is-success block">Stable</span> POST /api/request/id</h2>
                         <p>Submit a request for a specific song to be played. This call accepts a song ID, which is an impermanent label Cadence applies to each song and is not an inherent attribute of the song file itself. Therefore, you should execute a search for an ID as a prerequisite to request.</p>
                         <h3 class="title is-6">Request</h3>
                         <code>{ "ID": "1", "Token", "abcdefghijk" }</code>
@@ -135,7 +141,7 @@
         
                         <hr/>
         
-                        <h2 class="title is-3">POST /api/request/bestmatch</h2>
+                        <h2 class="title is-3"><span class="tag is-danger block">Experimental</span> POST /api/request/bestmatch</h2>
                         <p>In contrast to <code>/api/request/id</code>, this call essentially executes a search, selects the number one result (the most relevant result to the search), and submits a request for it.</p>
 
                         <h3 class="title is-6">Request</h3>
@@ -149,7 +155,7 @@
                         <hr/>
                     </div>
                     <div class="column">
-                        <h2 class="title is-3">GET /api/nowplaying/metadata</h2>
+                        <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/nowplaying/metadata</h2>
                         <p>Gets all text metadata on the currently playing song.</p>
                         <p>Does not return album art. To get album art, use <code>/api/nowplaying/albumart</code></p>
                         <h3 class="title is-6">Response</h3>
@@ -166,7 +172,7 @@
 
                         <hr/>
                         
-                        <h2 class="title is-3">GET /api/nowplaying/albumart</h2>
+                        <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/nowplaying/albumart</h2>
                         <p>Gets the base64-encoded album art of the currently playing song.</p>
                         <h3 class="title is-6">Response</h3>
                         <code>
@@ -176,15 +182,15 @@
                         </code>
 
                         <hr/>
-
-                        <h2 class="title is-3">GET /api/version</h2>
+                        is-warning
+                        <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/version</h2>
                         <p>Returns the server version.</p>
                         <h3 class="title is-6">Response</h3>
                         <code>{ "Version": "5.0.0" }</code>
 
                         <hr/>
 
-                        <h2 class="title is-3">WS /socket/radiodata</h2>
+                        <h2 class="title is-3"><span class="tag is-danger block">Experimental</span> WS /socket/radiodata</h2>
                         <p>When a connection is established, the server will continue to push data to the client as it changes on the backend. The data is updated within two seconds after a change is observed. All data transfer happens through only one socket and is differentiated by the three unique <code>Type</code>s.</p>
                         <p>As an example, if the playing song changes, all connected clients receive a <code>Type: "NowPlaying"</code> message from the server.</p>
                         <h3 class="title is-6">Messages</h4>

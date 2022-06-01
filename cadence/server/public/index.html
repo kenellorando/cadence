@@ -58,7 +58,7 @@
     </head>
     <body>
         <div id="player" class="columns is-centered is-vcentered box">
-            <div class="column is-narrow is-offset-2-desktop is-4-desktop-only">
+            <div class="column is-narrow is-offset-1-desktop is-4-desktop-only">
                 <div id="artworkcontainer">
                     <img id="artwork" src=""/>
                 </div>
@@ -98,15 +98,16 @@
                 <div id="searchResults"></div>
             </section>
             <section data-content="theme">
-                        <div class="tag block">Light</div>
-                        <div class="buttons has-addons">
-                            <button type="button is-white" class="button themeButton" id="Default">Default</button>
-                        </div>
-                        <div class="tag is-black block">Dark</div>
-                        <div class="buttons has-addons">
-                            <button type="button" class="button is-dark themeButton" id="RCB40">RCB40</button>
-                            <button type="button" class="button is-black themeButton" id="No2TypeB">No. 2 Type B</button>
-                        </div>
+                <p>N/A</p>
+                <!-- <div class="tag block">Light</div>
+                <div class="buttons has-addons">
+                    <button type="button is-white" class="button themeButton" id="Default">Default</button>
+                </div>
+                <div class="tag is-black block">Dark</div>
+                <div class="buttons has-addons">
+                    <button type="button" class="button is-dark themeButton" id="RCB40">RCB40</button>
+                    <button type="button" class="button is-black themeButton" id="No2TypeB">No. 2 Type B</button>
+                </div> -->
             </section>
             <section data-content="api" class="content">
                 <p>All requests, responses, and messages shall be transmitted as raw JSON.</p>
@@ -118,19 +119,19 @@
                         <h3 class="title is-6">Request</h3>
                         <code>{ "search": "railgun" }</code>
                         <h3 class="title is-6">Response</h3>
-                        <code>[ {ID: "1", Artist: "fripSide", Title: "only my railgun"}, ...]</code>
+                        <code>[ { "ID": "1", "Artist": "fripSide", "Title": "only my railgun"}, ...]</code>
         
                         <hr/>
         
                         <h2 class="title is-3">POST /api/request/id</h2>
                         <p>Submit a request for a specific song to be played. This call accepts a song ID, which is an impermanent label Cadence applies to each song and is not an inherent attribute of the song file itself. Therefore, you should execute a search for an ID as a prerequisite to request.</p>
                         <h3 class="title is-6">Request</h3>
-                        <code>{ ID: "1", Token, "abcdefghijk" }</code>
+                        <code>{ "ID": "1", "Token", "abcdefghijk" }</code>
                         <ul>
                             <li><code>"Token"</code> is an optional string provided by the radio administrator which allows the requesting entity to bypass any rate limiters enabled on Cadence.</li>
                         </ul>
                         <h3 class="title is-6">Response</h3>
-                        <code>{ Message: "Request accepted!", TimeRemaining: 300 }</code>
+                        <code>{ "Message": "Request accepted!", "TimeRemaining": 300 }</code>
         
                         <hr/>
         
@@ -138,12 +139,12 @@
                         <p>In contrast to <code>/api/request/id</code>, this call essentially executes a search, selects the number one result (the most relevant result to the search), and submits a request for it.</p>
 
                         <h3 class="title is-6">Request</h3>
-                        <code>{ Search: "only my railgun fripSide", Token, "abcdefghijk"  }</code>
+                        <code>{ "Search": "only my railgun fripSide", "Token", "abcdefghijk"  }</code>
                         <ul>
                             <li><code>"Token"</code> is an optional string provided by the radio administrator which allows the requesting entity to bypass any rate limiters enabled on Cadence.</li>
                         </ul>
                         <h3 class="title is-6">Response</h3>
-                        <code>{ Message: "Request accepted!", TimeRemaining: 300 }</code>
+                        <code>{ "Message": "Request accepted!", "TimeRemaining": 300 }</code>
         
                         <hr/>
                     </div>
@@ -154,12 +155,12 @@
                         <h3 class="title is-6">Response</h3>
                         <code>
                         { 
-                            ID: 1, 
-                            Artist: "fripSide", 
-                            Title: "only my railgun", 
-                            Album: "only my railgun - Single", 
-                            Genre: "J-Pop", 
-                            Year: 2009 
+                            "ID": 1, 
+                            "Artist": "fripSide", 
+                            "Title": "only my railgun", 
+                            "Album": "only my railgun - Single", 
+                            "Genre": "J-Pop", 
+                            "Year": 2009 
                         }
                         </code>
 
@@ -170,7 +171,7 @@
                         <h3 class="title is-6">Response</h3>
                         <code>
                         { 
-                            Picture: "(base64 encoding of album art)" 
+                            "Picture": "(base64 encoding of album art)" 
                         }
                         </code>
 
@@ -179,17 +180,17 @@
                         <h2 class="title is-3">GET /api/version</h2>
                         <p>Returns the server version.</p>
                         <h3 class="title is-6">Response</h3>
-                        <code>{ Version: "5.0.0" }</code>
+                        <code>{ "Version": "5.0.0" }</code>
 
                         <hr/>
 
                         <h2 class="title is-3">WS /socket/radiodata</h2>
-                        <p>When a connection is established, the server will continue to push data to the client as it changes on the backend. The data is updated within two seconds after a change is observed. There is only one socket for data transfer, but is differentiated by the three different <code>Type</code>s.</p>
+                        <p>When a connection is established, the server will continue to push data to the client as it changes on the backend. The data is updated within two seconds after a change is observed. All data transfer happens through only one socket and is differentiated by the three unique <code>Type</code>s.</p>
                         <p>As an example, if the playing song changes, all connected clients receive a <code>Type: "NowPlaying"</code> message from the server.</p>
                         <h3 class="title is-6">Messages</h4>
-                        <div><code>{ Type: "NowPlaying", Artist: "fripSide", Title: "only my railgun" }</code></div>
-                        <div><code>{ Type: "Listeners", Listeners: 2 }</code></div>
-                        <div><code>{ Type: "StreamConnection", ListenURL: "stream.cadenceradio.com", Mountpoint: "/cadence1" }</code></div>
+                        <div><code>{ "Type": "NowPlaying", "Artist": "fripSide", "Title": "only my railgun" }</code></div>
+                        <div><code>{ "Type": "Listeners", "Listeners": 2 }</code></div>
+                        <div><code>{ "Type": "StreamConnection", "Host": "stream.cadenceradio.com", "Mountpoint": "/cadence1" }</code></div>
                     </div>
                 </div>
             </section>
@@ -199,6 +200,5 @@
             <div>Version: <span id="release">-</span></div>
             <div>Created by <a href="https://kenellorando.com/">Ken Ellorando</a></div>
         </footer>
-
     </body>
 </html>

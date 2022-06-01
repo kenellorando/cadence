@@ -37,7 +37,6 @@ RUN if [ "$TARGETARCH" = "arm" ] ; then \
     apt remove --purge g++-arm-linux-gnueabihf -y; \
     elif [ "$TARGETARCH" = "amd64" ] ; then \
     CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /cadence-server --tags "linux sqlite_fts5"; fi
-RUN apt clean && apt autoremove --purge -y
 
 ARG ARCH=
 FROM ${ARCH}golang:1.18.1-bullseye

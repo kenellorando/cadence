@@ -61,12 +61,12 @@ var streamSrcURL = "" // this gets used by the stream playButton function
 // Hook into the cadence radio data socket
 $(document).ready(function() {
 	if (location.protocol == "https:") {
-		var socket = new WebSocket("wss://" +  location.host + "/socket/radiodata")
+		socket = new WebSocket("wss://" +  location.host + "/socket/radiodata")
 	} else {
 		// This is necessary for local testing. All public ingress is https.
-		var socket = new WebSocket("ws://" + location.host + "/socket/radiodata")
+		socket = new WebSocket("ws://" + location.host + "/socket/radiodata")
 	}
-
+	
 	socket.onopen = () => {
 		console.log("Established connection with Cadence radiodata socket.")
 	}
@@ -75,6 +75,7 @@ $(document).ready(function() {
 	}
 	socket.onerror = (ServerMessage) => {
 		console.warn("Could not reach the Cadence radio data socket: " + ServerMessage.data)
+		socket.close()
 	}
 
 	function handle(ServerMessage) {
@@ -101,11 +102,9 @@ $(document).ready(function() {
 				}
 				break;
 			case "StreamConnection":
-				var currentListenURL = location.protocol + "//" + message.ListenURL.trim();
-				var currentMountpoint = message.Mountpoint.trim();
-				
+				var currentListenURL = location.protocol + "//" + message.Host.trim() + "/" + message.Mountpoint.trim();
 				if (currentListenURL !== "N/A") {
-					$('#status').html("Connected to stream: <a href='"+ currentListenURL + "'>" + currentMountpoint + "</a>");
+					$('#status').html("Connected to stream: <a href='"+ currentListenURL + "'>" + message.Mountpoint.trim() + "</a>");
 				} else {
 					$('#status').html("Disconnected from stream.");
 				}

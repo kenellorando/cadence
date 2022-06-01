@@ -6,11 +6,8 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
-	"os"
 	"strings"
 
-	"github.com/dhowden/tag"
 	"github.com/kenellorando/clog"
 )
 
@@ -43,45 +40,4 @@ func tokenCheck(token string) bool {
 	}
 	clog.Info("tokenCheck", fmt.Sprintf("Token %s is invalid.", token))
 	return false
-}
-
-// Queries the metadata DB for the path of a given song, reads the file data for artwork, then returns artwork directly.
-func getAlbumArt(currentArtist string, currentTitle string) []byte {
-	log.Printf("%s %s", currentArtist, currentTitle)
-
-	selectStatement := fmt.Sprintf("SELECT path FROM %s WHERE artist=\"%v\" AND title=\"%v\";", c.MetadataTable, currentArtist, currentTitle)
-	rows, err := database.Query(selectStatement)
-	if err != nil {
-		clog.Error("getAlbumArt", "Could not query the DB for a path.", err)
-		return nil
-	}
-	if err != nil {
-		clog.Error("getAlbumArt", "Could not query the DB for a path.", err)
-		return nil
-	}
-
-	var pic []byte
-
-	for rows.Next() {
-		var path string
-		err := rows.Scan(&path)
-		if err != nil {
-			clog.Debug("getAlbumArt", "ae")
-			return nil
-		}
-		// Open a file for reading
-		file, err := os.Open(path)
-		if err != nil {
-			clog.Error("getAlbumArt", "Could not open music file for album art.", err)
-			return nil
-		}
-		// Read metadata from the file
-		tags, err := tag.ReadFrom(file)
-		if err != nil {
-			clog.Error("getAlbumArt", "Could not read tags from file for album art.", err)
-			return nil
-		}
-		pic = tags.Picture().Data
-	}
-	return pic
 }

@@ -11,15 +11,11 @@
         <meta property="og:url" content="https://cadenceradio.com">
         <meta property="og:type" content="website">
         <meta property="og:title" content="Cadence Radio ♥">
-        <meta property="og:description" content="A Rhythmic Experience">
-        <meta property="og:image" content="https://i.imgur.com/GSVMd9L.gif">
         
         <meta name="twitter:card" content="summary_large_image">
         <meta property="twitter:domain" content="cadenceradio.com">
         <meta property="twitter:url" content="https://cadenceradio.com">
         <meta name="twitter:title" content="Cadence Radio ♥">
-        <meta name="twitter:description" content="A Rhythmic Experience">
-        <meta name="twitter:image" content="https://i.imgur.com/GSVMd9L.gif">
 
         <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 
@@ -90,8 +86,8 @@
                     <li>an API server providing music search and request functionality.</li>
                     <li>an interactive web frontend.</li>
                     <li>a built-in, auto-populating music metadata database.</li>
-                    <li>full integration with <i>Icecast</i> and <i>Liquidsoap</i> deployments, custom-tuned for use with a Cadence API.</li>
-                    <li>full containerization of all components and deployment to Kubernetes cluster infrastructure.</li>
+                    <li>built-in <i>Icecast</i> and <i>Liquidsoap</i> integration</li>
+                    <li>containerization of all components and deployment to Kubernetes cluster infrastructure.</li>
                 </ol> 
                 <p>For questions about the project, please email the author.</p>
             </section>
@@ -190,7 +186,7 @@
 
                         <hr/>
 
-                        <h2 class="title is-3"><span class="tag is-danger block">Experimental</span> WS /socket/radiodata</h2>
+                        <h2 class="title is-3"><span class="tag is-danger block">Experimental</span> WS GET /socket/radiodata</h2>
                         <p>When a connection is established, the server will continue to push data to the client as it changes on the backend. The data is updated within two seconds after a change is observed. All data transfer happens through only one socket and is differentiated by the three unique <code>Type</code>s.</p>
                         <p>As an example, if the playing song changes, all connected clients receive a <code>Type: "NowPlaying"</code> message from the server.</p>
                         <h3 class="title is-6">Messages</h4>
@@ -204,7 +200,7 @@
         <footer>
             <div class="title rocksalt is-3">CADENCE</div>
             <div>Version: <span id="release">-</span></div>
-            <div>Created by <a href="https://kenellorando.com/">Ken Ellorando</a></div>
+            <div>Created by Ken Ellorando</div>
         </footer>
     </body>
 </html>

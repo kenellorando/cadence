@@ -21,12 +21,20 @@
 
         <!-- Bulma CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-        <link rel="stylesheet" href="./css/5.0.css">
-        <link rel="stylesheet" href="./css/5.0tabs.css">
-        <link rel="stylesheet" href="./css/5.0mq.css">
 
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Rock+Salt&display=swap" rel="stylesheet"> 
+
+        <link rel="stylesheet" href="./css/5.0.css">
+        <!-- <link rel="stylesheet" href="./css/5.0tabs.css">
+        <link rel="stylesheet" href="./css/5.0mq.css"> -->
+
+
+        <!-- HTMX JS
+        <script src="https://unpkg.com/htmx.org@1.7.0"></script> -->
         <!-- HTMX JS -->
-        <script src="https://unpkg.com/htmx.org@1.7.0"></script>
         <!-- <link rel="stylesheet" href="/css/base.css"> -->
 
         <!--
@@ -42,15 +50,11 @@
         <!-- API (Aria) scripts -->
         <script type="text/javascript" src="./js/aria.js"></script>
         <!-- Radio player scripts -->
-        <script type="text/javascript" src="./js/player.js"></script>
+        <script type="text/javascript" src="./js/page.js"></script>
 
 
         <!-- 5.0 new -->
-        <script type="text/javascript" src="./js/5.0.js"></script>
-
-
-        <!-- UI view switching scripts -->
-        <!-- <script type="text/javascript" src="/js/tabs.js"></script> -->
+        <!-- <script type="text/javascript" src="./js/5.0.js"></script> -->
     </head>
     <body>
         <div id="player" class="columns is-centered is-vcentered box">
@@ -81,15 +85,15 @@
 
         <div id="tab-content">
             <section data-content="about" class="content is-active">
-                <p><b>Cadence</b> is a fully-featured web radio application suite. The project is multi-component and features:</p>
+                <p><b>Cadence</b> is a fully-featured web radio application suite. It ships everything needed to run an internet radio station. The project is multi-component and features:</p>
                 <ol>
-                    <li>an API server providing music search and request functionality.</li>
-                    <li>an interactive web frontend.</li>
+                    <li>an API server providing music search, song request, now playing data, and artwork functionality.</li>
+                    <li>an interactive web frontend with a UI theme changer.</li>
                     <li>a built-in, auto-populating music metadata database.</li>
-                    <li>built-in <i>Icecast</i> and <i>Liquidsoap</i> integration</li>
-                    <li>containerization of all components and deployment to Kubernetes cluster infrastructure.</li>
-                </ol> 
-                <p>For questions about the project, please email the author.</p>
+                    <li>custom <i>Icecast</i> and <i>Liquidsoap</i> integration</li>
+                    <li>containerization of all components and support for deployment to Kubernetes cluster infrastructure.</li>
+                </ol>
+                <p>The current iteration, <code>5.x</code>, is currently under development.</p>
             </section>
             <section data-content="request" class="content">
                 <p>Submit a song request to enter the play queue.</p>
@@ -100,7 +104,7 @@
                 <div id="searchResults"></div>
             </section>
             <section data-content="theme">
-                <p>N/A</p>
+                <p>Coming soon.</p>
                 <!-- <div class="tag block">Light</div>
                 <div class="buttons has-addons">
                     <button type="button is-white" class="button themeButton" id="Default">Default</button>
@@ -200,7 +204,7 @@
         <footer>
             <div class="title rocksalt is-3">CADENCE</div>
             <div>Version: <span id="release">-</span></div>
-            <div>Created by Ken Ellorando</div>
+            <div>Created by <a href="https://kenellorando.com">Ken Ellorando</a></div>
         </footer>
     </body>
 </html>

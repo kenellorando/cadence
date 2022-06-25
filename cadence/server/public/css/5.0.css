@@ -1,8 +1,3 @@
-
-@import url('https://fonts.googleapis.com/css2?family=family=Rock+Salt&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Roboto+Condensed:wght@300&family=Rock+Salt&display=swap');
-
 body {
 	font-family: 'Roboto Condensed', sans-serif;
 	padding-left: 5%;
@@ -72,3 +67,48 @@ footer {
 #searchResults tr td:last-child {
 	text-align: right;
 } */
+
+#tab-content section {
+    display: none;
+}
+#tab-content section.is-active {
+    display: block;
+}
+
+
+@media (min-width: 769px) {
+	body {
+		padding-left: 8%;
+		padding-right: 8%;
+	}
+    #playerinfo {
+        text-align: left;
+    }
+    #player #playButton {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+@media (min-width: 1200px) {
+    body {
+		padding-left: 16%;
+		padding-right: 16%;
+	}
+    #player #song {
+        max-width: 80%;
+    }
+}
+@media (min-width: 1600px) {
+	body {
+		padding-left: 21%;
+		padding-right: 21%;
+	}
+}
+
+@media (min-width: 1800px) {
+	body {
+		padding-left: 26%;
+		padding-right: 26%;
+	}
+}
+

@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(window).on("load", function(e) {
 	// Initial search on load
 	postSearch()
 	// When the user presses the return key
@@ -42,7 +42,7 @@ $(document).ready(function() {
 });
 
 // Get latest source release title
-$(document).ready(function() {
+$(window).on("load", function(e) {
 	$.ajax({
 		type: 'GET',
 		url: "/api/version",

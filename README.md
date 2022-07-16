@@ -4,22 +4,24 @@
 
 **Cadence** is a fully-featured HTTP API application suite for *Icecast/Liquidsoap* web radios.
 
-This project ships an API server, web-frontend, and built-in music-metadata database wrapper for custom-built stream service _Icecast_ and _Liquidsoap_ (also included out of the box). All components are containerized, with releases for amd64 and armv7.
+Out of the box, this project ships an API server, web-frontend, and autopopulating music-metadata database with custom _Icecast_ and _Liquidsoap_ containers. A Compose file will let you set up an entire radio stack in minutes. All components have releases for amd64 and armv7. 
 
 See a demo of this on [https://cadenceradio.com/](https://cadenceradio.com/).
 
 ## Get Started
 
-1. Configure the `cadence/config/cadence.env` file.
-   1. Configure the `CSERVER_MUSIC_DIR` to an absolute path of a directory on your local system which you want to play music. The target is not recursively searched. The default location is `/music/`.
-   2. (optional) Configure the rate limiter by setting the `CSERVER_REQRATELIMIT` to the number of seconds you wish to timeout users after they make song requests. Setting this value to `0` will disable rate limiting.
+### Running Locally
+
+1. Edit the `cadence/config/cadence.env` file:
+   1. Set the `CSERVER_MUSIC_DIR` value to an absolute path of a directory on your local system which you want to play music. The target is not recursively searched. The default location is `/music/`.
+   2. Set the `CSERVER_REQRATELIMIT` to the number of seconds you wish to timeout users after they make song requests. Setting this value to `0` will disable rate limiting.
 3. `docker compose up`
 
-This will pull pre-built images (with working default configurations) for each of the services and start them with your `cadence.env` file options. The frontend interface is accessible by default at `localhost:8080`.
+Running `docker compose up` will start all of the Cadence services. The frontend interface is accessible by default at `localhost:8080`.
 
-Running Cadence like this is perfectly fine for local usage, but if you plan to expose Cadence beyond your local network, you'll need to tweak a few configuration files so the radio services are password protected (see next section).
+### Password Protecting Services
 
-### Publicly Accessible Configuration (Password Protected)
+If you plan to expose Cadence beyond your local network, you'll need to tweak a few configuration files so the radio services are password protected (see next section).
 
 > **Warning**: The way this repo currently handles configuration involves adding passwords to files which you may accidentally commit, so be careful.
 

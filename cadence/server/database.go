@@ -15,79 +15,74 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var database *sql.DB // Database abstraction interface
-
-func dbAutoConfig() (*sql.DB, error) {
-	clog.Debug("dbAutoConfig", "Starting automatic database configuration.")
-	newdatabase, err := sql.Open("sqlite3", "/cadence/music-metadata.db")
-	if err != nil {
-		panic(err)
-	}
-
-	// Build the database tables
-	clog.Debug("dbAutoConfig", fmt.Sprintf("Building database schema for table <%s>...", c.MetadataTable))
-	_, err = newdatabase.Exec(`CREATE VIRTUAL TABLE IF NOT EXISTS aria USING FTS5(title,album,artist,genre,year,path)`)
+func dbAutoConfig() (newdb *sql.DB, err error) {
+	clog.Info("dbAutoConfig", "Setting up the database.")
+	newdb, err = sql.Open("sqlite3", "/cadence/music-metadata.db")
 	if err != nil {
 		clog.Error("dbAutoConfig", "Failed to build database table!", err)
 		return nil, err
 	}
-	return newdatabase, nil
+	clog.Info("dbAutoConfig", fmt.Sprintf("Building schema for table <%s>...", c.MetadataTable))
+	_, err = newdb.Exec(`CREATE VIRTUAL TABLE IF NOT EXISTS aria USING FTS5(title,album,artist,genre,year,path)`) // Todo: insert 'aria' through c
+	if err != nil {
+		clog.Error("dbAutoConfig", "Failed to build database table!", err)
+		return nil, err
+	}
+	return newdb, nil
 }
 
 func dbPopulate() error {
-	clog.Debug("dbPopulate", "Starting metadata database population.")
-	// SQL exec statements here
-	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6", "aria", "title", "album", "artist", "genre", "year", "path")
-	// Check if music directory exists. Return if err
+	clog.Info("dbPopulate", "Running music metadata database population.")
 	_, err := os.Stat(c.MusicDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			clog.Error("dbPopulate", "The defined music directory was not found.", err)
+			clog.Error("dbPopulate", "The configured target music directory was not found.", err)
 			return err
 		}
 	}
-	clog.Debug("dbPopulate", fmt.Sprintf("Extracting metadata from directory: %s", c.MusicDir))
-	// Recursive walk on directory
+
+	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6", "aria", "title", "album", "artist", "genre", "year", "path")
+	clog.Info("dbPopulate", fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir))
 	err = filepath.Walk(c.MusicDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		// Skip directories
 		if info.IsDir() {
 			return nil
 		}
-		// Skip non-music files
-		var extensions = [...]string{".flac", ".ogg", ".mp3"}
+
+		extensions := []string{".mp3", ".flac", ".ogg"}
 		for _, ext := range extensions {
 			if strings.HasSuffix(path, ext) {
-				// Open a file for reading
-				file, e := os.Open(path)
-				if e != nil {
-					return e
-				}
-				// Read metadata from the file
-				tags, err := tag.ReadFrom(file)
+				file, err := os.Open(path)
+				defer file.Close()
 				if err != nil {
+					clog.Error("dbPopulate", fmt.Sprintf("A problem occured opening <%s>.", path), err)
 					return err
 				}
-				// Insert into database
-				_, err = database.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(),
+
+				tags, err := tag.ReadFrom(file)
+				if err != nil {
+					clog.Error("dbPopulate", fmt.Sprintf("A problem occured fetching tags from <%s>.", path), err)
+					return err
+				}
+
+				_, err = db.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(),
 					tags.Genre(), tags.Year(), path)
 				if err != nil {
-					clog.Error("dbPopulate", "A problem occured populating metadata for a song.", err)
+					clog.Error("dbPopulate", fmt.Sprintf("A problem occured populating metadata for <%s>.", path), err)
+					return err
 				}
-				// Close the file
-				file.Close()
-			} else {
-				continue
+				break
 			}
 		}
 		return nil
 	})
 	if err != nil {
-		clog.Error("dbPopulate", "Examination of music file metadata failed!", err)
+		clog.Error("dbPopulate", "Music metadata database population failed, or may be incomplete.", err)
 		return err
 	}
-	clog.Debug("dbPopulate", "Database population complete.")
+
+	clog.Info("dbPopulate", "Database population completed.")
 	return nil
 }

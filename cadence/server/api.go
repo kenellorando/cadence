@@ -16,10 +16,12 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Jeffail/gabs"
 	"github.com/dhowden/tag"
+	"github.com/gorilla/websocket"
 	"github.com/kenellorando/clog"
 )
 
@@ -75,7 +77,7 @@ func Search() http.HandlerFunc {
 			// Title search
 			q := query[len("songs named "):]
 			selectWhereStatement := selectStatement + "WHERE title LIKE $1 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
+			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -84,7 +86,7 @@ func Search() http.HandlerFunc {
 			// Artist search
 			q := query[len("songs by "):]
 			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
+			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -93,7 +95,7 @@ func Search() http.HandlerFunc {
 			// Genre search
 			q := query[:len(query)-len(" songs")]
 			selectWhereStatement := selectStatement + "WHERE genre LIKE $1 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
+			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -103,7 +105,7 @@ func Search() http.HandlerFunc {
 			// Note that the year query doesn't use includes: "Songs from 20" shouldn't return a song made in 2009.
 			q := query[len("songs from "):]
 			selectWhereStatement := selectStatement + "WHERE year LIKE $1 OR ALBUM LIKE $2 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, q, "%"+q+"%")
+			rows, err = db.Query(selectWhereStatement, q, "%"+q+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -113,7 +115,7 @@ func Search() http.HandlerFunc {
 			// This search also doesn't use an include-style parameter
 			q := query[len("songs released in "):]
 			selectWhereStatement := selectStatement + "WHERE year LIKE $1 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, q)
+			rows, err = db.Query(selectWhereStatement, q)
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -122,7 +124,7 @@ func Search() http.HandlerFunc {
 			// Album search
 			q := query[len("songs in "):]
 			selectWhereStatement := selectStatement + "WHERE album LIKE $1 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
+			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -132,7 +134,7 @@ func Search() http.HandlerFunc {
 			// It's been an open question since before v3.0 what exactly we should do for a general search...
 			// But, it's always been the case that either title or artist search works here.
 			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
+			rows, err = db.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -256,7 +258,7 @@ func RequestID() http.HandlerFunc {
 		clog.Debug("Request", "Searching database for corresponding path...")
 
 		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v;", c.MetadataTable, request.ID)
-		rows, err := database.Query(selectStatement)
+		rows, err := db.Query(selectStatement)
 		if err != nil {
 			clog.Error("Request", "Database select failed.", err)
 			timeRemaining := 0
@@ -374,7 +376,7 @@ func RequestBestMatch() http.HandlerFunc {
 			// Title search
 			q := query[len("songs named "):]
 			selectWhereStatement := selectStatement + "WHERE title LIKE $1 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
+			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -383,7 +385,7 @@ func RequestBestMatch() http.HandlerFunc {
 			// Artist search
 			q := query[len("songs by "):]
 			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
+			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -392,7 +394,7 @@ func RequestBestMatch() http.HandlerFunc {
 			// Genre search
 			q := query[:len(query)-len(" songs")]
 			selectWhereStatement := selectStatement + "WHERE genre LIKE $1 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
+			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -402,7 +404,7 @@ func RequestBestMatch() http.HandlerFunc {
 			// Note that the year query doesn't use includes: "Songs from 20" shouldn't return a song made in 2009.
 			q := query[len("songs from "):]
 			selectWhereStatement := selectStatement + "WHERE year LIKE $1 OR ALBUM LIKE $2 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, q, "%"+q+"%")
+			rows, err = db.Query(selectWhereStatement, q, "%"+q+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -412,7 +414,7 @@ func RequestBestMatch() http.HandlerFunc {
 			// This search also doesn't use an include-style parameter
 			q := query[len("songs released in "):]
 			selectWhereStatement := selectStatement + "WHERE year LIKE $1 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, q)
+			rows, err = db.Query(selectWhereStatement, q)
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -421,7 +423,7 @@ func RequestBestMatch() http.HandlerFunc {
 			// Album search
 			q := query[len("songs in "):]
 			selectWhereStatement := selectStatement + "WHERE album LIKE $1 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, "%"+q+"%")
+			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -431,7 +433,7 @@ func RequestBestMatch() http.HandlerFunc {
 			// It's been an open question since before v3.0 what exactly we should do for a general search...
 			// But, it's always been the case that either title or artist search works here.
 			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
-			rows, err = database.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
+			rows, err = db.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
 			if err != nil {
 				clog.Error("Search", "Database search failed.", err)
 				return
@@ -558,7 +560,7 @@ func NowPlayingMetadata() http.HandlerFunc {
 
 		// When the title and artist are known, we query the metadata DB for all of the data it has on the playing track
 		selectStatement := fmt.Sprintf("SELECT rowid,artist,title,album,genre,year FROM %s WHERE artist=\"%v\" AND title=\"%v\";", c.MetadataTable, artist, title)
-		rows, err := database.Query(selectStatement)
+		rows, err := db.Query(selectStatement)
 		if err != nil {
 			clog.Error("NowPlayingMetadata", "Could not query DB.", err)
 			return
@@ -630,7 +632,7 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 		log.Printf("%s %s", artist, title)
 
 		selectStatement := fmt.Sprintf("SELECT path FROM %s WHERE artist=\"%v\" AND title=\"%v\";", c.MetadataTable, artist, title)
-		rows, err := database.Query(selectStatement)
+		rows, err := db.Query(selectStatement)
 		if err != nil {
 			clog.Error("NowPlayingAlbumArt", "Could not query the DB for a path.", err)
 			return
@@ -697,4 +699,131 @@ func Ready() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
 	}
+}
+
+var upgrader = websocket.Upgrader{}
+
+// RadioData() upgrades a connection for websocket
+func RadioData() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		clog.Debug("RadioDataLoop", "Received new socket connection")
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Print("Error upgrading socket connection.", err)
+			return
+		}
+		defer conn.Close()
+
+		type Message struct {
+			Type       string
+			Artist     string
+			Title      string
+			Host       string
+			Mountpoint string
+			ListenURL  string
+			Listeners  float64
+		}
+
+		var lastArtist, lastTitle, lastHost, lastMountpoint string
+		var lastListeners float64
+
+		var currentArtist, currentTitle, currentHost, currentMountpoint string
+		var currentListeners float64
+
+		for {
+			resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
+			if err != nil {
+				clog.Error("RadioData", "Failed to connect to audio stream server.", err)
+				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-", Artist: "-"})
+				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})
+				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A", ListenURL: "N/A"})
+				return
+			}
+			defer resp.Body.Close()
+			if resp.StatusCode != http.StatusOK {
+				clog.Error("RadioData", "Audio stream server returned bad status", err)
+				return
+			}
+
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				clog.Error("RadioData", "Failed to read stream server response.", err)
+				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-"})
+				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})
+				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A"})
+				return
+			}
+			jsonParsed, err := gabs.ParseJSON([]byte(body))
+			if err != nil {
+				clog.Error("RadioData", "Failed to parse stream server response.", err)
+				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-"})
+				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})
+				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A"})
+				return
+			}
+
+			currentArtist = fmt.Sprintf(jsonParsed.Path("icestats.source.artist").Data().(string))
+			currentTitle = fmt.Sprintf(jsonParsed.Path("icestats.source.title").Data().(string))
+			currentHost = fmt.Sprintf(jsonParsed.Path("icestats.host").Data().(string))
+			currentMountpoint = fmt.Sprintf(jsonParsed.Path("icestats.source.server_name").Data().(string))
+			currentListeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
+
+			if (lastArtist != currentArtist) || (lastTitle != currentTitle) {
+
+				clog.Debug("RadioData", "artist or title change detected")
+				clog.Debug("RadioData", currentArtist)
+				clog.Debug("RadioData", currentTitle)
+				clog.Debug("RadioData", "Writing connection")
+
+				err = conn.WriteJSON(Message{Type: "NowPlaying", Artist: currentArtist, Title: currentTitle})
+				if err != nil {
+					clog.Error("RadioData", "There was a problem writing the connection", err)
+				}
+				lastArtist = currentArtist
+				lastTitle = currentTitle
+			}
+			if (lastHost != currentHost) || (lastMountpoint != currentMountpoint) {
+				conn.WriteJSON(Message{Type: "StreamConnection", Host: currentHost, Mountpoint: currentMountpoint})
+				lastHost = currentHost
+				lastMountpoint = currentMountpoint
+			}
+			if lastListeners != currentListeners {
+				conn.WriteJSON(Message{Type: "Listeners", Listeners: currentListeners})
+				lastListeners = currentListeners
+			}
+
+			// Ping the client to maintain the connection
+			// Close it in the event of an error
+			err = conn.WriteMessage(websocket.PingMessage, []byte{})
+			if err != nil {
+				clog.Error("RadioData", "Error writing Ping.", err)
+				conn.Close()
+				return
+			}
+			time.Sleep(1 * time.Second)
+		}
+	}
+}
+
+func tokenCheck(token string) bool {
+	clog.Info("tokenCheck", fmt.Sprintf("Checking token %s...", token))
+
+	if len(token) != 26 {
+		clog.Debug("tokenCheck", fmt.Sprintf("Token %s does not satisfy length requirements.", token))
+		return false
+	}
+
+	// Check the whitelist. If this fails, the whitelist is not configured. No panic is thrown, but the bypass is denied.
+	b, err := ioutil.ReadFile(c.WhitelistPath)
+	if err != nil {
+		return false
+	}
+	s := string(b)
+
+	if strings.Contains(s, token) {
+		clog.Info("tokenCheck", fmt.Sprintf("Token %s is valid.", token))
+		return true
+	}
+	clog.Info("tokenCheck", fmt.Sprintf("Token %s is invalid.", token))
+	return false
 }

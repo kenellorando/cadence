@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,10 +10,9 @@ import (
 	"github.com/kenellorando/clog"
 )
 
-// Declare globally accessible data
 var c = ServerConfig{}
+var db *sql.DB
 
-// ServerConfig - Webserver configuration
 type ServerConfig struct {
 	Version          string
 	RootPath         string
@@ -28,10 +28,7 @@ type ServerConfig struct {
 	MetadataTable    string
 }
 
-// Init function grabs configuration values for the server
-// All configs are set in environment variables
 func init() {
-	// Webserver configuration
 	c.Version = os.Getenv("CSERVER_VERSION")
 	c.RootPath = os.Getenv("CSERVER_ROOTPATH")
 	c.LogLevel, _ = strconv.Atoi(os.Getenv("CSERVER_LOGLEVEL"))
@@ -45,25 +42,22 @@ func init() {
 	c.WhitelistPath = os.Getenv("CSERVER_WHITELIST_PATH")
 	c.MetadataTable = os.Getenv("CSERVER_DB_METADATA_TABLE")
 
-	// Initialize logging
 	clog.Level(c.LogLevel)
-	clog.Info("init", fmt.Sprintf("Logging service initialized to level <%v>", c.LogLevel))
+	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
-	newDatabase, err := dbAutoConfig()
+	var err error
+	db, err = dbAutoConfig()
 	if err != nil {
-		clog.Warn("init", "Database setup failed! Future database requests will also fail. Data check will be skipped.")
+		clog.Warn("init", "Database setup failed! Future database requests will also fail. Population will be skipped.")
 	} else {
-		database = newDatabase
 		err = dbPopulate()
 		if err != nil {
-			clog.Warn("init", "Initial database population failed.")
-		} else {
-			clog.Debug("init", "Database population OK.")
+			clog.Warn("init", "An error occured during initial database population. Music data may be inaccurate.")
 		}
 	}
 }
 
 func main() {
-	clog.Info("main", fmt.Sprintf("Starting webserver on port <%s>.", c.Port))
-	clog.Fatal("main", "Server failed to start!", http.ListenAndServe(c.Port, routes()))
+	clog.Info("main", fmt.Sprintf("Starting Cadence on port <%s>.", c.Port))
+	clog.Fatal("main", "Cadence failed to start!", http.ListenAndServe(c.Port, routes()))
 }

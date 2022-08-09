@@ -4,17 +4,14 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"path"
-	"strconv"
 	"strings"
 	"time"
 
@@ -46,66 +43,11 @@ func Site404() http.HandlerFunc {
 	}
 }
 
-// Declare object for a song
-type SongData struct {
-	ID     int
-	Artist string
-	Title  string
-	Album  string
-	Genre  string
-	Year   int
-}
-
-// Takes a search string, returns a slice of SongData of songs by relevance.
-func dbQuery(query string) (queryResults []SongData, err error) {
-	clog.Info("dbQuery", fmt.Sprintf("Searching database for query: '%v'", query))
-
-	selectWhereStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ", c.MetadataTable) + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
-	rows, err := db.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
-	if err != nil {
-		clog.Error("Search", "Database search failed.", err)
-		return nil, err
-	}
-
-	for rows.Next() {
-		song := new(SongData)
-		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
-		if err != nil {
-			clog.Error("Search", "Data scan failed.", err)
-			return
-		}
-		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
-	}
-	return queryResults, nil
-}
-
-// Takes a song ID integer, returns a string absolute path of the song.
-// Separated in order to keep filesystem paths internal.
-func dbQueryPath(id int) (path string, err error) {
-	clog.Info("dbQuery", fmt.Sprintf("Searching database for the path of song: '%v'", id))
-
-	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v", c.MetadataTable, id)
-
-	rows, err := db.Query(selectWhereStatement)
-	if err != nil {
-		clog.Error("Search", "Database search failed.", err)
-		return "", err
-	}
-	for rows.Next() {
-		err = rows.Scan(&path)
-		if err != nil {
-			clog.Error("Search", "Data scan failed.", err)
-			return "", err
-		}
-	}
-	return path, nil
-}
-
 // Default API ////////////////////////////////////////////////////////////////////
 func Search() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("Search", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
-		// Declare object to hold r body data
+		clog.Info("Search", fmt.Sprintf("Search by client %s.", r.Header.Get("X-Forwarded-For")))
+
 		type Search struct {
 			Query string `json:"search"`
 		}
@@ -114,7 +56,6 @@ func Search() http.HandlerFunc {
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&search)
 		if err != nil {
-			clog.Error("Search", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
 			return
 		}
 
@@ -122,292 +63,77 @@ func Search() http.HandlerFunc {
 		if err != nil {
 
 		}
-		// Scan the returned data and save the relevant info
-		clog.Debug("Search", "Scanning returned data...")
-		// Return data to client
+
 		jsonMarshal, _ := json.Marshal(queryResults)
 		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK) // 200 OK
 		w.Write(jsonMarshal)
 	}
 }
 
 func RequestID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("Request", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
-		requesterIP := r.Header.Get("X-Forwarded-For")
+		clog.Info("Request", fmt.Sprintf("Request-by-ID by client %s.", r.Header.Get("X-Forwarded-For")))
 
-		// Declare object for a song
-		type RequestResponse struct {
-			Message       string
-			TimeRemaining int
-		}
-
-		// Declare object to hold r body data
 		type Request struct {
-			ID    string `json:"ID"`
-			Token string `json:"Token"`
+			ID int `json:"ID"`
 		}
 		var request Request
 
-		// Decode json object
-		body, err := ioutil.ReadAll(r.Body)
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&request)
 		if err != nil {
-			clog.Error("Request", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
-
-			timeRemaining := 0
-			message := "Request not completed. Request-body is possibly malformed."
-
-			// Return data to client
-			requestResponse := RequestResponse{message, timeRemaining}
-			jsonMarshal, _ := json.Marshal(requestResponse)
-
 			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonMarshal)
 			return
 		}
-		err = json.Unmarshal(body, &request)
+
+		path, err := dbQueryPath(request.ID)
 		if err != nil {
-			clog.Error("Request", fmt.Sprintf("Failed to unmarshal http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
-
-			timeRemaining := 0
-			message := "Request not completed. Request-body is possibly malformed."
-
-			// Return data to client
-			requestResponse := RequestResponse{message, timeRemaining}
-			jsonMarshal, _ := json.Marshal(requestResponse)
-
-			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonMarshal)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
-
-		// Perform a check on the token
-		var tokenValid bool
-		if request.Token != "" {
-			tokenValid = tokenCheck(request.Token)
-		}
-
-		if tokenValid {
-			clog.Info("Request", fmt.Sprintf("Client %s bypassing rate limiter using token %s.", r.Header.Get("X-Forwarded-For"), request.Token))
-		} else { // Perform check on timeout log in memory
-			if _, ok := requestTimeoutIPs[requesterIP]; ok {
-				// If the existing IP was recently logged, deny the request.
-				if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.RequestRateLimit {
-					clog.Info("Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
-
-					timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
-					message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
-
-					// Return data to client
-					requestResponse := RequestResponse{message, timeRemaining}
-					jsonMarshal, _ := json.Marshal(requestResponse)
-
-					w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
-					w.Header().Set("Content-Type", "application/json")
-					w.Header().Set("Retry-After", strconv.Itoa(timeRemaining))
-					w.Write(jsonMarshal)
-					return
-				}
-			}
-		}
-
-		clog.Debug("Request", fmt.Sprintf("Received a song request for song ID #%v.", request.ID))
-		clog.Debug("Request", "Searching database for corresponding path...")
-
-		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v;", c.MetadataTable, request.ID)
-		rows, err := db.Query(selectStatement)
+		_, err = pushRequest(path)
 		if err != nil {
-			clog.Error("Request", "Database select failed.", err)
-			timeRemaining := 0
-			message := "Request not completed. Encountered a database error."
-
-			// Return data to client
-			requestResponse := RequestResponse{message, timeRemaining}
-			jsonMarshal, _ := json.Marshal(requestResponse)
-
-			w.WriteHeader(http.StatusInternalServerError) // 500 Server Error
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonMarshal)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
-
-		// "Every call to Scan, even the first one, must be preceded by a call to Next."
-		var path string
-		for rows.Next() {
-			err := rows.Scan(&path)
-			if err != nil {
-				clog.Error("Request", "Data scan failed.", err)
-				timeRemaining := 0
-				message := "Request not completed. Encountered a database error."
-
-				// Return data to client
-				requestResponse := RequestResponse{message, timeRemaining}
-				jsonMarshal, _ := json.Marshal(requestResponse)
-
-				w.WriteHeader(http.StatusInternalServerError) // 500 Server Error
-				w.Header().Set("Content-Type", "application/json")
-				w.Write(jsonMarshal)
-				return
-			}
-		}
-		clog.Debug("Request", fmt.Sprintf("Translated ID %v to path: %s", request.ID, path))
-
-		// Telnet to liquidsoap
-		clog.Debug("Request", "Connecting to liquidsoap service...")
-		conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
-		if err != nil {
-			clog.Error("Request", "Failed to connect to audio source server.", err)
-
-			timeRemaining := 0
-			message := "Request not completed. Could not submit request to stream source service."
-
-			// Return data to client
-			requestResponse := RequestResponse{message, timeRemaining}
-			jsonMarshal, _ := json.Marshal(requestResponse)
-
-			w.WriteHeader(http.StatusServiceUnavailable) // 503 Server Error
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonMarshal)
-			return
-		}
-
-		// Push request over connection
-		fmt.Fprintf(conn, "request.push "+path+"\n")
-		// Listen for reply
-		sourceServiceResponse, _ := bufio.NewReader(conn).ReadString('\n')
-		clog.Debug("Request", fmt.Sprintf("Message from audio source server: %s", sourceServiceResponse))
-
-		fmt.Fprintf(conn, "quit"+"\n")
-		// Disconnect from liquidsoap
-		conn.Close()
-
-		// Create or overwrite existing log times if time and request body look OK
-		requestTimeoutIPs[requesterIP] = int(time.Now().Unix())
-
-		// Return 202 OK to client
-		timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
-		message := "Request accepted!"
-
-		// Return data to client
-		requestResponse := RequestResponse{message, timeRemaining}
-		jsonMarshal, _ := json.Marshal(requestResponse)
 
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
 	}
 }
 
 func RequestBestMatch() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Debug("Search", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
-		requesterIP := r.Header.Get("X-Forwarded-For")
 
-		// Declare object to hold r body data and the corresponding ID
 		type RequestBestMatch struct {
 			Query string `json:"Search"`
-			Token string `json:"Token"`
-			Path  string // ascertained later
 		}
 		var rbm RequestBestMatch
 
-		// Decode json object
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&rbm)
 		if err != nil {
-			clog.Error("Search", fmt.Sprintf("Failed to read http-request body from %s.", r.Header.Get("X-Forwarded-For")), err)
+			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 			return
 		}
 
 		queryResults, err := dbQuery(rbm.Query)
 		if err != nil {
-
-		}
-		rbm.Path, err = dbQueryPath(queryResults[0].ID)
-		if err != nil {
-
-		}
-		// Declare object for a song
-		type RequestResponse struct {
-			Message       string
-			TimeRemaining int
-		}
-
-		// Perform a check on the token
-		var tokenValid bool
-		if rbm.Token != "" {
-			tokenValid = tokenCheck(rbm.Token)
-		}
-
-		if tokenValid {
-			clog.Info("Request", fmt.Sprintf("Client %s bypassing rate limiter using token %s.", r.Header.Get("X-Forwarded-For"), rbm.Token))
-		} else { // Perform check on timeout log in memory
-			if _, ok := requestTimeoutIPs[requesterIP]; ok {
-				// If the existing IP was recently logged, deny the request.
-				if requestTimeoutIPs[requesterIP] > int(time.Now().Unix())-c.RequestRateLimit {
-					clog.Info("Request", fmt.Sprintf("Request denied by rate limit for client %s.", r.Header.Get("X-Forwarded-For")))
-
-					timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
-					message := fmt.Sprintf("Request denied. Client is rate-limited for %v seconds.", timeRemaining)
-
-					// Return data to client
-					requestResponse := RequestResponse{message, timeRemaining}
-					jsonMarshal, _ := json.Marshal(requestResponse)
-
-					w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
-					w.Header().Set("Content-Type", "application/json")
-					w.Header().Set("Retry-After", strconv.Itoa(timeRemaining))
-					w.Write(jsonMarshal)
-					return
-				}
-			}
-		}
-
-		// Telnet to liquidsoap
-		clog.Debug("Request", "Connecting to liquidsoap service...")
-		conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
-		if err != nil {
-			clog.Error("Request", "Failed to connect to audio source server.", err)
-
-			timeRemaining := 0
-			message := "Request not completed. Could not submit request to stream source service."
-
-			// Return data to client
-			requestResponse := RequestResponse{message, timeRemaining}
-			jsonMarshal, _ := json.Marshal(requestResponse)
-
-			w.WriteHeader(http.StatusServiceUnavailable) // 503 Server Error
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonMarshal)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
-
-		// Push request over connection
-		fmt.Fprintf(conn, "request.push "+rbm.Path+"\n")
-		// Listen for reply
-		sourceServiceResponse, _ := bufio.NewReader(conn).ReadString('\n')
-		clog.Debug("Request", fmt.Sprintf("Message from audio source server: %s", sourceServiceResponse))
-
-		fmt.Fprintf(conn, "quit"+"\n")
-		// Disconnect from liquidsoap
-		conn.Close()
-
-		// Create or overwrite existing log times if time and request body look OK
-		requestTimeoutIPs[requesterIP] = int(time.Now().Unix())
-
-		// Return 202 OK to client
-		timeRemaining := requestTimeoutIPs[requesterIP] + c.RequestRateLimit - int(time.Now().Unix())
-		message := "Request accepted!"
-
-		// Return data to client
-		requestResponse := RequestResponse{message, timeRemaining}
-		jsonMarshal, _ := json.Marshal(requestResponse)
-
+		path, err := dbQueryPath(queryResults[0].ID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
+		_, err = pushRequest(path)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
 	}
 }
 

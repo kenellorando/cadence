@@ -5,7 +5,6 @@ package main
 
 import (
 	"bufio"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -33,6 +32,7 @@ func SiteRoot() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Info("ServeRoot", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 		w.Header().Set("Content-type", "text/html")
+		w.WriteHeader(http.StatusOK) // 200 Accepted
 		http.ServeFile(w, r, path.Dir(c.RootPath+"./public/index.html"))
 	}
 }
@@ -41,8 +41,64 @@ func Site404() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Info("Serve404", fmt.Sprintf("Client %s requesting unknown resource %s%s. Returning 404.", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 		w.Header().Set("Content-type", "text/html")
+		w.WriteHeader(http.StatusOK) // 200 Accepted
 		http.ServeFile(w, r, path.Dir(c.RootPath+"./public/404/index.html"))
 	}
+}
+
+// Declare object for a song
+type SongData struct {
+	ID     int
+	Artist string
+	Title  string
+	Album  string
+	Genre  string
+	Year   int
+}
+
+// Takes a search string, returns a slice of SongData of songs by relevance.
+func dbQuery(query string) (queryResults []SongData, err error) {
+	clog.Info("dbQuery", fmt.Sprintf("Searching database for query: '%v'", query))
+
+	selectWhereStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ", c.MetadataTable) + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
+	rows, err := db.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
+	if err != nil {
+		clog.Error("Search", "Database search failed.", err)
+		return nil, err
+	}
+
+	for rows.Next() {
+		song := new(SongData)
+		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
+		if err != nil {
+			clog.Error("Search", "Data scan failed.", err)
+			return
+		}
+		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
+	}
+	return queryResults, nil
+}
+
+// Takes a song ID integer, returns a string absolute path of the song.
+// Separated in order to keep filesystem paths internal.
+func dbQueryPath(id int) (path string, err error) {
+	clog.Info("dbQuery", fmt.Sprintf("Searching database for the path of song: '%v'", id))
+
+	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v", c.MetadataTable, id)
+
+	rows, err := db.Query(selectWhereStatement)
+	if err != nil {
+		clog.Error("Search", "Database search failed.", err)
+		return "", err
+	}
+	for rows.Next() {
+		err = rows.Scan(&path)
+		if err != nil {
+			clog.Error("Search", "Data scan failed.", err)
+			return "", err
+		}
+	}
+	return path, nil
 }
 
 // Default API ////////////////////////////////////////////////////////////////////
@@ -55,7 +111,6 @@ func Search() http.HandlerFunc {
 		}
 		var search Search
 
-		// Decode json object
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&search)
 		if err != nil {
@@ -63,110 +118,14 @@ func Search() http.HandlerFunc {
 			return
 		}
 
-		query := search.Query
-		clog.Debug("Search", fmt.Sprintf("Search query decoded: '%v'", query))
-		clog.Info("Search", fmt.Sprintf("Querying database for: '%v'", query))
+		queryResults, err := dbQuery(search.Query)
+		if err != nil {
 
-		// Query database
-		selectStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ", c.MetadataTable)
-		var rows *sql.Rows
-
-		// Decide based on the format of the query if this is a special form.
-		// The available fields are : "title", "album", "artist", "genre", "year"
-		if startsWith(query, "songs named ") {
-			// Title search
-			q := query[len("songs named "):]
-			selectWhereStatement := selectStatement + "WHERE title LIKE $1 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else if startsWith(query, "songs by ") {
-			// Artist search
-			q := query[len("songs by "):]
-			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else if endsWith(query, " songs") {
-			// Genre search
-			q := query[:len(query)-len(" songs")]
-			selectWhereStatement := selectStatement + "WHERE genre LIKE $1 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else if startsWith(query, "songs from ") {
-			// Joint year/album search
-			// Note that the year query doesn't use includes: "Songs from 20" shouldn't return a song made in 2009.
-			q := query[len("songs from "):]
-			selectWhereStatement := selectStatement + "WHERE year LIKE $1 OR ALBUM LIKE $2 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, q, "%"+q+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else if startsWith(query, "songs released in ") {
-			// Year search
-			// This search also doesn't use an include-style parameter
-			q := query[len("songs released in "):]
-			selectWhereStatement := selectStatement + "WHERE year LIKE $1 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, q)
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else if startsWith(query, "songs in ") {
-			// Album search
-			q := query[len("songs in "):]
-			selectWhereStatement := selectStatement + "WHERE album LIKE $1 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else {
-			// After all that work, we've concluded we don't have a special form.
-			// It's been an open question since before v3.0 what exactly we should do for a general search...
-			// But, it's always been the case that either title or artist search works here.
-			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
 		}
-
-		// Declare object for a song
-		type SongData struct {
-			ID     int
-			Artist string
-			Title  string
-			Album  string
-			Genre  string
-			Year   int
-		}
-
 		// Scan the returned data and save the relevant info
 		clog.Debug("Search", "Scanning returned data...")
-		var searchResults []SongData
-		for rows.Next() {
-			song := new(SongData)
-			err := rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
-			if err != nil {
-				clog.Error("Search", "Data scan failed.", err)
-				return
-			}
-			// Add song (as SongData) to full searchResults
-			searchResults = append(searchResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
-
-		}
 		// Return data to client
-		jsonMarshal, _ := json.Marshal(searchResults)
+		jsonMarshal, _ := json.Marshal(queryResults)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
@@ -348,9 +307,9 @@ func RequestBestMatch() http.HandlerFunc {
 
 		// Declare object to hold r body data and the corresponding ID
 		type RequestBestMatch struct {
-			Search string `json:"Search"`
-			Token  string `json:"Token"`
-			Path   string // ascertained later
+			Query string `json:"Search"`
+			Token string `json:"Token"`
+			Path  string // ascertained later
 		}
 		var rbm RequestBestMatch
 
@@ -362,99 +321,18 @@ func RequestBestMatch() http.HandlerFunc {
 			return
 		}
 
-		query := rbm.Search
-		clog.Debug("Search", fmt.Sprintf("Search query decoded: '%v'", query))
-		clog.Info("Search", fmt.Sprintf("Querying database for: '%v'", query))
+		queryResults, err := dbQuery(rbm.Query)
+		if err != nil {
 
-		// Query database
-		selectStatement := fmt.Sprintf("SELECT \"path\" FROM %s ", c.MetadataTable)
-		var rows *sql.Rows
-
-		// Decide based on the format of the query if this is a special form.
-		// The available fields are : "title", "album", "artist", "genre", "year"
-		if startsWith(query, "songs named ") {
-			// Title search
-			q := query[len("songs named "):]
-			selectWhereStatement := selectStatement + "WHERE title LIKE $1 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else if startsWith(query, "songs by ") {
-			// Artist search
-			q := query[len("songs by "):]
-			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else if endsWith(query, " songs") {
-			// Genre search
-			q := query[:len(query)-len(" songs")]
-			selectWhereStatement := selectStatement + "WHERE genre LIKE $1 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else if startsWith(query, "songs from ") {
-			// Joint year/album search
-			// Note that the year query doesn't use includes: "Songs from 20" shouldn't return a song made in 2009.
-			q := query[len("songs from "):]
-			selectWhereStatement := selectStatement + "WHERE year LIKE $1 OR ALBUM LIKE $2 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, q, "%"+q+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else if startsWith(query, "songs released in ") {
-			// Year search
-			// This search also doesn't use an include-style parameter
-			q := query[len("songs released in "):]
-			selectWhereStatement := selectStatement + "WHERE year LIKE $1 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, q)
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else if startsWith(query, "songs in ") {
-			// Album search
-			q := query[len("songs in "):]
-			selectWhereStatement := selectStatement + "WHERE album LIKE $1 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, "%"+q+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
-		} else {
-			// After all that work, we've concluded we don't have a special form.
-			// It's been an open question since before v3.0 what exactly we should do for a general search...
-			// But, it's always been the case that either title or artist search works here.
-			selectWhereStatement := selectStatement + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
-			rows, err = db.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
-			if err != nil {
-				clog.Error("Search", "Database search failed.", err)
-				return
-			}
 		}
+		rbm.Path, err = dbQueryPath(queryResults[0].ID)
+		if err != nil {
 
+		}
 		// Declare object for a song
 		type RequestResponse struct {
 			Message       string
 			TimeRemaining int
-		}
-
-		// Scan the returned data and save the relevant info
-		clog.Debug("Search", "Scanning returned data...")
-		for rows.Next() {
-			err := rows.Scan(&rbm.Path)
-			if err != nil {
-				clog.Error("Search", "Data scan failed.", err)
-				return
-			}
-			break
 		}
 
 		// Perform a check on the token
@@ -598,6 +476,7 @@ func NowPlayingMetadata() http.HandlerFunc {
 	}
 }
 
+// /api/nowplaying/albumart
 func NowPlayingAlbumArt() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Since Cadence does maintain state on what the stream server is playing
@@ -688,7 +567,8 @@ func Version() http.HandlerFunc {
 		}
 		version := CadenceVersion{Version: c.Version}
 		jsonMarshal, _ := json.Marshal(version)
-		w.WriteHeader(http.StatusAccepted) // 202 Accepted
+
+		w.WriteHeader(http.StatusOK) // 200 Accepted
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
@@ -697,7 +577,7 @@ func Version() http.HandlerFunc {
 // Status Checks ////////////////////////////////////////////////////////////////////
 func Ready() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusAccepted) // 202 Accepted
+		w.WriteHeader(http.StatusOK) // 200 Accepted
 	}
 }
 

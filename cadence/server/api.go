@@ -1,5 +1,5 @@
 // handlers.go
-// REST API
+// API functions and fileservers
 
 package main
 
@@ -56,7 +56,7 @@ func Search() http.HandlerFunc {
 
 		queryResults, err := searchByQuery(search.Query)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 
@@ -86,12 +86,12 @@ func RequestID() http.HandlerFunc {
 
 		path, err := getPathById(request.ID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 		_, err = pushRequest(path)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 
@@ -118,17 +118,17 @@ func RequestBestMatch() http.HandlerFunc {
 
 		queryResults, err := searchByQuery(rbm.Query)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 		path, err := getPathById(queryResults[0].ID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 		_, err = pushRequest(path)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
@@ -140,12 +140,12 @@ func NowPlayingMetadata() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		title, artist, err := getNowPlaying()
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 		queryResults, err := searchByTitleArtist(title, artist)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 		song := queryResults[0]
@@ -172,29 +172,29 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		title, artist, err := getNowPlaying()
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 		queryResults, err := searchByTitleArtist(title, artist)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 		path, err := getPathById(queryResults[0].ID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 
 		file, err := os.Open(path)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 		// Read metadata from the file
 		tags, err := tag.ReadFrom(file)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
 

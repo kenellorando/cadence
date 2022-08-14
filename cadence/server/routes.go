@@ -28,5 +28,6 @@ func routes() *http.ServeMux {
 
 	// UI Fileserver
 	r.Handle("/", http.FileServer(http.Dir(c.RootPath+"./public/")))
+
 	return r
 }

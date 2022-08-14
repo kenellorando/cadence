@@ -27,7 +27,7 @@ type SongData struct {
 }
 
 // Takes a query string to search the database.
-// Returns a slice of SongData of songs by relevance.
+// Returns a slice of SongData of songs ordered by relevance.
 func searchByQuery(query string) (queryResults []SongData, err error) {
 	clog.Info("dbQuery", fmt.Sprintf("Searching database for query: '%v'", query))
 
@@ -51,7 +51,7 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 	return queryResults, nil
 }
 
-// Takes a title and artist string to find exact matches for both.
+// Takes a title and artist string to find a song which exactly matches.
 // Returns a slice of SongData of songs by relevance.
 // This search should only have one result unless multiple audio files share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
@@ -71,11 +71,12 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 		}
 		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
 	}
+
 	return queryResults, nil
 }
 
 // Takes a song ID integer.
-// Returns a string absolute path of the song.
+// Returns the absolute path of the audio file.
 func getPathById(id int) (path string, err error) {
 	clog.Info("dbQuery", fmt.Sprintf("Searching database for the path of song: '%v'", id))
 
@@ -123,7 +124,7 @@ func pushRequest(path string) (message string, err error) {
 // Takes no arguments.
 // Returns the title and artist strings actively playing on Icecast.
 func getNowPlaying() (title string, artist string, err error) {
-	if nowTitle == "-" || nowArtist == "-" {
+	if nowTitle == "-" && nowArtist == "-" {
 		clog.Info("getNowPlaying", "Did not see anything playing in Icecast.")
 	} else {
 		clog.Info("getNowPlaying", fmt.Sprintf("The stream server reports it is playing: '%s' by '%s'.", title, artist))
@@ -136,13 +137,10 @@ var preHost, preMountpoint, nowHost, nowMountpoint string = "-", "-", "-", "-"
 var preListeners, nowListeners float64 = -1, -1
 
 // Takes no arguments.
-// Returns nothing, but sends updated stream info to the event source stream
-// It watches for changes to now playing info.
+// Returns nothing, but sends updated stream info to SSE and sets the global variables.
+// It is launched as a goroutine by init.
 func icecastMonitor() {
 	for {
-		radiodata_sse.SendEventMessage(nowTitle, "title", "")
-		radiodata_sse.SendEventMessage(nowArtist, "artist", "")
-
 		resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
 		if err != nil {
 		}
@@ -201,7 +199,7 @@ func icecastMonitor() {
 	}
 }
 
-// Resets Icecast data to default values. Use when Icecast is unreachable.
+// Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
 func resetIcecastData() {
 	preTitle, preArtist, nowTitle, nowArtist = "-", "-", "-", "-"
 	preHost, preMountpoint, nowHost, nowMountpoint = "-", "-", "-", "-"

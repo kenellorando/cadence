@@ -8,27 +8,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"path"
 
 	"github.com/dhowden/tag"
 	"github.com/kenellorando/clog"
 )
-
-func SiteRoot() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Info("ServeRoot", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
-		w.Header().Set("Content-type", "text/html")
-		http.ServeFile(w, r, path.Dir(c.RootPath+"./public/index.html"))
-	}
-}
-
-func Site404() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Info("Serve404", fmt.Sprintf("Client %s requesting unknown resource %s%s. Returning 404.", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
-		w.Header().Set("Content-type", "text/html")
-		http.ServeFile(w, r, path.Dir(c.RootPath+"./public/404/index.html"))
-	}
-}
 
 // /api/search
 func Search() http.HandlerFunc {
@@ -123,6 +106,7 @@ func RequestBestMatch() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
+
 		w.WriteHeader(http.StatusAccepted) // 202 Accepted
 	}
 }

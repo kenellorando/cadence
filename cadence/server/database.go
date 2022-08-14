@@ -19,13 +19,13 @@ func dbConfig() (newdb *sql.DB, err error) {
 	clog.Info("dbConfig", "Setting up the database.")
 	newdb, err = sql.Open("sqlite3", "/cadence/music-metadata.db")
 	if err != nil {
-		clog.Error("dbAutoConfig", "Failed to build database table!", err)
+		clog.Error("dbConfig", "Failed to build database table!", err)
 		return nil, err
 	}
-	clog.Info("dbAutoConfig", fmt.Sprintf("Building schema for table <%s>...", c.MetadataTable))
+	clog.Info("dbConfig", fmt.Sprintf("Building schema for table <%s>...", c.MetadataTable))
 	_, err = newdb.Exec(`CREATE VIRTUAL TABLE IF NOT EXISTS aria USING FTS5(title,album,artist,genre,year,path)`) // Todo: insert 'aria' through c
 	if err != nil {
-		clog.Error("dbAutoConfig", "Failed to build database table!", err)
+		clog.Error("dbConfig", "Failed to build database table!", err)
 		return nil, err
 	}
 	return newdb, nil

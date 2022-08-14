@@ -46,7 +46,7 @@ func init() {
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
 	var err error
-	db, err = dbAutoConfig()
+	db, err = dbConfig()
 	if err != nil {
 		clog.Warn("init", "Database setup failed! Future database requests will also fail. Population will be skipped.")
 	} else {
@@ -55,6 +55,7 @@ func init() {
 			clog.Warn("init", "An error occured during initial database population. Music data may be inaccurate.")
 		}
 	}
+	go icecastMonitor()
 }
 
 func main() {

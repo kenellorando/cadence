@@ -10,6 +10,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/Jeffail/gabs"
 	"github.com/kenellorando/clog"
@@ -38,7 +39,7 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 	}
 
 	for rows.Next() {
-		song := new(SongData)
+		song := &SongData{}
 		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
 		if err != nil {
 			clog.Error("Search", "Data scan failed.", err)
@@ -54,7 +55,7 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 // Returns a slice of SongData of songs by relevance.
 // This search should only have one result unless multiple audio files share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
-	selectStatement := fmt.Sprintf("SELECT rowid,artist,title,album,genre,year FROM %s WHERE title=\"%v\" AND artist=\"%v\";", c.MetadataTable, artist, title)
+	selectStatement := fmt.Sprintf("SELECT rowid,artist,title,album,genre,year FROM %s WHERE title=\"%v\" AND artist=\"%v\";", c.MetadataTable, title, artist)
 	rows, err := db.Query(selectStatement)
 	if err != nil {
 		clog.Error("NowPlayingMetadata", "Could not query DB.", err)
@@ -62,7 +63,7 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 	}
 
 	for rows.Next() {
-		song := new(SongData)
+		song := &SongData{}
 		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
 		if err != nil {
 			clog.Error("Search", "Data scan failed.", err)
@@ -122,29 +123,87 @@ func pushRequest(path string) (message string, err error) {
 // Takes no arguments.
 // Returns the title and artist strings actively playing on Icecast.
 func getNowPlaying() (title string, artist string, err error) {
-	resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
-	if err != nil {
-		clog.Error("getNowPlaying", "Failed to connect to audio stream server.", err)
-		return "", "", err
+	if nowTitle == "-" || nowArtist == "-" {
+		clog.Info("getNowPlaying", "Did not see anything playing in Icecast.")
+	} else {
+		clog.Info("getNowPlaying", fmt.Sprintf("The stream server reports it is playing: '%s' by '%s'.", title, artist))
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		clog.Error("getNowPlaying", "Audio stream server returned bad status", err)
-		return "", "", err
-	}
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		clog.Error("getNowPlaying", "error", err)
-		return "", "", err
-	}
-	jsonParsed, err := gabs.ParseJSON([]byte(body))
-	if err != nil {
-		clog.Error("getNowPlaying", "error", err)
-		return "", "", err
-	}
+	return nowTitle, nowArtist, nil
+}
 
-	title, _ = jsonParsed.Path("icestats.source.title").Data().(string)
-	artist, _ = jsonParsed.Path("icestats.source.artist").Data().(string)
-	clog.Info("getNowPlaying", fmt.Sprintf("The stream server reports it is playing: '%s' by '%s'.", title, artist))
-	return title, artist, nil
+var preTitle, preArtist, nowTitle, nowArtist string = "-", "-", "-", "-"
+var preHost, preMountpoint, nowHost, nowMountpoint string = "-", "-", "-", "-"
+var preListeners, nowListeners float64 = -1, -1
+
+// Takes no arguments.
+// Returns nothing, but sends updated stream info to the event source stream
+// It watches for changes to now playing info.
+func icecastMonitor() {
+	for {
+		radiodata_sse.SendEventMessage(nowTitle, "title", "")
+		radiodata_sse.SendEventMessage(nowArtist, "artist", "")
+
+		resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
+		if err != nil {
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			clog.Debug("icecastMonitor", "Unable to connect to Icecast.")
+			resetIcecastData()
+			continue
+		}
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			clog.Debug("icecastMonitor", "Connected to Icecast but unable to read response.")
+			resetIcecastData()
+			continue
+		}
+		jsonParsed, err := gabs.ParseJSON([]byte(body))
+		if err != nil {
+			clog.Debug("icecastMonitor", "Connected to Icecast but unable to parse response.")
+			resetIcecastData()
+			continue
+		}
+		if jsonParsed.Path("icestats.source.title").Data() == nil || jsonParsed.Path("icestats.source.artist").Data() == nil {
+			clog.Debug("icecastMonitor", "Connected to Icecast, but did not see anything playing.")
+			resetIcecastData()
+			continue
+		}
+
+		nowArtist = jsonParsed.Path("icestats.source.artist").Data().(string)
+		nowTitle = jsonParsed.Path("icestats.source.title").Data().(string)
+		if (preTitle != nowTitle) || (preArtist != nowArtist) {
+			clog.Debug("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", nowTitle, nowArtist))
+			radiodata_sse.SendEventMessage(nowTitle, "title", "")
+			radiodata_sse.SendEventMessage(nowArtist, "artist", "")
+			preTitle = nowTitle
+			preArtist = nowArtist
+		}
+
+		nowHost = jsonParsed.Path("icestats.host").Data().(string)
+		nowMountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
+		if (preHost != nowHost) || (preMountpoint != nowMountpoint) {
+			clog.Debug("icecastMonitor", fmt.Sprintf("Stream host: <%s>", nowHost))
+			clog.Debug("icecastMonitor", fmt.Sprintf("Stream mountpoint: <%s>", nowMountpoint))
+			radiodata_sse.SendEventMessage(fmt.Sprintf(nowHost, "/", nowMountpoint), "listenurl", "")
+			preHost = nowHost
+			preMountpoint = nowMountpoint
+		}
+
+		nowListeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
+		if preListeners != nowListeners {
+			clog.Debug("icecastMonitor", fmt.Sprintf("Listener count: <%v>", nowListeners))
+			radiodata_sse.SendEventMessage(fmt.Sprint(nowListeners), "listeners", "")
+			preListeners = nowListeners
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+}
+
+// Resets Icecast data to default values. Use when Icecast is unreachable.
+func resetIcecastData() {
+	preTitle, preArtist, nowTitle, nowArtist = "-", "-", "-", "-"
+	preHost, preMountpoint, nowHost, nowMountpoint = "-", "-", "-", "-"
+	preListeners, nowListeners = -1, -1
 }

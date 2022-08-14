@@ -6,16 +6,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
 	"os"
 	"path"
-	"time"
 
-	"github.com/Jeffail/gabs"
 	"github.com/dhowden/tag"
-	"github.com/gorilla/websocket"
 	"github.com/kenellorando/clog"
 )
 
@@ -23,7 +18,6 @@ func SiteRoot() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Info("ServeRoot", fmt.Sprintf("Client %s requesting %s%s", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 		w.Header().Set("Content-type", "text/html")
-		w.WriteHeader(http.StatusOK) // 200 Accepted
 		http.ServeFile(w, r, path.Dir(c.RootPath+"./public/index.html"))
 	}
 }
@@ -32,7 +26,6 @@ func Site404() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Info("Serve404", fmt.Sprintf("Client %s requesting unknown resource %s%s. Returning 404.", r.Header.Get("X-Forwarded-For"), r.Host, r.URL.Path))
 		w.Header().Set("Content-type", "text/html")
-		w.WriteHeader(http.StatusOK) // 200 Accepted
 		http.ServeFile(w, r, path.Dir(c.RootPath+"./public/404/index.html"))
 	}
 }
@@ -62,7 +55,6 @@ func Search() http.HandlerFunc {
 
 		jsonMarshal, _ := json.Marshal(queryResults)
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK) // 200 OK
 		w.Write(jsonMarshal)
 	}
 }
@@ -148,6 +140,10 @@ func NowPlayingMetadata() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
+		if len(queryResults) < 1 {
+			w.WriteHeader(http.StatusNotFound) // 404
+			return
+		}
 		song := queryResults[0]
 
 		// Return data to client
@@ -162,7 +158,6 @@ func NowPlayingMetadata() http.HandlerFunc {
 		result := SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year}
 		jsonMarshal, _ := json.Marshal(result)
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK) // 200 OK
 		w.Write(jsonMarshal)
 	}
 }
@@ -178,6 +173,10 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 		queryResults, err := searchByTitleArtist(title, artist)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
+			return
+		}
+		if len(queryResults) < 1 {
+			w.WriteHeader(http.StatusNotFound) // 404
 			return
 		}
 		path, err := getPathById(queryResults[0].ID)
@@ -205,7 +204,34 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 		result := SongData{Picture: tags.Picture().Data}
 		jsonMarshal, _ := json.Marshal(result)
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK) // 200 OK
+		w.Write(jsonMarshal)
+	}
+}
+
+// /api/listenurl
+func ListenURL() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Return data to client
+		type ListenURL struct {
+			ListenURL string
+		}
+		listenurl := ListenURL{ListenURL: string(nowHost + "/" + nowMountpoint)}
+		jsonMarshal, _ := json.Marshal(listenurl)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+	}
+}
+
+// /api/listeners
+func Listeners() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Return data to client
+		type Listeners struct {
+			Listeners int
+		}
+		listeners := Listeners{Listeners: int(nowListeners)}
+		jsonMarshal, _ := json.Marshal(listeners)
+		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
 }
@@ -220,7 +246,6 @@ func Version() http.HandlerFunc {
 		version := CadenceVersion{Version: c.Version}
 		jsonMarshal, _ := json.Marshal(version)
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK) // 200 OK
 		w.Write(jsonMarshal)
 	}
 }
@@ -229,111 +254,5 @@ func Version() http.HandlerFunc {
 func Ready() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK) // 200 OK
-	}
-}
-
-/////////////////
-
-var upgrader = websocket.Upgrader{}
-
-// RadioData() upgrades a connection for websocket
-func RadioData() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("RadioDataLoop", "Received new socket connection")
-		conn, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.Print("Error upgrading socket connection.", err)
-			return
-		}
-		defer conn.Close()
-
-		type Message struct {
-			Type       string
-			Artist     string
-			Title      string
-			Host       string
-			Mountpoint string
-			ListenURL  string
-			Listeners  float64
-		}
-
-		var lastArtist, lastTitle, lastHost, lastMountpoint string
-		var lastListeners float64
-
-		var currentArtist, currentTitle, currentHost, currentMountpoint string
-		var currentListeners float64
-
-		for {
-			resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
-			if err != nil {
-				clog.Error("RadioData", "Failed to connect to audio stream server.", err)
-				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-", Artist: "-"})
-				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})
-				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A", ListenURL: "N/A"})
-				return
-			}
-			defer resp.Body.Close()
-			if resp.StatusCode != http.StatusOK {
-				clog.Error("RadioData", "Audio stream server returned bad status", err)
-				return
-			}
-
-			body, err := io.ReadAll(resp.Body)
-			if err != nil {
-				clog.Error("RadioData", "Failed to read stream server response.", err)
-				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-"})
-				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})
-				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A"})
-				return
-			}
-			jsonParsed, err := gabs.ParseJSON([]byte(body))
-			if err != nil {
-				clog.Error("RadioData", "Failed to parse stream server response.", err)
-				conn.WriteJSON(Message{Type: "NowPlaying", Title: "-"})
-				conn.WriteJSON(Message{Type: "Listeners", Listeners: -1})
-				conn.WriteJSON(Message{Type: "StreamConnection", Mountpoint: "N/A"})
-				return
-			}
-
-			currentArtist = fmt.Sprintf(jsonParsed.Path("icestats.source.artist").Data().(string))
-			currentTitle = fmt.Sprintf(jsonParsed.Path("icestats.source.title").Data().(string))
-			currentHost = fmt.Sprintf(jsonParsed.Path("icestats.host").Data().(string))
-			currentMountpoint = fmt.Sprintf(jsonParsed.Path("icestats.source.server_name").Data().(string))
-			currentListeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
-
-			if (lastArtist != currentArtist) || (lastTitle != currentTitle) {
-
-				clog.Debug("RadioData", "artist or title change detected")
-				clog.Debug("RadioData", currentArtist)
-				clog.Debug("RadioData", currentTitle)
-				clog.Debug("RadioData", "Writing connection")
-
-				err = conn.WriteJSON(Message{Type: "NowPlaying", Artist: currentArtist, Title: currentTitle})
-				if err != nil {
-					clog.Error("RadioData", "There was a problem writing the connection", err)
-				}
-				lastArtist = currentArtist
-				lastTitle = currentTitle
-			}
-			if (lastHost != currentHost) || (lastMountpoint != currentMountpoint) {
-				conn.WriteJSON(Message{Type: "StreamConnection", Host: currentHost, Mountpoint: currentMountpoint})
-				lastHost = currentHost
-				lastMountpoint = currentMountpoint
-			}
-			if lastListeners != currentListeners {
-				conn.WriteJSON(Message{Type: "Listeners", Listeners: currentListeners})
-				lastListeners = currentListeners
-			}
-
-			// Ping the client to maintain the connection
-			// Close it in the event of an error
-			err = conn.WriteMessage(websocket.PingMessage, []byte{})
-			if err != nil {
-				clog.Error("RadioData", "Error writing Ping.", err)
-				conn.Close()
-				return
-			}
-			time.Sleep(1 * time.Second)
-		}
 	}
 }

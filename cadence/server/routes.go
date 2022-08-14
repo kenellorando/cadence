@@ -6,26 +6,27 @@ package main
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"gopkg.in/antage/eventsource.v1"
 )
 
-func routes() *mux.Router {
-	r := mux.NewRouter()
-	// API
-	r.HandleFunc("/api/search", Search()).Methods("POST")
-	r.HandleFunc("/api/request/id", RequestID()).Methods("POST")
-	r.HandleFunc("/api/request/bestmatch", RequestBestMatch()).Methods("POST")
-	r.HandleFunc("/api/nowplaying/metadata", NowPlayingMetadata()).Methods("GET")
-	r.HandleFunc("/api/nowplaying/albumart", NowPlayingAlbumArt()).Methods("GET")
-	r.HandleFunc("/api/version", Version()).Methods("GET")
-	r.HandleFunc("/socket/radiodata", RadioData()).Methods("GET")
-	// Infrastructure
-	r.HandleFunc("/ready", Ready()).Methods("GET")
-	// Site
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(c.RootPath+"./public/static/")))).Methods("GET")
-	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir(c.RootPath+"./public/css/")))).Methods("GET")
-	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir(c.RootPath+"./public/js/")))).Methods("GET")
-	r.HandleFunc("/", SiteRoot()).Methods("GET")
-	r.NotFoundHandler = http.HandlerFunc(Site404())
+var radiodata_sse = eventsource.New(nil, nil)
+
+func routes() *http.ServeMux {
+	r := http.NewServeMux()
+	r.Handle("/api/search", Search())
+	r.Handle("/api/request/id", RequestID())
+	r.Handle("/api/request/bestmatch", RequestBestMatch())
+	r.Handle("/api/nowplaying/metadata", NowPlayingMetadata())
+	r.Handle("/api/nowplaying/albumart", NowPlayingAlbumArt())
+	r.Handle("/api/listenurl", ListenURL())
+	r.Handle("/api/listeners", Listeners())
+	r.Handle("/api/version", Version())
+	r.Handle("/ready", Ready())
+
+	// Event Streams
+	r.Handle("/api/radiodata/sse", radiodata_sse)
+
+	// UI Fileserver
+	r.Handle("/", http.FileServer(http.Dir(c.RootPath+"./public/")))
 	return r
 }

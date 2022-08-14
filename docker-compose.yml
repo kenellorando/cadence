@@ -5,7 +5,7 @@ services:
     build: 
       context: ./cadence_icecast2/ 
     image: kenellorando/cadence_icecast2
-    container_name: cadence_icecast2
+    container_name: icecast2
     restart: always
     ports:
       - 8000:8000
@@ -19,7 +19,7 @@ services:
     build: 
       context: ./cadence_liquidsoap/ 
     image: kenellorando/cadence_liquidsoap
-    container_name: cadence_liquidsoap
+    container_name: liquidsoap
     restart: always
     volumes:
       - ./cadence_liquidsoap/config/cadence.liq:/etc/liquidsoap/cadence.liq

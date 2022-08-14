@@ -15,8 +15,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func dbAutoConfig() (newdb *sql.DB, err error) {
-	clog.Info("dbAutoConfig", "Setting up the database.")
+func dbConfig() (newdb *sql.DB, err error) {
+	clog.Info("dbConfig", "Setting up the database.")
 	newdb, err = sql.Open("sqlite3", "/cadence/music-metadata.db")
 	if err != nil {
 		clog.Error("dbAutoConfig", "Failed to build database table!", err)

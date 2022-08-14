@@ -25,9 +25,10 @@ $(window).on("load", function(e) {
 			/* dataType expects a json response */
 			dataType: 'json',
 			complete: function(data) {
-				console.log("Server message: " + data.responseJSON.Message);
-				console.log("Timeout remaining (s): " + data.responseJSON.TimeRemaining);
-				document.getElementById("requestStatus").innerHTML = "Server message: " + data.responseJSON.Message;
+				// console.log("Server message: " + data.responseJSON.Message);
+				// console.log("Timeout remaining (s): " + data.responseJSON.TimeRemaining);
+				
+				document.getElementById("requestStatus").innerHTML = "Request submitted!";
 				// // Disable the request button over UI
 				// $(".requestButton").prop('disabled', true);
 				// document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
@@ -41,13 +42,12 @@ $(window).on("load", function(e) {
 	})
 });
 
-// Get latest source release title
+// Initial data load
 $(window).on("load", function(e) {
 	$.ajax({
 		type: 'GET',
 		url: "/api/version",
 		dataType: "json",
-		// On success, format data into table
 		success: function(data) {
 			document.getElementById("release").innerHTML = data.Version;
 		},
@@ -55,64 +55,90 @@ $(window).on("load", function(e) {
 			document.getElementById("release").innerHTML = "(N/A)";
 		}
 	});
+	$.ajax({
+		type: 'GET',
+		url: "/api/nowplaying/metadata",
+		dataType: "json",
+		success: function(data) {
+			$('#song').text(data.Title)
+			$('#artist').text(data.Artist)
+		},
+		error: function() {
+			$('#song').text("-")
+			$('#artist').text("-")
+		}
+	});
+	$.ajax({
+		type: 'GET',
+		url: "/api/nowplaying/albumart",
+		dataType: "json",
+		success: function(data) {
+			$('#artwork').attr("src", "data:image/jpeg;base64," + data.Picture);
+		},
+		error: function() {
+			$('#artwork').attr("src", "");
+		}
+	});
+	$.ajax({
+		type: 'GET',
+		url: "/api/listenurl",
+		dataType: "json",
+		success: function(data) {
+			if (data.ListenURL == "-/-") {
+				$('#status').html("Disconnected from server.")
+				$.ajax(this);
+				return
+			} else {
+				streamSrcURL = location.protocol + "//" + data.ListenURL
+				document.getElementById("stream").src = streamSrcURL;
+				$('#status').html("Connected: <a href='"+ streamSrcURL + "'>" + streamSrcURL + "</a>")
+			}
+		},
+		error: function() {
+			document.getElementById("stream").src = "";
+			$.ajax(this);
+			return
+		}
+	});
 });
 
 var streamSrcURL = "" // this gets used by the stream playButton function
-// Hook into the cadence radio data socket
+
+// Check into the cadence nowplaying metadata event stream
 $(document).ready(function() {
-	if (location.protocol == "https:") {
-		socket = new WebSocket("wss://" +  location.host + "/socket/radiodata")
-	} else {
-		// This is necessary for local testing. All public ingress is https.
-		socket = new WebSocket("ws://" + location.host + "/socket/radiodata")
+	let eventSource = new EventSource("/api/radiodata/sse");
+	eventSource.onopen = function(event) {
+		console.log("connected", event);
 	}
-	
-	socket.onopen = () => {
-		console.log("Established connection with Cadence radiodata socket.")
+	eventSource.onerror = function(event) {
+		console.log("error connecting", event);
 	}
-	socket.onmessage = (ServerMessage) => {
-		handle(ServerMessage)
-	}
-	socket.onerror = (ServerMessage) => {
-		console.warn("Could not reach the Cadence radio data socket: " + ServerMessage.data)
-		socket.close()
-	}
-
-	function handle(ServerMessage) {
-		let message = JSON.parse(ServerMessage.data)
-		switch (message.Type) {
-			case "NowPlaying":
-				console.log("NowPlaying update received: " + message.Artist.trim() + message.Title.trim())
-				var nowPlayingArtist = message.Artist.trim();
-				var nowPlayingTitle = message.Title.trim();
-
-				setAlbumArt()
-				$('#song').text(nowPlayingTitle);
-				$('#artist').text(nowPlayingArtist);
-				
-				console.log("Now playing: " + nowPlayingArtist + ", '" + nowPlayingTitle + "'")
-				break;
-			case "Listeners":
-				console.log("Listener update received: " + message.Listeners)
-				var currentListeners =  message.Listeners;
-				if (currentListeners == -1) {
-					document.getElementById("listeners").innerHTML = "(stream unreachable)"
-				} else {
-					document.getElementById("listeners").innerHTML = currentListeners;
-				}
-				break;
-			case "StreamConnection":
-				var currentListenURL = location.protocol + "//" + message.Host.trim() + "/" + message.Mountpoint.trim();
-				if (currentListenURL !== "N/A") {
-					$('#status').html("Connected to stream: <a href='"+ currentListenURL + "'>" + message.Mountpoint.trim() + "</a>");
-				} else {
-					$('#status').html("Disconnected from stream.");
-				}
-				document.getElementById("stream").src = currentListenURL
-				streamSrcURL = currentListenURL // set global URL
-				break;
+	eventSource.addEventListener("title", function(event) {
+		console.log(event.data)
+		$('#song').text(event.data)
+	})
+	eventSource.addEventListener("artist", function(event) {
+		console.log(event.data)
+		$('#artist').text(event.data)
+	})
+	eventSource.addEventListener("listeners", function(event) {
+		let listenerUpdate = event.data
+		if (listenerUpdate == -1) {
+			$('#listeners').html("(stream unreachable)")
+		} else {
+			$('#listeners').html(listenerUpdate)
 		}
-	}
+	})
+	eventSource.addEventListener("listenurl", function(event) {
+		let listenurl = event.data
+		if (listenurl == "-/-") {
+			$('#status').html("Disconnected from server.")
+		} else {
+			streamSrcURL = location.protocol + "//" + listenurl 
+			document.getElementById("stream").src = newListenURL
+			$('#status').html("Connected: <a href='"+ newListenURL + "'>" + newListenURL + "</a>")
+		}
+	})
 });
 
 function postSearch() {

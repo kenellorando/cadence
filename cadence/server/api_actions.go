@@ -171,7 +171,7 @@ func icecastMonitor() {
 		nowArtist = jsonParsed.Path("icestats.source.artist").Data().(string)
 		nowTitle = jsonParsed.Path("icestats.source.title").Data().(string)
 		if (preTitle != nowTitle) || (preArtist != nowArtist) {
-			clog.Debug("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", nowTitle, nowArtist))
+			clog.Info("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", nowTitle, nowArtist))
 			radiodata_sse.SendEventMessage(nowTitle, "title", "")
 			radiodata_sse.SendEventMessage(nowArtist, "artist", "")
 			preTitle = nowTitle
@@ -181,8 +181,8 @@ func icecastMonitor() {
 		nowHost = jsonParsed.Path("icestats.host").Data().(string)
 		nowMountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
 		if (preHost != nowHost) || (preMountpoint != nowMountpoint) {
-			clog.Debug("icecastMonitor", fmt.Sprintf("Stream host: <%s>", nowHost))
-			clog.Debug("icecastMonitor", fmt.Sprintf("Stream mountpoint: <%s>", nowMountpoint))
+			clog.Info("icecastMonitor", fmt.Sprintf("Stream host: <%s>", nowHost))
+			clog.Info("icecastMonitor", fmt.Sprintf("Stream mountpoint: <%s>", nowMountpoint))
 			radiodata_sse.SendEventMessage(fmt.Sprintf(nowHost, "/", nowMountpoint), "listenurl", "")
 			preHost = nowHost
 			preMountpoint = nowMountpoint
@@ -190,7 +190,7 @@ func icecastMonitor() {
 
 		nowListeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
 		if preListeners != nowListeners {
-			clog.Debug("icecastMonitor", fmt.Sprintf("Listener count: <%v>", nowListeners))
+			clog.Info("icecastMonitor", fmt.Sprintf("Listener count: <%v>", nowListeners))
 			radiodata_sse.SendEventMessage(fmt.Sprint(nowListeners), "listeners", "")
 			preListeners = nowListeners
 		}

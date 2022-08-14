@@ -114,11 +114,10 @@ $(document).ready(function() {
 		console.log("error connecting", event);
 	}
 	eventSource.addEventListener("title", function(event) {
-		console.log(event.data)
 		$('#song').text(event.data)
+		setAlbumArt()
 	})
 	eventSource.addEventListener("artist", function(event) {
-		console.log(event.data)
 		$('#artist').text(event.data)
 	})
 	eventSource.addEventListener("listeners", function(event) {

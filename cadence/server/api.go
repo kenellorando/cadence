@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/dhowden/tag"
 	"github.com/kenellorando/clog"
@@ -48,18 +49,24 @@ func RequestID() http.HandlerFunc {
 		clog.Info("Request", fmt.Sprintf("Request-by-ID by client %s.", r.Header.Get("X-Forwarded-For")))
 
 		type Request struct {
-			ID int `json:"ID"`
+			ID string `json:"ID"`
 		}
 		var request Request
 
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&request)
 		if err != nil {
+			clog.Error("RequestID", "Unable to decode request.", err)
 			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 			return
 		}
-
-		path, err := getPathById(request.ID)
+		reqID, err := strconv.Atoi(request.ID)
+		if err != nil {
+			clog.Error("RequestID", "Unable to convert request ID to an integer.", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500
+			return
+		}
+		path, err := getPathById(reqID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return

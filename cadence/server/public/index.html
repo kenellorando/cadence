@@ -4,7 +4,7 @@
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>Cadence Radio | A Rhythmic Experience</title>
+        <title>Cadence Radio ♥</title>
 
         <meta name="description" content="A Rhythmic Experience">
 
@@ -24,18 +24,10 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Rock+Salt&display=swap" rel="stylesheet"> 
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Rock+Salt&display=swap" rel="stylesheet"> 
 
         <link rel="stylesheet" href="./css/5.0.css">
-        <!-- <link rel="stylesheet" href="./css/5.0tabs.css">
-        <link rel="stylesheet" href="./css/5.0mq.css"> -->
-
-
-        <!-- HTMX JS
-        <script src="https://unpkg.com/htmx.org@1.7.0"></script> -->
-        <!-- HTMX JS -->
-        <!-- <link rel="stylesheet" href="/css/base.css"> -->
 
         <!--
         <link rel="stylesheet" href="." id="themeStylesheet">
@@ -51,10 +43,6 @@
         <script type="text/javascript" src="./js/aria.js"></script>
         <!-- Radio player scripts -->
         <script type="text/javascript" src="./js/page.js"></script>
-
-
-        <!-- 5.0 new -->
-        <!-- <script type="text/javascript" src="./js/5.0.js"></script> -->
     </head>
     <body>
         <div id="player" class="columns is-centered is-vcentered box">
@@ -76,30 +64,31 @@
         
         <div id="tabs" class="tabs is-centered is-boxed">
             <ul>
-            <li data-tab="about" class="is-active"><a>About</a></li>
-              <li data-tab="request"><a>Request</a></li>
-              <li data-tab="theme"><a>Theme</a></li>
-              <li data-tab="api"><a>API</a></li>
+                <li data-tab="about" class="is-active"><a>About</a></li>
+                <li data-tab="api"><a>API</a></li>
+                <li data-tab="request"><a>Request</a></li>
+                <li data-tab="theme"><a>Theme</a></li>
             </ul>
         </div>
 
         <div id="tab-content">
             <section data-content="about" class="content is-active">
-                <p><b>Cadence</b> is a fully-featured web radio application suite. It ships everything needed to run an internet radio station. The project is multi-component and features:</p>
-                <ol>
-                    <li>an API server providing music search, song request, now playing data, and artwork functionality.</li>
-                    <li>an interactive web frontend with a UI theme changer.</li>
-                    <li>a built-in, auto-populating music metadata database.</li>
-                    <li>custom <i>Icecast</i> and <i>Liquidsoap</i> integration</li>
-                    <li>containerization of all components and support for deployment to Kubernetes cluster infrastructure.</li>
+                <p><b>Cadence</b> is a fully-featured HTTP API web radio application suite. It ships everything needed to run an internet radio station, including:</p>
+                <l>
+                    <li>... a data API server providing music search, song request, now playing, and artwork functions.</li>
+                    <li>... an interactive web frontend.</li>
+                    <li>... a built-in auto-populating music metadata database.</li>
+                    <li>... custom <i>Icecast</i> and <i>Liquidsoap</i> integration.</li>
+                    <li>... containerization of all components with a Compose for fast local setup (this demo even runs on a Kubernetes cluster).</li>
                 </ol>
-                <p>The current iteration, <code>5.x</code>, is currently under development.</p>
+                <p>To configure Cadence, set a music directory (with some music files inside it), set a few service passwords and hostnames, and you're good to go! Cadence has releases for amd64 and arm/v7. Clone or leave a star on <a href="https://github.com/kenellorando/cadence">GitHub</a>.</p>
+
+                <p><i>Note: Cadence has no official relation to either the Icecast or Liquidsoap software projects. This is a personal project.</i></p>
             </section>
             <section data-content="request" class="content">
                 <p>Submit a song request to enter the play queue.</p>
 
                 <input name="searchInput" id="searchInput" class="input is-medium" type="text" placeholder="Filter for a song or artist!">
-                <!-- <button id="searchButton">Filter</button> -->
                 <div id="requestStatus"></div>
                 <div id="searchResults"></div>
             </section>
@@ -117,86 +106,120 @@
             </section>
             <section data-content="api" class="content">
                 <p>All requests, responses, and messages shall be transmitted as raw JSON.</p>
+
                 <div class="columns">
                     <div class="column">
                         <h2 class="title is-3"><span class="tag is-success block">Stable</span> POST /api/search</h2>
-                        <p>Search the server's music library for any song or artist. Cadence additionally is aware of audio file metadata for album, year, and genre, meaning you may also try to search by any of those parameters.</p>
+                        <p>Search the server's music library. Cadence is additionally aware of audio file metadata for album, year, and genre, meaning you may also try to search by any of those parameters.</p>
                         <p>This API call returns a list of results ordered by relevance.</p>
                         <h3 class="title is-6">Request</h3>
                         <code>{ "search": "railgun" }</code>
                         <h3 class="title is-6">Response</h3>
-                        <code>[ { "ID": "1", "Artist": "fripSide", "Title": "only my railgun"}, ...]</code>
-        
+                        <ul>
+                            <li>200 OK <code>[ { "ID": "1", "Artist": "fripSide", "Title": "only my railgun", "Album": "only my railgun - Single", "Genre": "J-Pop", "Year": 2009}, ...]</code>
+                            </li>
+                            <li>400 Bad Request</li>
+                        </ul>
                         <hr/>
         
                         <h2 class="title is-3"><span class="tag is-success block">Stable</span> POST /api/request/id</h2>
-                        <p>Submit a request for a specific song to be played. This call accepts a song ID, which is an impermanent label Cadence applies to each song and is not an inherent attribute of the song file itself. Therefore, you should execute a search for an ID as a prerequisite to request.</p>
+                        <p>Submit a request for a specific song to be played. This call accepts a song ID, which is an impermanent label Cadence applies to each song and is not an inherent attribute of the song file itself. Therefore, you should execute a search for an ID as a prerequisite to request if you want a guaranteed result. Also consider using <code>/api/request/bestmatch</code> to request the number one search result automatically.</p>
                         <h3 class="title is-6">Request</h3>
-                        <code>{ "ID": "1", "Token", "abcdefghijk" }</code>
-                        <ul>
-                            <li><code>"Token"</code> is an optional string provided by the radio administrator which allows the requesting entity to bypass any rate limiters enabled on Cadence.</li>
-                        </ul>
+                        <code>{ "ID": "1" }</code>
+
                         <h3 class="title is-6">Response</h3>
-                        <code>{ "Message": "Request accepted!", "TimeRemaining": 300 }</code>
+                        <ul>
+                            <li>202 Accepted</li>
+                            <li>400 Bad Request</li>
+                        </ul>
         
                         <hr/>
         
-                        <h2 class="title is-3"><span class="tag is-danger block">Experimental</span> POST /api/request/bestmatch</h2>
-                        <p>In contrast to <code>/api/request/id</code>, this call essentially executes a search, selects the number one result (the most relevant result to the search), and submits a request for it.</p>
+                        <h2 class="title is-3"><span class="tag is-success block">Stable</span> POST /api/request/bestmatch</h2>
+                        <p>This call executes a search, selects the number one result (the most relevant result to the search), and submits a request for it. This is Cadence's equivalent to Google's "I'm Feeling Lucky".</p>
 
                         <h3 class="title is-6">Request</h3>
-                        <code>{ "Search": "only my railgun fripSide", "Token", "abcdefghijk"  }</code>
-                        <ul>
-                            <li><code>"Token"</code> is an optional string provided by the radio administrator which allows the requesting entity to bypass any rate limiters enabled on Cadence.</li>
-                        </ul>
+                        <code>{ "Search": "only my railgun fripSide" }</code>
+
                         <h3 class="title is-6">Response</h3>
-                        <code>{ "Message": "Request accepted!", "TimeRemaining": 300 }</code>
-        
+                        <ul>
+                            <li>202 Accepted</li>
+                            <li>400 Bad Request</li>
+                        </ul>
+
                         <hr/>
-                    </div>
-                    <div class="column">
-                        <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/nowplaying/metadata</h2>
+
+
+                        <h2 class="title is-3"><span class="tag is-warning block">Testing</span> GET /api/nowplaying/metadata</h2>
                         <p>Gets all text metadata on the currently playing song.</p>
+                        <p>If you have multiple songs of the .</p>
                         <p>Does not return album art. To get album art, use <code>/api/nowplaying/albumart</code></p>
                         <h3 class="title is-6">Response</h3>
-                        <code>
-                        { 
-                            "ID": 1, 
-                            "Artist": "fripSide", 
-                            "Title": "only my railgun", 
-                            "Album": "only my railgun - Single", 
-                            "Genre": "J-Pop", 
-                            "Year": 2009 
-                        }
-                        </code>
+                        <ul>
+                            <li>200 OK <code>[ { "ID": "1", "Artist": "fripSide", "Title": "only my railgun", "Album": "only my railgun - Single", "Genre": "J-Pop", "Year": 2009}]</code>
+                            <li>404 Not Found -- This indicates the song currently playing is not in Cadence's internal database.</li>
+                        </ul>
+
 
                         <hr/>
                         
-                        <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/nowplaying/albumart</h2>
+                        <h2 class="title is-3"><span class="tag is-warning block">Testing</span> GET /api/nowplaying/albumart</h2>
                         <p>Gets the base64-encoded album art of the currently playing song.</p>
                         <h3 class="title is-6">Response</h3>
-                        <code>
-                        { 
-                            "Picture": "(base64 encoding of album art)" 
-                        }
-                        </code>
+                        <ul>
+                            <li>200 OK <code>{ "Picture": "(base64 encoding of album art)" } </code>
+                            <li>404 Not Found -- This indicates the song currently playing did not get written to Cadence's internal database.</li>
+                        </ul>
+                        
+                        <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/listeners</h2>
+                        <p>Returns the number of connected listeners.</p>
+                        <h3 class="title is-6">Response</h3>
+                        <ul>
+                            <li>200 OK <code>{ "Listeners": 14 }</code>
+                        </ul>
 
                         <hr/>
-                        is-warning
+
+                        <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/listenurl</h2>
+                        <p>Returns the direct audio listen URL. This is used for programmatically setting any audio sources.</p>
+                        <h3 class="title is-6">Response</h3>
+                        <ul>
+                            <li><code>200 OK { "ListenURL": "cadenceradio.com/cadence1" }</code></li>
+                        </ul>
+
+
+                        <hr/>
+                        
                         <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/version</h2>
                         <p>Returns the server version.</p>
                         <h3 class="title is-6">Response</h3>
-                        <code>{ "Version": "5.0.0" }</code>
+                        <ul>
+                            <li><code>200 OK { "Version": "5.0.0" }</code></li>
+                        </ul>
+                        
 
                         <hr/>
 
-                        <h2 class="title is-3"><span class="tag is-danger block">Experimental</span> WS GET /socket/radiodata</h2>
-                        <p>When a connection is established, the server will continue to push data to the client as it changes on the backend. The data is updated within two seconds after a change is observed. All data transfer happens through only one socket and is differentiated by the three unique <code>Type</code>s.</p>
-                        <p>As an example, if the playing song changes, all connected clients receive a <code>Type: "NowPlaying"</code> message from the server.</p>
-                        <h3 class="title is-6">Messages</h4>
-                        <div><code>{ "Type": "NowPlaying", "Artist": "fripSide", "Title": "only my railgun" }</code></div>
-                        <div><code>{ "Type": "Listeners", "Listeners": 2 }</code></div>
-                        <div><code>{ "Type": "StreamConnection", "Host": "stream.cadenceradio.com", "Mountpoint": "/cadence1" }</code></div>
+                        <h2 class="title is-3"><span class="tag is-danger block">Experimental</span> GET /api/radiodata/sse</h2>
+                        <p>This is a special server-sent event (SSE) connection API.</p>
+                        <p>Clients may connect to this endpoint, and as long as they stay connected, will receive server-pushed data as it changes live on the backend without the need for the client to poll. The data is sent within one second after a change is observed.</p>
+                        <p>All data transfer happens through only one event source and is differentiated by unique <code>event</code>s. At the moment, this event source will monitor and notify changes for <code>title</code>, <code>artist</code>, <code>listenurl</code>, and <code>listeners</code>. All of these can also be fetched on-demand through their respective API endpoints.</p>
+                        <p>As an example, if the playing song changes, all connected clients receive a <code>"title"</code> and <code>"artist"</code> event from the server. Here is an example of subscribing to the event stream in JavaScript:</p>
+<pre>
+let eventSource = new EventSource("/api/radiodata/sse");
+eventSource.addEventListener("title", function(event) {
+    console.log(event.data); // "only my railgun"
+})
+eventSource.addEventListener("artist", function(event) {
+    console.log(event.data); // "fripSide"
+})
+eventSource.addEventListener("listenurl", function(event) {
+    console.log(event.data); // "cadenceradio.com/cadence1"
+})
+eventSource.addEventListener("listeners", function(event) {
+    console.log(event.data); // 14
+})    
+</pre>
                     </div>
                 </div>
             </section>

@@ -19,26 +19,17 @@
 
         <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 
-        <!-- Bulma CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Rock+Salt&display=swap" rel="stylesheet"> 
-
-        <link rel="stylesheet" href="./css/5.0.css">
-
-        <!--
-        <link rel="stylesheet" href="." id="themeStylesheet">
-        <link rel="stylesheet" id="moduleRequestButton" href="/css/modules/requestButtonEnabled.css">
-        <link rel="stylesheet" href="/css/modules/themeButton.css"> -->
+        <!-- Bulma CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+        <!-- Main CSS -->
+        <link rel="stylesheet" href="./css/main.css">
 
         <!-- jQuery Google CDN -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>        
-        <!-- Theme changer scripts -->
-        <!-- <script type="text/javascript" src="/js/themeMetadata.js"></script>
-        <script type="text/javascript" src="/js/themeChanger.js"></script> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <!-- API (Aria) scripts -->
         <script type="text/javascript" src="./js/aria.js"></script>
         <!-- Radio player scripts -->
@@ -56,7 +47,7 @@
                 <div id="song">-</div>
                 <div id="artist">-</div>
                 <div id="playButton">►</div>
-                <input type="range" id="volume" value=".3" min="0" max=".8" step="0.006" class="block" >
+                <input type="range" id="volume" value=".3" min="0" max="1" step="0.006" class="block" >
                 <div id="status">Disconnected from server.</div>
                 <div id="version" class="block">Current Listeners: <span id="listeners">-</span></div>
             </div>
@@ -67,7 +58,6 @@
                 <li data-tab="about" class="is-active"><a>About</a></li>
                 <li data-tab="api"><a>API</a></li>
                 <li data-tab="request"><a>Request</a></li>
-                <li data-tab="theme"><a>Theme</a></li>
             </ul>
         </div>
 
@@ -81,7 +71,7 @@
                     <li>... custom <i>Icecast</i> and <i>Liquidsoap</i> integration.</li>
                     <li>... containerization of all components with a Compose for fast local setup (this demo even runs on a Kubernetes cluster).</li>
                 </ul>
-                <p>To configure Cadence, set a music directory (with some music files inside it), set a few service passwords and hostnames, and you're good to go! Cadence has releases for amd64 and arm/v7. Clone or leave a star on <a href="https://github.com/kenellorando/cadence">GitHub</a>.</p>
+                <p>To configure Cadence, set a music directory (with some music files inside it), set a few service passwords and hostnames, and you're good to go! Cadence has releases for amd64 and arm/v7. Leave a star on <a href="https://github.com/kenellorando/cadence">GitHub</a>.</p>
 
                 <p><i>Note: Cadence has no official relation to either the Icecast or Liquidsoap software projects. This is a personal project.</i></p>
             </section>
@@ -91,18 +81,6 @@
                 <input name="searchInput" id="searchInput" class="input is-medium" type="text" placeholder="Filter for a song or artist!">
                 <div id="requestStatus"></div>
                 <div id="searchResults"></div>
-            </section>
-            <section data-content="theme">
-                <p>Coming soon.</p>
-                <!-- <div class="tag block">Light</div>
-                <div class="buttons has-addons">
-                    <button type="button is-white" class="button themeButton" id="Default">Default</button>
-                </div>
-                <div class="tag is-black block">Dark</div>
-                <div class="buttons has-addons">
-                    <button type="button" class="button is-dark themeButton" id="RCB40">RCB40</button>
-                    <button type="button" class="button is-black themeButton" id="No2TypeB">No. 2 Type B</button>
-                </div> -->
             </section>
             <section data-content="api" class="content">
                 <p>All requests, responses, and messages shall be transmitted as raw JSON.</p>
@@ -120,6 +98,7 @@
                             </li>
                             <li>400 Bad Request</li>
                         </ul>
+
                         <hr/>
         
                         <h2 class="title is-3"><span class="tag is-success block">Stable</span> POST /api/request/id</h2>
@@ -137,10 +116,8 @@
         
                         <h2 class="title is-3"><span class="tag is-success block">Stable</span> POST /api/request/bestmatch</h2>
                         <p>This call executes a search, selects the number one result (the most relevant result to the search), and submits a request for it. This is Cadence's equivalent to Google's "I'm Feeling Lucky".</p>
-
                         <h3 class="title is-6">Request</h3>
                         <code>{ "Search": "only my railgun fripSide" }</code>
-
                         <h3 class="title is-6">Response</h3>
                         <ul>
                             <li>202 Accepted</li>
@@ -149,7 +126,8 @@
 
                         <hr/>
 
-
+                    </div>
+                    <div class="column">
                         <h2 class="title is-3"><span class="tag is-warning block">Testing</span> GET /api/nowplaying/metadata</h2>
                         <p>Gets all text metadata on the currently playing song.</p>
                         <p>If there are multiple audio files on the server which share the exact same title and artist, Cadence will return the first result only.</p>
@@ -160,7 +138,6 @@
                             <li>404 Not Found - This indicates the song currently playing is not in Cadence's internal database.</li>
                         </ul>
 
-
                         <hr/>
                         
                         <h2 class="title is-3"><span class="tag is-warning block">Testing</span> GET /api/nowplaying/albumart</h2>
@@ -170,7 +147,9 @@
                             <li>200 OK <code>{ "Picture": "(base64 encoding of album art)" } </code>
                             <li>404 Not Found - This indicates the song currently playing did not get written to Cadence's internal database.</li>
                         </ul>
-                        
+
+                        <hr/>
+
                         <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/listeners</h2>
                         <p>Returns the number of connected listeners.</p>
                         <h3 class="title is-6">Response</h3>
@@ -188,7 +167,6 @@
                             <li><code>200 OK { "ListenURL": "cadenceradio.com/cadence1" }</code></li>
                         </ul>
 
-
                         <hr/>
                         
                         <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/version</h2>
@@ -197,11 +175,12 @@
                         <ul>
                             <li><code>200 OK { "Version": "5.0.0" }</code></li>
                         </ul>
-                        
 
                         <hr/>
 
-                        <h2 class="title is-3"><span class="tag is-danger block">Experimental</span> GET /api/radiodata/sse</h2>
+                    </div>
+                </div>
+                <h2 class="title is-3"><span class="tag is-danger block">Experimental</span> GET /api/radiodata/sse</h2>
                         <p>This is a special server-sent event (SSE) connection API.</p>
                         <p>Clients may connect to this endpoint, and as long as they stay connected, will receive server-pushed data as it changes live on the backend without the need for the client to poll. The data is sent within one second after a change is observed.</p>
                         <p>All data transfer happens through only one event source and is differentiated by unique <code>event</code>s. At the moment, this event source will monitor and notify changes for <code>title</code>, <code>artist</code>, <code>listenurl</code>, and <code>listeners</code>. All of these can also be fetched on-demand through their respective API endpoints.</p>
@@ -221,8 +200,6 @@ eventSource.addEventListener("listeners", function(event) {
     console.log(event.data); // 14
 })    
 </pre>
-                    </div>
-                </div>
             </section>
         </div>
         <footer>

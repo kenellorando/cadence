@@ -152,12 +152,12 @@
 
                         <h2 class="title is-3"><span class="tag is-warning block">Testing</span> GET /api/nowplaying/metadata</h2>
                         <p>Gets all text metadata on the currently playing song.</p>
-                        <p>If you have multiple songs of the .</p>
+                        <p>If there are multiple audio files on the server which share the exact same title and artist, Cadence will return the first result only.</p>
                         <p>Does not return album art. To get album art, use <code>/api/nowplaying/albumart</code></p>
                         <h3 class="title is-6">Response</h3>
                         <ul>
-                            <li>200 OK <code>[ { "ID": "1", "Artist": "fripSide", "Title": "only my railgun", "Album": "only my railgun - Single", "Genre": "J-Pop", "Year": 2009}]</code>
-                            <li>404 Not Found -- This indicates the song currently playing is not in Cadence's internal database.</li>
+                            <li>200 OK <code>{ "ID": "1", "Artist": "fripSide", "Title": "only my railgun", "Album": "only my railgun - Single", "Genre": "J-Pop", "Year": 2009}</code>
+                            <li>404 Not Found - This indicates the song currently playing is not in Cadence's internal database.</li>
                         </ul>
 
 
@@ -168,7 +168,7 @@
                         <h3 class="title is-6">Response</h3>
                         <ul>
                             <li>200 OK <code>{ "Picture": "(base64 encoding of album art)" } </code>
-                            <li>404 Not Found -- This indicates the song currently playing did not get written to Cadence's internal database.</li>
+                            <li>404 Not Found - This indicates the song currently playing did not get written to Cadence's internal database.</li>
                         </ul>
                         
                         <h2 class="title is-3"><span class="tag is-success block">Stable</span> GET /api/listeners</h2>
@@ -176,6 +176,7 @@
                         <h3 class="title is-6">Response</h3>
                         <ul>
                             <li>200 OK <code>{ "Listeners": 14 }</code>
+                            <li>404 Not Found - This indicates the song currently playing did not get written to Cadence's internal database or more likely simply does not have any artwork metadata.</li>
                         </ul>
 
                         <hr/>

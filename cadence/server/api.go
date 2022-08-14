@@ -15,9 +15,10 @@ import (
 )
 
 // /api/search
+// Gets text metadata (excludes album art and path) of any songs matching a search query.
 func Search() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Info("Search", fmt.Sprintf("Search by client %s.", r.Header.Get("X-Forwarded-For")))
+		clog.Info("Search", fmt.Sprintf("Search request from client %s.", r.Header.Get("X-Forwarded-For")))
 
 		type Search struct {
 			Query string `json:"search"`
@@ -44,6 +45,7 @@ func Search() http.HandlerFunc {
 }
 
 // /api/request/id
+// Posts a request submission for a specific song ID.
 func RequestID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Info("Request", fmt.Sprintf("Request-by-ID by client %s.", r.Header.Get("X-Forwarded-For")))
@@ -71,7 +73,7 @@ func RequestID() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
-		_, err = pushRequest(path)
+		_, err = liquidsoapRequest(path)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
@@ -82,6 +84,7 @@ func RequestID() http.HandlerFunc {
 }
 
 // /api/request/bestmatch
+// Posts a request submission for the top result of a search.
 func RequestBestMatch() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clog.Debug("Search", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
@@ -108,7 +111,7 @@ func RequestBestMatch() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
-		_, err = pushRequest(path)
+		_, err = liquidsoapRequest(path)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
@@ -119,14 +122,10 @@ func RequestBestMatch() http.HandlerFunc {
 }
 
 // /api/nowplaying/metadata
+// Gets text metadata (excludes album art and path) of the currently playing song.
 func NowPlayingMetadata() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		title, artist, err := getNowPlaying()
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500
-			return
-		}
-		queryResults, err := searchByTitleArtist(title, artist)
+		queryResults, err := searchByTitleArtist(nowTitle, nowArtist)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
@@ -154,14 +153,10 @@ func NowPlayingMetadata() http.HandlerFunc {
 }
 
 // /api/nowplaying/albumart
+// Gets encoded album art of the currently playing song.
 func NowPlayingAlbumArt() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		title, artist, err := getNowPlaying()
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError) // 500
-			return
-		}
-		queryResults, err := searchByTitleArtist(title, artist)
+		queryResults, err := searchByTitleArtist(nowTitle, nowArtist)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
@@ -187,6 +182,10 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
+		if tags.Picture().Data == nil {
+			w.WriteHeader(http.StatusNotFound) // 404
+			return
+		}
 
 		// Return data to client
 		type SongData struct {
@@ -200,6 +199,7 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 }
 
 // /api/listenurl
+// Gets the direct stream listen URL, which is a combination of host and mountpoint, set in Icecast's cadence.xml.
 func ListenURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Return data to client
@@ -214,6 +214,7 @@ func ListenURL() http.HandlerFunc {
 }
 
 // /api/listeners
+// Gets the number of active connections with Icecast.
 func Listeners() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Return data to client
@@ -228,6 +229,7 @@ func Listeners() http.HandlerFunc {
 }
 
 // /api/version
+// Gets the current server version (set in cadence.env).
 func Version() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Return data to client
@@ -242,6 +244,7 @@ func Version() http.HandlerFunc {
 }
 
 // /ready
+// Gets 200 OK status.
 func Ready() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK) // 200 OK

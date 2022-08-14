@@ -19,7 +19,12 @@ func dbConfig() (newdb *sql.DB, err error) {
 	clog.Info("dbConfig", "Setting up the database.")
 	newdb, err = sql.Open("sqlite3", "/cadence/music-metadata.db")
 	if err != nil {
-		clog.Error("dbConfig", "Failed to build database table!", err)
+		clog.Error("dbConfig", "Failed to open database file!", err)
+		return nil, err
+	}
+	_, err = newdb.Exec(`DROP TABLE IF EXISTS aria`)
+	if err != nil {
+		clog.Error("dbConfig", "Unable to drop existing metadata table.", err)
 		return nil, err
 	}
 	clog.Info("dbConfig", fmt.Sprintf("Building schema for table <%s>...", c.MetadataTable))

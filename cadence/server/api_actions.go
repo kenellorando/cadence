@@ -1,6 +1,6 @@
 // api_actions.go
-// Repeatable actions used by API functions. Mostly database and audio client functions.
-// No responses to clients here.
+// Repeatable actions used by API functions. Mostly database and audio software calls.
+// No direct responses to clients here.
 
 package main
 
@@ -100,7 +100,7 @@ func getPathById(id int) (path string, err error) {
 
 // Takes an absolute song path, submits the path to be queued in Liquidsoap.
 // Returns the response message from Liquidsoap.
-func pushRequest(path string) (message string, err error) {
+func liquidsoapRequest(path string) (message string, err error) {
 	// Telnet to liquidsoap
 	clog.Debug("Request", "Connecting to liquidsoap service...")
 	conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
@@ -121,17 +121,6 @@ func pushRequest(path string) (message string, err error) {
 	return message, nil
 }
 
-// Takes no arguments.
-// Returns the title and artist strings actively playing on Icecast.
-func getNowPlaying() (title string, artist string, err error) {
-	if nowTitle == "-" && nowArtist == "-" {
-		clog.Info("getNowPlaying", "Did not see anything playing in Icecast.")
-	} else {
-		clog.Info("getNowPlaying", fmt.Sprintf("The stream server reports it is playing: '%s' by '%s'.", title, artist))
-	}
-	return nowTitle, nowArtist, nil
-}
-
 var preTitle, preArtist, nowTitle, nowArtist string = "-", "-", "-", "-"
 var preHost, preMountpoint, nowHost, nowMountpoint string = "-", "-", "-", "-"
 var preListeners, nowListeners float64 = -1, -1
@@ -147,24 +136,24 @@ func icecastMonitor() {
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
 			clog.Debug("icecastMonitor", "Unable to connect to Icecast.")
-			resetIcecastData()
+			icecastDataReset()
 			continue
 		}
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			clog.Debug("icecastMonitor", "Connected to Icecast but unable to read response.")
-			resetIcecastData()
+			icecastDataReset()
 			continue
 		}
 		jsonParsed, err := gabs.ParseJSON([]byte(body))
 		if err != nil {
 			clog.Debug("icecastMonitor", "Connected to Icecast but unable to parse response.")
-			resetIcecastData()
+			icecastDataReset()
 			continue
 		}
 		if jsonParsed.Path("icestats.source.title").Data() == nil || jsonParsed.Path("icestats.source.artist").Data() == nil {
-			clog.Debug("icecastMonitor", "Connected to Icecast, but did not see anything playing.")
-			resetIcecastData()
+			clog.Debug("icecastMonitor", "Connected to Icecast, but saw nothing playing.")
+			icecastDataReset()
 			continue
 		}
 
@@ -200,8 +189,9 @@ func icecastMonitor() {
 }
 
 // Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
-func resetIcecastData() {
+func icecastDataReset() {
 	preTitle, preArtist, nowTitle, nowArtist = "-", "-", "-", "-"
 	preHost, preMountpoint, nowHost, nowMountpoint = "-", "-", "-", "-"
 	preListeners, nowListeners = -1, -1
+	time.Sleep(3 * time.Second)
 }

@@ -1,39 +1,13 @@
-$(window).on("load", function(e) {
-	// Initial search on load
-	postSearch()
-	// When the user presses the return key
-	$("#searchInput").keyup(function(event) {
-		if (event.keyCode == 13) {
-			postSearch()
-		}
-	});
-	// User clicks the search button
-	$('#searchButton').click(function(e) {
-		postSearch()
-	});
+var streamSrcURL = "" // this is used by the stream source loader
 
-	// Clicks on song request buttons
-	$(document).on('click', '.requestButton', function(e) {
-		var data = {};
-		data.ID = unescape(this.dataset.id);
-		$.ajax({
-			type: 'POST',
-			url: '/api/request/id',
-			/* contentType sends application/x-www-form-urlencoded data */
-			contentType: 'application/x-www-form-urlencoded',
-			data: JSON.stringify(data),
-			success: function() {
-				document.getElementById("requestStatus").innerHTML = "Request accepted!";
-			},
-			error: function() {
-				document.getElementById("requestStatus").innerHTML = "Sorry, your request is rate limited.";
-			},
-		})
-	})
+$(window).on("load", function(e) {
+	refreshRadioData()
+	connectToSSE()
+	postSearch()
+	setSearchRequestFunctions()
 });
 
-// Initial data load
-$(window).on("load", function(e) {
+function refreshRadioData() {
 	$.ajax({
 		type: 'GET',
 		url: "/api/version",
@@ -76,8 +50,6 @@ $(window).on("load", function(e) {
 		success: function(data) {
 			if (data.ListenURL == "-/-") {
 				$('#status').html("Disconnected from server.")
-				$.ajax(this);
-				return
 			} else {
 				streamSrcURL = location.protocol + "//" + data.ListenURL
 				document.getElementById("stream").src = streamSrcURL;
@@ -86,23 +58,13 @@ $(window).on("load", function(e) {
 		},
 		error: function() {
 			document.getElementById("stream").src = "";
-			$.ajax(this);
-			return
+			$('#status').html("Disconnected from server.")
 		}
 	});
-});
+}
 
-var streamSrcURL = "" // this gets used by the stream playButton function
-
-// Check into the cadence nowplaying metadata event stream
-$(document).ready(function() {
+function connectToSSE() {
 	let eventSource = new EventSource("/api/radiodata/sse");
-	eventSource.onopen = function(event) {
-		console.log("connected", event);
-	}
-	eventSource.onerror = function(event) {
-		console.log("error connecting", event);
-	}
 	eventSource.addEventListener("title", function(event) {
 		$('#song').text(event.data)
 		setAlbumArt()
@@ -111,24 +73,23 @@ $(document).ready(function() {
 		$('#artist').text(event.data)
 	})
 	eventSource.addEventListener("listeners", function(event) {
-		let listenerUpdate = event.data
-		if (listenerUpdate == -1) {
+		if (event.data == -1) {
 			$('#listeners').html("(stream unreachable)")
 		} else {
-			$('#listeners').html(listenerUpdate)
+			$('#listeners').html(event.data)
 		}
 	})
 	eventSource.addEventListener("listenurl", function(event) {
-		let listenurl = event.data
-		if (listenurl == "-/-") {
+		if (event.data == "-/-") {
+			document.getElementById("stream").src = "";
 			$('#status').html("Disconnected from server.")
 		} else {
-			streamSrcURL = location.protocol + "//" + listenurl 
-			document.getElementById("stream").src = newListenURL
-			$('#status').html("Connected: <a href='"+ newListenURL + "'>" + newListenURL + "</a>")
+			streamSrcURL = location.protocol + "//" + event.data 
+			document.getElementById("stream").src = streamSrcURL
+			$('#status').html("Connected: <a href='"+ streamSrcURL + "'>" + streamSrcURL + "</a>")
 		}
 	})
-});
+}
 
 function postSearch() {
 	// Create a key 'search' to send in JSON
@@ -191,4 +152,32 @@ function setAlbumArt() {
 			$('#artwork').attr("src", "");
 		}
 	});
+}
+
+function setSearchRequestFunctions() {
+	// Presses return key
+	$("#searchInput").keyup(function(event) {
+		if (event.keyCode == 13) {
+			postSearch()
+		}
+	});
+
+	// Clicks on song request buttons
+	$(document).on('click', '.requestButton', function(e) {
+		var data = {};
+		data.ID = unescape(this.dataset.id);
+		$.ajax({
+			type: 'POST',
+			url: '/api/request/id',
+			/* contentType sends application/x-www-form-urlencoded data */
+			contentType: 'application/x-www-form-urlencoded',
+			data: JSON.stringify(data),
+			success: function() {
+				document.getElementById("requestStatus").innerHTML = "Request accepted!";
+			},
+			error: function() {
+				document.getElementById("requestStatus").innerHTML = "Sorry, your request is rate limited.";
+			},
+		})
+	})
 }

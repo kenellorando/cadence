@@ -1,5 +1,12 @@
-// Toggle the stream with the playButton
 $(document).ready(function() {
+	streamSourceLoad()
+	warnIOSSafari()
+	volumeControl()
+	pageTabs()
+});
+
+// Sets the audio source stream and playbutton functionality
+function streamSourceLoad() {
 	var stream = document.getElementById("stream");
 	var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 	document.getElementById("playButton").addEventListener('click', function() {
@@ -18,19 +25,19 @@ $(document).ready(function() {
 			document.getElementById("playButton").innerHTML = "►";
 		}
 	}, true);
-});
+}
 
-
-// Display page warning on iOS or Safari devices
-$(document).ready(function() {
+// Warnings for iOS or Safari devices
+function warnIOSSafari() {
 	let safariUA = /Apple/i.test(navigator.vendor);
 	let iOSUA = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 	if (iOSUA || safariUA) {
 		alert("You appear to be using an iOS device or a Safari browser. Cadence stream playback may not be compatible with your platform.")
 	}
-});
-// Volume control
-$(document).ready(function() {
+}
+
+// Volume bar functionality and volume setting caching
+function volumeControl() {
 	// Load cached volume level, or 30%
 	// Frontend default maximum volume is 60% max source volume
 	var vol = localStorage.getItem('volumeKey') || 0.30;
@@ -51,10 +58,11 @@ $(document).ready(function() {
 		// Sets the new set volume into localstorage
 		localStorage.setItem('volumeKey', vol);
 	}
-});
+}
 
-$(document).ready(function() {
-    $('#tabs li').on('click', function() {
+// The page section tabbing
+function pageTabs() {
+	$('#tabs li').on('click', function() {
         var tab = $(this).data('tab');
 
         $('#tabs li').removeClass('is-active');
@@ -63,16 +71,4 @@ $(document).ready(function() {
         $('#tab-content section').removeClass('is-active');
         $('section[data-content="' + tab + '"]').addClass('is-active');
     });
-});
-
-$(document).ready(function() {
-    $('#tabs li').on('click', function() {
-        var tab = $(this).data('tab');
-
-        $('#tabs li').removeClass('is-active');
-        $(this).addClass('is-active');
-
-        $('#tab-content section').removeClass('is-active');
-        $('section[data-content="' + tab + '"]').addClass('is-active');
-    });
-});
+}

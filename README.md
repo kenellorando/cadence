@@ -2,11 +2,9 @@
 # CadenceRadio
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/kenellorando/cadence?style=flat-square)
 
-**Cadence** is a fully-featured HTTP API application suite for *Icecast/Liquidsoap* web radios.
+**Cadence** is a fully-featured HTTP API web radio software suite.
 
-Out of the box, this project ships an API server, web-frontend, and autopopulating music-metadata database with custom _Icecast_ and _Liquidsoap_ containers. A Compose file will let you set up an entire radio stack in minutes. All components have releases for amd64 and armv7. 
-
-See a demo of this on [https://cadenceradio.com/](https://cadenceradio.com/).
+It ships everything you need to start a web radio station, including an API server (with search, request, now playing, and art functions), an interactive browser UI, an autopopulating music-metadata database, with custom _Icecast_ and _Liquidsoap_ integration. A Compose file sets the entire radio stack up in minutes. Cadence has container releases for amd64 and armv7. See a demo on [https://cadenceradio.com/](https://cadenceradio.com/).
 
 ## Get Started
 
@@ -21,7 +19,7 @@ Running `docker compose up` will start all of the Cadence services. The frontend
 
 ### Password Protecting Services
 
-If you plan to expose Cadence beyond your local network, you'll need to tweak a few configuration files so the radio services are password protected (see next section).
+If you plan to expose Cadence beyond your local network, you'll need to tweak a few configuration files so the radio services are password protected.
 
 > **Warning**: The way this repo currently handles configuration involves adding passwords to files which you may accidentally commit, so be careful.
 
@@ -34,6 +32,6 @@ If you plan to expose Cadence beyond your local network, you'll need to tweak a 
 
 ## Building for Development
 
-If you are developing for Cadence and need to run exactly what you have without using pre-built images:
+If you are developing and need to rebuild exactly what you have locally:
 
 1. `docker compose up --build`

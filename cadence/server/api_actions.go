@@ -29,12 +29,12 @@ type SongData struct {
 // Takes a query string to search the database.
 // Returns a slice of SongData of songs ordered by relevance.
 func searchByQuery(query string) (queryResults []SongData, err error) {
-	clog.Info("dbQuery", fmt.Sprintf("Searching database for query: '%v'", query))
+	clog.Info("searchByQuery", fmt.Sprintf("Searching database for query: '%v'", query))
 
 	selectWhereStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ", c.MetadataTable) + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
 	rows, err := db.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
 	if err != nil {
-		clog.Error("Search", "Database search failed.", err)
+		clog.Error("searchByQuery", "Database search failed.", err)
 		return nil, err
 	}
 
@@ -42,7 +42,7 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 		song := &SongData{}
 		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
 		if err != nil {
-			clog.Error("Search", "Data scan failed.", err)
+			clog.Error("searchByQuery", "Data scan failed.", err)
 			continue
 		}
 		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
@@ -58,7 +58,7 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 	selectStatement := fmt.Sprintf("SELECT rowid,artist,title,album,genre,year FROM %s WHERE title=\"%v\" AND artist=\"%v\";", c.MetadataTable, title, artist)
 	rows, err := db.Query(selectStatement)
 	if err != nil {
-		clog.Error("NowPlayingMetadata", "Could not query DB.", err)
+		clog.Error("searchByTitleArtist", "Could not query DB.", err)
 		return nil, err
 	}
 
@@ -66,7 +66,7 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 		song := &SongData{}
 		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
 		if err != nil {
-			clog.Error("Search", "Data scan failed.", err)
+			clog.Error("searchByTitleArtist", "Data scan failed.", err)
 			continue
 		}
 		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
@@ -78,19 +78,19 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 // Takes a song ID integer.
 // Returns the absolute path of the audio file.
 func getPathById(id int) (path string, err error) {
-	clog.Info("dbQuery", fmt.Sprintf("Searching database for the path of song: '%v'", id))
+	clog.Info("getPathById", fmt.Sprintf("Searching database for the path of song: '%v'", id))
 
 	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v", c.MetadataTable, id)
 
 	rows, err := db.Query(selectWhereStatement)
 	if err != nil {
-		clog.Error("Search", "Database search failed.", err)
+		clog.Error("getPathById", "Database search failed.", err)
 		return "", err
 	}
 	for rows.Next() {
 		err = rows.Scan(&path)
 		if err != nil {
-			clog.Error("Search", "Data scan failed.", err)
+			clog.Error("getPathById", "Data scan failed.", err)
 			return "", err
 		}
 	}
@@ -102,11 +102,11 @@ func getPathById(id int) (path string, err error) {
 // Returns the response message from Liquidsoap.
 func liquidsoapRequest(path string) (message string, err error) {
 	// Telnet to liquidsoap
-	clog.Debug("Request", "Connecting to liquidsoap service...")
+	clog.Debug("liquidsoapRequest", "Connecting to liquidsoap service...")
 	conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
 	defer conn.Close()
 	if err != nil {
-		clog.Error("Request", "Failed to connect to audio source server.", err)
+		clog.Error("liquidsoapRequest", "Failed to connect to audio source server.", err)
 		return "", err
 	}
 
@@ -114,7 +114,7 @@ func liquidsoapRequest(path string) (message string, err error) {
 	fmt.Fprintf(conn, "request.push "+path+"\n")
 	// Listen for response
 	message, _ = bufio.NewReader(conn).ReadString('\n')
-	clog.Info("Request", fmt.Sprintf("Message from audio source server: %s", message))
+	clog.Info("liquidsoapRequest", fmt.Sprintf("Message from audio source server: %s", message))
 	// Goodbye
 	fmt.Fprintf(conn, "quit"+"\n")
 

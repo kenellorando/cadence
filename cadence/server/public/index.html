@@ -68,12 +68,12 @@
                     <li>... a data API server providing music search, song request, now playing, and artwork functions.</li>
                     <li>... an interactive web frontend.</li>
                     <li>... a built-in auto-populating music metadata database.</li>
-                    <li>... custom <i>Icecast</i> and <i>Liquidsoap</i> integration.</li>
+                    <li>... integration with <i>Icecast</i> and <i>Liquidsoap</i>.</li>
                     <li>... containerization of all components with a Compose for fast local setup (this demo even runs on a Kubernetes cluster).</li>
                 </ul>
-                <p>To configure Cadence, set a music directory (with some music files inside it), set a few service passwords and hostnames, and you're good to go! Cadence has releases for amd64 and arm/v7. Leave a star on <a href="https://github.com/kenellorando/cadence">GitHub</a>.</p>
+                <p>To configure Cadence, set a music directory (with some music files inside it), set a few service passwords and hostnames, and you're good to go! Cadence has releases for amd64 and arm/v7. Leave a star on <a href="https://github.com/kenellorando/cadence">GitHub</a>!</p>
 
-                <p><i>Note: Cadence has no official relation to either the Icecast or Liquidsoap software projects. This is a personal project.</i></p>
+                <p><i>Cadence has no official relation to the Icecast or Liquidsoap software projects.</i></p>
             </section>
             <section data-content="request" class="content">
                 <p>Submit a song request to enter the play queue.</p>
@@ -110,6 +110,7 @@
                         <ul>
                             <li>202 Accepted</li>
                             <li>400 Bad Request</li>
+                            <li>429 Too Many Requests - This indicates you have made too many song requests within the timeframe configured for Cadence's request rate limiter.</li>
                         </ul>
         
                         <hr/>
@@ -122,6 +123,7 @@
                         <ul>
                             <li>202 Accepted</li>
                             <li>400 Bad Request</li>
+                            <li>429 Too Many Requests - This indicates you have made too many song requests within the timeframe configured for Cadence's request rate limiter.</li>
                         </ul>
 
                         <hr/>

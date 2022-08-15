@@ -22,22 +22,12 @@ $(window).on("load", function(e) {
 			/* contentType sends application/x-www-form-urlencoded data */
 			contentType: 'application/x-www-form-urlencoded',
 			data: JSON.stringify(data),
-			/* dataType expects a json response */
-			dataType: 'json',
-			complete: function(data) {
-				// console.log("Server message: " + data.responseJSON.Message);
-				// console.log("Timeout remaining (s): " + data.responseJSON.TimeRemaining);
-				
-				document.getElementById("requestStatus").innerHTML = "Request submitted!";
-				// // Disable the request button over UI
-				// $(".requestButton").prop('disabled', true);
-				// document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonDisabled.css"
-				// // Enable the request button after X minutes
-				// setTimeout(function() {
-				// 	$(".requestButton").prop('disabled', false);
-				// 	document.getElementById("moduleRequestButton").href = "/css/modules/requestButtonEnabled.css"
-				// }, 1000 * data.responseJSON.TimeRemaining)
-			}
+			success: function() {
+				document.getElementById("requestStatus").innerHTML = "Request accepted!";
+			},
+			error: function() {
+				document.getElementById("requestStatus").innerHTML = "Sorry, your request is rate limited.";
+			},
 		})
 	})
 });

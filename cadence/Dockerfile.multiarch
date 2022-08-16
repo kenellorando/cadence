@@ -13,6 +13,8 @@ RUN if [ "$TARGETARCH" = "arm" ] ; then \
 
 ARG ARCH=
 FROM ${ARCH}golang:1.18.1-bullseye
+LABEL maintainer="Ken Ellorando (kenellorando.com)"
+LABEL source="github.com/kenellorando/cadence"
 COPY --from=builder /cadence/public /cadence/server/public
 COPY --from=builder /cadence-server /cadence/cadence-server
 EXPOSE 8080

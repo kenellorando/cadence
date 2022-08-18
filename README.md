@@ -1,4 +1,3 @@
-
 # CadenceRadio
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/kenellorando/cadence?style=flat-square)
 
@@ -6,7 +5,11 @@
 
 It ships everything you need to start a web radio station, including an API server (with search, request, now playing, artwork, and stream information functions), an interactive browser UI, an autopopulating music-metadata database, and custom built-in _Icecast_ and _Liquidsoap_ integration.
 
-To configure Cadence, set a music directory (with some music files inside it), set a few service passwords and hostnames, and you're good to go! Cadence has container releases for amd64 and armv7. All components are containerized, and a Compose file sets the entire radio stack up in minutes. See a live demo on [cadenceradio.com](https://cadenceradio.com/)!
+Cadence is essentially a metadata broker between your music files and stream services, with a programmatic interface for your audiences. The project ships all components pre-configured to work with each each other so there is hardly any configuration to do.
+
+To configure Cadence, set a target directory containing your music, set a few service passwords and hostnames, and you're good to go! Cadence has container releases for amd64 and armv7. All components are containerized, and a Compose file sets the entire radio stack up in minutes. See a live demo on [cadenceradio.com](https://cadenceradio.com/)!
+
+![cadence5 architecture](https://user-images.githubusercontent.com/17265041/185465196-66fc2249-e43a-46f7-a12f-dbde9aaf8172.png)
 
 ## Get Started
 

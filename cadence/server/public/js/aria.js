@@ -1,13 +1,13 @@
 var streamSrcURL = "" // this is used by the stream source loader
 
 $(window).on("load", function(e) {
-	refreshRadioData()
+	getRadioData()
 	connectToSSE()
 	postSearch()
 	setSearchRequestFunctions()
 });
 
-function refreshRadioData() {
+function getRadioData() {
 	$.ajax({
 		type: 'GET',
 		url: "/api/version",
@@ -63,14 +63,28 @@ function refreshRadioData() {
 	});
 }
 
+var retry = 1;
+
 function connectToSSE() {
 	let eventSource = new EventSource("/api/radiodata/sse");
+	window.addEventListener('beforeunload', () => {
+		eventSource.close();
+	});
+
+	eventSource.onerror = function(event) {
+		eventSource.close();
+		retry *= 2;
+		setTimeout(() => { connectToSSE(); }, retry * 1000);
+	}
+
 	eventSource.addEventListener("title", function(event) {
 		$('#song').text(event.data)
-		setAlbumArt()
 	})
 	eventSource.addEventListener("artist", function(event) {
 		$('#artist').text(event.data)
+	})
+	eventSource.addEventListener("title" || "artist", function(event) {
+		setAlbumArt()
 	})
 	eventSource.addEventListener("listeners", function(event) {
 		if (event.data == -1) {

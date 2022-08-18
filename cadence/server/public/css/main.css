@@ -5,13 +5,13 @@ body {
 }
 
 footer {
+	font-size: 90%;
+	max-width: 160px;
     text-align: center;
     margin-top: 50px;
     margin-bottom: 30px;
-}
-
-.rocksalt {
-	font-family: 'Rock Salt', cursive;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 #player {

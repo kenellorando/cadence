@@ -1,0 +1,17 @@
+# Documentation for adding sources, live mounts, jingles, etc.
+# http://savonet.sourceforge.net/doc-svn/complete_case.html
+
+set("log.file.path", "/var/log/liquidsoap/liquidsoap.log")
+set("log.stdout", true)
+set("server.telnet", true)
+set("server.telnet.bind_addr", "0.0.0.0")
+
+# 1. Lowest priority: play all music in the target directory at random.
+default = mksafe(playlist(mode="randomize", "/music/"))
+# 2. Next priority: play user requests first if there are any in the queue.
+radio = fallback([ request.queue(id="request"), default])
+# 3. Next priority: play live input stream if one is connected. 
+full = fallback(track_sensitive=false, [input.http("http://localhost:8000/live.ogg"), radio])
+
+# Output the full stream in OGG
+output.icecast(%vorbis.cbr(bitrate=192), host="icecast2",port=8000,password="hackme", mount="cadence1",full)

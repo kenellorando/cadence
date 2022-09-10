@@ -1,0 +1,60 @@
+version: "3"
+services:
+
+  icecast2:
+    build: 
+      context: ./cadence_icecast2/ 
+    image: kenellorando/cadence_icecast2
+    container_name: icecast2
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - ./cadence_icecast2/config/cadence.xml:/etc/icecast/cadence.xml
+    networks:
+      external_services:
+      stream_delivery:
+
+  liquidsoap:
+    build: 
+      context: ./cadence_liquidsoap/ 
+    image: kenellorando/cadence_liquidsoap
+    container_name: liquidsoap
+    restart: always
+    volumes:
+      - ./cadence_liquidsoap/config/cadence.liq:/etc/liquidsoap/cadence.liq
+      - /music:/music
+    depends_on:
+      - icecast2
+    expose:
+      - 1234
+    networks:
+      internal_services:
+      stream_delivery:
+
+  cadence:
+    build: 
+      context: ./cadence/ 
+    image: kenellorando/cadence
+    container_name: cadence
+    restart: always
+    ports:
+      - 8080:8080
+    env_file:
+      - ./cadence/config/cadence.env
+    volumes:
+      - /music:/music
+    depends_on:
+      - icecast2
+      - liquidsoap
+    networks:
+      internal_services:
+      external_services:
+
+networks:
+  external_services:
+    driver: bridge
+  internal_services:
+    driver: bridge
+  stream_delivery:
+    driver: bridge

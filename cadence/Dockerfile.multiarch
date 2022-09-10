@@ -1,0 +1,22 @@
+# # syntax=docker/dockerfile:1
+ARG ARCH=
+FROM --platform=${BUILDPLATFORM} ${ARCH}golang:1.18.1-bullseye as builder
+WORKDIR /cadence
+COPY ./* ./
+RUN go mod download
+ARG TARGETOS TARGETARCH
+RUN if [ "$TARGETARCH" = "arm" ] ; then \ 
+    apt update && apt install g++-arm-linux-gnueabihf -y; \
+    CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=arm go build -o /cadence-server --tags "linux sqlite_fts5" -ldflags '-w'; \
+    elif [ "$TARGETARCH" = "amd64" ] ; then \
+    CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /cadence-server --tags "linux sqlite_fts5"; fi
+
+ARG ARCH=
+FROM ${ARCH}golang:1.18.1-bullseye
+LABEL maintainer="Ken Ellorando (kenellorando.com)"
+LABEL source="github.com/kenellorando/cadence"
+COPY --from=builder /cadence/public /cadence/server/public
+COPY --from=builder /cadence-server /cadence/cadence-server
+EXPOSE 8080
+# TODO: use non-root user
+CMD [ "/cadence/cadence-server" ]

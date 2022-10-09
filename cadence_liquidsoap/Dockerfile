@@ -10,7 +10,7 @@ RUN ln -s /usr/bin/dpkg-split /usr/sbin/dpkg-split && \
     ln -s /bin/tar /usr/sbin/tar
 
 RUN apt update
-RUN apt install liquidsoap -y
+RUN apt install liquidsoap=1.4.3-3 -y
 RUN apt clean
 EXPOSE 1234
 USER liquidsoap

@@ -1,16 +1,17 @@
 # CadenceRadio
 
-**Cadence** is a fully-featured HTTP API web radio software suite. 
+**Cadence** is a fully-featured REST API web radio software suite. 
 
-It ships everything you need to start a web radio station, including:
-- an API server (with search, request, now playing, artwork, and stream information functions)
+It ships everything needed to run a web radio station, including:
+
+- an API server with search, request, now playing, artwork, and stream information
 - an interactive browser UI
 - an autopopulating music-metadata database
 - custom built-in _Icecast_ and _Liquidsoap_ integration
 
-These features allow your audiences to interact with your web radio much like a call-in radio station. The project ships all components pre-configured to work with each each other so there is hardly any configuration to do.
+These features allow your audiences to interact with your web radio much like a traditional call-in radio station. The project ships all components pre-configured to work with each each other so there is hardly any configuration to do.
 
-To start your own instance of Cadence, set a target directory containing your music, set a few service passwords and hostnames, and you're good to go! Cadence has builds available for amd64 and armv7 systems. All components are containerized, and a Compose file will set the entire radio stack up in minutes. 
+To start your own instance of Cadence, set a target directory containing your music, set a few service passwords and hostnames, and you're good to go! All components have multi-architecture containers, and a Compose file will set the entire radio stack up in minutes.
 
 **See a live demo on [cadenceradio.com](https://cadenceradio.com/)!**
 
@@ -26,6 +27,10 @@ To start your own instance of Cadence, set a target directory containing your mu
 
 > **Warning**: The way this repo currently handles configuration involves adding passwords to files which you may accidentally commit, so be careful.
 
+## Prerequisites
+1. You must have Docker Compose installed.
+
+## Installation
 1. Edit the `cadence/config/cadence.env` file:
    1. Set the `CSERVER_MUSIC_DIR` value to an absolute path of a directory on your local system which you want to play music. The target is not recursively searched. The default location is `/music/`.
    2. Set the `CSERVER_REQRATELIMIT` to the number of seconds you wish to timeout users after they make song requests. Setting this value to `0` will disable rate limiting.
@@ -34,19 +39,21 @@ To start your own instance of Cadence, set a target directory containing your mu
    2. Set the `<hostname>` value to the endpoint you expect your audience to connect to. Cadence uses this value to set the stream source in the UI. This can be a DNS name, an IP address, or leave it default `localhost` to run locally.
 3. Configure the `cadence_liquidsoap/config/cadence.liq` file.
    1. Change all instances of `hackme` to a new password.
-4. `docker compose up`
+4. `docker compose up`. 
 
-Running `docker compose up` will start all Cadence services.
+That's all. All Cadence services will start up linked with each other.
 
-- The UI is accessible by default at `localhost:8080`.
-- The stream endpoint is accessible by default at `localhost:8000/cadence1`.
+## Accessing Services
+- The UI is accessible in a browser by default at `localhost:8080`.
+- API server requests may sent to the `localhost:8080` path by default. See API Documentation below.
+- The stream endpoint is accessible at `localhost:8000/cadence1` by default.
 
-If you are developing and need to rebuild exactly what you have locally:
-
+## Building the Stack Locally
+If you are developing and need to rebuild all services exactly as you have locally:
 1. `docker compose up --build`
 
 # API Reference
-See the `API` tab on https://cadenceradio.com for more details and request/response examples.
+See [Cadence's GitHub Wiki for API Documentation](https://github.com/kenellorando/cadence/wiki/API-Reference) or the `API` tab on https://cadenceradio.com for complete details and request/response examples.
 
 # Container Repositories
 - https://hub.docker.com/r/kenellorando/cadence

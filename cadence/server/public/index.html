@@ -63,17 +63,17 @@
 
         <div id="tab-content">
             <section data-content="about" class="content is-active">
-                <p><b>Cadence</b> is a fully-featured HTTP API web radio software suite.</p>
-                <p>It ships everything you need to run an internet radio station, including:</p>
+                <p><b>Cadence</b> is a fully-featured REST API web radio software suite. </p>
+                <p>It ships everything you need to run an web radio station, including:</p>
                 <ul>
-                    <li>... an API server providing music search, request, now playing, artwork, and stream information functions.</li>
+                    <li>... an API server with search, request, now playing, artwork, and stream information.</li>
                     <li>... an interactive browser UI.</li>
                     <li>... an auto-populating music metadata database.</li>
                     <li>... custom built-in <i>Icecast</i> and <i>Liquidsoap</i> integration.</li>
-                    <li>... containerization of all components (this demo even runs on a Kubernetes cluster).</li>
                 </ul>
-                <p>To configure Cadence, set a music directory (with some music files inside it), set a few service passwords and hostnames, and you're good to go! Cadence has releases for amd64 and armv7. A Compose file will build the entire radio stack for you in minutes. Leave a star on <a href="https://github.com/kenellorando/cadence">GitHub</a>!</p>
-
+                <p>These features allow your audiences to interact with your web radio much like a traditional call-in radio station. The project ships all components pre-configured to work with each each other so there is hardly any configuration to do.</p>
+                
+                <p>To start your own instance of Cadence, set a target directory containing your music, set a few service passwords and hostnames, and you're good to go! All components have multi-architecture containers, and a Compose file will set the entire radio stack up in minutes. Leave a star on <a href="https://github.com/kenellorando/cadence">GitHub</a>!</p>
             </section>
             <section data-content="request" class="content">
                 <p>Submit a song request to enter the play queue.</p>

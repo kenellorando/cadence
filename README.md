@@ -39,7 +39,7 @@ To start your own instance of Cadence, set a target directory containing your mu
    2. Set the `<hostname>` value to the endpoint you expect your audience to connect to. Cadence uses this value to set the stream source in the UI. This can be a DNS name, an IP address, or leave it default `localhost` to run locally.
 3. Configure the `cadence_liquidsoap/config/cadence.liq` file.
    1. Change all instances of `hackme` to a new password.
-   2. If you changed the music target directory above in step 1.2, change any instances of the default value `"/music/"` to match it.
+   2. If you changed the music target directory in step 1.1 above, change any instances of the default value `"/music/"` to match it.
 4. `docker compose up`. 
 
 That's all. All Cadence services will start up linked with each other.

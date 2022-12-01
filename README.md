@@ -1,17 +1,12 @@
 # CadenceRadio
 
-**Cadence** is a fully-featured REST API web radio software suite. 
+**Cadence** is an all-in-one web radio suite, allowing anyone to quickly and easily start an internet radio website in minutes.
 
-It ships everything needed to run a web radio station, including:
+The project ships with built-in _Icecast_ and _Liquidsoap_ working out-of-the-box, complemented by a UI, music search, song request, artwork, and real-time stream information features.
 
-- an API server with search, request, now playing, artwork, and stream information
-- an interactive browser UI
-- an autopopulating music-metadata database
-- custom built-in _Icecast_ and _Liquidsoap_ integration
+Your audiences can interact with your Cadence Radio much like a traditional call-in radio station. The project ships all components mostly pre-configured to work with each each other so there is hardly any configuration to do.
 
-These features allow your audiences to interact with your web radio much like a traditional call-in radio station. The project ships all components pre-configured to work with each each other so there is hardly any configuration to do.
-
-To start your own instance of Cadence, set a target directory containing your music, set a few service passwords and hostnames, and you're good to go! All components have multi-architecture containers, and a Compose file will set the entire radio stack up in minutes.
+To start your own instance of Cadence, set a target directory containing your music, set a few service passwords and hostnames, and you're good to go! Cadence ships which a Compose file that will set the entire radio stack up in a single command.
 
 **See a live demo on [cadenceradio.com](https://cadenceradio.com/)!**
 

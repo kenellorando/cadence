@@ -26,15 +26,15 @@ To start your own instance of Cadence, set a target directory containing your mu
 1. You must have Docker Compose installed.
 
 ## Installation
-1. Edit the `cadence/config/cadence.env` file:
-   1. Set the `CSERVER_MUSIC_DIR` value to an absolute path of a directory on your local system which you want to play music. The target is not recursively searched. The default location is `/music/`.
-   2. Set the `CSERVER_REQRATELIMIT` to the number of seconds you wish to timeout users after they make song requests. Setting this value to `0` will disable rate limiting.
-2. Configure the `cadence_icecast2/config/cadence.xml` file.
+1. Edit `cadence/config/cadence.env`:
+   1. Set `CSERVER_MUSIC_DIR` to an absolute path of a directory on your system which contains your music files to play. The target is not recursively searched.
+   2. Set `CSERVER_REQRATELIMIT` to an integer value of seconds to timeout users after they make song requests. Set this value to `0` to disable rate limiting.
+2. Edit `cadence_icecast2/config/cadence.xml`:
    1. Change all instances of `hackme` to a new password.
-   2. Set the `<hostname>` value to the endpoint you expect your audience to connect to. Cadence uses this value to set the stream source in the UI. This can be a DNS name, an IP address, or leave it default `localhost` to run locally.
-3. Configure the `cadence_liquidsoap/config/cadence.liq` file.
+   2. Set the `<hostname>` value to a URL you expect your audience to connect to. Cadence uses this value to set the stream source in the UI. This may be a DNS name, an IP address, or default to `localhost` if the radio is meant to be accessible from the host machine only.
+3. Edit `cadence_liquidsoap/config/cadence.liq`:
    1. Change all instances of `hackme` to a new password.
-   2. If you changed the music target directory in step 1.1 above, change any instances of the default value `"/music/"` to match it.
+   2. If you changed the `CSERVER_MUSIC_DIR` value in step 1, change any instances of the default value `"/music/"` to match it here.
 4. `docker compose up`. 
 
 That's all. All Cadence services will start up linked with each other.

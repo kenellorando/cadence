@@ -78,6 +78,11 @@ footer {
     display: block;
 }
 
+#requestStatus {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
 
 @media (min-width: 769px) {
 	body {
@@ -121,5 +126,8 @@ footer {
 	}
 	#player #artist {
 		font-size: 24px;
+	}
+	#searchResults tr th, #searchResults tr td{
+		font-size: 18px;
 	}
 }

@@ -159,8 +159,8 @@ function setAlbumArt() {
 		dataType: "json",
 		// On success, switch the source of the artwork tag
 		success: function(data) {
-			var nowPlayingArtwork = data.Picture;
-			$('#artwork').attr("src", "data:image/jpeg;base64,"+ nowPlayingArtwork);
+			var nowPlayingArtwork = "data:image/jpeg;base64,"+data.Picture;
+			$('#artwork').attr("src", nowPlayingArtwork);
 		},
 		error: function() {
 			$('#artwork').attr("src", "");

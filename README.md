@@ -13,7 +13,7 @@ To start your own instance of Cadence, set a target directory containing your mu
 # Image Gallery
 
 *Cadence Browser UI*
-![cadence5](https://user-images.githubusercontent.com/17265041/189464889-b6a67b78-8d9d-4aef-a142-2494448f26a4.JPG)
+![image](https://user-images.githubusercontent.com/17265041/205480947-998137da-fc10-4084-a311-0020f3ddbd0e.png)
 
 *Cadence Architecture*
 ![cadence5 architecture](https://user-images.githubusercontent.com/17265041/185465196-66fc2249-e43a-46f7-a12f-dbde9aaf8172.png)

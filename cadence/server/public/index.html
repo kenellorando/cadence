@@ -37,7 +37,7 @@
     </head>
     <body>
         <div id="player" class="columns is-centered is-vcentered box">
-            <div class="column is-narrow is-offset-1-desktop is-4-desktop-only">
+            <div class="column is-narrow is-offset-1-desktop is-3-desktop-only">
                 <div id="artworkcontainer">
                     <img id="artwork" src=""/>
                 </div>
@@ -55,25 +55,23 @@
         
         <div id="tabs" class="tabs is-centered is-boxed">
             <ul>
-                <li data-tab="about" class="is-active"><a>About</a></li>
+                <li data-tab="request" class="is-active"><a>Request</a></li>
+                <li data-tab="about"><a>About</a></li>
                 <li data-tab="api"><a>API</a></li>
-                <li data-tab="request"><a>Request</a></li>
             </ul>
         </div>
 
         <div id="tab-content">
-            <section data-content="about" class="content is-active">
+            <section data-content="request" class="content is-active">
+                <input name="searchInput" id="searchInput" class="input is-medium" type="text" placeholder="Filter for a song or artist!">
+                <div id="requestStatus"></div>
+                <div id="searchResults"></div>
+            </section>
+            <section data-content="about" class="content">
                 <p><b>Cadence</b> is an all-in-one web radio suite, allowing anyone to quickly and easily start an internet radio website in minutes.</p>
                 <p>The project ships with built-in <i>Icecast</i> and <i>Liquidsoap</i> working out-of-the-box, complemented by a UI, music search, song request, artwork, and real-time stream information features. A built-in, auto-populating metadata database tracks your radio music library for you.</p>
                 <p>Your audiences can interact with your Cadence Radio much like a traditional call-in radio station. The project ships all components mostly pre-configured to work with each each other so there is hardly any configuration to do.</p>
                 <p>To start your own instance of Cadence, set a target directory containing your music, set a few service passwords and hostnames, and you're good to go! Cadence ships which a Docker Compose file that will set the entire radio stack up in a single command. Cadence is completely open source and available on <a href="https://github.com/kenellorando/cadence">GitHub</a>!</p>
-            </section>
-            <section data-content="request" class="content">
-                <p>Submit a song request to enter the play queue.</p>
-
-                <input name="searchInput" id="searchInput" class="input is-medium" type="text" placeholder="Filter for a song or artist!">
-                <div id="requestStatus"></div>
-                <div id="searchResults"></div>
             </section>
             <section data-content="api" class="content">
                 <p>All requests, responses, and messages shall be transmitted as raw JSON.</p>

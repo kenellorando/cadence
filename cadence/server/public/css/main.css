@@ -23,14 +23,14 @@ footer {
     border: 1px solid black;
     width: 50vw;
     height: 50vw;
-    max-width: 280px;
-    max-height: 280px;
+    max-width: 240px;
+    max-height: 240px;
 }
 #player #song {
-	font-size: 30px;
+	font-size: 24px;
 }
 #player #artist {
-	font-size: 25px;
+	font-size: 20px;
 }
 #player #playButton {
 	/* background-color: #263635;
@@ -52,6 +52,9 @@ footer {
     margin-left: auto;
     margin-right: auto;
 	line-height: 100%;
+}
+#player #status, #player #version {
+	font-size: 14px;
 }
 
 #searchResults tr th, #searchResults tr td{
@@ -75,11 +78,16 @@ footer {
     display: block;
 }
 
+#requestStatus {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
 
 @media (min-width: 769px) {
 	body {
-		padding-left: 8%;
-		padding-right: 8%;
+		padding-left: 16%;
+		padding-right: 16%;
 	}
     #playerinfo {
         text-align: left;
@@ -91,8 +99,8 @@ footer {
 }
 @media (min-width: 1200px) {
     body {
-		padding-left: 16%;
-		padding-right: 16%;
+		padding-left: 23%;
+		padding-right: 23%;
 	}
     #player #song {
         max-width: 80%;
@@ -100,14 +108,26 @@ footer {
 }
 @media (min-width: 1600px) {
 	body {
-		padding-left: 21%;
-		padding-right: 21%;
+		padding-left: 26%;
+		padding-right: 26%;
 	}
 }
 
 @media (min-width: 1800px) {
 	body {
-		padding-left: 26%;
-		padding-right: 26%;
+		padding-left: 29%;
+		padding-right: 29%;
+	}
+	#player #song {
+		white-space: nowrap;
+	}
+	#player #song {
+		font-size: 28px;
+	}
+	#player #artist {
+		font-size: 24px;
+	}
+	#searchResults tr th, #searchResults tr td{
+		font-size: 18px;
 	}
 }

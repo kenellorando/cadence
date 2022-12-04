@@ -135,7 +135,7 @@ function postSearch() {
 				// Build the results table
 				table += "<thead><tr><th>Artist</th><th>Title</th><th>Availability</th></tr></thead><tbody>"
 				data.forEach(function(song) {
-					table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button class='button requestButton' data-id='" + escape(song.ID) + "'>REQUEST</button></td></tr>";
+					table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button class='button is-small is-light requestButton' data-id='" + escape(song.ID) + "'>Request</button></td></tr>";
 				})
 				table += "</tbody>"
 
@@ -159,8 +159,8 @@ function setAlbumArt() {
 		dataType: "json",
 		// On success, switch the source of the artwork tag
 		success: function(data) {
-			var nowPlayingArtwork = data.Picture;
-			$('#artwork').attr("src", "data:image/jpeg;base64,"+ nowPlayingArtwork);
+			var nowPlayingArtwork = "data:image/jpeg;base64,"+data.Picture;
+			$('#artwork').attr("src", nowPlayingArtwork);
 		},
 		error: function() {
 			$('#artwork').attr("src", "");

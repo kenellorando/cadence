@@ -78,17 +78,15 @@ function getListenURL() {
 	});
 }
 
-var retry = 1;
 function connectRadioData() {
 	let eventSource = new EventSource("/api/radiodata/sse");
-	window.addEventListener('beforeunload', () => {
-		eventSource.close();
-	});
+
 	eventSource.onerror = function(event) {
-		eventSource.close();
-		retry *= 2;
-		setTimeout(() => { connectToSSE(); }, retry * 1000);
+		setTimeout(function() { 
+			connectRadioData(); 
+		}, 5000);
 	}
+
 	eventSource.addEventListener("title", function(event) {
 		$('#song').text(event.data)
 	})
@@ -100,7 +98,7 @@ function connectRadioData() {
 	})
 	eventSource.addEventListener("listeners", function(event) {
 		if (event.data == -1) {
-			$('#listeners').html("(stream unreachable)")
+			$('#listeners').html("N/A")
 		} else {
 			$('#listeners').html(event.data)
 		}

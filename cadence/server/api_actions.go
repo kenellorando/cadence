@@ -130,8 +130,15 @@ var preListeners, nowListeners float64 = -1, -1
 // It is launched as a goroutine by init.
 func icecastMonitor() {
 	for {
+		// If the stream data get errors, we set default "blank" stream data and continue so Cadence API will not completely fail
 		resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
+		if resp != nil {
+			defer resp.Body.Close()
+		}
 		if err != nil {
+			clog.Error("icecastMonitor", "Unable to stream data from the Icecast service.", err)
+			icecastDataReset()
+			continue
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
@@ -184,6 +191,7 @@ func icecastMonitor() {
 			preListeners = nowListeners
 		}
 
+		resp.Body.Close()
 		time.Sleep(1 * time.Second)
 	}
 }

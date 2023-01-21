@@ -68,17 +68,18 @@
                 <div id="searchResults"></div>
             </section>
             <section data-content="about" class="content">
+                <p>Read a complete <a href="https://kenellorando.notion.site/Cadence-All-in-One-Web-Radio-Software-Suite-d1f0184b5eeb4882a3d6f78d582b2de6">blog post on Cadence's design</a>.</p>
+                <hr/>
                 <p><b>Cadence</b> is an all-in-one web radio suite, allowing anyone to quickly and easily start an internet radio website in minutes.</p>
-                <p>The project ships with built-in <i>Icecast</i> and <i>Liquidsoap</i> working out-of-the-box, complemented by a UI, music search, song request, artwork, and real-time stream information features. A built-in, auto-populating metadata database tracks your radio music library for you.</p>
-                <p>Your audiences can interact with your Cadence Radio much like a traditional call-in radio station. The project ships all components mostly pre-configured to work with each each other so there is hardly any configuration to do.</p>
-                <p>To start your own instance of Cadence, set a target directory containing your music, set a few service passwords and hostnames, and you're good to go! Cadence ships which a Docker Compose file that will set the entire radio stack up in a single command. Cadence is completely open source and available on <a href="https://github.com/kenellorando/cadence">GitHub</a>!</p>
+                <p>The project ships with <i>Icecast</i> and <i>Liquidsoap</i> working out-of-the-box, complemented by a UI, music search, song request, artwork, and real-time stream information features. An auto-populating metadata database tracks your radio music library for you.</p>
+                <p>The project ships all components mostly pre-configured to work with each each other so there is hardly any configuration to do. To start your own instance of Cadence, provide a music directory path, set a few service passwords and hostnames, and you're good to go! Cadence ships with a Docker Compose file that will set the entire radio stack up in a single command. Cadence is open source and available for free on <a href="https://github.com/kenellorando/cadence">GitHub</a>.</p>
             </section>
             <section data-content="api" class="content">
                 <p>All requests, responses, and messages shall be transmitted as raw JSON.</p>
 
                 <h2 class="title is-3"><span class="tag is-info block">POST</span> <code>/api/search</code></h2>
-                <p>Search the server's music library. Cadence is additionally aware of audio file metadata for album, year, and genre, meaning you may also try to search by any of those parameters.</p>
-                <p>This API call returns a list of results ordered by relevance.</p>
+                <p>Search the server's music library.</p>
+                <p>Cadence's API searches by "title" and "artist" metadata. This API call returns a list of results ordered by relevance.</p>
                 <h3 class="title is-6">Request</h3>
                 <code>{ "search": "railgun" }</code>
                 <h3 class="title is-6">Response</h3>
@@ -91,7 +92,8 @@
                 <hr/>
 
                 <h2 class="title is-3"><span class="tag is-info block">POST</span>  <code>/api/request/id</code></h2>
-                <p>Submit a request for a specific song to be played. This call accepts a song ID, which is an impermanent label Cadence applies to each song and is not an inherent attribute of the song file itself. Therefore, you should execute a search for an ID as a prerequisite to request if you want a guaranteed result. Also consider using <code>/api/request/bestmatch</code> to request the number one search result automatically.</p>
+                <p>Submit a request for a specific song to be played.</p>
+                <p>Accepts a song ID, which is an arbitrary label Cadence internally uses to track songs and is not an inherent attribute of the audio file itself. You should execute a search for an ID as a prerequisite to request if you want a guaranteed request match. Alternatively, consider using <code>/api/request/bestmatch</code> to automatically request the number one search result immediately.</p>
                 <h3 class="title is-6">Request</h3>
                 <code>{ "ID": "1" }</code>
 
@@ -99,13 +101,14 @@
                 <ul>
                     <li>202 Accepted</li>
                     <li>400 Bad Request</li>
-                    <li>429 Too Many Requests - This indicates you have made too many song requests within the timeframe configured for Cadence's request rate limiter.</li>
+                    <li>429 Too Many Requests - Indicates you have made too many song requests within the timeframe configured for Cadence's request rate limiter.</li>
                 </ul>
 
                 <hr/>
 
                 <h2 class="title is-3"><span class="tag is-info block">POST</span> <code>/api/request/bestmatch</code></h2>
-                <p>This call executes a search, selects the number one result (the most relevant result to the search), and submits a request for it. This is Cadence's equivalent to Google's "I'm Feeling Lucky".</p>
+                <p>Executes a search, selects the number one result (the most relevant result to the search), and submits a request for it.</p>
+                <p>This is Cadence's equivalent to Google's "I'm Feeling Lucky".</p>
                 <h3 class="title is-6">Request</h3>
                 <code>{ "Search": "only my railgun fripSide" }</code>
                 <h3 class="title is-6">Response</h3>
@@ -120,11 +123,11 @@
                 <h2 class="title is-3"><span class="tag is-success block">GET</span> <code>/api/nowplaying/metadata</code></h2>
                 <p>Gets all text metadata on the currently playing song.</p>
                 <p>If there are multiple audio files on the server which share the exact same title and artist, Cadence will return the first result only.</p>
-                <p>Does not return album art. To get album art, use <code>/api/nowplaying/albumart</code></p>
+                <p>This does not return album art. To fetch album art, use <code>/api/nowplaying/albumart</code></p>
                 <h3 class="title is-6">Response</h3>
                 <ul>
                     <li>200 OK <code>{ "ID": "1", "Artist": "fripSide", "Title": "only my railgun", "Album": "only my railgun - Single", "Genre": "J-Pop", "Year": 2009}</code>
-                    <li>404 Not Found - This indicates the song currently playing is not in Cadence's internal database.</li>
+                    <li>404 Not Found - Indicates the song currently playing is not in Cadence's internal database.</li>
                 </ul>
 
                 <hr/>
@@ -134,7 +137,7 @@
                 <h3 class="title is-6">Response</h3>
                 <ul>
                     <li>200 OK <code>{ "Picture": "(base64 encoding of album art)" } </code>
-                    <li>404 Not Found - This indicates the song currently playing did not get written to Cadence's internal database or more likely simply does not have any artwork metadata.</li>
+                    <li>404 Not Found - Indicates the song currently playing did not get written to Cadence's internal database or more likely simply does not have any artwork metadata.</li>
                 </ul>
 
                 <hr/>
@@ -149,7 +152,7 @@
                 <hr/>
 
                 <h2 class="title is-3"><span class="tag is-success block">GET</span> <code>/api/listenurl</code></h2>
-                <p>Returns the direct audio listen URL. This is used for programmatically setting any audio sources.</p>
+                <p>Returns the direct audio listen URL. Useful for programmatically setting an audio source.</p>
                 <h3 class="title is-6">Response</h3>
                 <ul>
                     <li><code>200 OK { "ListenURL": "cadenceradio.com/cadence1" }</code></li>
@@ -161,15 +164,22 @@
                 <p>Returns the server version.</p>
                 <h3 class="title is-6">Response</h3>
                 <ul>
-                    <li><code>200 OK { "Version": "5.0.0" }</code></li>
+                    <li><code>200 OK { "Version": "5.0.3" }</code></li>
                 </ul>
 
                 <hr/>
 
+                <h2 class="title is-3"><span class="tag is-success block">GET</span> <code>/ready</code></h2>
+                <p>Endpoint for Cadence API health check.</p>
+                <h3 class="title is-6">Response</h3>
+                <ul>
+                    <li><code>200 OK</code></li>
+                </ul>
+
                 <h2 class="title is-3"><span class="tag is-success block">GET</span> <code>/api/radiodata/sse</code></h2>
-                <p>This is a special server-sent event (SSE) connection API.</p>
-                <p>Clients may connect to this endpoint, and as long as they stay connected, will receive server-pushed data as it changes live on the backend without the need for the client to poll. The data is sent within one second after a change is observed.</p>
-                <p>All data transfer happens through only one event source and is differentiated by unique <code>event</code>s. At the moment, this event source will monitor and notify changes for <code>title</code>, <code>artist</code>, <code>listenurl</code>, and <code>listeners</code>. All of these can also be fetched on-demand through their respective API endpoints.</p>
+                <p>A special server-sent event API that returns updated stream data in real-time.</p>
+                <p>Clients that connect to this endpoint will receive server-pushed data as it changes live on the backend without the need for the client to poll, for as long as the client remains connected.</p>
+                <p>Various real-time data is communicated through this API and is differentiated by unique <code>event</code>s. his event source monitors and notifies changes for <code>title</code>, <code>artist</code>, <code>listenurl</code>, and <code>listeners</code>.
                 <p>As an example, if the playing song changes, all connected clients receive a <code>"title"</code> and <code>"artist"</code> event from the server. Here is an example of subscribing to the event stream in JavaScript:</p>
 <pre>
 let eventSource = new EventSource("/api/radiodata/sse");

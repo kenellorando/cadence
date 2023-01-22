@@ -143,7 +143,7 @@ $(document).ready(function() {
 			$('#artist').text(event.data)
 		})
 		eventSource.addEventListener("title" || "artist", function(event) {
-			setAlbumArt()
+			getNowPlayingAlbumArt()
 		})
 		eventSource.addEventListener("listeners", function(event) {
 			if (event.data == -1) {

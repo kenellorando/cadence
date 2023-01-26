@@ -71,13 +71,6 @@ footer {
 	text-align: right;
 } */
 
-#tab-content section {
-    display: none;
-}
-#tab-content section.is-active {
-    display: block;
-}
-
 #requestStatus {
 	margin-top: 5px;
 	margin-bottom: 5px;

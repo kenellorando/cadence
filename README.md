@@ -13,7 +13,7 @@ To install Cadence, set a target directory containing your music, set a few serv
 <details>
 <summary>Cadence Browser UI</summary>
 
-![cadence5 browser UI](https://user-images.githubusercontent.com/17265041/205480947-998137da-fc10-4084-a311-0020f3ddbd0e.png)
+![image](https://user-images.githubusercontent.com/17265041/214758418-8002cd64-2e3b-4a17-9104-1ad29d20ded6.png)
 
 </details>
 

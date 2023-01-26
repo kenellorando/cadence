@@ -31,18 +31,16 @@ To install Cadence, set a target directory containing your music, set a few serv
 1. You must have Docker Compose installed.
 
 ## Installation
-1. Find the `cadence/config/cadence.env.example` file. Make a copy of this file named exactly `cadence.env` and edit it:
+1. Edit `cadence/config/cadence.env`.
    1. Set `CSERVER_MUSIC_DIR` to an absolute path of a directory on your system which contains your music files to play. The target is not recursively searched.
    2. Set `CSERVER_REQRATELIMIT` to an integer value of seconds to timeout users after they make song requests. Set this value to `0` to disable rate limiting.
-2. Find the  `cadence_icecast2/config/cadence.xml.example` file. Make a copy of this file named exactly `cadence.env` and edit it:
+2. Edit `cadence_icecast2/config/cadence.xml`.
    1. Change all instances of `hackme` to a new password.
    2. Set the `<hostname>` value to a URL you expect your audience to connect to. Cadence uses this value to set the stream source in the UI. This may be a DNS name, an IP address, or default to `localhost` if the radio is meant to be accessible from the host machine only.
 3. Edit `cadence_liquidsoap/config/cadence.liq`:
    1. Change all instances of `hackme` to a new password.
    2. If you changed the `CSERVER_MUSIC_DIR` value in step 1, change any instances of the default value `"/music/"` to match it here.
-4. `docker compose up`. 
-
-That's all. All Cadence services will start up linked with each other.
+4. `docker compose up`.
 
 ## Accessing Services
 - The UI is accessible in a browser by default at `localhost:8080`.

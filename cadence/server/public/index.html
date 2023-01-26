@@ -19,24 +19,19 @@
 
         <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet"> 
-        <!-- Bulma CSS -->
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-        <!-- Main CSS -->
         <link rel="stylesheet" href="./css/main.css">
 
-        <!-- jQuery Google CDN -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <!-- API (Aria) scripts -->
         <script type="text/javascript" src="./js/aria.js"></script>
-        <!-- Radio player scripts -->
         <script type="text/javascript" src="./js/page.js"></script>
     </head>
     <body>
-        <div id="player" class="columns is-centered is-vcentered box">
+        <div id="player" class="columns is-centered is-vcentered box is-rounded">
             <div class="column is-narrow is-offset-1-desktop is-3-desktop-only">
                 <div id="artworkcontainer">
                     <img id="artwork" src=""/>
@@ -53,17 +48,18 @@
             </div>
         </div>
 
-        <section data-content="request" class="content">
-            <input name="searchInput" id="searchInput" class="input is-medium" type="text" placeholder="Filter for a song or artist!">
-            <div id="requestStatus"></div>
+        <div data-content="request" class="content">
+            <input name="searchInput" id="searchInput" class="input is-normal is-rounded" type="text" placeholder="Filter for a song or artist!">
             <div id="searchResults"></div>
-        </section>
+            <div id="requestStatus"></div>
+        </div>
+
         <footer>
             <div>Cadence Radio <span id="release">-</span></div>
             <div>
-                <a href="https://github.com/kenellorando/cadence">GitHub</a> • 
-                <a href="https://kenellorando.notion.site/Cadence-All-in-One-Web-Radio-Software-Suite-d1f0184b5eeb4882a3d6f78d582b2de6">About</a> • 
-                <a href="https://github.com/kenellorando/cadence/wiki/API-Reference">API</a>
+                <a target="_blank" href="https://github.com/kenellorando/cadence">GitHub</a> • 
+                <a target="_blank" href="https://kenellorando.notion.site/Cadence-All-in-One-Web-Radio-Software-Suite-d1f0184b5eeb4882a3d6f78d582b2de6">About</a> • 
+                <a target="_blank" href="https://github.com/kenellorando/cadence/wiki/API-Reference">API</a>
             </div>
         </footer>
     </body>

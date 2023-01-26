@@ -30,7 +30,7 @@ footer {
 	font-size: 24px;
 }
 #player #artist {
-	font-size: 20px;
+	font-size: 21px;
 }
 #player #playButton {
 	/* background-color: #263635;
@@ -57,10 +57,15 @@ footer {
 	font-size: 14px;
 }
 
+#searchResults tr {
+	max-height: 100%;
+}
+
 #searchResults tr th, #searchResults tr td{
 	text-align: left;
-	margin-top: 20px;
-	font-size: 15px;
+	margin-top: auto;
+	vertical-align: center;
+	font-size: 17px;
 	/* table-layout: fixed;
 	width: 100%; */
 }
@@ -71,14 +76,8 @@ footer {
 	text-align: right;
 } */
 
-#tab-content section {
-    display: none;
-}
-#tab-content section.is-active {
-    display: block;
-}
-
 #requestStatus {
+	text-align: center;
 	margin-top: 5px;
 	margin-bottom: 5px;
 }
@@ -125,9 +124,6 @@ footer {
 		font-size: 28px;
 	}
 	#player #artist {
-		font-size: 24px;
-	}
-	#searchResults tr th, #searchResults tr td{
-		font-size: 18px;
+		font-size: 25px;
 	}
 }

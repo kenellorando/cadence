@@ -90,12 +90,11 @@ function postSearch() {
 		success: function(data) {
 			var table = "<table class='table is-striped is-hoverable' id='searchResults'>";
 			if (data === null) { // if no results from search
-				document.getElementById("requestStatus").innerHTML = "Search completed.  0 results found.";
+				document.getElementById("requestStatus").innerHTML = "Results: 0";
 				var input = $('#searchInput').val();
 				input = input.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // Encode < and >, for error when placed back into no-results message
-				table += "<div>Nothing found for search '" + input + "' :(</div>";
 			} else {
-				document.getElementById("requestStatus").innerHTML = "Search completed. Results found: " + data.length;
+				document.getElementById("requestStatus").innerHTML = "Results: " + data.length;
 				table += "<thead><tr><th>Artist</th><th>Title</th><th>Availability</th></tr></thead><tbody>"
 				data.forEach(function(song) {
 					table += "<tr><td>" + song.Artist + "</td><td>" + song.Title + "</td><td><button class='button is-small is-light requestButton' data-id='" + escape(song.ID) + "'>Request</button></td></tr>";

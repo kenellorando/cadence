@@ -28,7 +28,7 @@ To install Cadence, set a target directory containing your music, set a few serv
 # Start Here
 
 ## Prerequisites
-1. You must have Docker Compose installed.
+1. You must have the [Docker Compose plugin](https://docs.docker.com/compose/install/linux/) installed.
 
 ## Installation
 1. Edit `cadence/config/cadence.env`.
@@ -50,6 +50,9 @@ To install Cadence, set a target directory containing your music, set a few serv
 ## Building the Stack Locally
 If you are developing and need to rebuild all services exactly as you have locally:
 1. `docker compose up --build`
+
+## Kubernetes Deployments
+To deploy a Cadence stack to a Kubernetes cluster, I provide manifests in [cadence-k8s](https://github.com/kenellorando/cadence-k8s).
 
 # API Reference
 See [Cadence's GitHub Wiki for API Documentation](https://github.com/kenellorando/cadence/wiki/API-Reference) for complete details and request/response examples.

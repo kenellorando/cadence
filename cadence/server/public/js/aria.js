@@ -46,7 +46,6 @@ function getNowPlayingAlbumArt() {
 		type: 'GET',
 		url: "/api/nowplaying/albumart",
 		dataType: "json",
-		// On success, switch the source of the artwork tag
 		success: function(data) {
 			var nowPlayingArtwork = "data:image/jpeg;base64,"+data.Picture;
 			$('#artwork').attr("src", nowPlayingArtwork);
@@ -84,7 +83,7 @@ function postSearch() {
 	$.ajax({
 		type: 'POST',
 		url: '/api/search',
-		contentType: 'application/x-www-form-urlencoded', // sends application/x-www-form-urlencoded data
+		contentType: 'application/json',
 		data: JSON.stringify(data),
 		dataType: 'json', // expects a json response
 		success: function(data) {
@@ -117,7 +116,7 @@ function postRequestID() {
 		$.ajax({
 			type: 'POST',
 			url: '/api/request/id',
-			contentType: 'application/x-www-form-urlencoded', // sends application/x-www-form-urlencoded data
+			contentType: 'application/json',
 			data: JSON.stringify(data),
 			success: function() {
 				document.getElementById("requestStatus").innerHTML = "Request accepted!";

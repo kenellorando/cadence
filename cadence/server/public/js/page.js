@@ -1,4 +1,7 @@
 $(document).ready(function () {
+	const stream = document.getElementById("stream");
+	const volbar = document.getElementById("volume");
+
 	// Warn iOS and Safari users
 	let safariUA = /Apple/i.test(navigator.vendor);
 	let iOSUA =
@@ -13,7 +16,6 @@ $(document).ready(function () {
 	document
 		.getElementById("playButton")
 		.addEventListener("click", function () {
-			var stream = document.getElementById("stream");
 			if (stream.paused) {
 				stream.src = streamSrcURL;
 				stream.load();
@@ -28,9 +30,7 @@ $(document).ready(function () {
 		});
 
 	// Load cached volume level, or 30%
-	var cachedVolume = localStorage.getItem("volumeKey") || 0.3;
-	$("#volume").value = cachedVolume;
-	$("#stream").volume = cachedVolume;
+	volbar.value = stream.volume = localStorage.getItem("volumeKey") || 0.3;
 	// Volume bar listeners
 	$("#volume")
 		.change(function () {

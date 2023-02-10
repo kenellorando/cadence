@@ -121,16 +121,21 @@ func liquidsoapRequest(path string) (message string, err error) {
 	return message, nil
 }
 
-var preTitle, preArtist, nowTitle, nowArtist string = "-", "-", "-", "-"
-var preHost, preMountpoint, nowHost, nowMountpoint string = "-", "-", "-", "-"
-var preListeners, nowListeners float64 = -1, -1
+var now = RadioData{}
 
-// Takes no arguments.
+type RadioData struct {
+	title      string
+	artist     string
+	host       string
+	mountpoint string
+	listeners  float64
+}
+
 // Returns nothing, but sends updated stream info to SSE and sets the global variables.
-// It is launched as a goroutine by init.
 func icecastMonitor() {
+	var prev = RadioData{}
 	for {
-		// If the stream data get errors, we set default "blank" stream data and continue so Cadence API will not completely fail
+		time.Sleep(1 * time.Second)
 		resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
 		if resp != nil {
 			defer resp.Body.Close()
@@ -164,42 +169,38 @@ func icecastMonitor() {
 			continue
 		}
 
-		nowArtist = jsonParsed.Path("icestats.source.artist").Data().(string)
-		nowTitle = jsonParsed.Path("icestats.source.title").Data().(string)
-		if (preTitle != nowTitle) || (preArtist != nowArtist) {
-			clog.Info("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", nowTitle, nowArtist))
-			radiodata_sse.SendEventMessage(nowTitle, "title", "")
-			radiodata_sse.SendEventMessage(nowArtist, "artist", "")
-			preTitle = nowTitle
-			preArtist = nowArtist
+		now.artist = jsonParsed.Path("icestats.source.artist").Data().(string)
+		now.title = jsonParsed.Path("icestats.source.title").Data().(string)
+		now.host = jsonParsed.Path("icestats.host").Data().(string)
+		now.mountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
+		now.listeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
+
+		if (prev.title != now.title) || (prev.artist != now.artist) {
+			clog.Info("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", now.title, now.artist))
+			radiodata_sse.SendEventMessage(now.title, "title", "")
+			radiodata_sse.SendEventMessage(now.artist, "artist", "")
+			prev.title = now.title
+			prev.artist = now.artist
+		}
+		if (prev.host != now.host) || (prev.mountpoint != now.mountpoint) {
+			clog.Info("icecastMonitor", fmt.Sprintf("Audio stream on: <%s/%s>", now.host, now.mountpoint))
+			radiodata_sse.SendEventMessage(fmt.Sprintf(now.host, "/", now.mountpoint), "listenurl", "")
+			prev.host = now.host
+			prev.mountpoint = now.mountpoint
+		}
+		if prev.listeners != now.listeners {
+			clog.Info("icecastMonitor", fmt.Sprintf("Listener count: <%v>", now.listeners))
+			radiodata_sse.SendEventMessage(fmt.Sprint(now.listeners), "listeners", "")
+			prev.listeners = now.listeners
 		}
 
-		nowHost = jsonParsed.Path("icestats.host").Data().(string)
-		nowMountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
-		if (preHost != nowHost) || (preMountpoint != nowMountpoint) {
-			clog.Info("icecastMonitor", fmt.Sprintf("Stream host: <%s>", nowHost))
-			clog.Info("icecastMonitor", fmt.Sprintf("Stream mountpoint: <%s>", nowMountpoint))
-			radiodata_sse.SendEventMessage(fmt.Sprintf(nowHost, "/", nowMountpoint), "listenurl", "")
-			preHost = nowHost
-			preMountpoint = nowMountpoint
-		}
-
-		nowListeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
-		if preListeners != nowListeners {
-			clog.Info("icecastMonitor", fmt.Sprintf("Listener count: <%v>", nowListeners))
-			radiodata_sse.SendEventMessage(fmt.Sprint(nowListeners), "listeners", "")
-			preListeners = nowListeners
-		}
-
+		prev = now
 		resp.Body.Close()
-		time.Sleep(1 * time.Second)
 	}
 }
 
 // Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
 func icecastDataReset() {
-	preTitle, preArtist, nowTitle, nowArtist = "-", "-", "-", "-"
-	preHost, preMountpoint, nowHost, nowMountpoint = "-", "-", "-", "-"
-	preListeners, nowListeners = -1, -1
-	time.Sleep(3 * time.Second)
+	now.title, now.artist, now.host, now.mountpoint = "-", "-", "-", "-"
+	now.listeners = -1
 }

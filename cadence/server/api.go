@@ -125,7 +125,7 @@ func RequestBestMatch() http.HandlerFunc {
 // Gets text metadata (excludes album art and path) of the currently playing song.
 func NowPlayingMetadata() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		queryResults, err := searchByTitleArtist(nowTitle, nowArtist)
+		queryResults, err := searchByTitleArtist(now.title, now.artist)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
@@ -156,7 +156,7 @@ func NowPlayingMetadata() http.HandlerFunc {
 // Gets encoded album art of the currently playing song.
 func NowPlayingAlbumArt() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		queryResults, err := searchByTitleArtist(nowTitle, nowArtist)
+		queryResults, err := searchByTitleArtist(now.title, now.artist)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
@@ -206,7 +206,7 @@ func ListenURL() http.HandlerFunc {
 		type ListenURL struct {
 			ListenURL string
 		}
-		listenurl := ListenURL{ListenURL: string(nowHost + "/" + nowMountpoint)}
+		listenurl := ListenURL{ListenURL: string(now.host + "/" + now.mountpoint)}
 		jsonMarshal, _ := json.Marshal(listenurl)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
@@ -221,7 +221,7 @@ func Listeners() http.HandlerFunc {
 		type Listeners struct {
 			Listeners int
 		}
-		listeners := Listeners{Listeners: int(nowListeners)}
+		listeners := Listeners{Listeners: int(now.listeners)}
 		jsonMarshal, _ := json.Marshal(listeners)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)

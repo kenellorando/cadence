@@ -48,6 +48,7 @@ func routes() *http.ServeMux {
 	r.Handle("/api/nowplaying/albumart", NowPlayingAlbumArt())
 	r.Handle("/api/listenurl", ListenURL())
 	r.Handle("/api/listeners", Listeners())
+	r.Handle("/api/bitrate", Bitrate())
 	r.Handle("/api/version", Version())
 	r.Handle("/ready", Ready())
 

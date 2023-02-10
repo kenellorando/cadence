@@ -16,7 +16,16 @@ import (
 	"github.com/kenellorando/clog"
 )
 
-// Song file metadata object
+var now = RadioInfo{}
+
+type RadioInfo struct {
+	Song       SongData
+	Host       string
+	Mountpoint string
+	Listeners  float64
+	Bitrate    float64
+}
+
 type SongData struct {
 	ID     int
 	Artist string
@@ -121,19 +130,9 @@ func liquidsoapRequest(path string) (message string, err error) {
 	return message, nil
 }
 
-var now = RadioData{}
-
-type RadioData struct {
-	title      string
-	artist     string
-	host       string
-	mountpoint string
-	listeners  float64
-}
-
 // Returns nothing, but sends updated stream info to SSE and sets the global variables.
 func icecastMonitor() {
-	var prev = RadioData{}
+	var prev = RadioInfo{}
 	for {
 		time.Sleep(1 * time.Second)
 		resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
@@ -169,29 +168,30 @@ func icecastMonitor() {
 			continue
 		}
 
-		now.artist = jsonParsed.Path("icestats.source.artist").Data().(string)
-		now.title = jsonParsed.Path("icestats.source.title").Data().(string)
-		now.host = jsonParsed.Path("icestats.host").Data().(string)
-		now.mountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
-		now.listeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
+		now.Song.Artist = jsonParsed.Path("icestats.source.artist").Data().(string)
+		now.Song.Title = jsonParsed.Path("icestats.source.title").Data().(string)
+		now.Host = jsonParsed.Path("icestats.host").Data().(string)
+		now.Mountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
+		now.Listeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
+		now.Bitrate = jsonParsed.Path("icestats.source.bitrate").Data().(float64)
 
-		if (prev.title != now.title) || (prev.artist != now.artist) {
-			clog.Info("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", now.title, now.artist))
-			radiodata_sse.SendEventMessage(now.title, "title", "")
-			radiodata_sse.SendEventMessage(now.artist, "artist", "")
-			prev.title = now.title
-			prev.artist = now.artist
+		if (prev.Song.Title != now.Song.Title) || (prev.Song.Artist != now.Song.Artist) {
+			clog.Info("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist))
+			radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
+			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
+			prev.Song.Title = now.Song.Title
+			prev.Song.Artist = now.Song.Artist
 		}
-		if (prev.host != now.host) || (prev.mountpoint != now.mountpoint) {
-			clog.Info("icecastMonitor", fmt.Sprintf("Audio stream on: <%s/%s>", now.host, now.mountpoint))
-			radiodata_sse.SendEventMessage(fmt.Sprintf(now.host, "/", now.mountpoint), "listenurl", "")
-			prev.host = now.host
-			prev.mountpoint = now.mountpoint
+		if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
+			clog.Info("icecastMonitor", fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint))
+			radiodata_sse.SendEventMessage(fmt.Sprintf(now.Host, "/", now.Mountpoint), "listenurl", "")
+			prev.Host = now.Host
+			prev.Mountpoint = now.Mountpoint
 		}
-		if prev.listeners != now.listeners {
-			clog.Info("icecastMonitor", fmt.Sprintf("Listener count: <%v>", now.listeners))
-			radiodata_sse.SendEventMessage(fmt.Sprint(now.listeners), "listeners", "")
-			prev.listeners = now.listeners
+		if prev.Listeners != now.Listeners {
+			clog.Info("icecastMonitor", fmt.Sprintf("Listener count: <%v>", now.Listeners))
+			radiodata_sse.SendEventMessage(fmt.Sprint(now.Listeners), "listeners", "")
+			prev.Listeners = now.Listeners
 		}
 
 		prev = now
@@ -201,6 +201,6 @@ func icecastMonitor() {
 
 // Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
 func icecastDataReset() {
-	now.title, now.artist, now.host, now.mountpoint = "-", "-", "-", "-"
-	now.listeners = -1
+	now.Song.Title, now.Song.Artist, now.Host, now.Mountpoint = "-", "-", "-", "-"
+	now.Listeners = -1
 }

@@ -179,19 +179,14 @@ func icecastMonitor() {
 			clog.Info("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist))
 			radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
 			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
-			prev.Song.Title = now.Song.Title
-			prev.Song.Artist = now.Song.Artist
 		}
 		if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
 			clog.Info("icecastMonitor", fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint))
 			radiodata_sse.SendEventMessage(fmt.Sprintf(now.Host, "/", now.Mountpoint), "listenurl", "")
-			prev.Host = now.Host
-			prev.Mountpoint = now.Mountpoint
 		}
 		if prev.Listeners != now.Listeners {
 			clog.Info("icecastMonitor", fmt.Sprintf("Listener count: <%v>", now.Listeners))
 			radiodata_sse.SendEventMessage(fmt.Sprint(now.Listeners), "listeners", "")
-			prev.Listeners = now.Listeners
 		}
 
 		prev = now

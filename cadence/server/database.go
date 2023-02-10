@@ -1,5 +1,5 @@
 // database.go
-// SQLite configuration and population
+// Metadata database configuration and population.
 
 package main
 

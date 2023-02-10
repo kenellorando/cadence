@@ -28,7 +28,7 @@ type ServerConfig struct {
 	MetadataTable    string
 }
 
-func init() {
+func main() {
 	c.Version = os.Getenv("CSERVER_VERSION")
 	c.RootPath = os.Getenv("CSERVER_ROOTPATH")
 	c.LogLevel, _ = strconv.Atoi(os.Getenv("CSERVER_LOGLEVEL"))
@@ -56,9 +56,7 @@ func init() {
 		}
 	}
 	go icecastMonitor()
-}
 
-func main() {
 	clog.Info("main", fmt.Sprintf("Starting Cadence on port <%s>.", c.Port))
 	clog.Fatal("main", "Cadence failed to start!", http.ListenAndServe(c.Port, routes()))
 }

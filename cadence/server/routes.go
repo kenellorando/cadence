@@ -1,5 +1,5 @@
 // routes.go
-// Rate limiter and router
+// Rate limiter and router.
 
 package main
 

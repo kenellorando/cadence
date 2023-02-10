@@ -1,6 +1,5 @@
 // api_actions.go
-// Repeatable actions used by API functions. Mostly database and audio software calls.
-// No direct responses to clients here.
+// API function repeatable actions.
 
 package main
 

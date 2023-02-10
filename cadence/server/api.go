@@ -1,5 +1,5 @@
 // handlers.go
-// API functions and fileservers
+// API functions and fileservers.
 
 package main
 

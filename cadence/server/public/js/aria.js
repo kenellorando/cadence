@@ -51,7 +51,7 @@ function getNowPlayingAlbumArt() {
 			$("#artwork").attr("src", nowPlayingArtwork);
 		},
 		error: function () {
-			$("#artwork").attr("src", "");
+			$("#artwork").attr("src", "/static/blank.jpg");
 		},
 	});
 }

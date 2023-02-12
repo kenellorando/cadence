@@ -48,11 +48,23 @@
                 <div id="version" class="block">Current Listeners: <span id="listeners">-</span></div>
             </div>
         </div>
-
-        <div data-content="request" class="content">
-            <input name="searchInput" id="searchInput" class="input is-normal is-rounded" type="text" placeholder="Filter for a song or artist!">
-            <div id="searchResults"></div>
-            <div id="requestStatus"></div>
+        
+        <div id="tabs" class="tabs is-centered">
+            <ul>
+                <li data-tab="request" class="is-active"><a>Request</a></li>
+                <li data-tab="history"><a>History</a></li>
+            </ul>
+        </div>
+        <div id="tab-content">
+            <section data-content="request" class="content is-active">
+                <input name="searchInput" id="searchInput" class="input is-normal is-rounded" type="text" placeholder="Filter for a song or artist!">
+                <div id="searchResults"></div>
+                <div id="requestStatus"></div>
+            </section>
+            <section data-content="history" class="content">
+                <div id="historyResults"></div>
+                <div id="historyStatus"></div>
+            </section>
         </div>
 
         <footer>

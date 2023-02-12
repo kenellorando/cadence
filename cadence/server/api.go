@@ -188,6 +188,16 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 	}
 }
 
+// /api/history
+// Gets the list of songs that recently played and what time each ended.
+func History() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		jsonMarshal, _ := json.Marshal(history)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+	}
+}
+
 // /api/listenurl
 // Gets the direct stream listen URL, which is a combination of host and mountpoint, set in Icecast's cadence.xml.
 func ListenURL() http.HandlerFunc {

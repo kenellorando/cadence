@@ -3,6 +3,7 @@ var streamSrcURL = ""
 
 $(document).ready(function() {
 	getListenURL()
+	getHistory()
 	getNowPlayingMetadata()
 	getNowPlayingAlbumArt()
 	getVersion()
@@ -74,6 +75,32 @@ function getListenURL() {
 		error: function() {
 			document.getElementById("stream").src = "";
 			$('#status').html("Disconnected from server.")
+		}
+	});
+}
+
+function getHistory() {
+	$.ajax({
+		type: 'GET',
+		url: "/api/history",
+		dataType: "json",
+		success: function(data) {
+			var table = "<table class='table is-striped' id='historyResults'>";
+			if (data.length === 0) {
+				document.getElementById("historyStatus").innerHTML = "No history available (yet).";
+			} else {
+				table += "<thead><tr><th>Ended</th><th>Artist</th><th>Title</th></tr></thead><tbody>"
+				data.forEach(function(song) {
+					table += "<tr><td>" + song.Ended + "</td><td>" + song.Artist + "</td><td>" + song.Title + "</td></tr>";
+				})
+				table += "</tbody>"		
+				document.getElementById("historyStatus").innerHTML = "";
+			}
+			table += "</table>";
+			document.getElementById("historyResults").innerHTML = table;
+		},
+		error: function() {	
+			document.getElementById("historyStatus").innerHTML = "Error. Could not get history.";
 		}
 	});
 }
@@ -151,6 +178,9 @@ function connectRadioData() {
 		} else {
 			$('#listeners').html(event.data)
 		}
+	})
+	eventSource.addEventListener("history", function(event) {
+		getHistory()
 	})
 	eventSource.addEventListener("listenurl", function(event) {
 		if (event.data == "-/-") {

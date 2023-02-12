@@ -178,6 +178,10 @@ func icecastMonitor() {
 			clog.Info("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist))
 			radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
 			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
+			if (prev.Song.Title != "") && (prev.Song.Artist != "") {
+				history = append(history, playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
+				radiodata_sse.SendEventMessage("", "history", "")
+			}
 		}
 		if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
 			clog.Info("icecastMonitor", fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint))
@@ -197,4 +201,12 @@ func icecastMonitor() {
 func icecastDataReset() {
 	now.Song.Title, now.Song.Artist, now.Host, now.Mountpoint = "-", "-", "-", "-"
 	now.Listeners = -1
+}
+
+var history = make([]playRecord, 0, 10)
+
+type playRecord struct {
+	Title  string
+	Artist string
+	Ended  time.Time
 }

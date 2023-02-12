@@ -57,26 +57,26 @@ footer {
 	font-size: 14px;
 }
 
-#searchResults tr {
+#searchResults tr, #historyResults tr {
 	max-height: 100%;
 }
 
-#searchResults tr th, #searchResults tr td{
+#searchResults tr th, #searchResults tr td, #historyResults tr th, #historyResults tr td{
 	text-align: left;
 	margin-top: auto;
 	vertical-align: center;
 	font-size: 17px;
-	/* table-layout: fixed;
-	width: 100%; */
 }
-/* #searchResults tr th:last-child {
-	text-align: right;
-}
-#searchResults tr td:last-child {
-	text-align: right;
-} */
 
-#requestStatus {
+#tab-content section {
+    display: none;
+}
+#tab-content section.is-active {
+    display: block;
+}
+
+
+#requestStatus, #historyStatus {
 	text-align: center;
 	margin-top: 5px;
 	margin-bottom: 5px;

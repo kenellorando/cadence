@@ -103,10 +103,6 @@ footer {
 		padding-left: 23%;
 		padding-right: 23%;
 	}
-
-	#player #song {
-		max-width: 80%;
-	}
 }
 
 @media (min-width: 1600px) {
@@ -120,10 +116,6 @@ footer {
 	body {
 		padding-left: 29%;
 		padding-right: 29%;
-	}
-
-	#player #song {
-		white-space: nowrap;
 	}
 
 	#player #song {

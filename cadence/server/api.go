@@ -173,8 +173,8 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
-		if tags.Picture().Data == nil {
-			w.WriteHeader(http.StatusNotFound) // 404
+		if tags.Picture() == nil {
+			w.WriteHeader(http.StatusNoContent) // 204
 			return
 		}
 

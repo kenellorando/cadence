@@ -47,8 +47,11 @@ function getNowPlayingAlbumArt() {
 		url: "/api/nowplaying/albumart",
 		dataType: "json",
 		success: function (data) {
-			var nowPlayingArtwork = "data:image/jpeg;base64," + data.Picture;
-			$("#artwork").attr("src", nowPlayingArtwork);
+			if (data == undefined) {
+				$("#artwork").attr("src", "./static/blank.jpg");
+			} else {
+				$("#artwork").attr("src", "data:image/jpeg;base64," + data.Picture);
+			}
 		},
 		error: function () {
 			$("#artwork").attr("src", "./static/blank.jpg");

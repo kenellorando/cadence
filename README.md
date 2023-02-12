@@ -54,7 +54,7 @@ Cadence provides an optional secret API, DevMode, that allow special administrat
 
 1. Edit `cadence/config/cadence.env`.
    1. Set `CSERVER_DEVMODE` from `0` (disabled) to `1` (enabled).
-2. `docker compose up --build`
+2. `docker compose down; docker compose up --build`
 
 ### API Reference
 See [Cadence's GitHub Wiki for API Documentation](https://github.com/kenellorando/cadence/wiki/API-Reference) for complete details and request/response examples.

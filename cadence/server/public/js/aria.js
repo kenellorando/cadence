@@ -91,7 +91,29 @@ function getHistory() {
 			} else {
 				table += "<thead><tr><th>Ended</th><th>Artist</th><th>Title</th></tr></thead><tbody>"
 				data.forEach(function(song) {
-					table += "<tr><td>" + song.Ended + "</td><td>" + song.Artist + "</td><td>" + song.Title + "</td></tr>";
+					var delta = Math.round((+(new Date()) - (new Date(String(song.Ended)))) / 1000);
+
+					var minute = 60
+					var hour = minute * 60
+					var day = hour * 24
+
+					var timeAgo;
+
+					if (delta < 30) {
+						timeAgo = 'just now';
+					} else if (delta < minute) {
+						timeAgo = delta + ' seconds ago';
+					} else if (delta < 2 * minute) {
+						timeAgo = 'a minute ago'
+					} else if (delta < hour) {
+						timeAgo = Math.floor(delta / minute) + ' minutes ago';
+					} else if (Math.floor(delta / hour) == 1) {
+						timeAgo = '1 hour ago'
+					} else if (delta < day) {
+						timeAgo = Math.floor(delta / hour) + ' hours ago';
+					}
+
+					table += "<tr><td>" + timeAgo + "</td><td>" + song.Artist + "</td><td>" + song.Title + "</td></tr>";
 				})
 				table += "</tbody>"		
 				document.getElementById("historyStatus").innerHTML = "";
@@ -169,9 +191,6 @@ function connectRadioData() {
 	eventSource.addEventListener("artist", function(event) {
 		$('#artist').text(event.data)
 	})
-	eventSource.addEventListener("title" || "artist", function(event) {
-		getNowPlayingAlbumArt()
-	})
 	eventSource.addEventListener("listeners", function(event) {
 		if (event.data == -1) {
 			$('#listeners').html("N/A")
@@ -179,7 +198,8 @@ function connectRadioData() {
 			$('#listeners').html(event.data)
 		}
 	})
-	eventSource.addEventListener("history", function(event) {
+	eventSource.addEventListener("title" || "artist" || "history", function() {
+		getNowPlayingAlbumArt()
 		getHistory()
 	})
 	eventSource.addEventListener("listenurl", function(event) {

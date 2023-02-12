@@ -180,7 +180,7 @@ func icecastMonitor() {
 			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
 			if (prev.Song.Title != "") && (prev.Song.Artist != "") {
 				history = append(history, playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
-				radiodata_sse.SendEventMessage("", "history", "")
+				radiodata_sse.SendEventMessage("update", "history", "")
 			}
 		}
 		if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {

@@ -90,7 +90,7 @@ function getHistory() {
 				document.getElementById("historyStatus").innerHTML = "No history available (yet).";
 			} else {
 				table += "<thead><tr><th>Ended</th><th>Artist</th><th>Title</th></tr></thead><tbody>"
-				data.forEach(function(song) {
+				data.reverse().forEach(function(song) {
 					var delta = Math.round((+(new Date()) - (new Date(String(song.Ended)))) / 1000);
 
 					var minute = 60

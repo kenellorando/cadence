@@ -26,6 +26,7 @@ type ServerConfig struct {
 	StreamPort       string
 	WhitelistPath    string
 	MetadataTable    string
+	DevMode          bool
 }
 
 func main() {
@@ -41,6 +42,7 @@ func main() {
 	c.StreamPort = os.Getenv("CSERVER_STREAMPORT")
 	c.WhitelistPath = os.Getenv("CSERVER_WHITELIST_PATH")
 	c.MetadataTable = os.Getenv("CSERVER_DB_METADATA_TABLE")
+	c.DevMode, _ = strconv.ParseBool(os.Getenv("CSERVER_DEVMODE"))
 
 	clog.Level(c.LogLevel)
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))

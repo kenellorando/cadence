@@ -53,6 +53,11 @@ func routes() *http.ServeMux {
 	r.Handle("/api/version", Version())
 	r.Handle("/ready", Ready())
 
+	// Development Mode Enabled
+	if c.DevMode {
+		r.Handle("/api/dev/skip", DevSkip())
+	}
+
 	// Event Streams
 	r.Handle("/api/radiodata/sse", radiodata_sse)
 

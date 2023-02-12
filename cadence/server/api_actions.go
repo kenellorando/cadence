@@ -129,6 +129,21 @@ func liquidsoapRequest(path string) (message string, err error) {
 	return message, nil
 }
 
+func liquidsoapSkip() (message string, err error) {
+	clog.Debug("liquidsoapRequest", "Connecting to liquidsoap service...")
+	conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
+	defer conn.Close()
+	if err != nil {
+		clog.Error("liquidsoapRequest", "Failed to connect to audio source server.", err)
+		return "", err
+	}
+	fmt.Fprintf(conn, "cadence1.skip\n")
+	// Listen for response
+	message, _ = bufio.NewReader(conn).ReadString('\n')
+	fmt.Fprintf(conn, "quit"+"\n")
+	return message, nil
+}
+
 // Returns nothing, but sends updated stream info to SSE and sets the global variables.
 func icecastMonitor() {
 	var prev = RadioInfo{}

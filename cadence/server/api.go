@@ -261,3 +261,16 @@ func Ready() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK) // 200 OK
 	}
 }
+
+// /api/dev/skip
+// Skip the currently playing track.
+func DevSkip() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		_, err := liquidsoapSkip()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError) // 500
+			return
+		}
+		w.WriteHeader(http.StatusOK) // 200 OK
+	}
+}

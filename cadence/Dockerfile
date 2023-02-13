@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 ARG ARCH=
-FROM ${ARCH}golang:1.18.1-bullseye
+FROM ${ARCH}golang:1.20.0-bullseye
 LABEL maintainer="Ken Ellorando (kenellorando.com)"
 LABEL source="github.com/kenellorando/cadence"
 WORKDIR /cadence/server

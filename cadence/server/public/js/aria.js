@@ -1,190 +1,146 @@
-var streamSrcURL = "";
+const SONG_ID = '#song'
+const ARTIST_ID = '#artist'
+const ARTWORK_ID = '#artwork'
+const STATUS_ID = '#status'
+const SEARCH_INPUT_ID = '#searchInput'
+const LISTENERS_ID = '#listeners'
+const RELEASE_ID = 'release'
+const STREAM_ID = 'stream'
+const REQUEST_STATUS_ID = 'requestStatus'
 
-$(document).ready(function () {
-	getListenURL();
-	getNowPlayingMetadata();
-	getNowPlayingAlbumArt();
-	getVersion();
-	connectRadioData();
-	postSearch();
-	postRequestID();
-});
+let streamSrcURL = ''
 
-function getVersion() {
-	$.ajax({
-		type: "GET",
-		url: "/api/version",
-		dataType: "json",
-		success: function (data) {
-			document.getElementById("release").innerHTML = data.Version;
-		},
-		error: function () {
-			document.getElementById("release").innerHTML = "(N/A)";
-		},
-	});
+$(document).ready(() => {
+   getListenURL()
+   getNowPlayingMetadata()
+   getNowPlayingAlbumArt()
+   getVersion()
+   connectRadioData()
+   postSearch()
+   postRequestID()
+})
+
+let getVersion = () => {
+   $.ajax({
+      type: 'GET',
+      url: '/api/version',
+      dataType: 'json',
+      success: (data) => document.getElementById(RELEASE_ID).innerHTML = data.Version,
+      error: () => document.getElementById(RELEASE_ID).innerHTML = '(N/A)',
+   })
 }
 
-function getNowPlayingMetadata() {
-	$.ajax({
-		type: "GET",
-		url: "/api/nowplaying/metadata",
-		dataType: "json",
-		success: function (data) {
-			$("#song").text(data.Title);
-			$("#artist").text(data.Artist);
-		},
-		error: function () {
-			$("#song").text("-");
-			$("#artist").text("-");
-		},
-	});
+let getNowPlayingMetadata = () => {
+   $.ajax({
+      type: 'GET',
+      url: '/api/nowplaying/metadata',
+      dataType: 'json',
+      success: (data) => {
+         $(SONG_ID).text(data.Title)
+         $(ARTIST_ID).text(data.Artist)
+      },
+      error: () => {
+         $(SONG_ID).text('-')
+         $(ARTIST_ID).text('-')
+      },
+   })
 }
 
-function getNowPlayingAlbumArt() {
-	$.ajax({
-		type: "GET",
-		url: "/api/nowplaying/albumart",
-		dataType: "json",
-		success: function (data) {
-			var nowPlayingArtwork = "data:image/jpeg;base64," + data.Picture;
-			$("#artwork").attr("src", nowPlayingArtwork);
-		},
-		error: function () {
-			$("#artwork").attr("src", "");
-		},
-	});
+let getNowPlayingAlbumArt = () => {
+   $.ajax({
+      type: 'GET',
+      url: '/api/nowplaying/albumart',
+      dataType: 'json',
+      success: (data) => {
+         let nowPlayingArtwork = `data:image/jpegbase64,${data.Picture}`
+         $(ARTWORK_ID).attr('src', nowPlayingArtwork)
+      },
+      error: () => $(ARTWORK_ID).attr('src', ''),
+   })
 }
 
-function getListenURL() {
-	$.ajax({
-		type: "GET",
-		url: "/api/listenurl",
-		dataType: "json",
-		success: function (data) {
-			if (data.ListenURL == "-/-") {
-				$("#status").html("Disconnected from server.");
-			} else {
-				streamSrcURL = location.protocol + "//" + data.ListenURL;
-				document.getElementById("stream").src = streamSrcURL;
-				$("#status").html(
-					"Connected: <a href='" +
-						streamSrcURL +
-						"'>" +
-						streamSrcURL +
-						"</a>"
-				);
-			}
-		},
-		error: function () {
-			document.getElementById("stream").src = "";
-			$("#status").html("Disconnected from server.");
-		},
-	});
+let getListenURL = () => {
+   $.ajax({
+      type: 'GET',
+      url: '/api/listenurl',
+      dataType: 'json',
+      success: (data) => {
+         if (data.ListenURL == '-/-') {
+            $(STATUS_ID).html('Disconnected from server.')
+         } else {
+            streamSrcURL = `${location.protocol}//${data.ListenURL}`
+            document.getElementById(STREAM_ID).src = streamSrcURL
+            $(STATUS_ID).html(`Connected: <a href='${streamSrcURL}'>${streamSrcURL}</a>`)
+         }
+      },
+      error: () => {
+         document.getElementById(STREAM_ID).src = ''
+         $(STATUS_ID).html('Disconnected from server.')
+      },
+   })
 }
 
-function postSearch() {
-	var data = {};
-	data.search = $("#searchInput").val();
-	$.ajax({
-		type: "POST",
-		url: "/api/search",
-		contentType: "application/json",
-		data: JSON.stringify(data),
-		dataType: "json", // expects a json response
-		success: function (data) {
-			var table =
-				"<table class='table is-striped is-hoverable' id='searchResults'>";
-			if (data === null) {
-				// if no results from search
-				document.getElementById("requestStatus").innerHTML =
-					"Results: 0";
-				var input = $("#searchInput").val();
-				input = input.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // Encode < and >, for error when placed back into no-results message
-			} else {
-				document.getElementById("requestStatus").innerHTML =
-					"Results: " + data.length;
-				table +=
-					"<thead><tr><th>Artist</th><th>Title</th><th>Availability</th></tr></thead><tbody>";
-				data.forEach(function (song) {
-					table +=
-						"<tr><td>" +
-						song.Artist +
-						"</td><td>" +
-						song.Title +
-						"</td><td><button class='button is-small is-light requestButton' data-id='" +
-						escape(song.ID) +
-						"'>Request</button></td></tr>";
-				});
-				table += "</tbody>";
-			}
-			table += "</table>";
-			document.getElementById("searchResults").innerHTML = table;
-		},
-		error: function () {
-			document.getElementById("requestStatus").innerHTML =
-				"Error. Could not execute search.";
-		},
-	});
+let postSearch = () => {
+   let data = {}
+   data.search = $(SEARCH_INPUT_ID).val()
+   $.ajax({
+      type: 'POST',
+      url: '/api/search',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      dataType: 'json', // expects a json response
+      success: (data) => {
+         let table = "<table class='table is-striped is-hoverable' id='searchResults'>"
+
+         if (!data) {
+            // if no results from search
+            document.getElementById(REQUEST_STATUS_ID).innerHTML = 'Results: 0'
+            let input = $(SEARCH_INPUT_ID).val()
+            input = input.replace(/</g, '&lt').replace(/>/g, '&gt') // Encode < and >, for error when placed back into no-results message
+         } else {
+            document.getElementById(REQUEST_STATUS_ID).innerHTML = `Results: ${data.length}`
+            table += '<thead><tr><th>Artist</th><th>Title</th><th>Availability</th></tr></thead><tbody>'
+            data.forEach((song) => table += `<tr><td>${song.Artist}</td><td>${song.Title}</td><td><button class='button is-small is-light requestButton' data-id='${decodeURI(song.ID)}'>Request</button></td></tr>`)
+            table += '</tbody>'
+         }
+         table += '</table>'
+         document.getElementById('searchResults').innerHTML = table
+      },
+      error: () => document.getElementById(REQUEST_STATUS_ID).innerHTML = 'Error. Could not execute search.',
+   })
 }
 
-function postRequestID() {
-	$(document).on("click", ".requestButton", function (e) {
-		var data = {};
-		data.ID = unescape(this.dataset.id);
-		$.ajax({
-			type: "POST",
-			url: "/api/request/id",
-			contentType: "application/json",
-			data: JSON.stringify(data),
-			success: function () {
-				document.getElementById("requestStatus").innerHTML =
-					"Request accepted!";
-			},
-			error: function () {
-				document.getElementById("requestStatus").innerHTML =
-					"Sorry, your request was not accepted. You may be rate limited.";
-			},
-		});
-	});
+let postRequestID = () => {
+   $(document).on('click', '.requestButton', (e) => {
+      let data = {}
+      data.ID = decodeURI(this.dataset.id)
+      $.ajax({
+         type: 'POST',
+         url: '/api/request/id',
+         contentType: 'application/json',
+         data: JSON.stringify(data),
+         success: () => document.getElementById(REQUEST_STATUS_ID).innerHTML = 'Request accepted!',
+         error: () => document.getElementById(REQUEST_STATUS_ID).innerHTML = 'Sorry, your request was not accepted. You may be rate limited.',
+      })
+   })
 }
 
-function connectRadioData() {
-	let eventSource = new EventSource("/api/radiodata/sse");
-	eventSource.onerror = function (event) {
-		setTimeout(function () {
-			connectRadioData();
-		}, 5000);
-	};
-	eventSource.addEventListener("title", function (event) {
-		$("#song").text(event.data);
-	});
-	eventSource.addEventListener("artist", function (event) {
-		$("#artist").text(event.data);
-	});
-	eventSource.addEventListener("title" || "artist", function (event) {
-		getNowPlayingAlbumArt();
-	});
-	eventSource.addEventListener("listeners", function (event) {
-		if (event.data == -1) {
-			$("#listeners").html("N/A");
-		} else {
-			$("#listeners").html(event.data);
-		}
-	});
-	eventSource.addEventListener("listenurl", function (event) {
-		if (event.data == "-/-") {
-			document.getElementById("stream").src = "";
-			$("#status").html("Disconnected from server.");
-		} else {
-			streamSrcURL = location.protocol + "//" + event.data;
-			document.getElementById("stream").src = streamSrcURL;
-			$("#status").html(
-				"Connected: <a href='" +
-					streamSrcURL +
-					"'>" +
-					streamSrcURL +
-					"</a>"
-			);
-		}
-	});
+let connectRadioData = () => {
+   let eventSource = new EventSource('/api/radiodata/sse')
+
+   eventSource.onerror = (event) => setTimeout(() => connectRadioData(), 5000)
+   eventSource.addEventListener('title', (event) => $(SONG_ID).text(event.data))
+   eventSource.addEventListener('artist', (event) => $(ARTIST_ID).text(event.data))
+   eventSource.addEventListener('title' || 'artist', () => getNowPlayingAlbumArt())
+   eventSource.addEventListener('listeners', (event) => event.data === -1 ? $(LISTENERS_ID).html('N/A') : $(LISTENERS_ID).html(event.data))
+   eventSource.addEventListener('listenurl', (event) => {
+      if (event.data == '-/-') {
+         document.getElementById(STREAM_ID).src = ''
+         $(STATUS_ID).html('Disconnected from server.')
+      } else {
+         streamSrcURL = location.protocol + '//' + event.data
+         document.getElementById(STREAM_ID).src = streamSrcURL
+         $(STATUS_ID).html(`Connected: <a href='${streamSrcURL}'>${streamSrcURL}</a>`)
+      }
+   })
 }

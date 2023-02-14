@@ -30,7 +30,7 @@ let getVersion = () => {
    })
 }
 
-let getNowPlayingMetadata = () => {
+const getNowPlayingMetadata = () => {
    $.ajax({
       type: 'GET',
       url: '/api/nowplaying/metadata',
@@ -46,7 +46,7 @@ let getNowPlayingMetadata = () => {
    })
 }
 
-let getNowPlayingAlbumArt = () => {
+const getNowPlayingAlbumArt = () => {
    $.ajax({
       type: 'GET',
       url: '/api/nowplaying/albumart',
@@ -59,7 +59,7 @@ let getNowPlayingAlbumArt = () => {
    })
 }
 
-let getListenURL = () => {
+const getListenURL = () => {
    $.ajax({
       type: 'GET',
       url: '/api/listenurl',
@@ -80,7 +80,7 @@ let getListenURL = () => {
    })
 }
 
-let postSearch = () => {
+const postSearch = () => {
    let data = {}
    data.search = $(SEARCH_INPUT_ID).val()
    $.ajax({
@@ -110,7 +110,7 @@ let postSearch = () => {
    })
 }
 
-let postRequestID = () => {
+const postRequestID = () => {
    $(document).on('click', '.requestButton', (e) => {
       let data = {}
       data.ID = decodeURI(this.dataset.id)
@@ -125,7 +125,7 @@ let postRequestID = () => {
    })
 }
 
-let connectRadioData = () => {
+const connectRadioData = () => {
    let eventSource = new EventSource('/api/radiodata/sse')
 
    eventSource.onerror = (event) => setTimeout(() => connectRadioData(), 5000)

@@ -113,11 +113,11 @@ func liquidsoapRequest(path string) (message string, err error) {
 	// Telnet to liquidsoap
 	clog.Debug("liquidsoapRequest", "Connecting to liquidsoap service...")
 	conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
-	defer conn.Close()
 	if err != nil {
 		clog.Error("liquidsoapRequest", "Failed to connect to audio source server.", err)
 		return "", err
 	}
+	defer conn.Close()
 
 	// Push song request to source service
 	fmt.Fprintf(conn, "request.push "+path+"\n")
@@ -133,11 +133,11 @@ func liquidsoapRequest(path string) (message string, err error) {
 func liquidsoapSkip() (message string, err error) {
 	clog.Debug("liquidsoapRequest", "Connecting to liquidsoap service...")
 	conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
-	defer conn.Close()
 	if err != nil {
 		clog.Error("liquidsoapRequest", "Failed to connect to audio source server.", err)
 		return "", err
 	}
+	defer conn.Close()
 	fmt.Fprintf(conn, "cadence1.skip\n")
 	// Listen for response
 	message, _ = bufio.NewReader(conn).ReadString('\n')
@@ -150,11 +150,13 @@ func filesystemMonitor() {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		clog.Error("fileSystemMonitor", "Error creating watcher.", err)
+		return
 	}
 	defer watcher.Close()
 	err = watcher.Add(c.MusicDir)
 	if err != nil {
 		clog.Error("fileSystemMonitor", "Error adding music directory to watcher.", err)
+		return
 	}
 	done := make(chan bool)
 	go func() {
@@ -184,9 +186,6 @@ func icecastMonitor() {
 		for {
 			time.Sleep(1 * time.Second)
 			resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
-			if resp != nil {
-				defer resp.Body.Close()
-			}
 			if err != nil {
 				clog.Error("icecastMonitor", "Unable to stream data from the Icecast service.", err)
 				icecastDataReset()

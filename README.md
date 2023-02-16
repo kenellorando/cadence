@@ -8,10 +8,11 @@ Cadence ships all components mostly pre-configured with each each other so there
 
 **See a live demo on [cadenceradio.com](https://cadenceradio.com/)!**
 
+## 🖼️ Image Gallery
 <details>
 <summary>Cadence Browser UI</summary>
 
-![image](https://user-images.githubusercontent.com/17265041/214758418-8002cd64-2e3b-4a17-9104-1ad29d20ded6.png)
+![cadence5.1 browser ui](https://user-images.githubusercontent.com/17265041/219263637-6971ce33-209a-4eb5-b67e-547f271dc3c8.png)
 
 </details>
 
@@ -25,7 +26,7 @@ Cadence ships all components mostly pre-configured with each each other so there
 ## 🏃 Get Started
 
 ### Requirements
-1. You must have Docker installed. If you are running Docker on a Linux server, additionally install the [Compose plugin](https://docs.docker.com/compose/install/linux/).
+1. You must have Docker installed. If you are on a Linux server, install the [Compose plugin](https://docs.docker.com/compose/install/linux/).
 
 ### Installation
 1. Edit `cadence/config/cadence.env`.
@@ -49,12 +50,16 @@ Assuming no changes were made to port numbers or the hostnames in the steps abov
 
 ## 👩‍💻 Development
 
-### Enabling _Development Mode_ and Building the Stack Locally
-Cadence provides an optional secret API, DevMode, that allow special administrative control that may be useful for testing. See the API Reference for development commands. As the name implies, don't enable DevMode on a production server. 
+### Enabling _Development Mode_
+Cadence provides an optional API that allow special administrative controls that may be useful for testing. See the API Reference for development commands. As the name implies, don't enable development mode on a production server. 
 
 1. Edit `cadence/config/cadence.env`.
    1. Set `CSERVER_DEVMODE` from `0` (disabled) to `1` (enabled).
-2. `docker compose down; docker compose up --build`
+   
+### Building the Stack Locally
+If you are developing and need to rebuild exactly what you have, you can do so with Docker Compose.
+
+1. `docker compose down; docker compose up --build`
 
 ### API Reference
 See [Cadence's GitHub Wiki for API Documentation](https://github.com/kenellorando/cadence/wiki/API-Reference) for complete details and request/response examples.

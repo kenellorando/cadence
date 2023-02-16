@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 ARG ARCH=
-FROM ${ARCH}debian:11.3-slim
+FROM ${ARCH}debian:11.6-slim
 LABEL maintainer="Ken Ellorando (kenellorando.com)"
 LABEL source="github.com/kenellorando/cadence"
 

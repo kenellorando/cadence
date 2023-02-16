@@ -1,5 +1,5 @@
 // routes.go
-// Rate limiter and router
+// Rate limiter and router.
 
 package main
 
@@ -46,10 +46,17 @@ func routes() *http.ServeMux {
 	r.Handle("/api/request/bestmatch", rateLimit(RequestBestMatch()))
 	r.Handle("/api/nowplaying/metadata", NowPlayingMetadata())
 	r.Handle("/api/nowplaying/albumart", NowPlayingAlbumArt())
+	r.Handle("/api/history", History())
 	r.Handle("/api/listenurl", ListenURL())
 	r.Handle("/api/listeners", Listeners())
+	r.Handle("/api/bitrate", Bitrate())
 	r.Handle("/api/version", Version())
 	r.Handle("/ready", Ready())
+
+	// Development Mode Enabled
+	if c.DevMode {
+		r.Handle("/api/dev/skip", DevSkip())
+	}
 
 	// Event Streams
 	r.Handle("/api/radiodata/sse", radiodata_sse)

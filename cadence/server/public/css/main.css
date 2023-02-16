@@ -6,10 +6,10 @@ body {
 
 footer {
 	font-size: 90%;
-	max-width: 160px;
-	text-align: center;
-	margin-top: 50px;
-	margin-bottom: 30px;
+	max-width: 320px;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 30px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -57,19 +57,26 @@ footer {
 	font-size: 14px;
 }
 
-#searchResults tr {
+#searchResults tr, #historyResults tr {
 	max-height: 100%;
 }
 
-#searchResults tr th,
-#searchResults tr td {
+#searchResults tr th, #searchResults tr td, #historyResults tr th, #historyResults tr td{
 	text-align: left;
 	margin-top: auto;
 	vertical-align: center;
 	font-size: 17px;
 }
 
-#requestStatus {
+#tab-content section {
+    display: none;
+}
+#tab-content section.is-active {
+    display: block;
+}
+
+
+#requestStatus, #historyStatus {
 	text-align: center;
 	margin-top: 5px;
 	margin-bottom: 5px;
@@ -96,10 +103,6 @@ footer {
 		padding-left: 23%;
 		padding-right: 23%;
 	}
-
-	#player #song {
-		max-width: 80%;
-	}
 }
 
 @media (min-width: 1600px) {
@@ -113,10 +116,6 @@ footer {
 	body {
 		padding-left: 29%;
 		padding-right: 29%;
-	}
-
-	#player #song {
-		white-space: nowrap;
 	}
 
 	#player #song {

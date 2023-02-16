@@ -1,13 +1,14 @@
 var streamSrcURL = "";
 
-$(document).ready(function () {
-	getListenURL();
-	getNowPlayingMetadata();
-	getNowPlayingAlbumArt();
-	getVersion();
-	connectRadioData();
-	postSearch();
-	postRequestID();
+$(document).ready(function() {
+	getListenURL()
+	getHistory()
+	getNowPlayingMetadata()
+	getNowPlayingAlbumArt()
+	getVersion()
+	connectRadioData()
+	postSearch()
+	postRequestID()
 });
 
 function getVersion() {
@@ -46,11 +47,14 @@ function getNowPlayingAlbumArt() {
 		url: "/api/nowplaying/albumart",
 		dataType: "json",
 		success: function (data) {
-			var nowPlayingArtwork = "data:image/jpeg;base64," + data.Picture;
-			$("#artwork").attr("src", nowPlayingArtwork);
+			if (data == undefined) {
+				$("#artwork").attr("src", "./static/blank.jpg");
+			} else {
+				$("#artwork").attr("src", "data:image/jpeg;base64," + data.Picture);
+			}
 		},
 		error: function () {
-			$("#artwork").attr("src", "");
+			$("#artwork").attr("src", "./static/blank.jpg");
 		},
 	});
 }
@@ -79,6 +83,54 @@ function getListenURL() {
 			document.getElementById("stream").src = "";
 			$("#status").html("Disconnected from server.");
 		},
+	});
+}
+
+function getHistory() {
+	$.ajax({
+		type: 'GET',
+		url: "/api/history",
+		dataType: "json",
+		success: function(data) {
+			var table = "<table class='table is-striped' id='historyResults'>";
+			if (data.length === 0) {
+				document.getElementById("historyStatus").innerHTML = "No history available (yet).";
+			} else {
+				table += "<thead><tr><th>Ended</th><th>Artist</th><th>Title</th></tr></thead><tbody>"
+				data.reverse().forEach(function(song) {
+					var delta = Math.round((+(new Date()) - (new Date(String(song.Ended)))) / 1000);
+
+					var minute = 60
+					var hour = minute * 60
+					var day = hour * 24
+
+					var timeAgo;
+
+					if (delta < 30) {
+						timeAgo = 'just now';
+					} else if (delta < minute) {
+						timeAgo = delta + ' seconds ago';
+					} else if (delta < 2 * minute) {
+						timeAgo = 'a minute ago'
+					} else if (delta < hour) {
+						timeAgo = Math.floor(delta / minute) + ' minutes ago';
+					} else if (Math.floor(delta / hour) == 1) {
+						timeAgo = '1 hour ago'
+					} else if (delta < day) {
+						timeAgo = Math.floor(delta / hour) + ' hours ago';
+					}
+
+					table += "<tr><td>" + timeAgo + "</td><td>" + song.Artist + "</td><td>" + song.Title + "</td></tr>";
+				})
+				table += "</tbody>"		
+				document.getElementById("historyStatus").innerHTML = "";
+			}
+			table += "</table>";
+			document.getElementById("historyResults").innerHTML = table;
+		},
+		error: function() {	
+			document.getElementById("historyStatus").innerHTML = "Error. Could not get history.";
+		}
 	});
 }
 
@@ -154,24 +206,25 @@ function connectRadioData() {
 		setTimeout(function () {
 			connectRadioData();
 		}, 5000);
-	};
-	eventSource.addEventListener("title", function (event) {
-		$("#song").text(event.data);
-	});
-	eventSource.addEventListener("artist", function (event) {
-		$("#artist").text(event.data);
-	});
-	eventSource.addEventListener("title" || "artist", function (event) {
-		getNowPlayingAlbumArt();
-	});
-	eventSource.addEventListener("listeners", function (event) {
+	}
+	eventSource.addEventListener("title", function(event) {
+		$('#song').text(event.data)
+	})
+	eventSource.addEventListener("artist", function(event) {
+		$('#artist').text(event.data)
+	})
+	eventSource.addEventListener("listeners", function(event) {
 		if (event.data == -1) {
 			$("#listeners").html("N/A");
 		} else {
 			$("#listeners").html(event.data);
 		}
-	});
-	eventSource.addEventListener("listenurl", function (event) {
+	})
+	eventSource.addEventListener("title" || "artist" || "history", function() {
+		getNowPlayingAlbumArt()
+		getHistory()
+	})
+	eventSource.addEventListener("listenurl", function(event) {
 		if (event.data == "-/-") {
 			document.getElementById("stream").src = "";
 			$("#status").html("Disconnected from server.");

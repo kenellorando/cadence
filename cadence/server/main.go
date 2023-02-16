@@ -26,9 +26,10 @@ type ServerConfig struct {
 	StreamPort       string
 	WhitelistPath    string
 	MetadataTable    string
+	DevMode          bool
 }
 
-func init() {
+func main() {
 	c.Version = os.Getenv("CSERVER_VERSION")
 	c.RootPath = os.Getenv("CSERVER_ROOTPATH")
 	c.LogLevel, _ = strconv.Atoi(os.Getenv("CSERVER_LOGLEVEL"))
@@ -41,24 +42,15 @@ func init() {
 	c.StreamPort = os.Getenv("CSERVER_STREAMPORT")
 	c.WhitelistPath = os.Getenv("CSERVER_WHITELIST_PATH")
 	c.MetadataTable = os.Getenv("CSERVER_DB_METADATA_TABLE")
+	c.DevMode, _ = strconv.ParseBool(os.Getenv("CSERVER_DEVMODE"))
 
 	clog.Level(c.LogLevel)
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
-	var err error
-	db, err = dbConfig()
-	if err != nil {
-		clog.Warn("init", "Database setup failed! Future database requests will also fail. Population will be skipped.")
-	} else {
-		err = dbPopulate()
-		if err != nil {
-			clog.Warn("init", "An error occured during initial database population. Music data may be inaccurate.")
-		}
-	}
+	dbRefresh()
+	go filesystemMonitor()
 	go icecastMonitor()
-}
 
-func main() {
 	clog.Info("main", fmt.Sprintf("Starting Cadence on port <%s>.", c.Port))
 	clog.Fatal("main", "Cadence failed to start!", http.ListenAndServe(c.Port, routes()))
 }

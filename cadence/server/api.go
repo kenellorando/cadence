@@ -1,5 +1,5 @@
 // handlers.go
-// API functions and fileservers
+// API functions and fileservers.
 
 package main
 
@@ -125,7 +125,7 @@ func RequestBestMatch() http.HandlerFunc {
 // Gets text metadata (excludes album art and path) of the currently playing song.
 func NowPlayingMetadata() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		queryResults, err := searchByTitleArtist(nowTitle, nowArtist)
+		queryResults, err := searchByTitleArtist(now.Song.Title, now.Song.Artist)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
@@ -136,15 +136,6 @@ func NowPlayingMetadata() http.HandlerFunc {
 		}
 		song := queryResults[0]
 
-		// Return data to client
-		type SongData struct {
-			ID     int
-			Artist string
-			Title  string
-			Album  string
-			Genre  string
-			Year   int
-		}
 		result := SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year}
 		jsonMarshal, _ := json.Marshal(result)
 		w.Header().Set("Content-Type", "application/json")
@@ -156,7 +147,7 @@ func NowPlayingMetadata() http.HandlerFunc {
 // Gets encoded album art of the currently playing song.
 func NowPlayingAlbumArt() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		queryResults, err := searchByTitleArtist(nowTitle, nowArtist)
+		queryResults, err := searchByTitleArtist(now.Song.Title, now.Song.Artist)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
@@ -182,12 +173,11 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
-		if tags.Picture().Data == nil {
-			w.WriteHeader(http.StatusNotFound) // 404
+		if tags.Picture() == nil {
+			w.WriteHeader(http.StatusNoContent) // 204
 			return
 		}
 
-		// Return data to client
 		type SongData struct {
 			Picture []byte
 		}
@@ -198,15 +188,24 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 	}
 }
 
+// /api/history
+// Gets the list of songs that recently played and what time each ended.
+func History() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		jsonMarshal, _ := json.Marshal(history)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+	}
+}
+
 // /api/listenurl
 // Gets the direct stream listen URL, which is a combination of host and mountpoint, set in Icecast's cadence.xml.
 func ListenURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Return data to client
 		type ListenURL struct {
 			ListenURL string
 		}
-		listenurl := ListenURL{ListenURL: string(nowHost + "/" + nowMountpoint)}
+		listenurl := ListenURL{ListenURL: string(now.Host + "/" + now.Mountpoint)}
 		jsonMarshal, _ := json.Marshal(listenurl)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
@@ -217,12 +216,25 @@ func ListenURL() http.HandlerFunc {
 // Gets the number of active connections with Icecast.
 func Listeners() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Return data to client
 		type Listeners struct {
 			Listeners int
 		}
-		listeners := Listeners{Listeners: int(nowListeners)}
+		listeners := Listeners{Listeners: int(now.Listeners)}
 		jsonMarshal, _ := json.Marshal(listeners)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMarshal)
+	}
+}
+
+// /api/bitrate
+// Gets the audio stream bitrate.
+func Bitrate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		type Bitrate struct {
+			Bitrate int
+		}
+		bitrate := Bitrate{Bitrate: int(now.Bitrate)}
+		jsonMarshal, _ := json.Marshal(bitrate)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
@@ -232,11 +244,10 @@ func Listeners() http.HandlerFunc {
 // Gets the current server version (set in cadence.env).
 func Version() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Return data to client
-		type CadenceVersion struct {
+		type Version struct {
 			Version string
 		}
-		version := CadenceVersion{Version: c.Version}
+		version := Version{Version: c.Version}
 		jsonMarshal, _ := json.Marshal(version)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
@@ -247,6 +258,19 @@ func Version() http.HandlerFunc {
 // Gets 200 OK status.
 func Ready() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK) // 200 OK
+	}
+}
+
+// /api/dev/skip
+// Skip the currently playing track.
+func DevSkip() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		_, err := liquidsoapSkip()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError) // 500
+			return
+		}
 		w.WriteHeader(http.StatusOK) // 200 OK
 	}
 }

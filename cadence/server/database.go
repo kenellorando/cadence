@@ -1,5 +1,5 @@
 // database.go
-// SQLite configuration and population
+// Metadata database configuration and population.
 
 package main
 
@@ -14,6 +14,20 @@ import (
 	"github.com/kenellorando/clog"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+func dbRefresh() {
+	clog.Info("dbRefresh", "Starting configuration and population.")
+	var err error
+	db, err = dbConfig()
+	if err != nil {
+		clog.Warn("dbRefresh", "Database setup failed! Future database requests will also fail. Population will be skipped.")
+	} else {
+		err = dbPopulate()
+		if err != nil {
+			clog.Warn("dbRefresh", "An error occured during database population. Music data may be inaccurate.")
+		}
+	}
+}
 
 func dbConfig() (newdb *sql.DB, err error) {
 	clog.Info("dbConfig", "Setting up the database.")

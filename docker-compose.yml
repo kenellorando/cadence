@@ -1,6 +1,14 @@
 version: "3"
 services:
 
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: redis
+    ports:
+      - 6379:6379
+    networks:
+      internal_services:
+
   icecast2:
     build: 
       context: ./cadence_icecast2/ 

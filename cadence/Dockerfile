@@ -6,7 +6,7 @@ LABEL source="github.com/kenellorando/cadence"
 WORKDIR /cadence/server
 COPY ./* ./
 RUN go mod download
-RUN go build -o /cadence/cadence-server --tags "linux sqlite_fts5"
+RUN go build -o /cadence/cadence-server
 
 RUN useradd -s /bin/bash cadence
 RUN touch /cadence/music-metadata.db

@@ -7,10 +7,12 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/go-redis/redis"
 	"github.com/kenellorando/clog"
 )
 
 var c = ServerConfig{}
+
 var db *sql.DB
 
 type ServerConfig struct {
@@ -24,6 +26,8 @@ type ServerConfig struct {
 	SourcePort       string
 	StreamAddress    string
 	StreamPort       string
+	DatabaseAddress  string
+	DatabasePort     string
 	WhitelistPath    string
 	MetadataTable    string
 	DevMode          bool
@@ -40,6 +44,8 @@ func main() {
 	c.SourcePort = os.Getenv("CSERVER_SOURCEPORT")
 	c.StreamAddress = os.Getenv("CSERVER_STREAMADDRESS")
 	c.StreamPort = os.Getenv("CSERVER_STREAMPORT")
+	c.DatabaseAddress = os.Getenv("CSERVER_DBADDRESS")
+	c.DatabasePort = os.Getenv("CSERVER_DBPORT")
 	c.WhitelistPath = os.Getenv("CSERVER_WHITELIST_PATH")
 	c.MetadataTable = os.Getenv("CSERVER_DB_METADATA_TABLE")
 	c.DevMode, _ = strconv.ParseBool(os.Getenv("CSERVER_DEVMODE"))
@@ -47,7 +53,15 @@ func main() {
 	clog.Level(c.LogLevel)
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
-	dbRefresh()
+	client := redis.NewClient(&redis.Options{
+		Addr:     c.DatabaseAddress,
+		Password: "",
+		DB:       0,
+	})
+	pong, err := client.Ping().Result()
+	fmt.Println(pong, err)
+
+	// dbRefresh()
 	go filesystemMonitor()
 	go icecastMonitor()
 

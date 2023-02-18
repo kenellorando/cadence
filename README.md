@@ -4,7 +4,7 @@
 
 The project ships with _Icecast_ and _Liquidsoap_ built-in, complemented by a _Cadence_ API server providing music search, song request, artwork, a UI, and real-time stream information. 
 
-Cadence ships all components mostly pre-configured with each each other so there is hardly any work needed to get started. Set a target directory containing your music files, set a few service passwords and hostnames, and you're done! The Cadence stack can be deployed in a single command.
+Cadence ships all components mostly pre-configured with each each other so there is hardly any configuration required. Simply set a target directory containing your music files, set a few service passwords and hostnames, and you're done! The Cadence stack can be deployed in a single command.
 
 **Try the live demo! [cadenceradio.com](https://cadenceradio.com/)**
 
@@ -42,7 +42,7 @@ Cadence ships all components mostly pre-configured with each each other so there
    1. On older versions of Docker, use `docker-compose up` instead.
 
 ### Accessing Services
-Assuming no changes were made to port numbers or the hostnames in the steps above:
+Assuming no changes were made to port numbers or the hostnames during installation:
 
 - The UI is accessible in a browser at `localhost:8080`
 - API server requests may also be sent to the `localhost:8080` path. See the API Reference for more details.
@@ -51,15 +51,15 @@ Assuming no changes were made to port numbers or the hostnames in the steps abov
 ## 👩‍💻 Developing
 
 ### Building the Stack
-If you are developing and need to rebuild exactly what you have, use the `--build` flag.
+If you are changing code and need to rebuild exactly what you have, use the `--build` flag.
 
 1. `docker compose down; docker compose up --build`
 
 ### Development Mode
-Cadence provides special administrative controls that may be useful for testing in an optional development API. As the name implies, don't enable development mode on a production server. 
+Cadence provides special administrative control that may be useful for testing though an API that may be optionally enabled. As the name implies, don't enable development mode on a production server.
 
 1. Edit `cadence/config/cadence.env`.
    1. Set `CSERVER_DEVMODE` from `0` (disabled) to `1` (enabled).
 
 ### API Reference
-If you are developing a custom client for Cadence Radio stacks, [Cadence's Wiki API Reference](https://github.com/kenellorando/cadence/wiki/API-Reference) provides usage details and complete request/response examples.
+[Cadence's API Reference](https://github.com/kenellorando/cadence/wiki/API-Reference) provides usage details and complete request/response examples.

@@ -5,6 +5,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/Jeffail/gabs"
+	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/fsnotify/fsnotify"
 	"github.com/kenellorando/clog"
 )
@@ -39,25 +41,14 @@ type SongData struct {
 // Takes a query string to search the database.
 // Returns a slice of SongData of songs ordered by relevance.
 func searchByQuery(query string) (queryResults []SongData, err error) {
-	clog.Info("searchByQuery", fmt.Sprintf("Searching database for query: '%v'", query))
-
-	selectWhereStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ", c.MetadataTable) + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
-	rows, err := db.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
-	if err != nil {
-		clog.Error("searchByQuery", "Database search failed.", err)
-		return nil, err
+	results, _, _ := r.Metadata.Search(redisearch.NewQuery(" %" + query + "% "))
+	for _, song := range results {
+		var songData SongData
+		// todo: error handle marshal/unmarshal
+		songBytes, _ := json.Marshal(song.Properties)
+		_ = json.Unmarshal(songBytes, &songData)
+		queryResults = append(queryResults, songData)
 	}
-
-	for rows.Next() {
-		song := &SongData{}
-		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
-		if err != nil {
-			clog.Error("searchByQuery", "Data scan failed.", err)
-			continue
-		}
-		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
-	}
-
 	return queryResults, nil
 }
 

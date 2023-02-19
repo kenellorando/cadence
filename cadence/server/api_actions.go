@@ -5,6 +5,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/Jeffail/gabs"
 	"github.com/fsnotify/fsnotify"
+	"github.com/go-redis/redis"
 	"github.com/kenellorando/clog"
 )
 
@@ -90,22 +92,34 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 func getPathById(id int) (path string, err error) {
 	clog.Info("getPathById", fmt.Sprintf("Searching database for the path of song: '%v'", id))
 
-	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v", c.MetadataTable, id)
+	// selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v", c.MetadataTable, id)
 
-	rows, err := db.Query(selectWhereStatement)
-	if err != nil {
-		clog.Error("getPathById", "Database search failed.", err)
+	// rows, err := db.Query(selectWhereStatement)
+	song, err := r.Metadata.Get(fmt.Sprint(id)).Result()
+	if err == redis.Nil {
+		clog.Error("getPathById", "Database search failed: ID does not exist.", err)
+		return "", err
+	} else if err != nil {
+		clog.Error("getPathById", "Error searching for ID.", err)
 		return "", err
 	}
-	for rows.Next() {
-		err = rows.Scan(&path)
-		if err != nil {
-			clog.Error("getPathById", "Data scan failed.", err)
-			return "", err
-		}
-	}
+	var songJSON SongData
+	_ = json.Unmarshal([]byte(song), &songJSON)
+	fmt.Println(songJSON)
 
-	return path, nil
+	// if err != nil {
+	// 	clog.Error("getPathById", "Database search failed.", err)
+	// 	return "", err
+	// }
+	// for rows.Next() {
+	// 	err = rows.Scan(&path)
+	// 	if err != nil {
+	// 		clog.Error("getPathById", "Data scan failed.", err)
+	// 		return "", err
+	// 	}
+	// }
+
+	return songJSON.Path, nil
 }
 
 // Takes an absolute song path, submits the path to be queued in Liquidsoap.

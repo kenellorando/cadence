@@ -168,7 +168,7 @@ func filesystemMonitor() {
 					continue
 				}
 				clog.Info("fileSystemMonitor", "Change detected in music library.")
-				//dbRefresh()
+				dbPopulate()
 			case err, ok := <-watcher.Errors:
 				if !ok {
 					continue

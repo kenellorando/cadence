@@ -23,14 +23,22 @@ type RedisClient struct {
 	Limiter  *redis.Client
 }
 
-func dbPopulate() error {
+func dbNewClients() {
 	r.Metadata = redis.NewClient(&redis.Options{
 		Addr:     c.DatabaseAddress + c.DatabasePort,
 		Password: "", // todo: c.DatabasePassword
 		DB:       0,
 	})
+}
+
+func dbPopulate() error {
+	err := r.Metadata.FlushDB().Err()
+	if err != nil {
+		clog.Error("dbPopulate", fmt.Sprintf("Could not flush the metadata database."), err)
+		return err
+	}
 	clog.Debug("dbPopulate", "Opening given music directory.")
-	_, err := os.Stat(c.MusicDir)
+	_, err = os.Stat(c.MusicDir)
 	if err != nil {
 		if os.IsNotExist(err) {
 			clog.Error("dbPopulate", "The configured target music directory was not found.", err)

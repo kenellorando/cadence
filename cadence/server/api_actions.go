@@ -88,36 +88,13 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 // Takes a song ID integer.
 // Returns the absolute path of the audio file.
 func getPathById(id int) (path string, err error) {
-	clog.Info("getPathById", fmt.Sprintf("Searching database for the path of song: '%v'", id))
-
-	// selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v", c.MetadataTable, id)
-
-	// rows, err := db.Query(selectWhereStatement)
-	// song, err := r.Metadata.Get(fmt.Sprint(id)).Result()
-	// if err == redis.Nil {
-	// 	clog.Error("getPathById", "Database search failed: ID does not exist.", err)
-	// 	return "", err
-	// } else if err != nil {
-	// 	clog.Error("getPathById", "Error searching for ID.", err)
-	// 	return "", err
-	// }
-	// var songJSON SongData
-	// _ = json.Unmarshal([]byte(song), &songJSON)
-	// fmt.Println(songJSON)
-
-	// if err != nil {
-	// 	clog.Error("getPathById", "Database search failed.", err)
-	// 	return "", err
-	// }
-	// for rows.Next() {
-	// 	err = rows.Scan(&path)
-	// 	if err != nil {
-	// 		clog.Error("getPathById", "Data scan failed.", err)
-	// 		return "", err
-	// 	}
-	// }
-
-	return "", nil
+	clog.Info("getPathById", fmt.Sprintf("Searching database for the path of song ID <%v>", id))
+	result, err := r.Metadata.Get(fmt.Sprint(id))
+	if err != nil {
+		clog.Error("getPathById", "Database search failed.", err)
+		return "", err
+	}
+	return fmt.Sprint(result.Properties["Path"]), nil
 }
 
 // Takes an absolute song path, submits the path to be queued in Liquidsoap.

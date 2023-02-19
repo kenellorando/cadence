@@ -59,7 +59,7 @@ func dbPopulate() error {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured fetching tags from <%s>.", path), err)
 					return err
 				}
-				doc := redisearch.NewDocument("song:"+fmt.Sprint(id), 1.0)
+				doc := redisearch.NewDocument(fmt.Sprint(id), 1.0)
 				doc.Set("ID", id).
 					Set("Artist", tags.Artist()).
 					Set("Title", tags.Title()).

@@ -41,6 +41,7 @@ var radiodata_sse = eventsource.New(nil, nil)
 
 func routes() *http.ServeMux {
 	r := http.NewServeMux()
+	r.Handle("/api/radiodata/sse", radiodata_sse)
 	r.Handle("/api/search", Search())
 	r.Handle("/api/request/id", rateLimit(RequestID()))
 	r.Handle("/api/request/bestmatch", rateLimit(RequestBestMatch()))
@@ -52,17 +53,9 @@ func routes() *http.ServeMux {
 	r.Handle("/api/bitrate", Bitrate())
 	r.Handle("/api/version", Version())
 	r.Handle("/ready", Ready())
-
-	// Development Mode Enabled
 	if c.DevMode {
 		r.Handle("/api/dev/skip", DevSkip())
 	}
-
-	// Event Streams
-	r.Handle("/api/radiodata/sse", radiodata_sse)
-
-	// UI Fileserver
 	r.Handle("/", http.FileServer(http.Dir(c.RootPath+"./public/")))
-
 	return r
 }

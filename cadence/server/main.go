@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -13,8 +12,9 @@ import (
 
 var c = ServerConfig{}
 
-var db *sql.DB
+var db *sql.DB // todo: remove after upgrade complete
 
+// todo: rename source, stream, database to component names
 type ServerConfig struct {
 	Version          string
 	RootPath         string
@@ -53,29 +53,7 @@ func main() {
 	clog.Level(c.LogLevel)
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
-	dbInit()
-
-	// begin debug print
-	values, err := r.Metadata.Get("0").Result()
-	if err != nil {
-		fmt.Println("error")
-	}
-	fmt.Println(values)
-	var s SongData
-	_ = json.Unmarshal([]byte(values), &s)
-	fmt.Println(s)
-	fmt.Println("=======")
-
-	values, err = r.Metadata.Get("1").Result()
-	if err != nil {
-		fmt.Println("error")
-	}
-	fmt.Println(values)
-	var t SongData
-	_ = json.Unmarshal([]byte(values), &t)
-	fmt.Println(t)
-	fmt.Println("=======")
-
+	go dbPopulate()
 	go filesystemMonitor()
 	go icecastMonitor()
 

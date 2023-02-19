@@ -4,41 +4,32 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/dhowden/tag"
-	"github.com/go-redis/redis"
 	"github.com/kenellorando/clog"
 )
 
 var r = RedisClient{}
 
 type RedisClient struct {
-	Metadata *redis.Client
-	History  *redis.Client
-	Limiter  *redis.Client
+	Metadata       *redisearch.Client
+	MetadataSchema *redisearch.Schema
 }
 
 func dbNewClients() {
-	r.Metadata = redis.NewClient(&redis.Options{
-		Addr:     c.DatabaseAddress + c.DatabasePort,
-		Password: "", // todo: c.DatabasePassword
-		DB:       0,
-	})
+	r.Metadata = redisearch.NewClient(c.DatabaseAddress+c.DatabasePort, "metadata")
 }
 
 func dbPopulate() error {
-	err := r.Metadata.FlushDB().Err()
-	if err != nil {
-		clog.Error("dbPopulate", fmt.Sprintf("Could not flush the metadata database."), err)
-		return err
-	}
+	dbBuildSchema()
 	clog.Debug("dbPopulate", "Opening given music directory.")
-	_, err = os.Stat(c.MusicDir)
+	_, err := os.Stat(c.MusicDir)
 	if err != nil {
 		if os.IsNotExist(err) {
 			clog.Error("dbPopulate", "The configured target music directory was not found.", err)
@@ -68,18 +59,18 @@ func dbPopulate() error {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured fetching tags from <%s>.", path), err)
 					return err
 				}
-				song := SongData{
-					ID:     id,
-					Artist: tags.Artist(),
-					Title:  tags.Title(),
-					Album:  tags.Album(),
-					Genre:  tags.Genre(),
-					Year:   tags.Year(),
-					Path:   path,
-				}
-				songInsert, _ := json.Marshal(song)
-				err = r.Metadata.Set(fmt.Sprint(id), songInsert, 0).Err()
-				if err != nil {
+
+				doc := redisearch.NewDocument("song:"+fmt.Sprint(id), 1.0)
+				doc.Set("ID", id).
+					Set("Artist", tags.Artist()).
+					Set("Title", tags.Title()).
+					Set("Album", tags.Album()).
+					Set("Genre", tags.Genre()).
+					Set("Year", tags.Year()).
+					Set("Path", path)
+
+				// Index the document. The API accepts multiple documents at a time
+				if err := r.Metadata.Index([]redisearch.Document{doc}...); err != nil {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured populating metadata for <%s>.", path), err)
 					return err
 				}
@@ -95,4 +86,20 @@ func dbPopulate() error {
 	}
 	clog.Info("dbPopulate", "Database population completed.")
 	return nil
+}
+
+func dbBuildSchema() {
+	// Drop whatever schema set
+	r.Metadata.Drop()
+	r.MetadataSchema = redisearch.NewSchema(redisearch.DefaultOptions).
+		AddField(redisearch.NewNumericField("ID")).
+		AddField(redisearch.NewTextField("Artist")).
+		AddField(redisearch.NewTextField("Title")).
+		AddField(redisearch.NewTextField("Album")).
+		AddField(redisearch.NewTextField("Genre")).
+		AddField(redisearch.NewNumericField("Year")).
+		AddField(redisearch.NewTextField("Path"))
+	if err := r.Metadata.CreateIndex(r.MetadataSchema); err != nil {
+		log.Fatal(err)
+	}
 }

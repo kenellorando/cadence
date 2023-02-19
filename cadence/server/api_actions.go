@@ -5,7 +5,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -14,7 +13,6 @@ import (
 
 	"github.com/Jeffail/gabs"
 	"github.com/fsnotify/fsnotify"
-	"github.com/go-redis/redis"
 	"github.com/kenellorando/clog"
 )
 
@@ -95,17 +93,17 @@ func getPathById(id int) (path string, err error) {
 	// selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v", c.MetadataTable, id)
 
 	// rows, err := db.Query(selectWhereStatement)
-	song, err := r.Metadata.Get(fmt.Sprint(id)).Result()
-	if err == redis.Nil {
-		clog.Error("getPathById", "Database search failed: ID does not exist.", err)
-		return "", err
-	} else if err != nil {
-		clog.Error("getPathById", "Error searching for ID.", err)
-		return "", err
-	}
-	var songJSON SongData
-	_ = json.Unmarshal([]byte(song), &songJSON)
-	fmt.Println(songJSON)
+	// song, err := r.Metadata.Get(fmt.Sprint(id)).Result()
+	// if err == redis.Nil {
+	// 	clog.Error("getPathById", "Database search failed: ID does not exist.", err)
+	// 	return "", err
+	// } else if err != nil {
+	// 	clog.Error("getPathById", "Error searching for ID.", err)
+	// 	return "", err
+	// }
+	// var songJSON SongData
+	// _ = json.Unmarshal([]byte(song), &songJSON)
+	// fmt.Println(songJSON)
 
 	// if err != nil {
 	// 	clog.Error("getPathById", "Database search failed.", err)
@@ -119,7 +117,7 @@ func getPathById(id int) (path string, err error) {
 	// 	}
 	// }
 
-	return songJSON.Path, nil
+	return "", nil
 }
 
 // Takes an absolute song path, submits the path to be queued in Liquidsoap.

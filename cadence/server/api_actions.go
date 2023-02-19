@@ -56,23 +56,14 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 // Returns a slice of SongData of songs by relevance.
 // This search should only have one result unless multiple audio files share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
-	selectStatement := fmt.Sprintf("SELECT rowid,artist,title,album,genre,year FROM %s WHERE title=\"%v\" AND artist=\"%v\";", c.MetadataTable, title, artist)
-	rows, err := db.Query(selectStatement)
-	if err != nil {
-		clog.Error("searchByTitleArtist", "Could not query DB.", err)
-		return nil, err
+	results, _, _ := r.Metadata.Search(redisearch.NewQuery(title+" "+artist).Limit(0, 1))
+	for _, song := range results {
+		var songData SongData
+		// todo: error handle marshal/unmarshal
+		songBytes, _ := json.Marshal(song.Properties)
+		_ = json.Unmarshal(songBytes, &songData)
+		queryResults = append(queryResults, songData)
 	}
-
-	for rows.Next() {
-		song := &SongData{}
-		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
-		if err != nil {
-			clog.Error("searchByTitleArtist", "Data scan failed.", err)
-			continue
-		}
-		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
-	}
-
 	return queryResults, nil
 }
 

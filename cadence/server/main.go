@@ -2,12 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 
-	"github.com/go-redis/redis"
 	"github.com/kenellorando/clog"
 )
 
@@ -53,15 +53,29 @@ func main() {
 	clog.Level(c.LogLevel)
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
-	client := redis.NewClient(&redis.Options{
-		Addr:     c.DatabaseAddress,
-		Password: "",
-		DB:       0,
-	})
-	pong, err := client.Ping().Result()
-	fmt.Println(pong, err)
+	dbInit()
 
-	// dbRefresh()
+	// begin debug print
+	values, err := r.Metadata.Get("0").Result()
+	if err != nil {
+		fmt.Println("error")
+	}
+	fmt.Println(values)
+	var s SongData
+	_ = json.Unmarshal([]byte(values), &s)
+	fmt.Println(s)
+	fmt.Println("=======")
+
+	values, err = r.Metadata.Get("1").Result()
+	if err != nil {
+		fmt.Println("error")
+	}
+	fmt.Println(values)
+	var t SongData
+	_ = json.Unmarshal([]byte(values), &t)
+	fmt.Println(t)
+	fmt.Println("=======")
+
 	go filesystemMonitor()
 	go icecastMonitor()
 

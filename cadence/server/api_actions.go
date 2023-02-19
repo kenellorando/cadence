@@ -33,6 +33,7 @@ type SongData struct {
 	Album  string
 	Genre  string
 	Year   int
+	Path   string
 }
 
 // Takes a query string to search the database.

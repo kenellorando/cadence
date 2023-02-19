@@ -1,6 +1,6 @@
-# # syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1
 ARG ARCH=
-FROM --platform=${BUILDPLATFORM} ${ARCH}golang:1.18.1-bullseye as builder
+FROM --platform=${BUILDPLATFORM} ${ARCH}golang:1.20.0-bullseye as builder
 WORKDIR /cadence
 COPY ./* ./
 RUN go mod download
@@ -11,14 +11,13 @@ RUN if [ "$TARGETARCH" = "arm" ] ; then \
     CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /cadence-server; fi
 
 ARG ARCH=
-FROM ${ARCH}golang:1.18.1-bullseye
+FROM ${ARCH}golang:1.20.0-bullseye
 LABEL maintainer="Ken Ellorando (kenellorando.com)"
 LABEL source="github.com/kenellorando/cadence"
 COPY --from=builder /cadence/public /cadence/server/public
 COPY --from=builder /cadence-server /cadence/cadence-server
 
 RUN useradd -s /bin/bash cadence
-RUN touch /cadence/music-metadata.db
 RUN chown cadence:cadence /cadence/ /cadence/* /cadence/cadence-server
 RUN chmod u+wrx /cadence/ /cadence/* 
 

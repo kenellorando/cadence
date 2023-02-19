@@ -9,7 +9,6 @@ RUN go mod download
 RUN go build -o /cadence/cadence-server
 
 RUN useradd -s /bin/bash cadence
-RUN touch /cadence/music-metadata.db
 RUN chown cadence:cadence /cadence/ /cadence/* /cadence/cadence-server
 RUN chmod u+wrx /cadence/ /cadence/* 
 

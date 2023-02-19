@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/kenellorando/clog"
 )
 
@@ -55,32 +54,7 @@ func main() {
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
 	dbNewClients()
-	dbPopulate()
-
-	// begin debug
-	results, total, err := r.Metadata.Search(redisearch.NewQuery("only").
-		Limit(0, 10))
-	fmt.Println(results[0])
-	fmt.Println(total)
-	fmt.Println(err)
-
-	results2, total, err := r.Metadata.Search(redisearch.NewQuery("only my").
-		Limit(0, 10))
-	fmt.Println(results2[0].Properties["Path"])
-	fmt.Println(total)
-	fmt.Println(err)
-
-	results3, total, err := r.Metadata.Search(redisearch.NewQuery("fripside").
-		Limit(0, 10))
-	fmt.Println(results3[0])
-	fmt.Println(total)
-	fmt.Println(err)
-
-	results4, total, err := r.Metadata.Search(redisearch.NewQuery("zutomayo"))
-	fmt.Println(results4)
-	fmt.Println(total)
-	fmt.Println(err)
-
+	go dbPopulate()
 	go filesystemMonitor()
 	go icecastMonitor()
 

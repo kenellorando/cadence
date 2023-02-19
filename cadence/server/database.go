@@ -1,5 +1,5 @@
 // database.go
-// Metadata, history, and rate limiter database configuration and population.
+// Metadata database configuration and population.
 
 package main
 
@@ -59,7 +59,6 @@ func dbPopulate() error {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured fetching tags from <%s>.", path), err)
 					return err
 				}
-
 				doc := redisearch.NewDocument("song:"+fmt.Sprint(id), 1.0)
 				doc.Set("ID", id).
 					Set("Artist", tags.Artist()).
@@ -68,8 +67,6 @@ func dbPopulate() error {
 					Set("Genre", tags.Genre()).
 					Set("Year", tags.Year()).
 					Set("Path", path)
-
-				// Index the document. The API accepts multiple documents at a time
 				if err := r.Metadata.Index([]redisearch.Document{doc}...); err != nil {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured populating metadata for <%s>.", path), err)
 					return err
@@ -89,7 +86,6 @@ func dbPopulate() error {
 }
 
 func dbBuildSchema() {
-	// Drop whatever schema set
 	r.Metadata.Drop()
 	r.MetadataSchema = redisearch.NewSchema(redisearch.DefaultOptions).
 		AddField(redisearch.NewNumericField("ID")).

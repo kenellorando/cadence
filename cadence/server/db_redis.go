@@ -19,10 +19,10 @@ type RedisClient struct {
 	RateLimit      *redis.Client
 }
 
-func newRedisClients() {
-	dbr.Metadata = redisearch.NewClient(c.DatabaseAddress+c.DatabasePort, "metadata")
+func redisInit() {
+	dbr.Metadata = redisearch.NewClient(c.RedisAddress+c.RedisPort, "metadata")
 	dbr.RateLimit = redis.NewClient(&redis.Options{
-		Addr:     c.DatabaseAddress + c.DatabasePort,
+		Addr:     c.RedisAddress + c.RedisPort,
 		Password: "", // no password set
 		DB:       1,  // use default DB
 	})

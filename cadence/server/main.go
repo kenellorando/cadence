@@ -26,8 +26,13 @@ type ServerConfig struct {
 	SourcePort       string
 	StreamAddress    string
 	StreamPort       string
-	DatabaseAddress  string
-	DatabasePort     string
+	PostgresAddress  string
+	PostgresPort     string
+	PostgresUser     string
+	PostgresPassword string
+	PostgresSSL      string
+	RedisAddress     string
+	RedisPort        string
 	WhitelistPath    string
 	MetadataTable    string
 	DevMode          bool
@@ -44,8 +49,13 @@ func main() {
 	c.SourcePort = os.Getenv("CSERVER_SOURCEPORT")
 	c.StreamAddress = os.Getenv("CSERVER_STREAMADDRESS")
 	c.StreamPort = os.Getenv("CSERVER_STREAMPORT")
-	c.DatabaseAddress = os.Getenv("CSERVER_DBADDRESS")
-	c.DatabasePort = os.Getenv("CSERVER_DBPORT")
+	c.PostgresAddress = os.Getenv("CSERVER_POSTGRESADDRESS")
+	c.PostgresPort = os.Getenv("CSERVER_POSTGRESPORT")
+	c.PostgresUser = os.Getenv("CSERVER_POSTGRESUSER")
+	c.PostgresPassword = os.Getenv("CSERVER_POSTGRESPASSWORD")
+	c.PostgresSSL = os.Getenv("CSERVER_POSTGRESSSL")
+	c.RedisAddress = os.Getenv("CSERVER_REDISADDRESS")
+	c.RedisPort = os.Getenv("CSERVER_REDISPORT")
 	c.WhitelistPath = os.Getenv("CSERVER_WHITELIST_PATH")
 	c.MetadataTable = os.Getenv("CSERVER_DB_METADATA_TABLE")
 	c.DevMode, _ = strconv.ParseBool(os.Getenv("CSERVER_DEVMODE"))
@@ -53,8 +63,8 @@ func main() {
 	clog.Level(c.LogLevel)
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
-	newRedisClients()
-	go metadataPopulate()
+	redisInit()
+	postgresInit()
 	go filesystemMonitor()
 	go icecastMonitor()
 

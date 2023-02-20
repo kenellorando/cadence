@@ -9,6 +9,16 @@ services:
     networks:
       internal_services:
 
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: hackme
+    networks:
+      internal_services:
+
   icecast2:
     build: 
       context: ./cadence_icecast2/ 
@@ -55,6 +65,8 @@ services:
     depends_on:
       - icecast2
       - liquidsoap
+      - redis
+      - postgres
     networks:
       internal_services:
       external_services:

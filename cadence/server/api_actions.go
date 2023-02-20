@@ -5,7 +5,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -13,7 +12,6 @@ import (
 	"time"
 
 	"github.com/Jeffail/gabs"
-	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/fsnotify/fsnotify"
 	"github.com/kenellorando/clog"
 )
@@ -41,41 +39,73 @@ type SongData struct {
 // Takes a query string to search the database.
 // Returns a slice of SongData of songs ordered by relevance.
 func searchByQuery(query string) (queryResults []SongData, err error) {
-	results, _, _ := dbr.Metadata.Search(redisearch.NewQuery(" %"+query+"% ").SetReturnFields("ID", "Title", "Artist", "Album", "Genre", "Year"))
-	for _, song := range results {
-		var songData SongData
-		// todo: error handle marshal/unmarshal
-		songBytes, _ := json.Marshal(song.Properties)
-		_ = json.Unmarshal(songBytes, &songData)
-		queryResults = append(queryResults, songData)
+
+	clog.Info("searchByQuery", fmt.Sprintf("Searching database for query: '%v'", query))
+
+	selectWhereStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ", c.MetadataTable) + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
+	rows, err := dbp.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
+	if err != nil {
+		clog.Error("searchByQuery", "Database search failed.", err)
+		return nil, err
 	}
+
+	for rows.Next() {
+		song := &SongData{}
+		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
+		if err != nil {
+			clog.Error("searchByQuery", "Data scan failed.", err)
+			continue
+		}
+		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
+	}
+
 	return queryResults, nil
 }
 
 // Takes a title and artist string to find a song which exactly matches.
 // Returns a single SongData, the first result to match. This will not work if multiple songs share the exact same title and artist.
-func searchByTitleArtist(title string, artist string) (nowPlaying []SongData, err error) {
-	results, _, _ := dbr.Metadata.Search(redisearch.NewQuery("@Title:%"+title+"% @Artist:%"+artist+"%").SetReturnFields("ID", "Title", "Artist", "Album", "Genre", "Year").Limit(0, 1))
-	// todo: error handle marshal/unmarshal
-	songBytes, err := json.Marshal(results[0].Properties)
+func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
+	selectStatement := fmt.Sprintf("SELECT rowid,artist,title,album,genre,year FROM %s WHERE title=\"%v\" AND artist=\"%v\";", c.MetadataTable, title, artist)
+	rows, err := dbp.Query(selectStatement)
 	if err != nil {
-		fmt.Println("error in search by title artist", err)
+		clog.Error("searchByTitleArtist", "Could not query DB.", err)
+		return nil, err
 	}
-	_ = json.Unmarshal(songBytes, &nowPlaying)
-	fmt.Println(nowPlaying)
-	return nowPlaying, nil
+
+	for rows.Next() {
+		song := &SongData{}
+		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
+		if err != nil {
+			clog.Error("searchByTitleArtist", "Data scan failed.", err)
+			continue
+		}
+		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
+	}
+
+	return queryResults, nil
 }
 
 // Takes a song ID integer.
 // Returns the absolute path of the audio file.
 func getPathById(id int) (path string, err error) {
-	clog.Info("getPathById", fmt.Sprintf("Searching database for the path of song ID <%v>", id))
-	result, err := dbr.Metadata.Get(fmt.Sprint(id))
+	clog.Info("getPathById", fmt.Sprintf("Searching database for the path of song: '%v'", id))
+
+	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v", c.MetadataTable, id)
+
+	rows, err := dbp.Query(selectWhereStatement)
 	if err != nil {
 		clog.Error("getPathById", "Database search failed.", err)
 		return "", err
 	}
-	return fmt.Sprint(result.Properties["Path"]), nil
+	for rows.Next() {
+		err = rows.Scan(&path)
+		if err != nil {
+			clog.Error("getPathById", "Data scan failed.", err)
+			return "", err
+		}
+	}
+
+	return path, nil
 }
 
 // Takes an absolute song path, submits the path to be queued in Liquidsoap.
@@ -138,7 +168,7 @@ func filesystemMonitor() {
 					continue
 				}
 				clog.Info("fileSystemMonitor", "Change detected in music library.")
-				metadataPopulate()
+				postgresPopulate()
 			case err, ok := <-watcher.Errors:
 				if !ok {
 					continue

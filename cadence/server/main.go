@@ -30,6 +30,7 @@ type ServerConfig struct {
 	PostgresPort     string
 	PostgresUser     string
 	PostgresPassword string
+	PostgresDBName   string
 	PostgresSSL      string
 	RedisAddress     string
 	RedisPort        string
@@ -53,6 +54,7 @@ func main() {
 	c.PostgresPort = os.Getenv("CSERVER_POSTGRESPORT")
 	c.PostgresUser = os.Getenv("CSERVER_POSTGRESUSER")
 	c.PostgresPassword = os.Getenv("CSERVER_POSTGRESPASSWORD")
+	c.PostgresDBName = os.Getenv("CSERVER_POSTGRESDBNAME")
 	c.PostgresSSL = os.Getenv("CSERVER_POSTGRESSSL")
 	c.RedisAddress = os.Getenv("CSERVER_REDISADDRESS")
 	c.RedisPort = os.Getenv("CSERVER_REDISPORT")

@@ -4,11 +4,7 @@ FROM --platform=${BUILDPLATFORM} ${ARCH}golang:1.20.0-bullseye as builder
 WORKDIR /cadence
 COPY ./* ./
 RUN go mod download
-ARG TARGETOS TARGETARCH
-RUN if [ "$TARGETARCH" = "arm" ] ; then \ 
-    CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=arm go build -o /cadence-server; \
-    elif [ "$TARGETARCH" = "amd64" ] ; then \
-    CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /cadence-server; fi
+RUN go build -o /cadence-server
 
 ARG ARCH=
 FROM ${ARCH}golang:1.20.0-bullseye

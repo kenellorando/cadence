@@ -48,5 +48,3 @@ func rateLimit(next http.Handler) http.Handler {
 		}
 	})
 }
-
-func manageHistory()

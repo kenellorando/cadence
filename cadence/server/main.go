@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,8 +8,6 @@ import (
 
 	"github.com/kenellorando/clog"
 )
-
-var ctx = context.Background()
 
 var c = ServerConfig{}
 

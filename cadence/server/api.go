@@ -125,19 +125,12 @@ func RequestBestMatch() http.HandlerFunc {
 // Gets text metadata (excludes album art and path) of the currently playing song.
 func NowPlayingMetadata() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		queryResults, err := searchByTitleArtist(now.Song.Title, now.Song.Artist)
+		queryResult, err := searchByTitleArtist(now.Song.Title, now.Song.Artist)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
-		if len(queryResults) < 1 {
-			w.WriteHeader(http.StatusNotFound) // 404
-			return
-		}
-		song := queryResults[0]
-
-		result := SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year}
-		jsonMarshal, _ := json.Marshal(result)
+		jsonMarshal, _ := json.Marshal(queryResult)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}

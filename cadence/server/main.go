@@ -1,19 +1,21 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 
-	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/kenellorando/clog"
 )
 
+var ctx = context.Background()
+
 var c = ServerConfig{}
 
-var db *sql.DB // todo: remove after upgrade complete
+var dbo *sql.DB // todo: remove after upgrade complete
 
 // todo: rename source, stream, database to component names
 type ServerConfig struct {
@@ -54,9 +56,7 @@ func main() {
 	clog.Level(c.LogLevel)
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
-	r.Metadata = redisearch.NewClient(c.DatabaseAddress+c.DatabasePort, "metadata")
-	r.RateLimit = redisearch.NewClient(c.DatabaseAddress+c.DatabasePort, "ratelimit")
-
+	newRedisClients()
 	go metadataPopulate()
 	go filesystemMonitor()
 	go icecastMonitor()

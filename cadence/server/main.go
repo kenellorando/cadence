@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/kenellorando/clog"
 )
 
@@ -53,8 +54,10 @@ func main() {
 	clog.Level(c.LogLevel)
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
-	dbNewClients()
-	go dbPopulate()
+	r.Metadata = redisearch.NewClient(c.DatabaseAddress+c.DatabasePort, "metadata")
+	r.RateLimit = redisearch.NewClient(c.DatabaseAddress+c.DatabasePort, "ratelimit")
+
+	go metadataPopulate()
 	go filesystemMonitor()
 	go icecastMonitor()
 

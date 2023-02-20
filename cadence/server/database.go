@@ -1,5 +1,5 @@
 // database.go
-// Metadata database configuration and population.
+// Metadata and rate-limit database configuration and population.
 
 package main
 
@@ -18,16 +18,25 @@ import (
 var r = RedisClient{}
 
 type RedisClient struct {
-	Metadata       *redisearch.Client
-	MetadataSchema *redisearch.Schema
+	Metadata        *redisearch.Client
+	MetadataSchema  *redisearch.Schema
+	RateLimit       *redisearch.Client
+	RateLimitSchema *redisearch.Schema
 }
 
-func dbNewClients() {
-	r.Metadata = redisearch.NewClient(c.DatabaseAddress+c.DatabasePort, "metadata")
-}
-
-func dbPopulate() error {
-	dbBuildSchema()
+func metadataPopulate() error {
+	r.Metadata.Drop()
+	r.MetadataSchema = redisearch.NewSchema(redisearch.DefaultOptions).
+		AddField(redisearch.NewNumericField("ID")).
+		AddField(redisearch.NewTextField("Artist")).
+		AddField(redisearch.NewTextField("Title")).
+		AddField(redisearch.NewTextField("Album")).
+		AddField(redisearch.NewTextField("Genre")).
+		AddField(redisearch.NewNumericField("Year")).
+		AddField(redisearch.NewTextField("Path"))
+	if err := r.Metadata.CreateIndex(r.MetadataSchema); err != nil {
+		log.Fatal(err)
+	}
 	clog.Debug("dbPopulate", "Opening given music directory.")
 	_, err := os.Stat(c.MusicDir)
 	if err != nil {
@@ -83,19 +92,4 @@ func dbPopulate() error {
 	}
 	clog.Info("dbPopulate", "Database population completed.")
 	return nil
-}
-
-func dbBuildSchema() {
-	r.Metadata.Drop()
-	r.MetadataSchema = redisearch.NewSchema(redisearch.DefaultOptions).
-		AddField(redisearch.NewNumericField("ID")).
-		AddField(redisearch.NewTextField("Artist")).
-		AddField(redisearch.NewTextField("Title")).
-		AddField(redisearch.NewTextField("Album")).
-		AddField(redisearch.NewTextField("Genre")).
-		AddField(redisearch.NewNumericField("Year")).
-		AddField(redisearch.NewTextField("Path"))
-	if err := r.Metadata.CreateIndex(r.MetadataSchema); err != nil {
-		log.Fatal(err)
-	}
 }

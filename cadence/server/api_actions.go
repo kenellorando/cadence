@@ -41,7 +41,7 @@ type SongData struct {
 // Takes a query string to search the database.
 // Returns a slice of SongData of songs ordered by relevance.
 func searchByQuery(query string) (queryResults []SongData, err error) {
-	results, _, _ := r.Metadata.Search(redisearch.NewQuery(" %" + query + "% "))
+	results, _, _ := r.Metadata.Search(redisearch.NewQuery(" %"+query+"% ").SetReturnFields("ID", "Title", "Artist", "Album", "Genre", "Year"))
 	for _, song := range results {
 		var songData SongData
 		// todo: error handle marshal/unmarshal
@@ -56,7 +56,7 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 // Returns a slice of SongData of songs by relevance.
 // This search should only have one result unless multiple audio files share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
-	results, _, _ := r.Metadata.Search(redisearch.NewQuery(title+" "+artist).Limit(0, 1))
+	results, _, _ := r.Metadata.Search(redisearch.NewQuery(title+" "+artist).SetReturnFields("ID", "Title", "Artist", "Album", "Genre", "Year").Limit(0, 1))
 	for _, song := range results {
 		var songData SongData
 		// todo: error handle marshal/unmarshal

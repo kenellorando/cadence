@@ -18,8 +18,7 @@ import (
 // Gets text metadata (excludes album art and path) of any songs matching a search query.
 func Search() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Info("Search", fmt.Sprintf("Search request from client %s.", r.Header.Get("X-Forwarded-For")))
-
+		clog.Debug("Search", fmt.Sprintf("Search request from client %s.", checkIP(r)))
 		type Search struct {
 			Query string `json:"search"`
 		}
@@ -48,7 +47,7 @@ func Search() http.HandlerFunc {
 // Posts a request submission for a specific song ID.
 func RequestID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Info("Request", fmt.Sprintf("Request-by-ID by client %s.", r.Header.Get("X-Forwarded-For")))
+		clog.Info("Request", fmt.Sprintf("Request-by-ID by client %s.", checkIP(r)))
 
 		type Request struct {
 			ID string `json:"ID"`
@@ -87,7 +86,7 @@ func RequestID() http.HandlerFunc {
 // Posts a request submission for the top result of a search.
 func RequestBestMatch() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("Search", fmt.Sprintf("Decoding http-request data from client %s.", r.Header.Get("X-Forwarded-For")))
+		clog.Debug("Search", fmt.Sprintf("Decoding http-request data from client %s.", checkIP(r)))
 
 		type RequestBestMatch struct {
 			Query string `json:"Search"`

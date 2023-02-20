@@ -30,8 +30,9 @@ Cadence ships all components mostly pre-configured with each each other so there
 
 ### Installation
 1. Edit `cadence/config/cadence.env`.
-   1. Set `CSERVER_MUSIC_DIR` to an absolute path of a directory on your system which contains music files (`.mp3`, `.flac`) to play. The target is not recursively searched. The default value is `/music/`.
-   2. Set `CSERVER_REQRATELIMIT` to an integer value that represents a song request cooldown period in seconds. Set this value to `0` to disable request rate limiting. The default value is `180`.
+   1. Set the `POSTGRES_PASSWORD` from `hackme` to a new password.
+   2. Set `CSERVER_MUSIC_DIR` to an absolute path of a directory on your system which contains music files (`.mp3`, `.flac`) to play. The target is not recursively searched. The default value is `/music/`.
+   3. Set `CSERVER_REQRATELIMIT` to an integer value that represents a song request cooldown period in seconds. Set this value to `0` to disable request rate limiting. The default value is `180`.
 2. Edit `cadence_icecast2/config/cadence.xml`.
    1. Change all instances of `hackme` to a new password.
    2. Set the `<hostname>` value to a URL you expect your audience to connect to. Cadence uses this value to set the stream source in the UI. This may be a DNS name or a public or internal IP address. You can leave the default value `localhost` if your radio is meant to be accessible locally only.

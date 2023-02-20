@@ -19,32 +19,32 @@ import (
 var dbp *sql.DB
 
 func postgresInit() (err error) {
-	enableExtension := "CREATE EXTENSION fuzzystrmatch"
-
 	// At this point in the program, Postgres should not have any database, so the DSN does not name one.
-	time.Sleep(3 * time.Second)
+	// We're waiting to give leeway to Postgres to finish startup.
+	time.Sleep(2 * time.Second)
 	dsn := fmt.Sprintf("host='%s' port='%s' user='%s' password='%s' sslmode='%s'", c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresSSL)
-	fmt.Println(dsn)
 	dbp, err = sql.Open("postgres", dsn)
 	if err != nil {
-		clog.Error("postgresConfig", "fail 1", err)
+		clog.Error("postgresConfig", "Could not open connection to database.", err)
 	}
 	err = dbp.Ping()
 	if err != nil {
-		clog.Error("postgresConfig", "fail 2", err)
+		clog.Error("postgresConfig", "Could not successfully ping the metadata database.", err)
 	}
 	// Enable fuzzystrmatch for levenshtein sorting
 	// (sorting search results by how close they are to the query)
 	clog.Debug("databaseAutoConfig", "Enabling fuzzystrmatch extension...")
+	enableExtension := "CREATE EXTENSION fuzzystrmatch"
 	_, err = dbp.Exec(enableExtension)
 	if err != nil {
-		clog.Error("databaseAutoConfig", "Failed to enable fuzzystrmatch!", err)
+		clog.Error("databaseAutoConfig", "Failed to enable extension. The error may be ignored if 'fuzzystrmatch' already exists.", err)
 		return err
 	}
 
+	// Initial population on empty database.
 	postgresPopulate()
 	if err != nil {
-		clog.Error("postgresConfig", "fail 3", err)
+		clog.Error("postgresConfig", "Failed to complete initial metadata population.", err)
 	}
 	return nil
 }

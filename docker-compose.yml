@@ -10,12 +10,12 @@ services:
       internal_services:
 
   postgres:
-    image: postgres:latest
+    image: postgres:15-alpine
     container_name: postgres
     ports:
       - 5432:5432
-    environment:
-      POSTGRES_PASSWORD: hackme
+    env_file:
+      - ./cadence/config/cadence.env
     networks:
       internal_services:
 

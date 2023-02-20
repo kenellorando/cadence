@@ -49,7 +49,7 @@ func main() {
 	c.PostgresAddress = os.Getenv("CSERVER_POSTGRESADDRESS")
 	c.PostgresPort = os.Getenv("CSERVER_POSTGRESPORT")
 	c.PostgresUser = os.Getenv("CSERVER_POSTGRESUSER")
-	c.PostgresPassword = os.Getenv("CSERVER_POSTGRESPASSWORD")
+	c.PostgresPassword = os.Getenv("POSTGRES_PASSWORD")
 	c.PostgresDBName = os.Getenv("CSERVER_POSTGRESDBNAME")
 	c.PostgresTableName = os.Getenv("CSERVER_POSTGRESTABLENAME")
 	c.PostgresSSL = os.Getenv("CSERVER_POSTGRESSSL")

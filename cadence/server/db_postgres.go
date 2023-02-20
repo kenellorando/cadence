@@ -1,5 +1,5 @@
-// dbp.go
-// Metadata and rate-limit database configuration and population.
+// db_postgres.go
+// Metadata database configuration and population.
 
 package main
 

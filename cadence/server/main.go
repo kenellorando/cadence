@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,8 +13,6 @@ import (
 var ctx = context.Background()
 
 var c = ServerConfig{}
-
-var dbo *sql.DB // todo: remove after upgrade complete
 
 // todo: rename source, stream, database to component names
 type ServerConfig struct {

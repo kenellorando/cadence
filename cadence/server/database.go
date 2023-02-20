@@ -6,38 +6,18 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/dhowden/tag"
 	"github.com/kenellorando/clog"
-	"github.com/redis/go-redis/v9"
 )
 
-var db = RedisClient{}
-
-type RedisClient struct {
-	Metadata       *redisearch.Client
-	MetadataSchema *redisearch.Schema
-	RateLimit      *redis.Client
-}
-
-func newRedisClients() {
-	db.Metadata = redisearch.NewClient(c.DatabaseAddress+c.DatabasePort, "metadata")
-	db.RateLimit = redis.NewClient(&redis.Options{
-		Addr:     c.DatabaseAddress + c.DatabasePort,
-		Password: "", // no password set
-		DB:       1,  // use default DB
-	})
-}
-
 func metadataPopulate() error {
-	db.Metadata.Drop()
-	db.MetadataSchema = redisearch.NewSchema(redisearch.DefaultOptions).
+	dbr.Metadata.Drop()
+	dbr.MetadataSchema = redisearch.NewSchema(redisearch.DefaultOptions).
 		AddField(redisearch.NewNumericField("ID")).
 		AddField(redisearch.NewTextField("Artist")).
 		AddField(redisearch.NewTextField("Title")).
@@ -45,7 +25,7 @@ func metadataPopulate() error {
 		AddField(redisearch.NewTextField("Genre")).
 		AddField(redisearch.NewNumericField("Year")).
 		AddField(redisearch.NewTextField("Path"))
-	if err := db.Metadata.CreateIndex(db.MetadataSchema); err != nil {
+	if err := dbr.Metadata.CreateIndex(dbr.MetadataSchema); err != nil {
 		log.Fatal(err)
 	}
 	clog.Debug("dbPopulate", "Opening given music directory.")
@@ -69,11 +49,11 @@ func metadataPopulate() error {
 		for _, ext := range extensions {
 			if strings.HasSuffix(path, ext) {
 				file, err := os.Open(path)
-				defer file.Close()
 				if err != nil {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured opening <%s>.", path), err)
 					return err
 				}
+				defer file.Close()
 				tags, err := tag.ReadFrom(file)
 				if err != nil {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured fetching tags from <%s>.", path), err)
@@ -87,7 +67,7 @@ func metadataPopulate() error {
 					Set("Genre", tags.Genre()).
 					Set("Year", tags.Year()).
 					Set("Path", path)
-				if err := db.Metadata.Index([]redisearch.Document{doc}...); err != nil {
+				if err := dbr.Metadata.Index([]redisearch.Document{doc}...); err != nil {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured populating metadata for <%s>.", path), err)
 					return err
 				}
@@ -103,23 +83,4 @@ func metadataPopulate() error {
 	}
 	clog.Info("dbPopulate", "Database population completed.")
 	return nil
-}
-
-func rateLimit(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ip := r.RemoteAddr
-		_, err := db.RateLimit.Get(ctx, ip).Result()
-		if err != nil {
-			if err == redis.Nil {
-				db.RateLimit.Set(ctx, ip, nil, time.Duration(c.RequestRateLimit)*time.Second)
-				next.ServeHTTP(w, r)
-			} else {
-				w.WriteHeader(http.StatusInternalServerError) // 500
-				return
-			}
-		} else {
-			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
-			return
-		}
-	})
 }

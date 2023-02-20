@@ -41,7 +41,7 @@ type SongData struct {
 // Takes a query string to search the database.
 // Returns a slice of SongData of songs ordered by relevance.
 func searchByQuery(query string) (queryResults []SongData, err error) {
-	results, _, _ := db.Metadata.Search(redisearch.NewQuery(" %"+query+"% ").SetReturnFields("ID", "Title", "Artist", "Album", "Genre", "Year"))
+	results, _, _ := dbr.Metadata.Search(redisearch.NewQuery(" %"+query+"% ").SetReturnFields("ID", "Title", "Artist", "Album", "Genre", "Year"))
 	for _, song := range results {
 		var songData SongData
 		// todo: error handle marshal/unmarshal
@@ -55,7 +55,7 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 // Takes a title and artist string to find a song which exactly matches.
 // Returns a single SongData, the first result to match. This will not work if multiple songs share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (nowPlaying []SongData, err error) {
-	results, _, _ := db.Metadata.Search(redisearch.NewQuery("@Title:"+title+" @Artist:"+artist).SetReturnFields("ID", "Title", "Artist", "Album", "Genre", "Year").Limit(0, 1))
+	results, _, _ := dbr.Metadata.Search(redisearch.NewQuery("@Title:%"+title+"% @Artist:%"+artist+"%").SetReturnFields("ID", "Title", "Artist", "Album", "Genre", "Year").Limit(0, 1))
 	// todo: error handle marshal/unmarshal
 	songBytes, err := json.Marshal(results[0].Properties)
 	if err != nil {
@@ -70,7 +70,7 @@ func searchByTitleArtist(title string, artist string) (nowPlaying []SongData, er
 // Returns the absolute path of the audio file.
 func getPathById(id int) (path string, err error) {
 	clog.Info("getPathById", fmt.Sprintf("Searching database for the path of song ID <%v>", id))
-	result, err := db.Metadata.Get(fmt.Sprint(id))
+	result, err := dbr.Metadata.Get(fmt.Sprint(id))
 	if err != nil {
 		clog.Error("getPathById", "Database search failed.", err)
 		return "", err
@@ -157,12 +157,12 @@ func icecastMonitor() {
 		for {
 			time.Sleep(1 * time.Second)
 			resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
+			defer resp.Body.Close()
 			if err != nil {
 				clog.Error("icecastMonitor", "Unable to stream data from the Icecast service.", err)
 				icecastDataReset()
 				continue
 			}
-			defer resp.Body.Close()
 			if resp.StatusCode != http.StatusOK {
 				clog.Debug("icecastMonitor", "Unable to connect to Icecast.")
 				icecastDataReset()

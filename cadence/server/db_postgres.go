@@ -50,8 +50,6 @@ func postgresInit() (err error) {
 }
 
 func postgresPopulate() error {
-
-	// SQL exec statements here
 	dropDatabase := fmt.Sprintf("DROP DATABASE IF EXISTS %s", c.PostgresDBName)
 	createDatabase := fmt.Sprintf("CREATE DATABASE %s", c.PostgresDBName)
 	createTable := fmt.Sprintf(`CREATE TABLE %s
@@ -92,7 +90,8 @@ func postgresPopulate() error {
 		return err
 	}
 
-	clog.Info("dbPopulate", "Running music metadata database population.")
+	// Verify music directory accessible
+	clog.Debug("dbPopulate", "Verifying music metadata directory is accessible...")
 	_, err = os.Stat(c.MusicDir)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -102,7 +101,7 @@ func postgresPopulate() error {
 	}
 
 	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6", c.PostgresTableName, "title", "album", "artist", "genre", "year", "path")
-	clog.Info("dbPopulate", fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir))
+	clog.Debug("dbPopulate", fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir))
 	err = filepath.Walk(c.MusicDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -120,15 +119,12 @@ func postgresPopulate() error {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured opening <%s>.", path), err)
 					return err
 				}
-
 				tags, err := tag.ReadFrom(file)
 				if err != nil {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured fetching tags from <%s>.", path), err)
 					return err
 				}
-
-				_, err = dbp.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(),
-					tags.Genre(), tags.Year(), path)
+				_, err = dbp.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
 				if err != nil {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured populating metadata for <%s>.", path), err)
 					return err

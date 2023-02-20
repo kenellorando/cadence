@@ -13,7 +13,6 @@ import (
 )
 
 var ctx = context.Background()
-
 var dbr = RedisClient{}
 
 type RedisClient struct {
@@ -27,7 +26,7 @@ func redisInit() {
 	dbr.RateLimit = redis.NewClient(&redis.Options{
 		Addr:     c.RedisAddress + c.RedisPort,
 		Password: "", // no password set
-		DB:       1,  // use default DB
+		DB:       0,
 	})
 }
 
@@ -40,7 +39,7 @@ func rateLimit(next http.Handler) http.Handler {
 				dbr.RateLimit.Set(ctx, ip, nil, time.Duration(c.RequestRateLimit)*time.Second)
 				next.ServeHTTP(w, r)
 			} else {
-				w.WriteHeader(http.StatusInternalServerError) // 500
+				w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 				return
 			}
 		} else {

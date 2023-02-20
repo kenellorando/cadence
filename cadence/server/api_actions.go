@@ -39,16 +39,13 @@ type SongData struct {
 // Takes a query string to search the database.
 // Returns a slice of SongData of songs ordered by relevance.
 func searchByQuery(query string) (queryResults []SongData, err error) {
-
-	clog.Info("searchByQuery", fmt.Sprintf("Searching database for query: '%v'", query))
-
+	clog.Debug("searchByQuery", fmt.Sprintf("Searching database for query: '%v'", query))
 	selectWhereStatement := fmt.Sprintf("SELECT \"id\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ", c.PostgresTableName) + "WHERE artist ILIKE $1 OR title ILIKE $2 ORDER BY LEAST(levenshtein($3, artist), levenshtein($4, title))"
 	rows, err := dbp.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%", query, query)
 	if err != nil {
 		clog.Error("searchByQuery", "Database search failed.", err)
 		return nil, err
 	}
-
 	for rows.Next() {
 		song := &SongData{}
 		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
@@ -58,20 +55,19 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 		}
 		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
 	}
-
 	return queryResults, nil
 }
 
 // Takes a title and artist string to find a song which exactly matches.
 // Returns a list of SongData whose one result is the first (best) match. This will not work if multiple songs share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
+	clog.Debug("searchByTitleArtist", fmt.Sprintf("Searching database for: '%s by %s", title, artist))
 	selectStatement := fmt.Sprintf("SELECT id,artist,title,album,genre,year FROM %s WHERE title LIKE $1 AND artist LIKE $2;", c.PostgresTableName)
 	rows, err := dbp.Query(selectStatement, title, artist)
 	if err != nil {
 		clog.Error("searchByTitleArtist", "Could not query DB.", err)
 		return nil, err
 	}
-
 	for rows.Next() {
 		song := &SongData{}
 		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
@@ -81,18 +77,14 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 		}
 		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
 	}
-
-	fmt.Print("=======", queryResults)
 	return queryResults, nil
 }
 
 // Takes a song ID integer.
 // Returns the absolute path of the audio file.
 func getPathById(id int) (path string, err error) {
-	clog.Info("getPathById", fmt.Sprintf("Searching database for the path of song: '%v'", id))
-
+	clog.Debug("getPathById", fmt.Sprintf("Searching database for the path of song: '%v'", id))
 	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=%v", c.PostgresTableName, id)
-
 	rows, err := dbp.Query(selectWhereStatement)
 	if err != nil {
 		clog.Error("getPathById", "Database search failed.", err)
@@ -105,7 +97,6 @@ func getPathById(id int) (path string, err error) {
 			return "", err
 		}
 	}
-
 	return path, nil
 }
 
@@ -114,7 +105,7 @@ func getPathById(id int) (path string, err error) {
 func liquidsoapRequest(path string) (message string, err error) {
 	// Telnet to liquidsoap
 	clog.Debug("liquidsoapRequest", "Connecting to liquidsoap service...")
-	conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
+	conn, err := net.Dial("tcp", c.LiquidsoapAddress+c.LiquidsoapPort)
 	if err != nil {
 		clog.Error("liquidsoapRequest", "Failed to connect to audio source server.", err)
 		return "", err
@@ -134,7 +125,7 @@ func liquidsoapRequest(path string) (message string, err error) {
 
 func liquidsoapSkip() (message string, err error) {
 	clog.Debug("liquidsoapRequest", "Connecting to liquidsoap service...")
-	conn, err := net.Dial("tcp", c.SourceAddress+c.SourcePort)
+	conn, err := net.Dial("tcp", c.LiquidsoapAddress+c.LiquidsoapPort)
 	if err != nil {
 		clog.Error("liquidsoapRequest", "Failed to connect to audio source server.", err)
 		return "", err
@@ -187,7 +178,7 @@ func icecastMonitor() {
 	go func() {
 		for {
 			time.Sleep(1 * time.Second)
-			resp, err := http.Get("http://" + c.StreamAddress + c.StreamPort + "/status-json.xsl")
+			resp, err := http.Get("http://" + c.IcecastAddress + c.IcecastPort + "/status-json.xsl")
 			defer resp.Body.Close()
 			if err != nil {
 				clog.Error("icecastMonitor", "Unable to stream data from the Icecast service.", err)

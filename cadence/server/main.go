@@ -11,7 +11,6 @@ import (
 
 var c = ServerConfig{}
 
-// todo: rename source, stream, database to component names
 type ServerConfig struct {
 	Version           string
 	RootPath          string
@@ -19,10 +18,10 @@ type ServerConfig struct {
 	LogLevel          int
 	Port              string
 	MusicDir          string
-	SourceAddress     string
-	SourcePort        string
-	StreamAddress     string
-	StreamPort        string
+	LiquidsoapAddress string
+	LiquidsoapPort    string
+	IcecastAddress    string
+	IcecastPort       string
 	PostgresAddress   string
 	PostgresPort      string
 	PostgresUser      string
@@ -43,10 +42,10 @@ func main() {
 	c.RequestRateLimit, _ = strconv.Atoi(os.Getenv("CSERVER_REQRATELIMIT"))
 	c.Port = os.Getenv("CSERVER_PORT")
 	c.MusicDir = os.Getenv("CSERVER_MUSIC_DIR")
-	c.SourceAddress = os.Getenv("CSERVER_SOURCEADDRESS")
-	c.SourcePort = os.Getenv("CSERVER_SOURCEPORT")
-	c.StreamAddress = os.Getenv("CSERVER_STREAMADDRESS")
-	c.StreamPort = os.Getenv("CSERVER_STREAMPORT")
+	c.LiquidsoapAddress = os.Getenv("CSERVER_LIQUIDSOAPADDRESS")
+	c.LiquidsoapPort = os.Getenv("CSERVER_LIQUIDSOAPPORT")
+	c.IcecastAddress = os.Getenv("CSERVER_ICECASTADDRESS")
+	c.IcecastPort = os.Getenv("CSERVER_ICECASTPORT")
 	c.PostgresAddress = os.Getenv("CSERVER_POSTGRESADDRESS")
 	c.PostgresPort = os.Getenv("CSERVER_POSTGRESPORT")
 	c.PostgresUser = os.Getenv("CSERVER_POSTGRESUSER")

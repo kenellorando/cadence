@@ -4,12 +4,15 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"time"
 
 	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/redis/go-redis/v9"
 )
+
+var ctx = context.Background()
 
 var dbr = RedisClient{}
 

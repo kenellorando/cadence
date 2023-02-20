@@ -22,8 +22,8 @@ func postgresInit() (err error) {
 	enableExtension := "CREATE EXTENSION fuzzystrmatch"
 
 	// At this point in the program, Postgres should not have any database, so the DSN does not name one.
-	time.Sleep(5 * time.Second)
-	dsn := fmt.Sprintf("host='%s' port ='%s' user='%s' password='%s' sslmode='%s'", c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresSSL)
+	time.Sleep(3 * time.Second)
+	dsn := fmt.Sprintf("host='%s' port='%s' user='%s' password='%s' sslmode='%s'", c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresSSL)
 	fmt.Println(dsn)
 	dbp, err = sql.Open("postgres", dsn)
 	if err != nil {
@@ -42,10 +42,10 @@ func postgresInit() (err error) {
 		return err
 	}
 
-	// postgresPopulate()
-	// if err != nil {
-	// 	clog.Error("postgresConfig", "fail 3", err)
-	// }
+	postgresPopulate()
+	if err != nil {
+		clog.Error("postgresConfig", "fail 3", err)
+	}
 	return nil
 }
 
@@ -66,7 +66,7 @@ func postgresPopulate() error {
 	)
 	WITH (
 	   OIDS = FALSE
-	)`, "metadata")
+	)`, c.PostgresTableName)
 
 	// Drop the database if it exists
 	clog.Debug("databaseAutoConfig", fmt.Sprintf("Deleting existing databases named <%s>.", c.PostgresDBName))
@@ -85,7 +85,7 @@ func postgresPopulate() error {
 	}
 
 	// Build the database tables
-	clog.Debug("databaseAutoConfig", fmt.Sprintf("Reconnected. Building database schema for table <%s>...", "metadata"))
+	clog.Debug("databaseAutoConfig", fmt.Sprintf("Reconnected. Building database schema for table <%s>...", c.PostgresTableName))
 	_, err = dbp.Exec(createTable)
 	if err != nil {
 		clog.Error("databaseAutoConfig", "Failed to build database table!", err)
@@ -101,7 +101,7 @@ func postgresPopulate() error {
 		}
 	}
 
-	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6", "metadata", "title", "album", "artist", "genre", "year", "path")
+	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6", c.PostgresTableName, "title", "album", "artist", "genre", "year", "path")
 	clog.Info("dbPopulate", fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir))
 	err = filepath.Walk(c.MusicDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {

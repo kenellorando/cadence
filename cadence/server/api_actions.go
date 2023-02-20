@@ -42,8 +42,8 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 
 	clog.Info("searchByQuery", fmt.Sprintf("Searching database for query: '%v'", query))
 
-	selectWhereStatement := fmt.Sprintf("SELECT \"rowid\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ", c.MetadataTable) + "WHERE artist LIKE $1 OR title LIKE $2 ORDER BY rank"
-	rows, err := dbp.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%")
+	selectWhereStatement := fmt.Sprintf("SELECT \"id\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ", c.PostgresTableName) + "WHERE artist ILIKE $1 OR title ILIKE $2 ORDER BY LEAST(levenshtein($3, artist), levenshtein($4, title))"
+	rows, err := dbp.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%", query, query)
 	if err != nil {
 		clog.Error("searchByQuery", "Database search failed.", err)
 		return nil, err
@@ -63,10 +63,10 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 }
 
 // Takes a title and artist string to find a song which exactly matches.
-// Returns a single SongData, the first result to match. This will not work if multiple songs share the exact same title and artist.
+// Returns a list of SongData whose one result is the first (best) match. This will not work if multiple songs share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
-	selectStatement := fmt.Sprintf("SELECT rowid,artist,title,album,genre,year FROM %s WHERE title=\"%v\" AND artist=\"%v\";", c.MetadataTable, title, artist)
-	rows, err := dbp.Query(selectStatement)
+	selectStatement := fmt.Sprintf("SELECT id,artist,title,album,genre,year FROM %s WHERE title LIKE $1 AND artist LIKE $2;", c.PostgresTableName)
+	rows, err := dbp.Query(selectStatement, title, artist)
 	if err != nil {
 		clog.Error("searchByTitleArtist", "Could not query DB.", err)
 		return nil, err
@@ -82,6 +82,7 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
 	}
 
+	fmt.Print("=======", queryResults)
 	return queryResults, nil
 }
 
@@ -90,7 +91,7 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 func getPathById(id int) (path string, err error) {
 	clog.Info("getPathById", fmt.Sprintf("Searching database for the path of song: '%v'", id))
 
-	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE rowid=%v", c.MetadataTable, id)
+	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=%v", c.PostgresTableName, id)
 
 	rows, err := dbp.Query(selectWhereStatement)
 	if err != nil {

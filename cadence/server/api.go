@@ -130,7 +130,7 @@ func NowPlayingMetadata() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError) // 500
 			return
 		}
-		jsonMarshal, _ := json.Marshal(queryResult)
+		jsonMarshal, _ := json.Marshal(queryResult[0])
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}

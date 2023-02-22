@@ -1,15 +1,14 @@
 # syntax=docker/dockerfile:1
 ARG ARCH=
-FROM ${ARCH}golang:1.20.0-bullseye
+FROM ${ARCH}golang:1.20.1-bullseye
 LABEL maintainer="Ken Ellorando (kenellorando.com)"
 LABEL source="github.com/kenellorando/cadence"
 WORKDIR /cadence/server
 COPY ./* ./
 RUN go mod download
-RUN go build -o /cadence/cadence-server --tags "linux sqlite_fts5"
+RUN go build -o /cadence/cadence-server
 
 RUN useradd -s /bin/bash cadence
-RUN touch /cadence/music-metadata.db
 RUN chown cadence:cadence /cadence/ /cadence/* /cadence/cadence-server
 RUN chmod u+wrx /cadence/ /cadence/* 
 

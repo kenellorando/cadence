@@ -1,25 +1,20 @@
 # syntax=docker/dockerfile:1
-ARG ARCH=
-FROM --platform=${BUILDPLATFORM} ${ARCH}golang:1.20.0-bullseye as builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.20.1-bullseye as builder
+ARG TARGETPLATFORM BUILDPLATFORM TARGETOS TARGETARCH
 WORKDIR /cadence
 COPY ./* ./
-ARG TARGETOS TARGETARCH
 RUN go mod download
-RUN if [ "$TARGETARCH" = "arm" ] ; then \ 
-    apt update && apt install g++-arm-linux-gnueabihf -y; \
-    CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=arm go build -o /cadence-server --tags "linux sqlite_fts5" -ldflags '-w'; \
-    elif [ "$TARGETARCH" = "amd64" ] ; then \
-    CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /cadence-server --tags "linux sqlite_fts5"; fi
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s" -o /cadence-server
 
 ARG ARCH=
-FROM ${ARCH}golang:1.20.0-bullseye
+FROM ${ARCH}golang:1.20.1-alpine
 LABEL maintainer="Ken Ellorando (kenellorando.com)"
 LABEL source="github.com/kenellorando/cadence"
 COPY --from=builder /cadence/public /cadence/server/public
 COPY --from=builder /cadence-server /cadence/cadence-server
 
-RUN useradd -s /bin/bash cadence
-RUN chown cadence:cadence /cadence/ /cadence/* /cadence/cadence-server
+RUN adduser --disabled-password --gecos "" cadence
+RUN chown cadence /cadence/ /cadence/* /cadence/cadence-server
 RUN chmod u+wrx /cadence/ /cadence/* 
 
 EXPOSE 8080

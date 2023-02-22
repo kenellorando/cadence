@@ -13,14 +13,13 @@ import (
 
 	"github.com/dhowden/tag"
 	"github.com/kenellorando/clog"
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 )
 
 var dbp *sql.DB
 
 func postgresInit() (err error) {
-	// At this point in the program, Postgres should not have any database, so the DSN does not name one.
-	// We're waiting to give leeway to Postgres to finish startup.
+	// We wait to give some leeway for Postgres to finish startup.
 	time.Sleep(2 * time.Second)
 	dsn := fmt.Sprintf("host='%s' port='%s' user='%s' password='%s' sslmode='%s'", c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresSSL)
 	dbp, err = sql.Open("postgres", dsn)
@@ -33,15 +32,19 @@ func postgresInit() (err error) {
 	}
 	// Enable fuzzystrmatch for levenshtein sorting
 	// (sorting search results by how close they are to the query)
-	clog.Debug("databaseAutoConfig", "Enabling fuzzystrmatch extension...")
+	clog.Debug("postgresInit", "Enabling fuzzystrmatch extension...")
 	enableExtension := "CREATE EXTENSION fuzzystrmatch"
 	_, err = dbp.Exec(enableExtension)
 	if err != nil {
-		clog.Error("databaseAutoConfig", "Failed to enable extension. The error may be ignored if 'fuzzystrmatch' already exists.", err)
-		return err
+		if err.(*pq.Error).Code == "42710" {
+			// Indicates an existing Postgres instance, configured by some other Cadence instance, is still running.
+			clog.Debug("postgresInit", "fuzzystrmatch already enabled on metadata database.")
+		} else {
+			clog.Error("postgresInit", "Failed to enable fuzzystrmatch. Search may be degraded.", err)
+			return err
+		}
 	}
-
-	// Initial population on empty database.
+	// Initial population.
 	postgresPopulate()
 	if err != nil {
 		clog.Error("postgresConfig", "Failed to complete initial metadata population.", err)
@@ -67,26 +70,26 @@ func postgresPopulate() error {
 	)`, c.PostgresTableName)
 
 	// Drop the database if it exists
-	clog.Debug("databaseAutoConfig", fmt.Sprintf("Deleting existing databases named <%s>.", c.PostgresDBName))
+	clog.Debug("postgresInit", fmt.Sprintf("Deleting existing databases named <%s>.", c.PostgresDBName))
 	_, err := dbp.Exec(dropDatabase)
 	if err != nil {
-		clog.Error("databaseAutoConfig", "Failed to remove existing dbp. Skipping remaining autoconfig steps.", err)
+		clog.Error("postgresInit", "Failed to remove existing dbp. Skipping remaining autoconfig steps.", err)
 		return err
 	}
 
 	// Create the database
-	clog.Debug("databaseAutoConfig", fmt.Sprintf("Creating database <%s>.", c.PostgresDBName))
+	clog.Debug("postgresInit", fmt.Sprintf("Creating database <%s>.", c.PostgresDBName))
 	_, err = dbp.Exec(createDatabase)
 	if err != nil {
-		clog.Error("databaseAutoConfig", "Failed to create dbp. Skipping remaining autoconfig steps.", err)
+		clog.Error("postgresInit", "Failed to create dbp. Skipping remaining autoconfig steps.", err)
 		return err
 	}
 
 	// Build the database tables
-	clog.Debug("databaseAutoConfig", fmt.Sprintf("Reconnected. Building database schema for table <%s>...", c.PostgresTableName))
+	clog.Debug("postgresInit", fmt.Sprintf("Reconnected. Building database schema for table <%s>...", c.PostgresTableName))
 	_, err = dbp.Exec(createTable)
 	if err != nil {
-		clog.Error("databaseAutoConfig", "Failed to build database table!", err)
+		clog.Error("postgresInit", "Failed to build database table!", err)
 		return err
 	}
 

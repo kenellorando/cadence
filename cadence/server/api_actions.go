@@ -256,16 +256,3 @@ type playRecord struct {
 	Artist string
 	Ended  time.Time
 }
-
-func checkIP(r *http.Request) string {
-	if r.Header.Get("X-REAL-IP") != "" {
-		return r.Header.Get("X-REAL-IP")
-	}
-	if r.Header.Get("X-FORWARDED-FOR") != "" {
-		return r.Header.Get("X-FORWARDED-FOR")
-	}
-	if r.RemoteAddr != "" {
-		return r.RemoteAddr
-	}
-	return ""
-}

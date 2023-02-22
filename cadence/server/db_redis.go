@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -16,13 +15,10 @@ var ctx = context.Background()
 var dbr = RedisClient{}
 
 type RedisClient struct {
-	Metadata       *redisearch.Client
-	MetadataSchema *redisearch.Schema
-	RateLimit      *redis.Client
+	RateLimit *redis.Client
 }
 
 func redisInit() {
-	dbr.Metadata = redisearch.NewClient(c.RedisAddress+c.RedisPort, "metadata")
 	dbr.RateLimit = redis.NewClient(&redis.Options{
 		Addr:     c.RedisAddress + c.RedisPort,
 		Password: "", // no password set

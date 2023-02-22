@@ -1,5 +1,5 @@
 // db_redis.go
-// Redis clients, with rate limiting and history functions.
+// Redis clients, with rate limiting functions.
 
 package main
 
@@ -21,7 +21,7 @@ type RedisClient struct {
 func redisInit() {
 	dbr.RateLimit = redis.NewClient(&redis.Options{
 		Addr:     c.RedisAddress + c.RedisPort,
-		Password: "", // no password set
+		Password: "",
 		DB:       0,
 	})
 }

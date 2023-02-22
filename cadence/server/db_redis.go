@@ -1,5 +1,5 @@
 // db_redis.go
-// Redis clients, with rate limiting functions.
+// Rate limit database functions.
 
 package main
 
@@ -32,6 +32,9 @@ func rateLimit(next http.Handler) http.Handler {
 		_, err := dbr.RateLimit.Get(ctx, ip).Result()
 		if err != nil {
 			if err == redis.Nil {
+				// redis.Nil means the IP is not in the database.
+				// We create a new entry for the IP which will automatically
+				// expire after the configured rate limit time expires.
 				dbr.RateLimit.Set(ctx, ip, nil, time.Duration(c.RequestRateLimit)*time.Second)
 				next.ServeHTTP(w, r)
 			} else {

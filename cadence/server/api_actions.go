@@ -1,5 +1,5 @@
 // api_actions.go
-// API function repeatable actions.
+// API interactions for Postgres, Icecast, Liquidsoap.
 
 package main
 
@@ -40,7 +40,8 @@ type SongData struct {
 // Returns a slice of SongData of songs ordered by relevance.
 func searchByQuery(query string) (queryResults []SongData, err error) {
 	clog.Debug("searchByQuery", fmt.Sprintf("Searching database for query: '%v'", query))
-	selectWhereStatement := fmt.Sprintf("SELECT \"id\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ", c.PostgresTableName) + "WHERE artist ILIKE $1 OR title ILIKE $2 ORDER BY LEAST(levenshtein($3, artist), levenshtein($4, title))"
+	selectWhereStatement := fmt.Sprintf("SELECT \"id\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ",
+		c.PostgresTableName) + "WHERE artist ILIKE $1 OR title ILIKE $2 ORDER BY LEAST(levenshtein($3, artist), levenshtein($4, title))"
 	rows, err := dbp.Query(selectWhereStatement, "%"+query+"%", "%"+query+"%", query, query)
 	if err != nil {
 		clog.Error("searchByQuery", "Database search failed.", err)
@@ -53,16 +54,19 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 			clog.Error("searchByQuery", "Data scan failed.", err)
 			continue
 		}
-		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
+		queryResults = append(queryResults,
+			SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
 	}
 	return queryResults, nil
 }
 
 // Takes a title and artist string to find a song which exactly matches.
-// Returns a list of SongData whose one result is the first (best) match. This will not work if multiple songs share the exact same title and artist.
+// Returns a list of SongData whose one result is the first (best) match.
+// This will not work if multiple songs share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
 	clog.Debug("searchByTitleArtist", fmt.Sprintf("Searching database for: '%s by %s", title, artist))
-	selectStatement := fmt.Sprintf("SELECT id,artist,title,album,genre,year FROM %s WHERE title LIKE $1 AND artist LIKE $2;", c.PostgresTableName)
+	selectStatement := fmt.Sprintf("SELECT id,artist,title,album,genre,year FROM %s WHERE title LIKE $1 AND artist LIKE $2;",
+		c.PostgresTableName)
 	rows, err := dbp.Query(selectStatement, title, artist)
 	if err != nil {
 		clog.Error("searchByTitleArtist", "Could not query DB.", err)
@@ -75,7 +79,8 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 			clog.Error("searchByTitleArtist", "Data scan failed.", err)
 			continue
 		}
-		queryResults = append(queryResults, SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
+		queryResults = append(queryResults,
+			SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
 	}
 	return queryResults, nil
 }
@@ -111,15 +116,11 @@ func liquidsoapRequest(path string) (message string, err error) {
 		return "", err
 	}
 	defer conn.Close()
-
-	// Push song request to source service
+	// Push song request to source service, listen for a response, and quit the telnet session.
 	fmt.Fprintf(conn, "request.push "+path+"\n")
-	// Listen for response
 	message, _ = bufio.NewReader(conn).ReadString('\n')
 	clog.Info("liquidsoapRequest", fmt.Sprintf("Message from audio source server: %s", message))
-	// Goodbye
 	fmt.Fprintf(conn, "quit"+"\n")
-
 	return message, nil
 }
 
@@ -175,6 +176,13 @@ func filesystemMonitor() {
 // Watches the Icecast status page and updates stream info for SSE.
 func icecastMonitor() {
 	var prev = RadioInfo{}
+
+	// Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
+	icecastDataReset := func() {
+		now.Song.Title, now.Song.Artist, now.Host, now.Mountpoint = "-", "-", "-", "-"
+		now.Listeners = -1
+	}
+
 	go func() {
 		for {
 			time.Sleep(1 * time.Second)
@@ -235,17 +243,10 @@ func icecastMonitor() {
 				clog.Info("icecastMonitor", fmt.Sprintf("Listener count: <%v>", now.Listeners))
 				radiodata_sse.SendEventMessage(fmt.Sprint(now.Listeners), "listeners", "")
 			}
-
 			prev = now
 			resp.Body.Close()
 		}
 	}()
-}
-
-// Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
-func icecastDataReset() {
-	now.Song.Title, now.Song.Artist, now.Host, now.Mountpoint = "-", "-", "-", "-"
-	now.Listeners = -1
 }
 
 var history = make([]playRecord, 0, 10)

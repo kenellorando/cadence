@@ -19,9 +19,10 @@ import (
 var dbp *sql.DB
 
 func postgresInit() (err error) {
-	// We wait to give some leeway for Postgres to finish startup.
+	// We wait a bit to give some leeway for Postgres to finish startup.
 	time.Sleep(2 * time.Second)
-	dsn := fmt.Sprintf("host='%s' port='%s' user='%s' password='%s' sslmode='%s'", c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresSSL)
+	dsn := fmt.Sprintf("host='%s' port='%s' user='%s' password='%s' sslmode='%s'",
+		c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresSSL)
 	dbp, err = sql.Open("postgres", dsn)
 	if err != nil {
 		clog.Error("postgresConfig", "Could not open connection to database.", err)
@@ -30,21 +31,22 @@ func postgresInit() (err error) {
 	if err != nil {
 		clog.Error("postgresConfig", "Could not successfully ping the metadata database.", err)
 	}
-	// Enable fuzzystrmatch for levenshtein sorting
-	// (sorting search results by how close they are to the query)
+	// Enable fuzzystrmatch for levenshtein sorting.
+	// This enables the database to return results based on search similarity.
 	clog.Debug("postgresInit", "Enabling fuzzystrmatch extension...")
 	enableExtension := "CREATE EXTENSION fuzzystrmatch"
 	_, err = dbp.Exec(enableExtension)
 	if err != nil {
 		if err.(*pq.Error).Code == "42710" {
-			// Indicates an existing Postgres instance, configured by some other Cadence instance, is still running.
+			// 42710 also indicates an existing Postgres instance configured by another Cadence instance is still running.
 			clog.Debug("postgresInit", "fuzzystrmatch already enabled on metadata database.")
 		} else {
 			clog.Error("postgresInit", "Failed to enable fuzzystrmatch. Search may be degraded.", err)
 			return err
 		}
 	}
-	// Initial population.
+	// We start an initial population now regardless if we know the database already exists
+	// in case there are no other running Cadence instances already running.
 	postgresPopulate()
 	if err != nil {
 		clog.Error("postgresConfig", "Failed to complete initial metadata population.", err)
@@ -69,31 +71,25 @@ func postgresPopulate() error {
 	   OIDS = FALSE
 	)`, c.PostgresTableName)
 
-	// Drop the database if it exists
+	// Drop the database and rebuild it to start fresh.
 	clog.Debug("postgresInit", fmt.Sprintf("Deleting existing databases named <%s>.", c.PostgresDBName))
 	_, err := dbp.Exec(dropDatabase)
 	if err != nil {
 		clog.Error("postgresInit", "Failed to remove existing dbp. Skipping remaining autoconfig steps.", err)
 		return err
 	}
-
-	// Create the database
 	clog.Debug("postgresInit", fmt.Sprintf("Creating database <%s>.", c.PostgresDBName))
 	_, err = dbp.Exec(createDatabase)
 	if err != nil {
 		clog.Error("postgresInit", "Failed to create dbp. Skipping remaining autoconfig steps.", err)
 		return err
 	}
-
-	// Build the database tables
 	clog.Debug("postgresInit", fmt.Sprintf("Reconnected. Building database schema for table <%s>...", c.PostgresTableName))
 	_, err = dbp.Exec(createTable)
 	if err != nil {
 		clog.Error("postgresInit", "Failed to build database table!", err)
 		return err
 	}
-
-	// Verify music directory accessible
 	clog.Debug("dbPopulate", "Verifying music metadata directory is accessible...")
 	_, err = os.Stat(c.MusicDir)
 	if err != nil {
@@ -112,7 +108,6 @@ func postgresPopulate() error {
 		if info.IsDir() {
 			return nil
 		}
-
 		extensions := []string{".mp3", ".flac", ".ogg"}
 		for _, ext := range extensions {
 			if strings.HasSuffix(path, ext) {
@@ -141,7 +136,6 @@ func postgresPopulate() error {
 		clog.Error("dbPopulate", "Music metadata database population failed, or may be incomplete.", err)
 		return err
 	}
-
 	clog.Info("dbPopulate", "Database population completed.")
 	return nil
 }

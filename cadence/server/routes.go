@@ -1,5 +1,5 @@
 // routes.go
-// Router.
+// Routes incoming requests to functions written in api.go
 
 package main
 

@@ -39,11 +39,17 @@ func postgresInit() (err error) {
 	if err != nil {
 		if err.(*pq.Error).Code == "42710" {
 			// 42710 also indicates an existing Postgres instance configured by another Cadence instance is still running.
-			clog.Info("postgresInit", "fuzzystrmatch already enabled on metadata database.")
+			clog.Debug("postgresInit", "fuzzystrmatch already enabled on metadata database.")
 		} else {
 			clog.Error("postgresInit", "Failed to enable fuzzystrmatch. Search may be degraded.", err)
 			return err
 		}
+	}
+	// We start an initial population now regardless if we know the database already exists
+	// in case there are no other running Cadence instances already running.
+	postgresPopulate()
+	if err != nil {
+		clog.Error("postgresConfig", "Failed to complete initial metadata population.", err)
 	}
 	return nil
 }

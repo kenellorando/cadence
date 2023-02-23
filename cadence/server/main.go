@@ -62,7 +62,7 @@ func main() {
 	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
 	postgresInit()
-	go postgresPopulate()
+	postgresPopulate()
 	go redisInit()
 	go filesystemMonitor()
 	go icecastMonitor()

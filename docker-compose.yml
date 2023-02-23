@@ -4,16 +4,16 @@ services:
   redis:
     image: redis/redis-stack-server:latest
     container_name: redis
-    ports:
-      - 6379:6379
+    expose:
+      - 6379
     networks:
       internal_services:
 
   postgres:
     image: postgres:15-alpine
     container_name: postgres
-    ports:
-      - 5432:5432
+    expose:
+      - 5432
     env_file:
       - ./config/cadence.env
     networks:

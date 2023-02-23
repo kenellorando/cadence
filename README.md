@@ -1,12 +1,12 @@
 # CadenceRadio
 
-**Cadence** is an all-in-one web radio suite, allowing you to start a self-hosted internet radio website in minutes.
+**Cadence** is an all-in-one web radio suite that you can use to start a self-hosted radio website in minutes.
 
 The project ships with _Icecast_ and _Liquidsoap_ built-in, complemented by a _Cadence_ API server providing music search, song request, artwork, a UI, and real-time stream information. 
 
-Cadence ships all components mostly pre-configured with each each other so there is hardly any configuration required. Simply set a target directory containing your music files, set a few service passwords and hostnames, and you're done! The Cadence stack can be deployed in a single command.
+Cadence ships all components mostly pre-configured with each each other so there is hardly any configuration required. Simply set a target directory containing your music files, set a few service passwords and hostnames, and deploy!
 
-**Try the live demo! [cadenceradio.com](https://cadenceradio.com/)**
+**[Try the live demo!](https://cadenceradio.com/)**
 
 ## 🖼️ Image Gallery
 <details>
@@ -19,7 +19,7 @@ Cadence ships all components mostly pre-configured with each each other so there
 <details>
 <summary>Cadence Architecture</summary>
 
-![cadence5 architecture](https://user-images.githubusercontent.com/17265041/185465196-66fc2249-e43a-46f7-a12f-dbde9aaf8172.png)
+![cadence5.3 architecture](https://user-images.githubusercontent.com/17265041/220829527-411f76ca-884f-4bf4-8b44-3afeaca158fa.png)
 
 </details>
 
@@ -29,38 +29,38 @@ Cadence ships all components mostly pre-configured with each each other so there
 1. You must have Docker installed. If you are on a Linux server, install the [Compose plugin](https://docs.docker.com/compose/install/linux/).
 
 ### Installation
-1. Edit `cadence/config/cadence.env`.
-   1. Set the `POSTGRES_PASSWORD` from `hackme` to a new password.
-   2. Set `CSERVER_MUSIC_DIR` to an absolute path of a directory on your system which contains music files (`.mp3`, `.flac`) to play. The target is not recursively searched. The default value is `/music/`.
-   3. Set `CSERVER_REQRATELIMIT` to an integer value that represents a song request cooldown period in seconds. Set this value to `0` to disable request rate limiting. The default value is `180`.
-2. Edit `cadence_icecast2/config/cadence.xml`.
+1. Fork or clone the repository.
+2. Edit `config/cadence.env`
    1. Change all instances of `hackme` to a new password.
-   2. Set the `<hostname>` value to a URL you expect your audience to connect to. Cadence uses this value to set the stream source in the UI. This may be a DNS name or a public or internal IP address. You can leave the default value `localhost` if your radio is meant to be accessible locally only.
-3. Edit `cadence_liquidsoap/config/cadence.liq`:
+   2. Set `CSERVER_MUSIC_DIR` to an absolute path which contains music files (`.mp3`, `.flac`) for play. The target is not recursively searched. The default value is `/music/`.
+   3. Set `CSERVER_REQRATELIMIT` to an integer that sets the song request cooldown period in seconds. Set this value to `0` to disable rate limiting. The default value is `180`.
+3. Edit `config/icecast.xml`
    1. Change all instances of `hackme` to a new password.
-   2. If you changed the `CSERVER_MUSIC_DIR` value in step 1, change any instances of the default value `/music/` to match it here.
-4. `docker compose up`
-   1. On older versions of Docker, use `docker-compose up` instead.
+   2. Set the `<hostname>` value to a URL you expect your audience to connect to. This value is what is set in the UI's stream source. This may be a DNS name or a public or private IP address. You can leave the default value `localhost` if your radio is meant to be accessible locally only.
+4. Edit `config/liquidsoap.liq`
+   1. Change all instances of `hackme` to a new password.
+   2. If you changed `CSERVER_MUSIC_DIR` in step 1, change any instances of the default value `/music/` to match it here.
+5. (_Optional_) Edit `config/nginx.conf`
+   1. For advanced users deploying Cadence to a server with DNS, Cadence ships with a reverse proxy which will forward requests based on domain-name to backend services. Simply configure the `server_name` values with your domain names.
+6. `docker compose up`
 
 ### Accessing Services
-Assuming no changes were made to port numbers or the hostnames during installation:
 
-- The UI is accessible in a browser at `localhost:8080`
-- API server requests may also be sent to the `localhost:8080` path. See the API Reference for more details.
-- The audio stream is accessible at `localhost:8000/cadence1`.
+- Assuming you kept the default values above, Cadence will become accessible in a browser at `localhost:8080`.
+- If you optionally followed step 5 to make Cadence publicly accessible, open firewall port `80` and point DNS to your server.
 
 ## 👩‍💻 Developing
 
 ### Building the Stack
-If you are changing code and need to rebuild exactly what you have, use the `--build` flag.
+If you changed code or updated a container image, and need to rebuild exactly what you have, use the `--build` flag.
 
-1. `docker compose down; docker compose up --build`
+`docker compose down; docker compose up --build`
 
-### Development Mode
-Cadence provides special administrative control that may be useful for testing though an API that may be optionally enabled. As the name implies, don't enable development mode on a production server.
+### Enable Development API
+Cadence provides special administrative controls that may be useful for testing though an optionally enabled API. Don't enable development mode on a production server. See the API reference for more details.
 
-1. Edit `cadence/config/cadence.env`.
-   1. Set `CSERVER_DEVMODE` from `0` (disabled) to `1` (enabled).
+1. Edit `config/cadence.env`.
+   1. Set `CSERVER_DEVMODE` to `1` (enabled).
 
 ### API Reference
-[Cadence's API Reference](https://github.com/kenellorando/cadence/wiki/API-Reference) provides usage details and complete request/response examples.
+Interested in developing custom scripts or clients for your Cadence Radio? [Cadence's API Reference](https://github.com/kenellorando/cadence/wiki/API-Reference) provides usage details and complete request/response examples.

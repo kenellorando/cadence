@@ -4,43 +4,43 @@ services:
   redis:
     image: redis/redis-stack-server:latest
     container_name: redis
-    ports:
-      - 6379:6379
+    expose:
+      - 6379
     networks:
       internal_services:
 
   postgres:
     image: postgres:15-alpine
     container_name: postgres
-    ports:
-      - 5432:5432
+    expose:
+      - 5432
     env_file:
-      - ./cadence/config/cadence.env
+      - ./config/cadence.env
     networks:
       internal_services:
 
   icecast2:
-    build: 
-      context: ./cadence_icecast2/ 
-    image: kenellorando/cadence_icecast2
+    build:
+      dockerfile: ./cadence/stream/Dockerfile.icecast2
+    image: kenellorando/cadence_icecast2:latest
     container_name: icecast2
     restart: always
     ports:
       - 8000:8000
     volumes:
-      - ./cadence_icecast2/config/cadence.xml:/etc/icecast/cadence.xml
+      - ./config/icecast.xml:/etc/icecast/cadence.xml
     networks:
       external_services:
       stream_delivery:
 
   liquidsoap:
-    build: 
-      context: ./cadence_liquidsoap/ 
-    image: kenellorando/cadence_liquidsoap
+    build:
+      dockerfile: ./cadence/stream/Dockerfile.liquidsoap
+    image: kenellorando/cadence_liquidsoap:latest
     container_name: liquidsoap
     restart: always
     volumes:
-      - ./cadence_liquidsoap/config/cadence.liq:/etc/liquidsoap/cadence.liq
+      - ./config/liquidsoap.liq:/etc/liquidsoap/cadence.liq
       - /music:/music
     depends_on:
       - icecast2
@@ -52,14 +52,14 @@ services:
 
   cadence:
     build: 
-      context: ./cadence/ 
+      context: ./cadence/server/
     image: kenellorando/cadence
     container_name: cadence
     restart: always
     ports:
       - 8080:8080
     env_file:
-      - ./cadence/config/cadence.env
+      - ./config/cadence.env
     volumes:
       - /music:/music
     depends_on:
@@ -69,6 +69,19 @@ services:
       - postgres
     networks:
       internal_services:
+      external_services:
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+    container_name: nginx
+    restart: on-failure
+    ports:
+      - 80:80
+    depends_on:
+      - cadence
+    networks:
       external_services:
 
 networks:

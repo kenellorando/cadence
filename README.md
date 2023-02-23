@@ -19,7 +19,7 @@ Cadence ships all components mostly pre-configured with each each other so there
 <details>
 <summary>Cadence Architecture</summary>
 
-![cadence5 architecture](https://user-images.githubusercontent.com/17265041/185465196-66fc2249-e43a-46f7-a12f-dbde9aaf8172.png)
+![cadence5.3 architecture](https://user-images.githubusercontent.com/17265041/220829527-411f76ca-884f-4bf4-8b44-3afeaca158fa.png)
 
 </details>
 

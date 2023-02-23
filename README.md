@@ -29,18 +29,19 @@ Cadence ships all components mostly pre-configured with each each other so there
 1. You must have Docker installed. If you are on a Linux server, install the [Compose plugin](https://docs.docker.com/compose/install/linux/).
 
 ### Installation
-1. Edit `cadence/config/cadence.env`.
-   1. Set the `POSTGRES_PASSWORD` from `hackme` to a new password.
-   2. Set `CSERVER_MUSIC_DIR` to an absolute path of a directory on your system which contains music files (`.mp3`, `.flac`) to play. The target is not recursively searched. The default value is `/music/`.
-   3. Set `CSERVER_REQRATELIMIT` to an integer value that represents a song request cooldown period in seconds. Set this value to `0` to disable request rate limiting. The default value is `180`.
-2. Edit `cadence_icecast2/config/cadence.xml`.
+1. Edit `config/cadence.env`.
    1. Change all instances of `hackme` to a new password.
-   2. Set the `<hostname>` value to a URL you expect your audience to connect to. Cadence uses this value to set the stream source in the UI. This may be a DNS name or a public or internal IP address. You can leave the default value `localhost` if your radio is meant to be accessible locally only.
-3. Edit `cadence_liquidsoap/config/cadence.liq`:
+   2. Set `CSERVER_MUSIC_DIR` to an absolute path which contains music files (`.mp3`, `.flac`) for play. The target is not recursively searched. The default value is `/music/`.
+   3. Set `CSERVER_REQRATELIMIT` to an integer that sets the song request cooldown period in seconds. Set this value to `0` to disable rate limiting. The default value is `180`.
+2. Edit `config/icecast.xml`.
    1. Change all instances of `hackme` to a new password.
-   2. If you changed the `CSERVER_MUSIC_DIR` value in step 1, change any instances of the default value `/music/` to match it here.
-4. `docker compose up`
-   1. On older versions of Docker, use `docker-compose up` instead.
+   2. Set the `<hostname>` value to a URL you expect your audience to connect to. This value is what is set in the UI's stream source. This may be a DNS name or a public or private IP address. You can leave the default value `localhost` if your radio is meant to be accessible locally only.
+3. Edit `config/liquidsoap.liq`:
+   1. Change all instances of `hackme` to a new password.
+   2. If you changed `CSERVER_MUSIC_DIR` in step 1, change any instances of the default value `/music/` to match it here.
+4. Optional: Edit `config/nginx.conf`:
+   1. For advanced users deploying Cadence to a website with DNS, Cadence ships with a reverse proxy which will forward requests based on domain-name to backend services. Replace the `server_name` values with your domain names.
+5. `docker compose up`
 
 ### Accessing Services
 Assuming no changes were made to port numbers or the hostnames during installation:

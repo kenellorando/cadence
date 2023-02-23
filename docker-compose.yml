@@ -1,6 +1,16 @@
 version: "3"
 services:
 
+  nginx:
+    image: nginx
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+    container_name: nginx
+    ports:
+      - 80:80
+    networks:
+      external_services:
+
   redis:
     image: redis/redis-stack-server:latest
     container_name: redis
@@ -15,32 +25,28 @@ services:
     ports:
       - 5432:5432
     env_file:
-      - ./cadence/config/cadence.env
+      - ./config/cadence.env
     networks:
       internal_services:
 
   icecast2:
-    build: 
-      context: ./cadence_icecast2/ 
-    image: kenellorando/cadence_icecast2
+    image: kenellorando/cadence_icecast2:latest
     container_name: icecast2
     restart: always
     ports:
       - 8000:8000
     volumes:
-      - ./cadence_icecast2/config/cadence.xml:/etc/icecast/cadence.xml
+      - ./config/icecast.xml:/etc/icecast/cadence.xml
     networks:
       external_services:
       stream_delivery:
 
   liquidsoap:
-    build: 
-      context: ./cadence_liquidsoap/ 
-    image: kenellorando/cadence_liquidsoap
+    image: kenellorando/cadence_liquidsoap:latest
     container_name: liquidsoap
     restart: always
     volumes:
-      - ./cadence_liquidsoap/config/cadence.liq:/etc/liquidsoap/cadence.liq
+      - ./config/liquidsoap.liq:/etc/liquidsoap/cadence.liq
       - /music:/music
     depends_on:
       - icecast2
@@ -59,7 +65,7 @@ services:
     ports:
       - 8080:8080
     env_file:
-      - ./cadence/config/cadence.env
+      - ./config/cadence.env
     volumes:
       - /music:/music
     depends_on:

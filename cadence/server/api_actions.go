@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Jeffail/gabs"
@@ -39,6 +40,7 @@ type SongData struct {
 // Takes a query string to search the database.
 // Returns a slice of SongData of songs ordered by relevance.
 func searchByQuery(query string) (queryResults []SongData, err error) {
+	query = strings.TrimSpace(query)
 	clog.Debug("searchByQuery", fmt.Sprintf("Searching database for query: '%v'", query))
 	selectWhereStatement := fmt.Sprintf("SELECT \"id\", \"artist\", \"title\",\"album\", \"genre\", \"year\" FROM %s ",
 		c.PostgresTableName) + "WHERE artist ILIKE $1 OR title ILIKE $2 ORDER BY LEAST(levenshtein($3, artist), levenshtein($4, title))"
@@ -64,6 +66,7 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 // Returns a list of SongData whose one result is the first (best) match.
 // This will not work if multiple songs share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
+	title, artist = strings.TrimSpace(title), strings.TrimSpace(artist)
 	clog.Debug("searchByTitleArtist", fmt.Sprintf("Searching database for: '%s by %s", title, artist))
 	selectStatement := fmt.Sprintf("SELECT id,artist,title,album,genre,year FROM %s WHERE title LIKE $1 AND artist LIKE $2;",
 		c.PostgresTableName)

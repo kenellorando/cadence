@@ -179,75 +179,70 @@ func filesystemMonitor() {
 // Watches the Icecast status page and updates stream info for SSE.
 func icecastMonitor() {
 	var prev = RadioInfo{}
-
 	// Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
 	icecastDataReset := func() {
 		now.Song.Title, now.Song.Artist, now.Host, now.Mountpoint = "-", "-", "-", "-"
 		now.Listeners = -1
 	}
+	checkIcecastStatus := func() {
+		resp, err := http.Get("http://" + c.IcecastAddress + c.IcecastPort + "/status-json.xsl")
+		if err != nil {
+			clog.Error("icecastMonitor", "Unable to stream data from the Icecast service.", err)
+			icecastDataReset()
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			clog.Debug("icecastMonitor", "Unable to connect to Icecast.")
+			icecastDataReset()
+		}
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			clog.Debug("icecastMonitor", "Connected to Icecast but unable to read response.")
+			icecastDataReset()
+		}
+		jsonParsed, err := gabs.ParseJSON([]byte(body))
+		if err != nil {
+			clog.Debug("icecastMonitor", "Connected to Icecast but unable to parse response.")
+			icecastDataReset()
+		}
+		if jsonParsed.Path("icestats.source.title").Data() == nil || jsonParsed.Path("icestats.source.artist").Data() == nil {
+			clog.Debug("icecastMonitor", "Connected to Icecast, but saw nothing playing.")
+			icecastDataReset()
+		}
 
+		now.Song.Artist = jsonParsed.Path("icestats.source.artist").Data().(string)
+		now.Song.Title = jsonParsed.Path("icestats.source.title").Data().(string)
+		now.Host = jsonParsed.Path("icestats.host").Data().(string)
+		now.Mountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
+		now.Listeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
+		now.Bitrate = jsonParsed.Path("icestats.source.bitrate").Data().(float64)
+
+		if (prev.Song.Title != now.Song.Title) || (prev.Song.Artist != now.Song.Artist) {
+			clog.Info("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist))
+			radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
+			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
+			if (prev.Song.Title != "") && (prev.Song.Artist != "") {
+				history = append(history, playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
+				if len(history) > 10 {
+					history = history[1:]
+				}
+				radiodata_sse.SendEventMessage("update", "history", "")
+			}
+		}
+		if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
+			clog.Info("icecastMonitor", fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint))
+			radiodata_sse.SendEventMessage(fmt.Sprintf(now.Host, "/", now.Mountpoint), "listenurl", "")
+		}
+		if prev.Listeners != now.Listeners {
+			clog.Info("icecastMonitor", fmt.Sprintf("Listener count: <%v>", now.Listeners))
+			radiodata_sse.SendEventMessage(fmt.Sprint(now.Listeners), "listeners", "")
+		}
+		prev = now
+	}
 	go func() {
 		for {
 			time.Sleep(1 * time.Second)
-			resp, err := http.Get("http://" + c.IcecastAddress + c.IcecastPort + "/status-json.xsl")
-			defer resp.Body.Close()
-			if err != nil {
-				clog.Error("icecastMonitor", "Unable to stream data from the Icecast service.", err)
-				icecastDataReset()
-				continue
-			}
-			if resp.StatusCode != http.StatusOK {
-				clog.Debug("icecastMonitor", "Unable to connect to Icecast.")
-				icecastDataReset()
-				continue
-			}
-			body, err := io.ReadAll(resp.Body)
-			if err != nil {
-				clog.Debug("icecastMonitor", "Connected to Icecast but unable to read response.")
-				icecastDataReset()
-				continue
-			}
-			jsonParsed, err := gabs.ParseJSON([]byte(body))
-			if err != nil {
-				clog.Debug("icecastMonitor", "Connected to Icecast but unable to parse response.")
-				icecastDataReset()
-				continue
-			}
-			if jsonParsed.Path("icestats.source.title").Data() == nil || jsonParsed.Path("icestats.source.artist").Data() == nil {
-				clog.Debug("icecastMonitor", "Connected to Icecast, but saw nothing playing.")
-				icecastDataReset()
-				continue
-			}
-
-			now.Song.Artist = jsonParsed.Path("icestats.source.artist").Data().(string)
-			now.Song.Title = jsonParsed.Path("icestats.source.title").Data().(string)
-			now.Host = jsonParsed.Path("icestats.host").Data().(string)
-			now.Mountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
-			now.Listeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
-			now.Bitrate = jsonParsed.Path("icestats.source.bitrate").Data().(float64)
-
-			if (prev.Song.Title != now.Song.Title) || (prev.Song.Artist != now.Song.Artist) {
-				clog.Info("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist))
-				radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
-				radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
-				if (prev.Song.Title != "") && (prev.Song.Artist != "") {
-					history = append(history, playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
-					if len(history) > 10 {
-						history = history[1:]
-					}
-					radiodata_sse.SendEventMessage("update", "history", "")
-				}
-			}
-			if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
-				clog.Info("icecastMonitor", fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint))
-				radiodata_sse.SendEventMessage(fmt.Sprintf(now.Host, "/", now.Mountpoint), "listenurl", "")
-			}
-			if prev.Listeners != now.Listeners {
-				clog.Info("icecastMonitor", fmt.Sprintf("Listener count: <%v>", now.Listeners))
-				radiodata_sse.SendEventMessage(fmt.Sprint(now.Listeners), "listeners", "")
-			}
-			prev = now
-			resp.Body.Close()
+			checkIcecastStatus()
 		}
 	}()
 }

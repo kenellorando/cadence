@@ -106,11 +106,11 @@ func postgresPopulate() error {
 		for _, ext := range extensions {
 			if strings.HasSuffix(path, ext) {
 				file, err := os.Open(path)
-				defer file.Close()
 				if err != nil {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured opening <%s>.", path), err)
 					return err
 				}
+				defer file.Close()
 				tags, err := tag.ReadFrom(file)
 				if err != nil {
 					clog.Error("dbPopulate", fmt.Sprintf("A problem occured fetching tags from <%s>.", path), err)

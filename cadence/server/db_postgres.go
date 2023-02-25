@@ -25,11 +25,11 @@ func postgresInit() (err error) {
 		c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresSSL)
 	dbp, err = sql.Open("postgres", dsn)
 	if err != nil {
-		clog.Error("postgresConfig", "Could not open connection to database.", err)
+		clog.Error("postgresInit", "Could not open connection to database.", err)
 	}
 	err = dbp.Ping()
 	if err != nil {
-		clog.Error("postgresConfig", "Could not successfully ping the metadata database.", err)
+		clog.Error("postgresInit", "Could not successfully ping the metadata database.", err)
 	}
 	// Enable fuzzystrmatch for levenshtein sorting.
 	// This enables the database to return results based on search similarity.
@@ -51,6 +51,7 @@ func postgresInit() (err error) {
 func postgresPopulate() error {
 	dropDatabase := fmt.Sprintf("DROP DATABASE IF EXISTS %s", c.PostgresDBName)
 	createDatabase := fmt.Sprintf("CREATE DATABASE %s", c.PostgresDBName)
+	dropTable := fmt.Sprintf("DROP TABLE IF EXISTS %s", c.PostgresTableName)
 	createTable := fmt.Sprintf(`CREATE TABLE %s
 	(
 	   id serial PRIMARY KEY,
@@ -66,23 +67,34 @@ func postgresPopulate() error {
 	)`, c.PostgresTableName)
 
 	// Drop the database and rebuild it to start fresh.
-	clog.Debug("postgresInit", fmt.Sprintf("Deleting existing databases named <%s>.", c.PostgresDBName))
+	clog.Debug("postgresPopulate", fmt.Sprintf("Deleting existing databases named <%s>...", c.PostgresDBName))
 	_, err := dbp.Exec(dropDatabase)
 	if err != nil {
-		clog.Error("postgresInit", "Failed to remove existing dbp. Skipping remaining autoconfig steps.", err)
+		clog.Error("postgresPopulate", "Failed to remove existing dbp. Skipping remaining autoconfig steps.", err)
 		return err
 	}
-	clog.Debug("postgresInit", fmt.Sprintf("Creating database <%s>.", c.PostgresDBName))
+	clog.Debug("postgresPopulate", fmt.Sprintf("Creating database <%s>...", c.PostgresDBName))
 	_, err = dbp.Exec(createDatabase)
 	if err != nil {
-		clog.Error("postgresInit", "Failed to create dbp. Skipping remaining autoconfig steps.", err)
+		clog.Error("postgresPopulate", "Failed to create database. Skipping remaining autoconfig steps.", err)
 		return err
 	}
-	clog.Debug("postgresInit", fmt.Sprintf("Reconnected. Building database schema for table <%s>...", c.PostgresTableName))
+	clog.Debug("postgresPopulate", fmt.Sprintf("Dropping table <%s>...", c.PostgresTableName))
+	_, err = dbp.Exec(dropTable)
+	if err != nil {
+		clog.Error("postgresPopulate", "Failed to drop table. Skipping remaining autoconfig steps.", err)
+		return err
+	}
+	clog.Debug("postgresPopulate", fmt.Sprintf("Creating table <%s>...", c.PostgresTableName))
 	_, err = dbp.Exec(createTable)
 	if err != nil {
-		clog.Error("postgresInit", "Failed to build database table!", err)
-		return err
+		if err.(*pq.Error).Code == "42P07" {
+			// 42P10 indicates an existing metadata table configured by another Cadence instance is still running.
+			clog.Info("postgresInit", "Metadata database already exists")
+		} else {
+			clog.Error("postgresPopulate", "Failed to build database table!", err)
+			return err
+		}
 	}
 	clog.Debug("dbPopulate", "Verifying music metadata directory is accessible...")
 	_, err = os.Stat(c.MusicDir)

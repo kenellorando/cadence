@@ -203,9 +203,10 @@ function postRequestID() {
 function connectRadioData() {
 	let eventSource = new EventSource("/api/radiodata/sse");
 	eventSource.onerror = function (event) {
+		eventSource.close();
 		setTimeout(function () {
 			connectRadioData();
-		}, 5000);
+		}, 10000);
 	}
 	eventSource.addEventListener("title", function(event) {
 		$('#song').text(event.data)

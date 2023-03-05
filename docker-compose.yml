@@ -51,9 +51,9 @@ services:
       stream_delivery:
 
   cadence:
-    build: 
-      context: ./cadence/
-      dockerfile: ./cadence/cadence.Dockerfile
+    build:
+      context: ./cadence
+      dockerfile: ./cadence.Dockerfile
     image: kenellorando/cadence
     container_name: cadence
     restart: always

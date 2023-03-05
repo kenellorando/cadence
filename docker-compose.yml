@@ -21,7 +21,7 @@ services:
 
   icecast2:
     build:
-      dockerfile: ./stream/Dockerfile.icecast2
+      dockerfile: ./cadence/icecast2.Dockerfile
     image: kenellorando/cadence_icecast2:latest
     container_name: icecast2
     restart: always
@@ -35,7 +35,7 @@ services:
 
   liquidsoap:
     build:
-      dockerfile: ./stream/Dockerfile.liquidsoap
+      dockerfile: ./cadence/liquidsoap.Dockerfile
     image: kenellorando/cadence_liquidsoap:latest
     container_name: liquidsoap
     restart: always
@@ -53,6 +53,7 @@ services:
   cadence:
     build: 
       context: ./cadence/
+      dockerfile: ./cadence/cadence.Dockerfile
     image: kenellorando/cadence
     container_name: cadence
     restart: always

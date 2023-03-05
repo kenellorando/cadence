@@ -2,7 +2,7 @@
 
 **Cadence** is an all-in-one web radio suite that lets you start a self-hosted radio website.
 
-In minutes, you can create an audio broadcast complete with library search, song request, album artwork, a browser UI, and real-time stream information working out-of-the-box.
+In minutes, you can create an internet audio broadcast complete with library search, song request, album artwork, and a browser UI with real-time stream information working out-of-the-box.
 
 All components are mostly pre-configured so there is hardly any configuration required to get started. Simply provide target directory containing music files, set a few service passwords and hostnames, and deploy!
 

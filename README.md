@@ -32,8 +32,8 @@ All components are mostly pre-configured so there is hardly any configuration re
 1. Fork or clone the repository.
 2. Edit `config/cadence.env`
    1. Change all instances of `hackme` to a new password.
-   2. Set `CSERVER_MUSIC_DIR` to an absolute path which contains music files (`.mp3`, `.flac`) for play. The target is not recursively searched. The default value is `/music/`.
-   3. Set `CSERVER_REQRATELIMIT` to an integer that sets the song request cooldown period in seconds. Set this value to `0` to disable rate limiting. The default value is `180`.
+   2. Set `CSERVER_MUSIC_DIR` to an absolute path which contains music files (`.mp3`, `.flac`) for play. The target is not recursively searched.
+   3. Set `CSERVER_REQRATELIMIT` to an integer that sets the song request cooldown period in seconds. Set this value to `0` to disable rate limiting.
 3. Edit `config/icecast.xml`
    1. Change all instances of `hackme` to a new password.
    2. Set the `<hostname>` value to a URL you expect your audience to connect to. This value is what is set in the UI's stream source. This may be a DNS name or a public or private IP address. You can leave the default value `localhost` if your radio is meant to be accessible locally only.
@@ -41,8 +41,10 @@ All components are mostly pre-configured so there is hardly any configuration re
    1. Change all instances of `hackme` to a new password.
    2. If you changed `CSERVER_MUSIC_DIR` in step 1, change any instances of the default value `/music/` to match it here.
 5. (_Optional_) Edit `config/nginx.conf`
-   1. For advanced users deploying Cadence to a server with DNS, Cadence ships with a reverse proxy which will forward requests based on domain-name to backend services. Simply configure the `server_name` values with your domain names.
+   1. For advanced users deploying Cadence to a server with DNS, Cadence ships with a reverse proxy which will forward requests based on domain-name to backend services. Simply configure the `server_name` values with your domain names. The stream server domain should match the value you set in step 3.
 6. `docker compose up`
+
+After configuration is initially completed, you can simply run `docker compose up` again in the future to start your station.
 
 ### Accessing Services
 
@@ -52,12 +54,12 @@ All components are mostly pre-configured so there is hardly any configuration re
 ## 👩‍💻 Developing
 
 ### Building the Stack
-If you changed code or updated a container image, use the `--build` flag to rebuild exactly what you have.
+If you changed code or updated a container image, append the `--build` flag to rebuild exactly what you have.
 
 1. `docker compose down; docker compose up --build`
 
 ### Enable Development API
-Cadence provides special administrative controls that may be useful for testing though an optionally enabled API. Don't enable development mode on a production server. See the API reference for more details.
+Cadence provides an optionally-enabled API with special administrative controls that may be useful for testing. Don't enable development mode on a production server.
 
 1. Edit `config/cadence.env`.
    1. Set `CSERVER_DEVMODE` to `1` (enabled).

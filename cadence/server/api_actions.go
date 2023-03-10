@@ -189,25 +189,30 @@ func icecastMonitor() {
 		if err != nil {
 			clog.Error("icecastMonitor", "Unable to stream data from the Icecast service.", err)
 			icecastDataReset()
+			return
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
 			clog.Debug("icecastMonitor", "Unable to connect to Icecast.")
 			icecastDataReset()
+			return
 		}
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			clog.Debug("icecastMonitor", "Connected to Icecast but unable to read response.")
 			icecastDataReset()
+			return
 		}
 		jsonParsed, err := gabs.ParseJSON([]byte(body))
 		if err != nil {
 			clog.Debug("icecastMonitor", "Connected to Icecast but unable to parse response.")
 			icecastDataReset()
+			return
 		}
 		if jsonParsed.Path("icestats.source.title").Data() == nil || jsonParsed.Path("icestats.source.artist").Data() == nil {
 			clog.Debug("icecastMonitor", "Connected to Icecast, but saw nothing playing.")
 			icecastDataReset()
+			return
 		}
 
 		now.Song.Artist = jsonParsed.Path("icestats.source.artist").Data().(string)

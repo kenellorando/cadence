@@ -26,10 +26,12 @@ func postgresInit() (err error) {
 	dbp, err = sql.Open("postgres", dsn)
 	if err != nil {
 		clog.Error("postgresInit", "Could not open connection to database.", err)
+		return err
 	}
 	err = dbp.Ping()
 	if err != nil {
 		clog.Error("postgresInit", "Could not successfully ping the metadata database.", err)
+		return err
 	}
 	// Enable fuzzystrmatch for levenshtein sorting.
 	// This enables the database to return results based on search similarity.
@@ -109,9 +111,11 @@ func postgresPopulate() error {
 	clog.Debug("dbPopulate", fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir))
 	err = filepath.Walk(c.MusicDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
+			clog.Error("dbPopulate", "Error during filepath walk", err)
 			return err
 		}
 		if info.IsDir() {
+			clog.Debug("dbPopulate", "Population skipping directory.")
 			return nil
 		}
 		extensions := []string{".mp3", ".flac", ".ogg"}

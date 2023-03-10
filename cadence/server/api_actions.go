@@ -63,7 +63,7 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 }
 
 // Takes a title and artist string to find a song which exactly matches.
-// Returns a list of SongData whose one result is the first (best) match.
+// Returns a list of SongData whose first result [0] is the first (best) match.
 // This will not work if multiple songs share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
 	title, artist = strings.TrimSpace(title), strings.TrimSpace(artist)
@@ -138,6 +138,7 @@ func liquidsoapSkip() (message string, err error) {
 	fmt.Fprintf(conn, "cadence1.skip\n")
 	// Listen for response
 	message, _ = bufio.NewReader(conn).ReadString('\n')
+	clog.Debug("liquidsoapSkip", fmt.Sprintf("Message from audio source server: %s", message))
 	fmt.Fprintf(conn, "quit"+"\n")
 	return message, nil
 }

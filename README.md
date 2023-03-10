@@ -39,9 +39,11 @@ All components are mostly pre-configured so there is hardly any configuration re
 3. Edit `config/liquidsoap.liq`
    1. Change all instances of `hackme` to a new password.
    2. If you changed `CSERVER_MUSIC_DIR` in step 1, change any instances of the default value `/music/` to match it here.
-4. (_Optional_) Edit `config/nginx.conf`
+4. Edit `docker-compose.yml`
+   1. If you changed `CSERVER_MUSIC_DIR` in step 1, change any instances of the `Volumes` defined, replacing `/music:/music` with `/YOURDIR:/music`.
+5. (_Optional_) Edit `config/nginx.conf`
    1. For advanced users deploying Cadence to a server with DNS, Cadence ships with a reverse proxy that can forward requests based on domain-name to backend services. Simply configure the `server_name` values with your domain names. The stream server domain should match the value you set in step 2.
-5. `docker compose up`
+6. `docker compose up`
 
 After configuration is initially completed, you may simply run `docker compose up` again in the future to start your station.
 

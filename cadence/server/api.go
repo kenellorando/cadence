@@ -39,7 +39,12 @@ func Search() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
-		jsonMarshal, _ := json.Marshal(queryResults)
+		jsonMarshal, err := json.Marshal(queryResults)
+		if err != nil {
+			clog.Error("Search", "Failed to marshal results from the search.", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
@@ -138,7 +143,12 @@ func NowPlayingMetadata() http.HandlerFunc {
 			w.WriteHeader(http.StatusNotFound) // 404 Not Found
 			return
 		}
-		jsonMarshal, _ := json.Marshal(queryResults[0])
+		jsonMarshal, err := json.Marshal(queryResults[0])
+		if err != nil {
+			clog.Error("NowPlayingMetadata", "Failed to marshal results from the search.", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
@@ -186,7 +196,12 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 			Picture []byte
 		}
 		result := SongData{Picture: tags.Picture().Data}
-		jsonMarshal, _ := json.Marshal(result)
+		jsonMarshal, err := json.Marshal(result)
+		if err != nil {
+			clog.Error("NowPlayingAlbumArt", "Failed to marshal art data.", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
@@ -196,7 +211,12 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 // Gets a list of the ten last-played songs, noting the time each ended.
 func History() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		jsonMarshal, _ := json.Marshal(history)
+		jsonMarshal, err := json.Marshal(history)
+		if err != nil {
+			clog.Error("History", "Failed to marshal play history.", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
@@ -210,7 +230,12 @@ func ListenURL() http.HandlerFunc {
 			ListenURL string
 		}
 		listenurl := ListenURL{ListenURL: string(now.Host + "/" + now.Mountpoint)}
-		jsonMarshal, _ := json.Marshal(listenurl)
+		jsonMarshal, err := json.Marshal(listenurl)
+		if err != nil {
+			clog.Error("ListenURL", "Failed to marshal listen URL.", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
@@ -224,7 +249,12 @@ func Listeners() http.HandlerFunc {
 			Listeners int
 		}
 		listeners := Listeners{Listeners: int(now.Listeners)}
-		jsonMarshal, _ := json.Marshal(listeners)
+		jsonMarshal, err := json.Marshal(listeners)
+		if err != nil {
+			clog.Error("Listeners", "Failed to marshal listeners.", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
@@ -238,7 +268,12 @@ func Bitrate() http.HandlerFunc {
 			Bitrate int
 		}
 		bitrate := Bitrate{Bitrate: int(now.Bitrate)}
-		jsonMarshal, _ := json.Marshal(bitrate)
+		jsonMarshal, err := json.Marshal(bitrate)
+		if err != nil {
+			clog.Error("Bitrate", "Failed to marshal bitrate.", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}
@@ -252,7 +287,12 @@ func Version() http.HandlerFunc {
 			Version string
 		}
 		version := Version{Version: c.Version}
-		jsonMarshal, _ := json.Marshal(version)
+		jsonMarshal, err := json.Marshal(version)
+		if err != nil {
+			clog.Error("Version", "Failed to marshal version.", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMarshal)
 	}

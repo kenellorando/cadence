@@ -67,7 +67,7 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 // This will not work if multiple songs share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
 	title, artist = strings.TrimSpace(title), strings.TrimSpace(artist)
-	clog.Debug("searchByTitleArtist", fmt.Sprintf("Searching database for: '%s by %s", title, artist))
+	clog.Debug("searchByTitleArtist", fmt.Sprintf("Searching database for: %s by %s", title, artist))
 	selectStatement := fmt.Sprintf("SELECT id,artist,title,album,genre,year FROM %s WHERE title LIKE $1 AND artist LIKE $2;",
 		c.PostgresTableName)
 	rows, err := dbp.Query(selectStatement, title, artist)
@@ -121,7 +121,10 @@ func liquidsoapRequest(path string) (message string, err error) {
 	defer conn.Close()
 	// Push song request to source service, listen for a response, and quit the telnet session.
 	fmt.Fprintf(conn, "request.push "+path+"\n")
-	message, _ = bufio.NewReader(conn).ReadString('\n')
+	message, err = bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		clog.Error("liquidsoapRequest", "Failed to read stream response message from audio source server.", err)
+	}
 	clog.Info("liquidsoapRequest", fmt.Sprintf("Message from audio source server: %s", message))
 	fmt.Fprintf(conn, "quit"+"\n")
 	return message, nil
@@ -137,7 +140,10 @@ func liquidsoapSkip() (message string, err error) {
 	defer conn.Close()
 	fmt.Fprintf(conn, "cadence1.skip\n")
 	// Listen for response
-	message, _ = bufio.NewReader(conn).ReadString('\n')
+	message, err = bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		clog.Error("liquidsoapSkip", "Failed to read stream response message from audio source server.", err)
+	}
 	clog.Debug("liquidsoapSkip", fmt.Sprintf("Message from audio source server: %s", message))
 	fmt.Fprintf(conn, "quit"+"\n")
 	return message, nil

@@ -26,10 +26,12 @@ func postgresInit() (err error) {
 	dbp, err = sql.Open("postgres", dsn)
 	if err != nil {
 		clog.Error("postgresInit", "Could not open connection to database.", err)
+		return err
 	}
 	err = dbp.Ping()
 	if err != nil {
 		clog.Error("postgresInit", "Could not successfully ping the metadata database.", err)
+		return err
 	}
 	// Enable fuzzystrmatch for levenshtein sorting.
 	// This enables the database to return results based on search similarity.
@@ -96,22 +98,25 @@ func postgresPopulate() error {
 			return err
 		}
 	}
-	clog.Debug("dbPopulate", "Verifying music metadata directory is accessible...")
+	clog.Debug("postgresPopulate", "Verifying music metadata directory is accessible...")
 	_, err = os.Stat(c.MusicDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			clog.Error("dbPopulate", "The configured target music directory was not found.", err)
+			clog.Error("postgresPopulate", "The configured target music directory was not found.", err)
 			return err
 		}
 	}
 
 	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6", c.PostgresTableName, "title", "album", "artist", "genre", "year", "path")
-	clog.Debug("dbPopulate", fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir))
+	clog.Debug("postgresPopulate", fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir))
 	err = filepath.Walk(c.MusicDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
+			clog.Error("postgresPopulate", "Error during filepath walk", err)
 			return err
 		}
+		clog.Debug("postgresPopulate", fmt.Sprintf("Populate analyzing file: <%s>", path))
 		if info.IsDir() {
+			clog.Debug("postgresPopulate", fmt.Sprintf("<%s> is a directory, skipping.", path))
 			return nil
 		}
 		extensions := []string{".mp3", ".flac", ".ogg"}
@@ -119,29 +124,30 @@ func postgresPopulate() error {
 			if strings.HasSuffix(path, ext) {
 				file, err := os.Open(path)
 				if err != nil {
-					clog.Error("dbPopulate", fmt.Sprintf("A problem occured opening <%s>.", path), err)
+					clog.Error("postgresPopulate", fmt.Sprintf("A problem occured opening <%s>.", path), err)
 					return err
 				}
 				defer file.Close()
 				tags, err := tag.ReadFrom(file)
 				if err != nil {
-					clog.Error("dbPopulate", fmt.Sprintf("A problem occured fetching tags from <%s>.", path), err)
+					clog.Error("postgresPopulate", fmt.Sprintf("A problem occured fetching tags from <%s>.", path), err)
 					return err
 				}
 				_, err = dbp.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
 				if err != nil {
-					clog.Error("dbPopulate", fmt.Sprintf("A problem occured populating metadata for <%s>.", path), err)
+					clog.Error("postgresPopulate", fmt.Sprintf("A problem occured populating metadata for <%s>.", path), err)
 					return err
 				}
+				clog.Debug("postgresPopulate", fmt.Sprintf("Populated: %s by %s", tags.Title(), tags.Artist()))
 				break
 			}
 		}
 		return nil
 	})
 	if err != nil {
-		clog.Error("dbPopulate", "Music metadata database population failed, or may be incomplete.", err)
+		clog.Error("postgresPopulate", "Music metadata database population failed, or may be incomplete.", err)
 		return err
 	}
-	clog.Info("dbPopulate", "Database population completed.")
+	clog.Info("postgresPopulate", "Database population completed.")
 	return nil
 }

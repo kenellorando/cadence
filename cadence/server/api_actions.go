@@ -63,11 +63,11 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 }
 
 // Takes a title and artist string to find a song which exactly matches.
-// Returns a list of SongData whose one result is the first (best) match.
+// Returns a list of SongData whose first result [0] is the first (best) match.
 // This will not work if multiple songs share the exact same title and artist.
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
 	title, artist = strings.TrimSpace(title), strings.TrimSpace(artist)
-	clog.Debug("searchByTitleArtist", fmt.Sprintf("Searching database for: '%s by %s", title, artist))
+	clog.Debug("searchByTitleArtist", fmt.Sprintf("Searching database for: %s by %s", title, artist))
 	selectStatement := fmt.Sprintf("SELECT id,artist,title,album,genre,year FROM %s WHERE title LIKE $1 AND artist LIKE $2;",
 		c.PostgresTableName)
 	rows, err := dbp.Query(selectStatement, title, artist)
@@ -121,7 +121,10 @@ func liquidsoapRequest(path string) (message string, err error) {
 	defer conn.Close()
 	// Push song request to source service, listen for a response, and quit the telnet session.
 	fmt.Fprintf(conn, "request.push "+path+"\n")
-	message, _ = bufio.NewReader(conn).ReadString('\n')
+	message, err = bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		clog.Error("liquidsoapRequest", "Failed to read stream response message from audio source server.", err)
+	}
 	clog.Info("liquidsoapRequest", fmt.Sprintf("Message from audio source server: %s", message))
 	fmt.Fprintf(conn, "quit"+"\n")
 	return message, nil
@@ -137,7 +140,11 @@ func liquidsoapSkip() (message string, err error) {
 	defer conn.Close()
 	fmt.Fprintf(conn, "cadence1.skip\n")
 	// Listen for response
-	message, _ = bufio.NewReader(conn).ReadString('\n')
+	message, err = bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		clog.Error("liquidsoapSkip", "Failed to read stream response message from audio source server.", err)
+	}
+	clog.Debug("liquidsoapSkip", fmt.Sprintf("Message from audio source server: %s", message))
 	fmt.Fprintf(conn, "quit"+"\n")
 	return message, nil
 }
@@ -189,25 +196,30 @@ func icecastMonitor() {
 		if err != nil {
 			clog.Error("icecastMonitor", "Unable to stream data from the Icecast service.", err)
 			icecastDataReset()
+			return
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
 			clog.Debug("icecastMonitor", "Unable to connect to Icecast.")
 			icecastDataReset()
+			return
 		}
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			clog.Debug("icecastMonitor", "Connected to Icecast but unable to read response.")
 			icecastDataReset()
+			return
 		}
 		jsonParsed, err := gabs.ParseJSON([]byte(body))
 		if err != nil {
 			clog.Debug("icecastMonitor", "Connected to Icecast but unable to parse response.")
 			icecastDataReset()
+			return
 		}
 		if jsonParsed.Path("icestats.source.title").Data() == nil || jsonParsed.Path("icestats.source.artist").Data() == nil {
 			clog.Debug("icecastMonitor", "Connected to Icecast, but saw nothing playing.")
 			icecastDataReset()
+			return
 		}
 
 		now.Song.Artist = jsonParsed.Path("icestats.source.artist").Data().(string)

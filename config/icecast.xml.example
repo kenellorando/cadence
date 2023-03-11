@@ -1,6 +1,6 @@
 <icecast>
-    <location>Chicago, United States of America</location>
-    <admin>Ken Ellorando (kenellorando.com)</admin>
+    <location>Internet</location>
+    <admin>Source: Cadence Radio (github.com/kenellorando/cadence)</admin>
 	
     <limits>
 	<clients>100</clients>
@@ -15,15 +15,15 @@
 
     <authentication>
         <!-- Sources log in with username 'source' -->
-        <source-password>{C_PASS}</source-password>
+        <source-password>CADENCE_PASS_EXAMPLE</source-password>
         <!-- Relays log in username 'relay' -->
-        <relay-password>{C_PASS}</relay-password>
+        <relay-password>CADENCE_PASS_EXAMPLE</relay-password>
         <!-- Admin logs in with the username given below -->
         <admin-user>admin</admin-user>
-        <admin-password>{C_PASS}</admin-password>
+        <admin-password>CADENCE_PASS_EXAMPLE</admin-password>
     </authentication>
 
-    <hostname>localhost:8000</hostname>
+    <hostname>CADENCE_HOST_EXAMPLE</hostname>
 
     <listen-socket>
         <port>8000</port>

@@ -29,28 +29,15 @@ All components are mostly pre-configured so there is hardly any configuration re
 1. You must have [Docker](https://docs.docker.com/engine/install/) installed. If you are on a Linux server, additionally install the [Compose plugin](https://docs.docker.com/compose/install/linux/).
 
 ### Installation
-1. Edit `config/cadence.env`
-   1. Change all instances of `hackme` to a new password.
-   2. Set `CSERVER_MUSIC_DIR` to an absolute path which contains music files (`.mp3`, `.flac`) for play. The target is not recursively searched.
-   3. Set `CSERVER_REQRATELIMIT` to an integer that sets the song request cooldown period in seconds. Set this value to `0` to disable rate limiting.
-2. Edit `config/icecast.xml`
-   1. Change all instances of `hackme` to a new password.
-   2. Set the `<hostname>` value to a URL you expect your audience to connect to. This value is what is set in the UI's stream source. This may be a DNS name or a public or private IP address. You can leave the default value `localhost` if your radio is meant to be accessible locally only.
-3. Edit `config/liquidsoap.liq`
-   1. Change all instances of `hackme` to a new password.
-   2. If you changed `CSERVER_MUSIC_DIR` in step 1, change any instances of the default value `/music/` to match it here.
-4. Edit `docker-compose.yml`
-   1. If you changed `CSERVER_MUSIC_DIR` in step 1, change any instances of the `Volumes` defined, replacing `/music:/music` with `/YOURDIR:/music`.
-5. (_Optional_) Edit `config/nginx.conf`
-   1. For advanced users deploying Cadence to a server with DNS, Cadence ships with a reverse proxy that can forward requests based on domain-name to backend services. Simply configure the `server_name` values with your domain names. The stream server domain should match the value you set in step 2.
-6. `docker compose up`
+1. Run `./install.sh`.
+   1. You will be prompted to provide inputs: a music directory path, a stream hostname, a rate limit timeout, a service password, and optional DNS. Cadence should automatically start.
 
-After configuration is initially completed, you may simply run `docker compose up` again in the future to start your station.
+After initial installation, you may simply run `docker compose up` again in the future to start your station. Run `install.sh` again at any time to reconfigure.
 
 ### Accessing Services
 
-- Assuming you kept the default values above, Cadence will become accessible in a browser at `localhost:8080`.
-- If you optionally followed step 4, open firewall port `80` and point DNS to your server.
+- By default, Cadence will become accessible in a browser at `localhost:8080`.
+- If you optionally provided DNS, open firewall port `80` and point DNS to your server.
 
 ## 👩‍💻 Developing
 

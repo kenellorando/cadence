@@ -19,3 +19,8 @@
 
 # Go workspace file
 go.work
+
+cadence.env
+icecast.xml
+liquidsoap.liq
+nginx.conf

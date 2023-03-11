@@ -7,11 +7,11 @@ set("server.telnet", true)
 set("server.telnet.bind_addr", "0.0.0.0")
 
 # 1. Lowest priority: play all music in the target directory at random.
-default = mksafe(playlist(mode="randomize", "/music/"))
+default = mksafe(playlist(mode="randomize", "CADENCE_PATH_EXAMPLE"))
 # 2. Next priority: play user requests first if there are any in the queue.
 radio = fallback([ request.queue(id="request"), default])
 # 3. Next priority: play live input stream if one is connected. 
 full = fallback(track_sensitive=false, [input.http("http://localhost:8000/live.ogg"), radio])
 
 # Output the full stream in OGG
-output.icecast(%vorbis.cbr(bitrate=192), host="icecast2",port=8000,password="hackme", mount="cadence1",full)
+output.icecast(%vorbis.cbr(bitrate=192), host="icecast2",port=8000,password="CADENCE_PASS_EXAMPLE", mount="cadence1",full)

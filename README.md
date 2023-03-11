@@ -1,14 +1,12 @@
 # CadenceRadio
 
-**Cadence** is an all-in-one web radio suite that lets you start a self-hosted radio website.
+**Cadence** is an all-in-one suite that lets you start a self-hosted web radio website.
 
-In minutes, you can create an internet audio broadcast complete with library search, song request, album artwork, and a browser UI with real-time stream information working out-of-the-box.
-
-All components are mostly pre-configured so there is hardly any configuration required to get started. Simply provide target directory containing music files, set a few service passwords and hostnames, and deploy!
+In minutes, create your internet broadcast with library search, song request, album artwork, and a browser UI with real-time stream information. All components are mostly pre-configured to work out-of-the-box. Simply run an interactive installation script and deploy!
 
 **[See a live demo!](https://cadenceradio.com/)**
 
-## 🖼️ Image Gallery
+## 🖼️ Gallery
 <details>
 <summary>Browser UI Screenshot</summary>
 
@@ -23,34 +21,24 @@ All components are mostly pre-configured so there is hardly any configuration re
 
 </details>
 
-## 🏃 Get Started
+## 🏃 Start Here
 
 ### Requirements
-1. You must have [Docker](https://docs.docker.com/engine/install/) installed. If you are on a Linux server, additionally install the [Compose plugin](https://docs.docker.com/compose/install/linux/).
+You must have [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
 
 ### Installation
-1. Run `./install.sh`.
-   1. You will be prompted to provide inputs: a music directory path, a stream hostname, a rate limit timeout, a service password, and optional DNS. Cadence should automatically start.
+```bash
+chmod +x ./install.sh
+./install.sh
+```
 
-After initial installation, you may simply run `docker compose up` again in the future to start your station. Run `install.sh` again at any time to reconfigure.
+You will be interactively prompted for a music directory path, a stream hostname, a rate limit timeout, a service password, and optional DNS. After the last prompt, the radio stack will automatically launch and Cadence's web UI will become accessible at `localhost:8080`. 
 
-### Accessing Services
+After initial installation, simply run `docker compose up` to start your station. Use `install.sh` again at any time to reconfigure inputs.
 
-- By default, Cadence will become accessible in a browser at `localhost:8080`.
-- If you optionally provided DNS, open firewall port `80` and point DNS to your server.
+## 📚 Knowledge Base
+Cadence's GitHub Wiki provides various resources to help you use, administrate, and develop for your station. If you need any further assistance, we warmly welcome you to [open an issue](https://github.com/kenellorando/cadence/issues).
 
-## 👩‍💻 Developing
-
-### Building the Stack
-If you changed code or updated a container image, append the `--build` flag to rebuild exactly what you have.
-
-1. `docker compose down; docker compose up --build`
-
-### Enable Development API
-Cadence provides an optionally-enabled API with special administrative controls that may be useful for testing. Don't enable development mode on a production server.
-
-1. Edit `config/cadence.env`.
-   1. Set `CSERVER_DEVMODE` to `1` (enabled).
-
-### API Reference
-[Cadence's API Reference](https://github.com/kenellorando/cadence/wiki/API-Reference) provides usage details and complete request/response examples.
+- [API Reference](https://github.com/kenellorando/cadence/wiki/API-Reference)
+- [Development and Code Style Guide](https://github.com/kenellorando/cadence/wiki/Development-and-Code-Style)
+- [Installation Guide](https://github.com/kenellorando/cadence/wiki/Installation)

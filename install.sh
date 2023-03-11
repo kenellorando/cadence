@@ -1,35 +1,46 @@
 #!/bin/bash
 
 echo "[1/5] Music Directory Target"
-echo "Set the absolute path of a directory containing audio files "
-echo "(e.g. mp3, flac) meant for radio play. This target directory "
-echo "will not be recursively searched. Example: /music/"
+echo "Set the absolute path of a directory containing audio files (e.g. mp3, flac)"
+echo "meant for radio play. Only files at the directory base will be seen, not those"
+echo "in nested subdirectories."
+echo "Example: /music/"
 read -p "      Music path: " CADENCE_PATH
-echo "=============================================================="
+echo "================================================================================"
 echo "[2/5] Stream Host Address"
-echo "Set a stream host address for Cadence Icecast. This may be a "
-echo "DNS name, public IP, or private IP. Set this to localhost:8000"
-echo "if your Cadence instance is meant for local use only."
+echo "Set the stream host address for Cadence Icecast. This may be a DNS name, public"
+echo "IP, or private IP. Set this to localhost:8000 if your Cadence instance is meant"
+echo "for local use only."
+echo "Example: localhost:8000"
 read -p "      Stream address: " CADENCE_HOST
-echo "=============================================================="
+echo "================================================================================"
 echo "[3/5] Rate Limiter Timeout"
-echo "Set a rate limit timeout in integer seconds. This prevents the "
-echo "same listener from requesting songs within the configured "
-echo "timeframe. Set to 0 to disable. Example: 180"
+echo "Set a rate limit timeout in integer seconds. This prevents the same listener"
+echo "from requesting songs within the configured timeframe. Set to 0 to disable."
+echo "Example: 180"
 read -p "      Rate limit: " CADENCE_RATE
-echo "=============================================================="
+echo "================================================================================"
 echo "[4/5] Radio Service Password"
 echo "Set a secure, unique service password. Input is hidden."
 read -s -p "      Password: " CADENCE_PASS
 echo ""
-echo "=============================================================="
+echo "================================================================================"
 echo "[5/5] Domain Names - LEAVE BLANK TO SKIP"
-echo "OPTIONAL: if you are an advanced administrator routing DNS to "
-echo "your Cadence stack, provide your domain names here. You will "
-echo "be prompted for two domains: one for your Cadence Icecast "
-echo "stream, one for the Cadence web UI. Subdomains are acceptable."
+echo "OPTIONAL: if you are an advanced administrator routing DNS to your Cadence"
+echo "stack, provide your domain names here. You will be prompted for two domains: one"
+echo "for Cadence Icecast, one for Cadence web UI. Subdomains are acceptable."
 read -p "      Cadence Audio Stream Domain: " CADENCE_STREAM_DNS
 read -p "      Cadence Web UI Domain: " CADENCE_WEB_DNS
+
+if [ -z "$CADENCE_STREAM_DNS" ]
+then
+      CADENCE_STREAM_DNS=stream.cadenceradio.com
+fi
+
+if [ -z "$CADENCE_WEB_DNS" ]
+then
+      CADENCE_WEB_DNS=cadenceradio.com
+fi
 
 cp ./config/cadence.env.example ./config/cadence.env
 cp ./config/icecast.xml.example ./config/icecast.xml

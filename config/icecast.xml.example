@@ -15,12 +15,12 @@
 
     <authentication>
         <!-- Sources log in with username 'source' -->
-        <source-password>hackme</source-password>
+        <source-password>{C_PASS}</source-password>
         <!-- Relays log in username 'relay' -->
-        <relay-password>hackme</relay-password>
+        <relay-password>{C_PASS}</relay-password>
         <!-- Admin logs in with the username given below -->
         <admin-user>admin</admin-user>
-        <admin-password>hackme</admin-password>
+        <admin-password>{C_PASS}</admin-password>
     </authentication>
 
     <hostname>localhost:8000</hostname>

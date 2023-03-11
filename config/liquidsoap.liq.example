@@ -14,4 +14,4 @@ radio = fallback([ request.queue(id="request"), default])
 full = fallback(track_sensitive=false, [input.http("http://localhost:8000/live.ogg"), radio])
 
 # Output the full stream in OGG
-output.icecast(%vorbis.cbr(bitrate=192), host="icecast2",port=8000,password="hackme", mount="cadence1",full)
+output.icecast(%vorbis.cbr(bitrate=192), host="icecast2",port=8000,password="{C_PASS}", mount="cadence1",full)

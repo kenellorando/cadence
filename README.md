@@ -2,7 +2,7 @@
 
 **Cadence** is an all-in-one suite that lets you start a self-hosted web radio website.
 
-In minutes, create your internet broadcast with library search, song request, album artwork, and a browser UI with real-time stream information. All components are mostly pre-configured to work out-of-the-box. Simply run an interactive installation script and deploy!
+In minutes, create an internet broadcast with library search, song request, album artwork, and real-time stream information in a browser UI. All components are mostly pre-configured to work out-of-the-box. Simply run an interactive installation script and deploy!
 
 **[See a live demo!](https://cadenceradio.com/)**
 
@@ -32,12 +32,12 @@ chmod +x ./install.sh
 ./install.sh
 ```
 
-You will be interactively prompted for a music directory path, a stream hostname, a rate limit timeout, a service password, and optional DNS. After the last prompt, the radio stack will automatically launch and Cadence's web UI will become accessible at `localhost:8080`. 
+You will be prompted for a music directory path, a stream hostname, a rate limit timeout, a service password, and optional DNS. After the last prompt, the radio stack will automatically launch and Cadence's web UI will become accessible at `localhost:8080`. 
 
 After initial installation, simply run `docker compose up` to start your station. Use `install.sh` again at any time to reconfigure inputs.
 
 ## 📚 Knowledge Base
-Cadence's GitHub Wiki provides various resources to help you use, administrate, and develop for your station. If you need any further assistance, we warmly welcome you to [open an issue](https://github.com/kenellorando/cadence/issues).
+Cadence's GitHub Wiki provides various resources to help you use, administrate, and build clients for your station.
 
 - [API Reference](https://github.com/kenellorando/cadence/wiki/API-Reference)
 - [Development and Code Style Guide](https://github.com/kenellorando/cadence/wiki/Development-and-Code-Style)

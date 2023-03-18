@@ -1,12 +1,6 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/17265041/226129979-68be3598-3c28-4c14-bdb2-842d63b76b58.svg">
-    <img alt="Cadence logo.">
-  </picture>
-</p>
-
-<p align="center">
-  <picture>
     <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/17265041/226129976-035d6b2a-06b0-4a32-a3f4-2e6e44f42136.svg">
     <img alt="Cadence logo.">
   </picture>

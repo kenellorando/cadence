@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/17265041/226129979-68be3598-3c28-4c14-bdb2-842d63b76b58.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/17265041/226129976-035d6b2a-06b0-4a32-a3f4-2e6e44f42136.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/17265041/226766588-30a7bb71-490b-4182-a6b0-b22409f6ec3b.png" width="400">
+    <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/17265041/226766586-1a55554e-33a4-4fb2-8259-49359f3f3525.png" width="400">
     <img alt="Cadence logo.">
   </picture>
 </p>

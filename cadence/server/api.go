@@ -46,7 +46,11 @@ func Search() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
+		_, err = w.Write(jsonMarshal)
+		if err != nil {
+			clog.Error("Search", "Failed to write response.", err)
+			return
+		}
 	}
 }
 
@@ -150,7 +154,11 @@ func NowPlayingMetadata() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
+		_, err = w.Write(jsonMarshal)
+		if err != nil {
+			clog.Error("NowPlayingMetadata", "Failed to write response.", err)
+			return
+		}
 	}
 }
 
@@ -203,7 +211,11 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
+		_, err = w.Write(jsonMarshal)
+		if err != nil {
+			clog.Error("NowPlayingAlbumArt", "Failed to write response.", err)
+			return
+		}
 	}
 }
 
@@ -218,7 +230,11 @@ func History() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
+		_, err = w.Write(jsonMarshal)
+		if err != nil {
+			clog.Error("History", "Failed to write response.", err)
+			return
+		}
 	}
 }
 
@@ -237,7 +253,11 @@ func ListenURL() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
+		_, err = w.Write(jsonMarshal)
+		if err != nil {
+			clog.Error("ListenURL", "Failed to write response.", err)
+			return
+		}
 	}
 }
 
@@ -256,7 +276,11 @@ func Listeners() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
+		_, err = w.Write(jsonMarshal)
+		if err != nil {
+			clog.Error("Listeners", "Failed to write response.", err)
+			return
+		}
 	}
 }
 
@@ -275,7 +299,11 @@ func Bitrate() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
+		_, err = w.Write(jsonMarshal)
+		if err != nil {
+			clog.Error("Bitrate", "Failed to write response.", err)
+			return
+		}
 	}
 }
 
@@ -294,7 +322,11 @@ func Version() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMarshal)
+		_, err = w.Write(jsonMarshal)
+		if err != nil {
+			clog.Error("Version", "Failed to write response.", err)
+			return
+		}
 	}
 }
 

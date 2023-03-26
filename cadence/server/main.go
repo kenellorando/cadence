@@ -59,10 +59,12 @@ func main() {
 	c.DevMode, _ = strconv.ParseBool(os.Getenv("CSERVER_DEVMODE"))
 
 	clog.Level(c.LogLevel)
-	clog.Debug("init", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
+	clog.Debug("main", fmt.Sprintf("Cadence Logger initialized to level <%v>.", c.LogLevel))
 
 	if postgresInit() == nil {
-		postgresPopulate()
+		if postgresPopulate() != nil {
+			clog.Warn("main", "Initial database population failed.")
+		}
 	}
 	go redisInit()
 	go filesystemMonitor()

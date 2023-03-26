@@ -171,7 +171,11 @@ func filesystemMonitor() {
 					continue
 				}
 				clog.Info("fileSystemMonitor", "Change detected in music library.")
-				postgresPopulate()
+				err = postgresPopulate()
+				if err != nil {
+					clog.Error("fileSystemMonitor", "Failed to populate.", err)
+					return
+				}
 			case err, ok := <-watcher.Errors:
 				if !ok {
 					continue

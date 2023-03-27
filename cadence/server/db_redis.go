@@ -94,10 +94,13 @@ func rateLimitArt(next http.Handler) http.Handler {
 				w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 				return
 			}
-			// If the IP has requested artwork at least 16 times, deny the request.
+			// If the IP has requested artwork at least 16 times, notify no-change.
+			// Basically, this response says "You've requested artwork a bit too much,
+			// so we're not going to send you new artwork for now. The artwork hasn't changed
+			// since you last asked, so you're safe to use whatever you last cached."
 			if count >= 16 {
 				clog.Debug("rateLimit", fmt.Sprintf("Client <%s> is rate limited.", ip))
-				w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
+				w.WriteHeader(http.StatusNotModified) // 304 Not Modified
 				return
 			} else {
 				clog.Debug("rateLimit", fmt.Sprintf("Client <%s> is rate limited.", ip))

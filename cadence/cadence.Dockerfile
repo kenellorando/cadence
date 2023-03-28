@@ -1,15 +1,20 @@
 # syntax=docker/dockerfile:1
-ARG ARCH=
-FROM ${ARCH}golang:1.20-bullseye
-LABEL maintainer="Ken Ellorando (kenellorando.com)"
-LABEL source="github.com/kenellorando/cadence"
-WORKDIR /cadence/server
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.20-bullseye as builder
+ARG TARGETPLATFORM BUILDPLATFORM TARGETOS TARGETARCH
+WORKDIR /cadence
 COPY ./* ./
 RUN go mod download
-RUN go build -o /cadence/cadence-server
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s" -o /cadence-server
 
-RUN useradd -s /bin/bash cadence
-RUN chown cadence:cadence /cadence/ /cadence/* /cadence/cadence-server
+ARG ARCH=
+FROM ${ARCH}golang:1.20-alpine
+LABEL maintainer="Ken Ellorando (kenellorando.com)"
+LABEL source="github.com/kenellorando/cadence"
+COPY --from=builder /cadence/public /cadence/server/public
+COPY --from=builder /cadence-server /cadence/cadence-server
+
+RUN adduser --disabled-password --gecos "" cadence
+RUN chown cadence /cadence/ /cadence/* /cadence/cadence-server
 RUN chmod u+wrx /cadence/ /cadence/* 
 
 EXPOSE 8080

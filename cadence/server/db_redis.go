@@ -39,7 +39,7 @@ func rateLimitRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip, err := checkIP(r)
 		if err != nil {
-			clog.Error("rateLimit", "Error encountered while checking IP address.", err)
+			clog.Error("rateLimitRequest", "Error encountered while checking IP address.", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
@@ -52,12 +52,12 @@ func rateLimitRequest(next http.Handler) http.Handler {
 				dbr.RateLimitRequest.Set(ctx, ip, nil, time.Duration(c.RequestRateLimit)*time.Second)
 				next.ServeHTTP(w, r)
 			} else {
-				clog.Error("rateLimit", "Error while attempting to check for IP in rate limiter.", err)
+				clog.Error("rateLimitRequest", "Error while attempting to check for IP in rate limiter.", err)
 				w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 				return
 			}
 		} else {
-			clog.Debug("rateLimit", fmt.Sprintf("Client <%s> is rate limited.", ip))
+			clog.Debug("rateLimitRequest", fmt.Sprintf("Client <%s> is rate limited.", ip))
 			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
 			return
 		}
@@ -68,7 +68,7 @@ func rateLimitArt(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip, err := checkIP(r)
 		if err != nil {
-			clog.Error("rateLimit", "Error encountered while checking IP address.", err)
+			clog.Error("rateLimitArt", "Error encountered while checking IP address.", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
@@ -81,7 +81,7 @@ func rateLimitArt(next http.Handler) http.Handler {
 				dbr.RateLimitArt.Set(ctx, ip, 1, time.Duration(200)*time.Second)
 				next.ServeHTTP(w, r)
 			} else {
-				clog.Error("rateLimit", "Error while attempting to check for IP in rate limiter.", err)
+				clog.Error("rateLimitArt", "Error while attempting to check for IP in rate limiter.", err)
 				w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 				return
 			}
@@ -90,20 +90,24 @@ func rateLimitArt(next http.Handler) http.Handler {
 			// Check the value of the IP address.
 			count, err := dbr.RateLimitArt.Get(ctx, ip).Int()
 			if err != nil {
-				clog.Error("rateLimit", "Error while converting art served value to integer.", err)
+				clog.Error("rateLimitArt", "Error while converting art served value to integer.", err)
 				w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 				return
 			}
-			// If the IP has requested artwork at least 16 times, notify no-change.
-			// Basically, this response says "You've requested artwork a bit too much,
+			// We're using 16 as an arbitrary maximum number of times we expect any client to need
+			// to legitimately need to get album art over the course of a duration of one song.
+			// This strikes a balance between allowing a user to get album art when they need it
+			// and preventing malicious users from unnecessarily consuming bandwidth.
+			//
+			// Basically, a 304 response means "You've requested artwork a bit too much,
 			// so we're not going to send you new artwork for now. The artwork hasn't changed
 			// since you last asked, so you're safe to use whatever you last cached."
 			if count >= 16 {
-				clog.Debug("rateLimit", fmt.Sprintf("Client <%s> is rate limited.", ip))
+				clog.Debug("rateLimitArt", fmt.Sprintf("Client <%s> is rate limited.", ip))
 				w.WriteHeader(http.StatusNotModified) // 304 Not Modified
 				return
 			} else {
-				clog.Debug("rateLimit", fmt.Sprintf("Client <%s> is rate limited.", ip))
+				clog.Debug("rateLimitArt", fmt.Sprintf("Client <%s> is rate limited.", ip))
 				dbr.RateLimitArt.Set(ctx, ip, count+1, time.Duration(200)*time.Second)
 				next.ServeHTTP(w, r)
 			}

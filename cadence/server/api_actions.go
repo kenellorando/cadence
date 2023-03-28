@@ -235,6 +235,10 @@ func icecastMonitor() {
 
 		if (prev.Song.Title != now.Song.Title) || (prev.Song.Artist != now.Song.Artist) {
 			clog.Info("icecastMonitor", fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist))
+			// Dump the artwork rate limiter database first thing before updates
+			// are sent out to reset artwork request count.
+			dbr.RateLimitArt.FlushDB(ctx)
+
 			radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
 			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
 			if (prev.Song.Title != "") && (prev.Song.Artist != "") {

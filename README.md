@@ -1,12 +1,17 @@
 ## 📻 About
 
-<img align="right" src="https://user-images.githubusercontent.com/17265041/219263637-6971ce33-209a-4eb5-b67e-547f271dc3c8.png" width="450" >
-
 **Cadence** (or *CadenceRadio*) is an all-in-one internet radio suite. 
 
-The project ships with *Icecast* and *Liquidsoap* working out-of-the-box, complete with library search, song request, album artwork, and real-time stream information in a browser UI. Simply run an interactive installation script, provide some music, and enjoy!
+The project ships with *Icecast* and *Liquidsoap* working out-of-the-box, complete with library search, song request, album artwork, and real-time stream information in a browser UI. Simply run an installation script, provide some music, and enjoy!
 
 **See a live demo on [cadenceradio.com](https://cadenceradio.com/)!**
+
+<details>
+<summary><i>Browser UI Preview</i></summary>
+
+<img src="https://user-images.githubusercontent.com/17265041/219263637-6971ce33-209a-4eb5-b67e-547f271dc3c8.png" width="450" >
+
+</details>
 
 ## 🏃 Start Here
 

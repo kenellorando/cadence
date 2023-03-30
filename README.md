@@ -2,18 +2,20 @@
 
 **Cadence** (or *CadenceRadio*) is an all-in-one internet radio suite. 
 
-The project ships with *Icecast* and *Liquidsoap* working out-of-the-box, complete with library search, song request, album artwork, and real-time stream information in a browser UI. Simply run an installation script, provide some music, and enjoy!
+The project ships with *Icecast* and *Liquidsoap* working out-of-the-box, complete with library search, song request, album artwork, and real-time stream information in a browser UI. It only takes minutes to install and deploy.
 
 **See a live demo on [cadenceradio.com](https://cadenceradio.com/)!**
 
 <details>
 <summary><i>Browser UI Preview</i></summary>
 
-<img src="https://user-images.githubusercontent.com/17265041/219263637-6971ce33-209a-4eb5-b67e-547f271dc3c8.png" width="450" >
+<img src="https://user-images.githubusercontent.com/17265041/219263637-6971ce33-209a-4eb5-b67e-547f271dc3c8.png" width="800" >
 
 </details>
 
 ## 🏃 Start Here
+
+An interactive setup script is provided. Alternate installation methods including fully-manual steps and Kubernetes deployments are provided on the [Installation Guide](https://github.com/kenellorando/cadence/wiki/Installation).
 
 ### Requirements
 - You have [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
@@ -28,9 +30,14 @@ You will be prompted to provide a music directory path, a stream hostname, a rat
 
 After initial installation, simply run `docker compose up` to start your station. Run `./install.sh` again at any time to reconfigure. 
 
-If you can't run a shell script for any reason, or if the scripted install was too easy for you, alternative installation methods including fully-manual configuration and even Kubernetes deployment steps are provided on the [Installation Guide](https://github.com/kenellorando/cadence/wiki/Installation).
-
 ## 🦔 Resources
+
+<details>
+<summary><i>Basic Architecture</i></summary>
+
+<img src="https://user-images.githubusercontent.com/17265041/228726513-e71775c4-dce4-4ef3-b4c2-1bbd37999769.png" width="800" >
+
+</details>
 
 If you're interested in implementation details, [Cadence: Self-Hosted Web Radio Suite](https://kenellorando.notion.site/Cadence-Self-Hosted-Web-Radio-Suite-d1f0184b5eeb4882a3d6f78d582b2de6) does a dive into how a typical web radio works and the value Cadence provides.
 

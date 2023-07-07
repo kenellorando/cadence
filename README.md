@@ -6,34 +6,33 @@ The project ships with *Icecast* and *Liquidsoap* working out-of-the-box, comple
 
 **See a live demo on [cadenceradio.com](https://cadenceradio.com/)!**
 
-<details>
-<summary><i>Browser UI</i></summary>
-
-<img src="https://user-images.githubusercontent.com/17265041/219263637-6971ce33-209a-4eb5-b67e-547f271dc3c8.png" width="800" >
-
-</details>
+<img src="https://user-images.githubusercontent.com/17265041/219263637-6971ce33-209a-4eb5-b67e-547f271dc3c8.png" width="600" >
 
 ## 🏃 Get Started
 
-An interactive installation script is provided. Alternate methods (including manual configuration and Kubernetes deployments) are described on the [Installation Guide](https://github.com/kenellorando/cadence/wiki/Installation).
+An interactive installation script is provided. Users familiar with Docker can be up and running in ~5 minutes. Alternate methods including manual configuration and Kubernetes deployments are described on the [Installation Guide](https://github.com/kenellorando/cadence/wiki/Installation) and in [cadence-k8s](https://github.com/kenellorando/cadence-k8s), respectively.
 
-### Requirements
+### Server Preparation
 
-- [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) are installed.
+- [Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose V2](https://docs.docker.com/compose/install/) are installed.
 - You have some music files (e.g. `.mp3`, `.flac`) with title and artist metadata.
 
 ### Installation
+
+Clone the Cadence repository to your server, then run the following:
+
 ```bash
 $ chmod +x ./install.sh
 $ ./install.sh
 ```
 
-You will be prompted to provide the directory path to your music, a stream hostname, a rate limit timeout, a service password, and optional DNS. Your radio stack will automatically launch and Cadence's web UI will become accessible at `localhost:8080`.
+You will be prompted to provide the directory path to your music, a stream hostname, a rate limit timeout, a service password, and optional DNS. If you need help figuring out what values to use, refer the [Installation Guide](https://github.com/kenellorando/cadence/wiki/Installation#interactive-prompt-guide). Your radio stack will automatically launch and Cadence's web UI will become accessible at `localhost:8080`.
 
 After initial installation, simply run `docker compose up` to start your station. Run `./install.sh` again at any time to reconfigure. 
 
-## 🦔 Resources
+## 🔬 Technical Details
 
+### Architecture
 <details>
 <summary><i>Basic Architecture</i></summary>
 
@@ -43,4 +42,9 @@ After initial installation, simply run `docker compose up` to start your station
 
 If you're interested in implementation details, [Cadence: Self-Hosted Web Radio Suite](https://kenellorando.notion.site/Cadence-Self-Hosted-Web-Radio-Suite-d1f0184b5eeb4882a3d6f78d582b2de6) does a dive into how a typical *Icecast/Liquidsoap* web radio works and the value Cadence provides.
 
+### API Reference for Custom Clients
 Cadence's GitHub Wiki also hosts an [API Reference](https://github.com/kenellorando/cadence/wiki/API-Reference) with complete request/response details, useful for anyone developing custom scripts or clients for their station.
+
+### Discord Server Integration
+Cadence installations can be directly integrated with Discord Servers using [CadenceBot](https://github.com/za419/CadenceBot). CadenceBot allows you to control your station through Discord chat and listen to the radio in voice channels! 
+You can quickly demo a CadenceBot by [adding it to your Discord server](https://discord.com/api/oauth2/authorize?client_id=372999377569972224&permissions=274881252352&scope=bot).

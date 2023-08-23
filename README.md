@@ -28,7 +28,7 @@ $ ./install.sh
 
 You will be prompted to provide the directory path to your music, a stream hostname, a rate limit timeout, a service password, and optional DNS. If you need help figuring out what values to use, refer the [Installation Guide](https://github.com/kenellorando/cadence/wiki/Installation#interactive-prompt-guide). Your radio stack will automatically launch and Cadence's web UI will become accessible at `localhost:8080`.
 
-After initial installation, simply run `docker compose up` to start your station. Run `./install.sh` again at any time to reconfigure. 
+After initial installation, simply run `docker compose pull` to check for container updates, then `docker compose up` to start your station again. Run `./install.sh` again at any time to reconfigure. 
 
 ## 🔬 Technical Details
 

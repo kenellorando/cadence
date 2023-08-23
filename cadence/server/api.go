@@ -1,6 +1,6 @@
 // handlers.go
-// API functions and fileservers.
-// The functions are named exactly as their API paths are.
+// API functions.
+// The functions are named exactly the same as their API paths.
 // See complete API documentation: https://github.com/kenellorando/cadence/wiki/API-Reference
 
 package main
@@ -8,12 +8,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
 
 	"github.com/dhowden/tag"
-	"github.com/kenellorando/clog"
 )
 
 // POST /api/search
@@ -21,7 +21,7 @@ import (
 // Returns a JSON list of text metadata (excluding art and path) of any matching songs.
 func Search() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("Search", fmt.Sprintf("Search request from client %s.", r.RemoteAddr))
+		slog.Debug(fmt.Sprintf("Search request from client %s.", r.RemoteAddr), "func", "Search")
 		type Search struct {
 			Query string `json:"search"`
 		}
@@ -29,26 +29,26 @@ func Search() http.HandlerFunc {
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&search)
 		if err != nil {
-			clog.Error("Search", "Unable to decode search body.", err)
+			slog.Error("Unable to decode search body.", "func", "Search", "error", err)
 			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 			return
 		}
 		queryResults, err := searchByQuery(search.Query)
 		if err != nil {
-			clog.Error("Search", "Unable to execute search by query.", err)
+			slog.Error("Unable to execute search by query.", "func", "Search", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		jsonMarshal, err := json.Marshal(queryResults)
 		if err != nil {
-			clog.Error("Search", "Failed to marshal results from the search.", err)
+			slog.Error("Failed to marshal results from the search.", "func", "Search", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(jsonMarshal)
 		if err != nil {
-			clog.Error("Search", "Failed to write response.", err)
+			slog.Error("Failed to write response.", "func", "Search", "error", err)
 			return
 		}
 	}
@@ -59,7 +59,7 @@ func Search() http.HandlerFunc {
 // This ID is translated to a filesystem path, which is passed to Liquidsoap for processing.
 func RequestID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Info("Request", fmt.Sprintf("Request-by-ID by client %s.", r.RemoteAddr))
+		slog.Info(fmt.Sprintf("Request-by-ID by client %s.", r.RemoteAddr), "func", "Request")
 		type Request struct {
 			ID string `json:"ID"`
 		}
@@ -67,25 +67,25 @@ func RequestID() http.HandlerFunc {
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&request)
 		if err != nil {
-			clog.Error("RequestID", "Unable to decode request.", err)
+			slog.Error("Unable to decode request.", "func", "RequestID", "error", err)
 			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 			return
 		}
 		reqID, err := strconv.Atoi(request.ID)
 		if err != nil {
-			clog.Error("RequestID", "Unable to convert request ID to an integer.", err)
+			slog.Error("Unable to convert request ID to an integer.", "func", "RequestID", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		path, err := getPathById(reqID)
 		if err != nil {
-			clog.Error("RequestID", "Unable to find file path by song ID.", err)
+			slog.Error("Unable to find file path by song ID.", "func", "RequestID", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		_, err = liquidsoapRequest(path)
 		if err != nil {
-			clog.Error("RequestID", "Unable to submit song request.", err)
+			slog.Error("Unable to submit song request.", "func", "RequestID", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
@@ -98,7 +98,7 @@ func RequestID() http.HandlerFunc {
 // The number one result of the search has its path taken and submitted to Liquidsoap for processing.
 func RequestBestMatch() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		clog.Debug("Search", fmt.Sprintf("Decoding http-request data from client %s.", r.RemoteAddr))
+		slog.Debug(fmt.Sprintf("Decoding http-request data from client %s.", r.RemoteAddr), "func", "Search")
 		type RequestBestMatch struct {
 			Query string `json:"Search"`
 		}
@@ -106,25 +106,25 @@ func RequestBestMatch() http.HandlerFunc {
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&rbm)
 		if err != nil {
-			clog.Error("RequestBestMatch", "Unable to decode request body.", err)
+			slog.Error("Unable to decode request body.", "func", "RequestBestMatch", "error", err)
 			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 			return
 		}
 		queryResults, err := searchByQuery(rbm.Query)
 		if err != nil {
-			clog.Error("RequestBestMatch", "Unable to search by query.", err)
+			slog.Error("Unable to search by query.", "func", "RequestBestMatch", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		path, err := getPathById(queryResults[0].ID)
 		if err != nil {
-			clog.Error("RequestBestMatch", "Unable to find file path by song ID", err)
+			slog.Error("Unable to find file path by song ID", "func", "RequestBestMatch", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		_, err = liquidsoapRequest(path)
 		if err != nil {
-			clog.Error("RequestBestMatch", "Unable to submit song request.", err)
+			slog.Error("Unable to submit song request.", "func", "RequestBestMatch", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
@@ -138,25 +138,25 @@ func NowPlayingMetadata() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		queryResults, err := searchByTitleArtist(now.Song.Title, now.Song.Artist)
 		if err != nil {
-			clog.Error("NowPlayingMetadata", "Unable to search by title and artist.", err)
+			slog.Error("Unable to search by title and artist.", "func", "NowPlayingMetadata", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		if len(queryResults) < 1 {
-			clog.Warn("NowPlayingMetadata", "The currently playing song could not be found in the database. The database may not be populated.")
+			slog.Warn("The currently playing song could not be found in the database. The database may not be populated.", "func", "NowPlayingMetadata")
 			w.WriteHeader(http.StatusNotFound) // 404 Not Found
 			return
 		}
 		jsonMarshal, err := json.Marshal(queryResults[0])
 		if err != nil {
-			clog.Error("NowPlayingMetadata", "Failed to marshal results from the search.", err)
+			slog.Error("Failed to marshal results from the search.", "func", "NowPlayingMetadata", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(jsonMarshal)
 		if err != nil {
-			clog.Error("NowPlayingMetadata", "Failed to write response.", err)
+			slog.Error("Failed to write response.", "func", "NowPlayingMetadata", "error", err)
 			return
 		}
 	}
@@ -168,35 +168,35 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		queryResults, err := searchByTitleArtist(now.Song.Title, now.Song.Artist)
 		if err != nil {
-			clog.Error("NowPlayingAlbumArt", "Unable to search by title and artist.", err)
+			slog.Error("Unable to search by title and artist.", "func", "NowPlayingAlbumArt", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		if len(queryResults) < 1 {
-			clog.Warn("NowPlayingAlbumArt", "The currently playing song could not be found in the database. The database may not be populated.")
+			slog.Warn("The currently playing song could not be found in the database. The database may not be populated.", "func", "NowPlayingAlbumArt")
 			w.WriteHeader(http.StatusNotFound) // 404 Not Found
 			return
 		}
 		path, err := getPathById(queryResults[0].ID)
 		if err != nil {
-			clog.Error("NowPlayingAlbumArt", "Unable to find file path by song ID.", err)
+			slog.Error("Unable to find file path by song ID.", "func", "NowPlayingAlbumArt", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		file, err := os.Open(path)
 		if err != nil {
-			clog.Error("NowPlayingAlbumArt", "Unable to open a file for album art extraction.", err)
+			slog.Error("Unable to open a file for album art extraction.", "func", "NowPlayingAlbumArt", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		tags, err := tag.ReadFrom(file)
 		if err != nil {
-			clog.Error("NowPlayingAlbumArt", "Unable to read tags on file for art extraction.", err)
+			slog.Error("Unable to read tags on file for art extraction.", "func", "NowPlayingAlbumArt", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		if tags.Picture() == nil {
-			clog.Debug("NowPlayingAlbumArt", "The currently playing song has no album art metadata.")
+			slog.Debug("The currently playing song has no album art metadata.", "func", "NowPlayingAlbumArt")
 			w.WriteHeader(http.StatusNoContent) // 204 No Content
 			return
 		}
@@ -206,14 +206,14 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 		result := SongData{Picture: tags.Picture().Data}
 		jsonMarshal, err := json.Marshal(result)
 		if err != nil {
-			clog.Error("NowPlayingAlbumArt", "Failed to marshal art data.", err)
+			slog.Error("Failed to marshal art data.", "func", "NowPlayingAlbumArt", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(jsonMarshal)
 		if err != nil {
-			clog.Error("NowPlayingAlbumArt", "Failed to write response.", err)
+			slog.Error("Failed to write response.", "func", "NowPlayingAlbumArt", "error", err)
 			return
 		}
 	}
@@ -225,14 +225,14 @@ func History() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		jsonMarshal, err := json.Marshal(history)
 		if err != nil {
-			clog.Error("History", "Failed to marshal play history.", err)
+			slog.Error("Failed to marshal play history.", "func", "History", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(jsonMarshal)
 		if err != nil {
-			clog.Error("History", "Failed to write response.", err)
+			slog.Error("Failed to write response.", "func", "History", "error", err)
 			return
 		}
 	}
@@ -248,14 +248,14 @@ func ListenURL() http.HandlerFunc {
 		listenurl := ListenURL{ListenURL: string(now.Host + "/" + now.Mountpoint)}
 		jsonMarshal, err := json.Marshal(listenurl)
 		if err != nil {
-			clog.Error("ListenURL", "Failed to marshal listen URL.", err)
+			slog.Error("Failed to marshal listen URL.", "func", "ListenURL", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(jsonMarshal)
 		if err != nil {
-			clog.Error("ListenURL", "Failed to write response.", err)
+			slog.Error("Failed to write response.", "func", "ListenURL", "error", err)
 			return
 		}
 	}
@@ -271,14 +271,14 @@ func Listeners() http.HandlerFunc {
 		listeners := Listeners{Listeners: int(now.Listeners)}
 		jsonMarshal, err := json.Marshal(listeners)
 		if err != nil {
-			clog.Error("Listeners", "Failed to marshal listeners.", err)
+			slog.Error("Failed to marshal listeners.", "func", "Listeners", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(jsonMarshal)
 		if err != nil {
-			clog.Error("Listeners", "Failed to write response.", err)
+			slog.Error("Failed to write response.", "func", "Listeners", "error", err)
 			return
 		}
 	}
@@ -294,14 +294,14 @@ func Bitrate() http.HandlerFunc {
 		bitrate := Bitrate{Bitrate: int(now.Bitrate)}
 		jsonMarshal, err := json.Marshal(bitrate)
 		if err != nil {
-			clog.Error("Bitrate", "Failed to marshal bitrate.", err)
+			slog.Error("Failed to marshal bitrate.", "func", "Bitrate", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(jsonMarshal)
 		if err != nil {
-			clog.Error("Bitrate", "Failed to write response.", err)
+			slog.Error("Failed to write response.", "func", "Bitrate", "error", err)
 			return
 		}
 	}
@@ -317,14 +317,14 @@ func Version() http.HandlerFunc {
 		version := Version{Version: c.Version}
 		jsonMarshal, err := json.Marshal(version)
 		if err != nil {
-			clog.Error("Version", "Failed to marshal version.", err)
+			slog.Error("Failed to marshal version.", "func", "Version", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(jsonMarshal)
 		if err != nil {
-			clog.Error("Version", "Failed to write response.", err)
+			slog.Error("Failed to write response.", "func", "Version", "error", err)
 			return
 		}
 	}
@@ -334,6 +334,7 @@ func Version() http.HandlerFunc {
 // Gets 200 OK status. Primarily used for verifying health/readiness of the API.
 func Ready() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		slog.Debug("Ready check.", "func", "Ready")
 		w.WriteHeader(http.StatusOK) // 200 OK
 	}
 }
@@ -345,7 +346,7 @@ func DevSkip() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, err := liquidsoapSkip()
 		if err != nil {
-			clog.Error("DevSkip", "Unable to skip the playing song.", err)
+			slog.Error("Unable to skip the playing song.", "func", "DevSkip", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}

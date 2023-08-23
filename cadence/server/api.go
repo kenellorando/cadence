@@ -334,7 +334,6 @@ func Version() http.HandlerFunc {
 // Gets 200 OK status. Primarily used for verifying health/readiness of the API.
 func Ready() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		slog.Debug("Ready check.", "func", "Ready")
 		w.WriteHeader(http.StatusOK) // 200 OK
 	}
 }

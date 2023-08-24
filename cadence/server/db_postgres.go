@@ -6,13 +6,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/dhowden/tag"
-	"github.com/kenellorando/clog"
 	"github.com/lib/pq"
 )
 
@@ -25,25 +25,25 @@ func postgresInit() (err error) {
 		c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresSSL)
 	dbp, err = sql.Open("postgres", dsn)
 	if err != nil {
-		clog.Error("postgresInit", "Could not open connection to database.", err)
+		slog.Error("Couldn't open a connection to database.", "func", "postgresInit", "error", err)
 		return err
 	}
 	err = dbp.Ping()
 	if err != nil {
-		clog.Error("postgresInit", "Could not successfully ping the metadata database.", err)
+		slog.Error("Couldn't ping the metadata database.", "func", "postgresInit", "error", err)
 		return err
 	}
 	// Enable fuzzystrmatch for levenshtein sorting.
 	// This enables the database to return results based on search similarity.
-	clog.Debug("postgresInit", "Enabling fuzzystrmatch extension...")
+	slog.Debug("Enabling fuzzystrmatch extension...", "func", "postgresInit")
 	enableExtension := "CREATE EXTENSION fuzzystrmatch"
 	_, err = dbp.Exec(enableExtension)
 	if err != nil {
 		if err.(*pq.Error).Code == "42710" {
 			// 42710 also indicates an existing Postgres instance configured by another Cadence instance is still running.
-			clog.Info("postgresInit", "fuzzystrmatch already enabled on metadata database.")
+			slog.Debug("fuzzystrmatch already enabled on metadata database.", "func", "postgresInit")
 		} else {
-			clog.Error("postgresInit", "Failed to enable fuzzystrmatch. Search may be degraded.", err)
+			slog.Error("Failed to enable fuzzystrmatch. Search will function in a degraded state.", "func", "postgresInit", "error", err)
 			return err
 		}
 	}
@@ -69,54 +69,55 @@ func postgresPopulate() error {
 	)`, c.PostgresTableName)
 
 	// Drop the database and rebuild it to start fresh.
-	clog.Debug("postgresPopulate", fmt.Sprintf("Deleting existing databases named <%s>...", c.PostgresDBName))
+	slog.Debug(fmt.Sprintf("Deleting existing databases named <%s>...", c.PostgresDBName), "func", "postgresPopulate")
 	_, err := dbp.Exec(dropDatabase)
 	if err != nil {
-		clog.Error("postgresPopulate", "Failed to remove existing dbp. Skipping remaining autoconfig steps.", err)
+		slog.Error("Failed to remove existing dbp. Skipping remaining autoconfig steps.", "func", "postgresPopulate", "error", err)
 		return err
 	}
-	clog.Debug("postgresPopulate", fmt.Sprintf("Creating database <%s>...", c.PostgresDBName))
+	slog.Debug(fmt.Sprintf("Creating database <%s>...", c.PostgresDBName), "func", "postgresPopulate")
 	_, err = dbp.Exec(createDatabase)
 	if err != nil {
-		clog.Error("postgresPopulate", "Failed to create database. Skipping remaining autoconfig steps.", err)
+		slog.Error("Failed to create database. Skipping remaining autoconfig steps.", "func", "postgresPopulate", "error", err)
 		return err
 	}
-	clog.Debug("postgresPopulate", fmt.Sprintf("Dropping table <%s>...", c.PostgresTableName))
+	slog.Debug(fmt.Sprintf("Dropping table <%s>...", c.PostgresTableName), "func", "postgresPopulate")
 	_, err = dbp.Exec(dropTable)
 	if err != nil {
-		clog.Error("postgresPopulate", "Failed to drop table. Skipping remaining autoconfig steps.", err)
+		slog.Error("Failed to drop table. Skipping remaining autoconfig steps.", "func", "postgresPopulate", "error", err)
 		return err
 	}
-	clog.Debug("postgresPopulate", fmt.Sprintf("Creating table <%s>...", c.PostgresTableName))
+	slog.Debug(fmt.Sprintf("Creating table <%s>...", c.PostgresTableName), "func", "postgresPopulate")
 	_, err = dbp.Exec(createTable)
 	if err != nil {
 		if err.(*pq.Error).Code == "42P07" {
 			// 42P10 indicates an existing metadata table configured by another Cadence instance is still running.
-			clog.Info("postgresInit", "Metadata database already exists")
+			slog.Info("Metadata database already exists", "func", "postgresPopulate")
 		} else {
-			clog.Error("postgresPopulate", "Failed to build database table!", err)
+			slog.Error("Failed to build database table!", "func", "postgresPopulate", "error", err)
 			return err
 		}
 	}
-	clog.Debug("postgresPopulate", "Verifying music metadata directory is accessible...")
+	slog.Debug("Verifying music metadata directory is accessible.")
 	_, err = os.Stat(c.MusicDir)
 	if err != nil {
+		slog.Error(fmt.Sprintf("Could not open music directory <%s> for verification.", c.MusicDir), "func", postgresPopulate, "error", err)
 		if os.IsNotExist(err) {
-			clog.Error("postgresPopulate", "The configured target music directory was not found.", err)
+			slog.Error("The configured target music directory was not found.", "func", "postgresPopulate", "error", err)
 			return err
 		}
 	}
 
 	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6", c.PostgresTableName, "title", "album", "artist", "genre", "year", "path")
-	clog.Debug("postgresPopulate", fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir))
+	slog.Debug(fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir), "func", "postgresPopulate")
 	err = filepath.Walk(c.MusicDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			clog.Error("postgresPopulate", "Error during filepath walk", err)
+			slog.Error("Error during filepath walk", "func", "postgresPopulate", "error", err)
 			return err
 		}
-		clog.Debug("postgresPopulate", fmt.Sprintf("Populate analyzing file: <%s>", path))
+		slog.Debug(fmt.Sprintf("Populate analyzing file: <%s>", path), "func", "postgresPopulate")
 		if info.IsDir() {
-			clog.Debug("postgresPopulate", fmt.Sprintf("<%s> is a directory, skipping.", path))
+			slog.Debug(fmt.Sprintf("<%s> is a directory, skipping.", path), "func", "postgresPopulate")
 			return nil
 		}
 		extensions := []string{".mp3", ".flac", ".ogg"}
@@ -124,30 +125,30 @@ func postgresPopulate() error {
 			if strings.HasSuffix(path, ext) {
 				file, err := os.Open(path)
 				if err != nil {
-					clog.Error("postgresPopulate", fmt.Sprintf("A problem occured opening <%s>.", path), err)
+					slog.Error(fmt.Sprintf("Problem opening directory <%s> for music population.", path), "func", "postgresPopulate", "error", err)
 					return err
 				}
 				defer file.Close()
 				tags, err := tag.ReadFrom(file)
 				if err != nil {
-					clog.Error("postgresPopulate", fmt.Sprintf("A problem occured fetching tags from <%s>.", path), err)
+					slog.Error(fmt.Sprintf("Problem fetching tags from <%s>.", path), "func", "postgresPopulate", "error", err)
 					return err
 				}
 				_, err = dbp.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
 				if err != nil {
-					clog.Error("postgresPopulate", fmt.Sprintf("A problem occured populating metadata for <%s>.", path), err)
+					slog.Error(fmt.Sprintf("Problem populating metadata for <%s>.", path), "func", "postgresPopulate", "error", err)
 					return err
 				}
-				clog.Debug("postgresPopulate", fmt.Sprintf("Populated: %s by %s", tags.Title(), tags.Artist()))
+				slog.Debug(fmt.Sprintf("Finished populating track: %s by %s", tags.Title(), tags.Artist()), "func", "postgresPopulate")
 				break
 			}
 		}
 		return nil
 	})
 	if err != nil {
-		clog.Error("postgresPopulate", "Music metadata database population failed, or may be incomplete.", err)
+		slog.Error("Music metadata database population failed, or may be incomplete.", "func", "postgresPopulate", "error", err)
 		return err
 	}
-	clog.Info("postgresPopulate", "Database population completed.")
+	slog.Info("Database population completed.", "func", "postgresPopulate")
 	return nil
 }

@@ -6,11 +6,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net"
 	"net/http"
 	"time"
 
-	"github.com/kenellorando/clog"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -39,7 +39,7 @@ func rateLimitRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip, err := checkIP(r)
 		if err != nil {
-			clog.Error("rateLimitRequest", "Error encountered while checking IP address.", err)
+			slog.Error("Couldn't start IP address check for request API.", "func", "rateLimitRequest", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
@@ -52,12 +52,12 @@ func rateLimitRequest(next http.Handler) http.Handler {
 				dbr.RateLimitRequest.Set(ctx, ip, nil, time.Duration(c.RequestRateLimit)*time.Second)
 				next.ServeHTTP(w, r)
 			} else {
-				clog.Error("rateLimitRequest", "Error while attempting to check for IP in rate limiter.", err)
+				slog.Error("Redis reported error while checking for IP.", "func", "rateLimitRequest", "error", err)
 				w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 				return
 			}
 		} else {
-			clog.Debug("rateLimitRequest", fmt.Sprintf("Client <%s> is rate limited.", ip))
+			slog.Info(fmt.Sprintf("IP <%s> is rate limited.", ip), "func", "rateLimitRequest")
 			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
 			return
 		}
@@ -68,7 +68,7 @@ func rateLimitArt(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip, err := checkIP(r)
 		if err != nil {
-			clog.Error("rateLimitArt", "Error encountered while checking IP address.", err)
+			slog.Error("Couldn't start IP address check for artwork API.", "func", "rateLimitArt", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
@@ -81,7 +81,7 @@ func rateLimitArt(next http.Handler) http.Handler {
 				dbr.RateLimitArt.Set(ctx, ip, 1, time.Duration(200)*time.Second)
 				next.ServeHTTP(w, r)
 			} else {
-				clog.Error("rateLimitArt", "Error while attempting to check for IP in rate limiter.", err)
+				slog.Error("Redis reported error while checking for IP.", "func", "rateLimitArt", "error", err)
 				w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 				return
 			}
@@ -90,7 +90,7 @@ func rateLimitArt(next http.Handler) http.Handler {
 			// Check the value of the IP address.
 			count, err := dbr.RateLimitArt.Get(ctx, ip).Int()
 			if err != nil {
-				clog.Error("rateLimitArt", "Error while converting art served value to integer.", err)
+				slog.Error("Couldn't get the client's artwork request count.", "func", "rateLimitArt", "error", err)
 				w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 				return
 			}
@@ -103,11 +103,11 @@ func rateLimitArt(next http.Handler) http.Handler {
 			// so we're not going to send you new artwork for now. The artwork hasn't changed
 			// since you last asked, so you're safe to use whatever you last cached."
 			if count >= 16 {
-				clog.Debug("rateLimitArt", fmt.Sprintf("Client <%s> is rate limited.", ip))
+				slog.Info(fmt.Sprintf("IP <%s> is rate limited.", ip), "func", "rateLimitArt")
 				w.WriteHeader(http.StatusNotModified) // 304 Not Modified
 				return
 			} else {
-				clog.Debug("rateLimitArt", fmt.Sprintf("Client <%s> is rate limited.", ip))
+				slog.Info(fmt.Sprintf("IP <%s> is rate limited.", ip), "func", "rateLimitArt")
 				dbr.RateLimitArt.Set(ctx, ip, count+1, time.Duration(200)*time.Second)
 				next.ServeHTTP(w, r)
 			}
@@ -121,11 +121,11 @@ func checkIP(r *http.Request) (ip string, err error) {
 	if r.RemoteAddr != "" {
 		ip, _, err := net.SplitHostPort(r.RemoteAddr)
 		if err != nil {
-			clog.Error("checkIP", "Error while splitting client address IP and port. The request will be rejected.", err)
+			slog.Error("Couldn't split client address IP from port. The request will be rejected.", "func", "checkIP", "error", err)
 			return "", err
 		}
 		if ip == "" {
-			clog.Warn("checkIP", "IP address of a client was blank, and could not be checked. The request will be rejected.")
+			slog.Warn("A client IP was blank and could not be checked. The request will be rejected.", "func", "checkIP")
 			return "", err
 		}
 		return ip, nil

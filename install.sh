@@ -63,4 +63,5 @@ echo "========================================="
 echo "Configuration completed."
 echo "If it does not begin automatically, run 'docker compose up' to start Cadence."
 docker compose down
+docker compose pull
 docker compose up

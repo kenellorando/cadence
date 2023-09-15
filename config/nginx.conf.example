@@ -27,10 +27,10 @@ http {
 			chunked_transfer_encoding off;
 			proxy_buffering off;
 			proxy_cache off;
-			proxy_pass http://cadence:8080/api/radiodata/sse;
+			proxy_pass http://cadence-api:8080/api/radiodata/sse;
 		}
 		location / {
-			proxy_pass http://cadence:8080/;
+			proxy_pass http://cadence-api:8080/;
 		}
 	}
 }

@@ -1,13 +1,16 @@
 build-init:
 	docker buildx create --platform linux/arm/v7,linux/amd64 --use --name multiarch
 
-build-cadence:
-	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag kenellorando/cadence:latest --tag kenellorando/cadence:$(VERSION) --file ./cadence/cadence.Dockerfile ./cadence/
+build-cadence_api:
+	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag "kenellorando/cadence_api:latest" --tag kenellorando/cadence_api:$(VERSION) --file ./src/cadence-api.Dockerfile ./src/
+
+# build-cadence_api:
+# 	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag "kenellorando/cadence:latest" --tag kenellorando/cadence:$(VERSION) --file ./src/cadence.Dockerfile ./src/
 
 build-cadence_icecast2:
-	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag kenellorando/cadence_icecast2:latest --tag kenellorando/cadence_icecast2:$(VERSION) --file ./cadence/icecast2.Dockerfile ./cadence/
+	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag kenellorando/cadence_icecast2:latest --tag kenellorando/cadence_icecast2:$(VERSION) --file ./src/icecast2.Dockerfile ./src/
 
 build-cadence_liquidsoap:
-	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag kenellorando/cadence_liquidsoap:latest --tag kenellorando/cadence_liquidsoap:$(VERSION) --file ./cadence/liquidsoap.Dockerfile ./cadence/
+	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag kenellorando/cadence_liquidsoap:latest --tag kenellorando/cadence_liquidsoap:$(VERSION) --file ./src/liquidsoap.Dockerfile ./src/
 
-build-all: build-cadence build-cadence_icecast2 build-cadence_liquidsoap
+build-all: build-cadence_api build-cadence_icecast2 build-cadence_liquidsoap

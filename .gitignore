@@ -24,3 +24,12 @@ cadence.env
 icecast.xml
 liquidsoap.liq
 nginx.conf
+
+## Svelte/NodeJS
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package

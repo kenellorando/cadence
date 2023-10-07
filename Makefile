@@ -1,11 +1,8 @@
 build-init:
 	docker buildx create --platform linux/arm/v7,linux/amd64 --use --name multiarch
 
-build-cadence_api:
-	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag "kenellorando/cadence_api:latest" --tag kenellorando/cadence_api:$(VERSION) --file ./src/cadence-api.Dockerfile ./src/
-
-# build-cadence_api:
-# 	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag "kenellorando/cadence:latest" --tag kenellorando/cadence:$(VERSION) --file ./src/cadence.Dockerfile ./src/
+build-cadence:
+	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag "kenellorando/cadence:latest" --tag kenellorando/cadence:$(VERSION) --file ./src/cadence.Dockerfile ./src/
 
 build-cadence_icecast2:
 	docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag kenellorando/cadence_icecast2:latest --tag kenellorando/cadence_icecast2:$(VERSION) --file ./src/icecast2.Dockerfile ./src/

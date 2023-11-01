@@ -20,7 +20,8 @@ var dbp *sql.DB
 
 func postgresInit() (err error) {
 	// We wait a bit to give some leeway for Postgres to finish startup.
-	time.Sleep(2 * time.Second)
+	// Obligatory: There's probably a better way to do this.
+	time.Sleep(5 * time.Second)
 	dsn := fmt.Sprintf("host='%s' port='%s' user='%s' password='%s' sslmode='%s'",
 		c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresSSL)
 	dbp, err = sql.Open("postgres", dsn)

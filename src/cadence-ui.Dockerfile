@@ -10,17 +10,14 @@ RUN npm ci
 RUN npm run build
 RUN npm prune --production
 
+ARG ARCH=
+FROM node:20-alpine3.17 
+LABEL maintainer="Ken Ellorando (kenellorando.com)"
+LABEL source="github.com/kenellorando/cadence"
 
+WORKDIR /ui
+COPY --from=ui-builder /ui-builder/package*.json ./
+COPY --from=ui-builder /ui-builder/build ./build/
+RUN npm ci --omit dev
+ENV NODE_ENV production
 CMD [ "node", "build"]
-
-# ARG ARCH=
-# FROM node:20-alpine3.17 
-# LABEL maintainer="Ken Ellorando (kenellorando.com)"
-# LABEL source="github.com/kenellorando/cadence"
-
-# WORKDIR /ui
-# COPY --from=ui-builder /ui-builder/package*.json ./
-# COPY --from=ui-builder /ui-builder/build ./build/
-# RUN npm ci --omit dev
-# ENV NODE_ENV production
-# CMD [ "node", "build"]

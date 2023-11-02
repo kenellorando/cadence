@@ -50,12 +50,26 @@ services:
       internal_services:
       stream_delivery:
 
-  cadence:
+  cadence-ui:
     build:
       context: ./src
-      dockerfile: ./cadence.Dockerfile
-    #image: kenellorando/cadence
-    container_name: cadence
+      dockerfile: ./cadence-ui.Dockerfile
+    image: kenellorando/cadence-ui
+    container_name: cadence-ui
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - cadence-api
+    networks:
+      external_services:
+
+  cadence-api:
+    build:
+      context: ./src
+      dockerfile: ./cadence-api.Dockerfile
+    image: kenellorando/cadence-api
+    container_name: cadence-api
     restart: always
     ports:
       - 8080:8080
@@ -81,7 +95,7 @@ services:
     ports:
       - 80:80
     depends_on:
-      - cadence
+      - cadence-api
     networks:
       external_services:
 

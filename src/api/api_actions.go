@@ -243,7 +243,7 @@ func icecastMonitor() {
 			radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
 			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
 			if (prev.Song.Title != "") && (prev.Song.Artist != "") {
-				history = append(history, playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
+				history = append(playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()}, history...)
 				if len(history) > 10 {
 					history = history[1:]
 				}

@@ -1,11 +1,59 @@
+<script>
+  import { onMount } from "svelte";
+
+  let title, artist, album, version, listeners, bitrate, listenurl;
+
+  onMount(async () => {
+    fetch("http://localhost:8080/api/nowplaying/metadata")
+      .then((response) => response.json())
+      .then((data) => {
+        title = data.Title;
+        artist = data.Artist;
+        album = data.Album;
+      });
+    // fetch("http://localhost:8080/api/nowplaying/albumart")
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     title = data.Art;
+    //   });
+    fetch("http://localhost:8080/api/version")
+      .then((response) => response.json())
+      .then((data) => {
+        version = data.Version;
+      });
+    fetch("http://localhost:8080/api/listeners")
+      .then((response) => response.json())
+      .then((data) => {
+        listeners = data.Listeners;
+      });
+    fetch("http://localhost:8080/api/bitrate")
+      .then((response) => response.json())
+      .then((data) => {
+        bitrate = data.Bitrate;
+      });
+    fetch("http://localhost:8080/api/listenurl")
+      .then((response) => response.json())
+      .then((data) => {
+        listenurl = data.ListenURL;
+      });
+  });
+</script>
+
+<main>
+
+</main>
+
+
+
 <div class="font-sans p-4 mx-1 mb-2 rounded-xl shadow-lg text-center border-2 border-neutral-50">
     <div class="p-4">
         <div class=" mb-3 flex justify-center">
             <img class="border-2 border-black w-56" src="/blank.jpg" alt="no album art available">
         </div>
         <div class="mb-3">
-            <div class="text-2xl">You Belong With Me</div>
-            <div class="text-xl">Taylor Swift</div>
+            <div class="text-2xl">{title}</div>
+            <div class="text-xl">{artist}</div>
+            <div>{album}</div>
         </div>
         <div class="mb-3">
             <button class="bg-gray-200 font-bold py-3 px-5 rounded-full">▶︎</button>
@@ -15,23 +63,6 @@
         </div>
     </div>
 </div>
-
-<div class="font-thin font-sans mx-1 mb-2 collapse collapse-arrow rounded-xl border-2 border-neutral-50">
-    <input type="checkbox" /> 
-    <div class="collapse-title">
-      Stream Information
-    </div>
-    <div class="collapse-content text-sm">
-        <div>Connected: <span class="link text-cyan-700"><a href="https://stream.cadenceradio.com/cadence1">https://stream.cadenceradio.com/cadence1</a></span></div>
-        <div>Bitrate (kbps): <span>192</span></div>
-        <div>Current Listeners: <span>2</span></div>
-        <div>Cadence Radio Version: <span>5.5.0</span></div>
-        <div>
-            <a class="link text-cyan-700" target="_blank" href="https://github.com/kenellorando/cadence">GitHub</a> •
-            <a class="link text-cyan-700" target="_blank" href="https://github.com/kenellorando/cadence/wiki/API-Reference">API Reference</a>
-        </div>
-    </div>
-  </div>
 
 
   <div class="font-thin font-sans mx-1 mb-2 collapse collapse-arrow rounded-xl border-2 border-neutral-50">
@@ -69,6 +100,12 @@
                 
               </tbody>
             </table>
+            <div class="join">
+                <button class="join-item btn">1</button>
+                <button class="join-item btn btn-active">2</button>
+                <button class="join-item btn">3</button>
+                <button class="join-item btn">4</button>
+              </div>
           </div>
     </div>
 </div>
@@ -112,3 +149,21 @@
         <input type="radio" name="radio-1" class="radio" />
     </div>
   </div>
+
+
+<div class="font-thin font-sans mx-1 mb-2 collapse collapse-arrow rounded-xl border-2 border-neutral-50">
+  <input type="checkbox" /> 
+  <div class="collapse-title">
+    Radio Information
+  </div>
+  <div class="collapse-content text-sm font-mono">
+      <div>Mountpoint: <span class="link text-cyan-700">{listenurl}</span></div>
+      <div>Bitrate (kbps): {bitrate}</div>
+      <div>Current Listeners: {listeners}</div>
+      <div>Cadence Radio Version: {version}</div>
+      <div>
+          <a class="link text-cyan-700" target="_blank" href="https://github.com/kenellorando/cadence">GitHub</a> •
+          <a class="link text-cyan-700" target="_blank" href="https://github.com/kenellorando/cadence/wiki/API-Reference">API Reference</a>
+      </div>
+  </div>
+</div>

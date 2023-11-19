@@ -41,7 +41,9 @@
 
       if (response.ok) {
         console.log("Data posted successfully");
-        search = response.message;
+        const data = await response.json();
+        
+        search = data;
       } else {
         console.error("Failed to post data");
       }
@@ -67,7 +69,6 @@
       .then((response) => response.json())
       .then((data) => {
         history = data;
-        alert(history)
       });
     fetch("http://localhost:8080/api/version")
       .then((response) => response.json())
@@ -124,36 +125,36 @@
       Request
     </div>
     <div class="collapse-content text-sm">
-        <div class="form-control w-full max-w-xs">
+        <div class="form-control">
             <form on:submit|preventDefault={postSearch}>
-                <input bind:value={searchRequest.Search} type="text" placeholder="Search for a song or artist!" class="input input-bordered w-full max-w-xs" />
+                <input bind:value={searchRequest.Search} type="text" placeholder="Search for a song or artist!" class="input input-bordered" />
             
             </form>
           </div>
-        <div class="overflow-x-auto">
+        <div>
             <table class="table">
               <!-- head -->
               <thead>
                 <tr>
-                  <th>Title</th>
+                    <th>Title</th>
                   <th>Artist</th>
-                  <th>Album</th>
-                  <th>Year</th>
-                  <th>Request Availability</th>
+                  <th>Availability</th>
                 </tr>
               </thead>
               <tbody>
-                <!-- row 1 -->
-                <tr>
-                  <td>only my railgun</td>
-                  <td>fripSide</td>
-                  <td>Infinite Synthesis</td>
-                  <td>2009</td>
-                  <th>
-                    <button class="btn btn-ghost btn-xs">Request</button>
-                  </th>
-                </tr>
-                
+                {#if search != undefined}
+                    {#each search as song}
+                        <tr>
+                            <td>{song.Title}</td>
+                            <td>{song.Artist}</td>
+                            <td>
+                                <button class="btn btn-ghost btn-xs">Request</button>
+                            </td>
+                        </tr>
+                        {/each}
+                    {:else}
+                        <p class="text-sm">0 results.</p>
+                {/if}
               </tbody>
             </table>
             <div class="join">
@@ -172,27 +173,27 @@
       History
     </div>
     <div class="collapse-content text-sm">
-      <div class="overflow-x-auto">
+      <div>
           <table class="table">
             <!-- head -->
             <thead>
               <tr>
                 <th>Ended</th>
-                <th>Artist</th>
                 <th>Title</th>
+                <th>Artist</th>
               </tr>
             </thead>
             <tbody>
               {#if history != undefined}
-                {#each history as song}
+                {#each history as entry}
                 <tr>
-                  <td>{formatDate(song.Ended)}</td>
-                  <td>{song.Artist}</td>
-                  <td>{song.Title}</td>
+                  <td>{formatDate(entry.Ended)}</td>
+                  <td>{entry.Song.Title}</td>
+                  <td>{entry.Song.Artist}</td>
                 </tr>
                 {/each}
               {:else}
-                <p>No track history (yet). The radio may have just started!</p>
+                <p class="text-sm">No track history (yet). The radio may have just started!</p>
               {/if}
             </tbody>
           </table>
@@ -217,7 +218,7 @@
   <div class="collapse-title">
     Radio Information
   </div>
-  <div class="collapse-content text-sm font-mono">
+  <div class="collapse-content">
       <div>Mountpoint: <span class="link text-cyan-700">{listenurl}</span></div>
       <div>Bitrate (kbps): {bitrate}</div>
       <div>Current Listeners: {listeners}</div>

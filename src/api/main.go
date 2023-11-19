@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"log/slog"
 	"net/http"
 	"os"
@@ -62,7 +63,12 @@ func main() {
 	}
 	go redisInit()
 	go filesystemMonitor()
-	go icecastMonitor()
+	go func() {
+		for {
+			time.Sleep(1 * time.Second)
+			icecastMonitor()
+		}
+	}()
 
 	slog.Info(fmt.Sprintf("Starting Cadence on port <%s>.", c.Port), "func", "main")
 	if http.ListenAndServe(c.Port, routes()) != nil {

@@ -40,6 +40,15 @@ var now = Playing{}
 var prev = Playing{}
 var history = make([]Playing, 0, 10)
 
+func (now *Playing) SetPlaying(title string, artist string, host string, mountpoint string, listeners float64, bitrate float64) {
+	now.Song.Title = title
+	now.Song.Artist = artist
+	now.Host = host
+	now.Mountpoint = mountpoint
+	now.Listeners = listeners
+	now.Bitrate = bitrate
+}
+
 func (now *Playing) ResetPlaying() {
 	now.Song.Title = "-"
 	now.Song.Artist = "-"
@@ -200,75 +209,68 @@ func filesystemMonitor() {
 
 // Watches the Icecast status page and updates stream info for SSE.
 func icecastMonitor() {
-	checkIcecastStatus := func() {
-		resp, err := http.Get("http://" + c.IcecastAddress + c.IcecastPort + "/status-json.xsl")
-		if err != nil {
-			slog.Error("Unable to stream data from the Icecast service.", "func", "icecastMonitor", "error", err)
-			now.ResetPlaying()
-			return
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode != http.StatusOK {
-			slog.Debug("Unable to connect to Icecast.", "func", "icecastMonitor")
-			now.ResetPlaying()
-			return
-		}
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			slog.Debug("Connected to Icecast but unable to read response.", "func", "icecastMonitor")
-			now.ResetPlaying()
-			return
-		}
-		jsonParsed, err := gabs.ParseJSON([]byte(body))
-		if err != nil {
-			slog.Debug("Connected to Icecast but unable to parse response.", "func", "icecastMonitor")
-			now.ResetPlaying()
-			return
-		}
-		if jsonParsed.Path("icestats.source.title").Data() == nil || jsonParsed.Path("icestats.source.artist").Data() == nil {
-			slog.Debug("Connected to Icecast, but saw nothing playing.", "func", "icecastMonitor")
-			now.ResetPlaying()
-			return
-		}
-
-		now.Song.Artist = jsonParsed.Path("icestats.source.artist").Data().(string)
-		now.Song.Title = jsonParsed.Path("icestats.source.title").Data().(string)
-		now.Host = jsonParsed.Path("icestats.host").Data().(string)
-		now.Mountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
-		now.Listeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
-		now.Bitrate = jsonParsed.Path("icestats.source.bitrate").Data().(float64)
-
-		if prev.Song != now.Song {
-			slog.Info(fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist), "func", "icecastMonitor")
-			// Dump the artwork rate limiter database first thing before updates
-			// are sent out to reset artwork request count.
-			dbr.RateLimitArt.FlushDB(ctx)
-
-			radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
-			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
-			if (prev.Song.Title != "") && (prev.Song.Artist != "") {
-				addToHistory := Playing{Song: prev.Song, Ended: time.Now()}
-				history = append([]Playing{addToHistory}, history...)
-				if len(history) > 10 {
-					history = history[1:]
-				}
-				radiodata_sse.SendEventMessage("update", "history", "")
-			}
-		}
-		if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
-			slog.Info(fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint), "func", "icecastMonitor")
-			radiodata_sse.SendEventMessage(fmt.Sprintf(now.Host, "/", now.Mountpoint), "listenurl", "")
-		}
-		if prev.Listeners != now.Listeners {
-			slog.Info(fmt.Sprintf("Listener count: <%v>", now.Listeners), "func", "icecastMonitor")
-			radiodata_sse.SendEventMessage(fmt.Sprint(now.Listeners), "listeners", "")
-		}
-		prev = now
+	resp, err := http.Get("http://" + c.IcecastAddress + c.IcecastPort + "/status-json.xsl")
+	if err != nil {
+		slog.Error("Unable to stream data from the Icecast service.", "func", "icecastMonitor", "error", err)
+		now.ResetPlaying()
+		return
 	}
-	go func() {
-		for {
-			time.Sleep(1 * time.Second)
-			checkIcecastStatus()
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		slog.Debug("Unable to connect to Icecast.", "func", "icecastMonitor")
+		now.ResetPlaying()
+		return
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		slog.Debug("Connected to Icecast but unable to read response.", "func", "icecastMonitor")
+		now.ResetPlaying()
+		return
+	}
+	jsonParsed, err := gabs.ParseJSON([]byte(body))
+	if err != nil {
+		slog.Debug("Connected to Icecast but unable to parse response.", "func", "icecastMonitor")
+		now.ResetPlaying()
+		return
+	}
+	if jsonParsed.Path("icestats.source.title").Data() == nil || jsonParsed.Path("icestats.source.artist").Data() == nil {
+		slog.Debug("Connected to Icecast, but saw nothing playing.", "func", "icecastMonitor")
+		now.ResetPlaying()
+		return
+	}
+
+	now.SetPlaying(jsonParsed.Path("icestats.source.artist").Data().(string),
+		jsonParsed.Path("icestats.source.title").Data().(string),
+		jsonParsed.Path("icestats.host").Data().(string),
+		jsonParsed.Path("icestats.source.server_name").Data().(string),
+		jsonParsed.Path("icestats.source.listeners").Data().(float64),
+		jsonParsed.Path("icestats.source.bitrate").Data().(float64),
+	)
+
+	if prev.Song != now.Song {
+		slog.Info(fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist), "func", "icecastMonitor")
+		// Dump the artwork rate limiter database first thing before updates
+		// are sent out to reset artwork request count.
+		dbr.RateLimitArt.FlushDB(ctx)
+
+		radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
+		radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
+		if (prev.Song.Title != "") && (prev.Song.Artist != "") {
+			addToHistory := Playing{Song: prev.Song, Ended: time.Now()}
+			history = append([]Playing{addToHistory}, history...)
+			if len(history) > 10 {
+				history = history[1:]
+			}
+			radiodata_sse.SendEventMessage("update", "history", "")
 		}
-	}()
+	}
+	if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
+		slog.Info(fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint), "func", "icecastMonitor")
+		radiodata_sse.SendEventMessage(fmt.Sprintf(now.Host, "/", now.Mountpoint), "listenurl", "")
+	}
+	if prev.Listeners != now.Listeners {
+		slog.Info(fmt.Sprintf("Listener count: <%v>", now.Listeners), "func", "icecastMonitor")
+		radiodata_sse.SendEventMessage(fmt.Sprint(now.Listeners), "listeners", "")
+	}
+	prev = now
 }

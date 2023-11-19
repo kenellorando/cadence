@@ -18,16 +18,14 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-var now = RadioInfo{}
-
-type RadioInfo struct {
+type Playing struct {
 	Song       SongData
 	Host       string
 	Mountpoint string
 	Listeners  float64
 	Bitrate    float64
+	Ended  		time.Time
 }
-
 type SongData struct {
 	ID     int
 	Artist string
@@ -36,6 +34,18 @@ type SongData struct {
 	Genre  string
 	Year   int
 	Path   string
+}
+
+var now = Playing{}
+var prev = Playing{}
+var history = make([]Playing, 0, 10)
+
+func (now *Playing) ResetPlaying() {
+	now.Song.Title = "-"
+	now.Song.Artist = "-"
+	now.Host = "-"
+	now.Mountpoint = "-"
+	now.Listeners = -1
 }
 
 // Takes a query string to search the database.
@@ -190,40 +200,34 @@ func filesystemMonitor() {
 
 // Watches the Icecast status page and updates stream info for SSE.
 func icecastMonitor() {
-	var prev = RadioInfo{}
-	// Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
-	icecastDataReset := func() {
-		now.Song.Title, now.Song.Artist, now.Host, now.Mountpoint = "-", "-", "-", "-"
-		now.Listeners = -1
-	}
 	checkIcecastStatus := func() {
 		resp, err := http.Get("http://" + c.IcecastAddress + c.IcecastPort + "/status-json.xsl")
 		if err != nil {
 			slog.Error("Unable to stream data from the Icecast service.", "func", "icecastMonitor", "error", err)
-			icecastDataReset()
+			now.ResetPlaying()
 			return
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
 			slog.Debug("Unable to connect to Icecast.", "func", "icecastMonitor")
-			icecastDataReset()
+			now.ResetPlaying()
 			return
 		}
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			slog.Debug("Connected to Icecast but unable to read response.", "func", "icecastMonitor")
-			icecastDataReset()
+			now.ResetPlaying()
 			return
 		}
 		jsonParsed, err := gabs.ParseJSON([]byte(body))
 		if err != nil {
 			slog.Debug("Connected to Icecast but unable to parse response.", "func", "icecastMonitor")
-			icecastDataReset()
+			now.ResetPlaying()
 			return
 		}
 		if jsonParsed.Path("icestats.source.title").Data() == nil || jsonParsed.Path("icestats.source.artist").Data() == nil {
 			slog.Debug("Connected to Icecast, but saw nothing playing.", "func", "icecastMonitor")
-			icecastDataReset()
+			now.ResetPlaying()
 			return
 		}
 
@@ -234,7 +238,7 @@ func icecastMonitor() {
 		now.Listeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
 		now.Bitrate = jsonParsed.Path("icestats.source.bitrate").Data().(float64)
 
-		if (prev.Song.Title != now.Song.Title) || (prev.Song.Artist != now.Song.Artist) {
+		if prev.Song != now.Song {
 			slog.Info(fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist), "func", "icecastMonitor")
 			// Dump the artwork rate limiter database first thing before updates
 			// are sent out to reset artwork request count.
@@ -243,7 +247,8 @@ func icecastMonitor() {
 			radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
 			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
 			if (prev.Song.Title != "") && (prev.Song.Artist != "") {
-				history = append(playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()}, history...)
+				addToHistory := Playing{Song: prev.Song, Ended: time.Now()}
+				history = append([]Playing{addToHistory}, history...)
 				if len(history) > 10 {
 					history = history[1:]
 				}
@@ -266,12 +271,4 @@ func icecastMonitor() {
 			checkIcecastStatus()
 		}
 	}()
-}
-
-var history = make([]playRecord, 0, 10)
-
-type playRecord struct {
-	Title  string
-	Artist string
-	Ended  time.Time
 }

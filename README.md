@@ -2,7 +2,7 @@
 
 **Cadence** (or *CadenceRadio*) is an all-in-one internet radio suite. 
 
-The project ships with *Icecast* and *Liquidsoap* working out-of-the-box, complete with library search, song request, album artwork, and real-time stream information in a browser UI. Install and deploy in minutes.
+The project ships with *Icecast* and *Liquidsoap* working out-of-the-box, made complete with a *Cadence API* providing library search, song request, album artwork, and real-time stream information in a browser UI. Install and deploy in minutes.
 
 **See a live demo on [cadenceradio.com](https://cadenceradio.com/)!**
 

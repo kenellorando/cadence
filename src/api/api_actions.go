@@ -24,7 +24,7 @@ type Playing struct {
 	Mountpoint string
 	Listeners  float64
 	Bitrate    float64
-	Ended  		time.Time
+	Ended      time.Time
 }
 type SongData struct {
 	ID     int
@@ -55,6 +55,7 @@ func (now *Playing) ResetPlaying() {
 	now.Host = "-"
 	now.Mountpoint = "-"
 	now.Listeners = -1
+	now.Bitrate = -1
 }
 
 // Takes a query string to search the database.

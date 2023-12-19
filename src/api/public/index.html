@@ -1,79 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<title>Cadence | Open-Source Self Hosted Web Radio</title>
-		<meta name="title" content="Cadence | Open-Source Self Hosted Web Radio">
-		<meta name="description" content="Start a web radio website in minutes.">
-		<meta property="og:type" content="website">
-		<meta property="og:url" content="https://cadenceradio.com/">
-		<meta property="og:title" content="Cadence | Open-Source Self Hosted Web Radio">
-		<meta property="og:description" content="Start a web radio website in minutes.">
-		<meta property="og:image" content="/static/splash.jpg">
-		<meta property="twitter:card" content="summary_large_image">
-		<meta property="twitter:url" content="https://cadenceradio.com/">
-		<meta property="twitter:title" content="Cadence | Open-Source Self Hosted Web Radio">
-		<meta property="twitter:description" content="Start a web radio website in minutes.">
-		<meta property="twitter:image" content="/static/splash.jpg">
-
-		<link rel="icon" type="image/x-icon" href="/static/favicon.ico">
-
-		<link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet"> 
-
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-		<link rel="stylesheet" href="./css/main.css">
-
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script type="text/javascript" src="./js/aria.js"></script>
-        <script type="text/javascript" src="./js/page.js"></script>
+		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&family=Noto+Sans+KR:wght@300&family=Noto+Sans+SC:wght@300&family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
+	
+        <link rel="stylesheet" href="./css/tailwind.css">
+        <script src="https://unpkg.com/htmx.org@1.9.9"></script>
     </head>
-    <body>
-        <div id="player" class="columns is-centered is-vcentered box is-rounded">
-            <div class="column is-narrow is-offset-1-desktop is-3-desktop-only">
-                <div id="artworkcontainer">
-                    <img id="artwork" src="./static/blank.jpg"/>
+    <body class="p-2 md:p-4">
+        <div class="font-sans p-4 mx-1 mb-2 rounded-xl shadow-lg text-center border-2 border-neutral-50">
+            <div class="p-4">
+                <div class=" mb-3 flex justify-center">  
+                    <img class="border-2 border-black w-56" src="/blank.jpg" alt="no album art available">
+        
+                    <!-- {#if art == undefined}
+                    <img class="border-2 border-black w-56" src="/blank.jpg" alt="no album art available">
+                    {:else}
+                    <img class="border-2 border-black w-56" src="data:image/jpeg;base64,{art}" alt="album artwork">
+                    {/if} -->
                 </div>
-            </div>
-            <div class="column" id="playerinfo">
-                <audio id="stream" src="" type="audio/mp3"></audio>
-                <div id="song">-</div>
-                <div id="artist">-</div>
-                <div id="playButton">►</div>
-                <input type="range" id="volume" value=".3" min="0" max="1" step="0.006" class="block" >
-                <div id="status">Disconnected from server.</div>
-                <div id="version" class="block">Current Listeners: <span id="listeners">-</span></div>
+                <div class="mb-3">
+                    <!-- <div class="text-2xl">{title}</div>
+                    <div class="text-xl">{artist}</div>
+                    <div>{album}</div> -->
+                </div>
+                <div class="mb-3">
+                    <button class="bg-gray-200 font-bold py-3 px-5 rounded-full">▶︎</button>
+                </div>
+                <div class="mb-3">
+                    <input class="w-50 accent-cyan-600" type="range" name="volume" value="30" min="0" max="100"/>
+                </div>
             </div>
         </div>
         
-        <div id="tabs" class="tabs is-centered">
-            <ul>
-                <li data-tab="request" class="is-active"><a>Request</a></li>
-                <li data-tab="history"><a>History</a></li>
-            </ul>
+         
+        <div class="font-thin font-sans mx-1 mb-2 collapse collapse-arrow rounded-xl border-2 border-neutral-50">
+            <input type="checkbox" /> 
+            <div class="collapse-title">
+                Request
+            </div>
+            <div class="collapse-content text-sm">
+                <div class="form-control">
+                    <form on:submit|preventDefault={postSearch}>
+                        <input bind:value={searchRequest.Search} type="text" placeholder="Search for a song or artist!" class="input input-bordered" />
+                    
+                    </form>
+                    </div>
+                <div>
+                    <table class="table">
+                        
+                        <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Artist</th>
+                            <th>Availability</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {#if search != undefined}
+                            {#each search as song}
+                                <tr>
+                                    <td>{song.Title}</td>
+                                    <td>{song.Artist}</td>
+                                    <td>
+                                        <button class="btn btn-ghost btn-xs">Request</button>
+                                    </td>
+                                </tr>
+                                {/each}
+                            {:else}
+                                <p class="text-sm">0 results.</p>
+                        {/if}
+                        </tbody>
+                    </table>
+                    <div class="join">
+                        <button class="join-item btn">1</button>
+                        <button class="join-item btn btn-active">2</button>
+                        <button class="join-item btn">3</button>
+                        <button class="join-item btn">4</button>
+                        </div>
+                    </div>
+            </div>
         </div>
-        <div id="tab-content">
-            <section data-content="request" class="content is-active">
-                <input name="searchInput" id="searchInput" class="input is-normal is-rounded" type="text" placeholder="Filter for a song or artist!">
-                <div id="searchResults"></div>
-                <div id="requestStatus"></div>
-            </section>
-            <section data-content="history" class="content">
-                <div id="historyResults"></div>
-                <div id="historyStatus"></div>
-            </section>
+        
+        <div class="font-thin font-sans mx-1 mb-2 collapse collapse-arrow rounded-xl border-2 border-neutral-50">
+            <input type="checkbox" /> 
+            <div class="collapse-title">
+                History
+            </div>
+            <div class="collapse-content text-sm">
+                <div>
+                    <table class="table">
+                    <thead>
+                        <tr>
+                        <th>Ended</th>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#if history != undefined}
+                        {#each history as entry}
+                        <tr>
+                            <td>{formatDate(entry.Ended)}</td>
+                            <td>{entry.Song.Title}</td>
+                            <td>{entry.Song.Artist}</td>
+                        </tr>
+                        {/each}
+                        {:else}
+                        <p class="text-sm">No track history (yet). The radio may have just started!</p>
+                        {/if}
+                    </tbody>
+                    </table>
+            </div>
+            </div>
         </div>
-
-		<footer>
-			<div>Cadence Radio <span id="release">-</span></div>
-			<div>
-				<a target="_blank" href="https://github.com/kenellorando/cadence">GitHub</a> • 
-				<a target="_blank" href="https://kenellorando.notion.site/Cadence-All-in-One-Web-Radio-Software-Suite-d1f0184b5eeb4882a3d6f78d582b2de6">About</a> • 
-				<a target="_blank" href="https://github.com/kenellorando/cadence/wiki/API-Reference">API</a>
-			</div>
-		</footer>
-	</body>
+        
+            <div class="font-thin font-sans mx-1 mb-2 collapse collapse-arrow rounded-xl border-2 border-neutral-50">
+            <input type="checkbox" /> 
+            <div class="collapse-title">
+                UI Theme
+            </div>
+            <div class="collapse-content text-sm">
+                <input type="radio" name="radio-1" class="radio" checked />
+                <input type="radio" name="radio-1" class="radio" />
+            </div>
+            </div>
+        
+        
+        <div class="font-thin font-sans mx-1 mb-2 collapse collapse-arrow rounded-xl border-2 border-neutral-50">
+            <input type="checkbox" /> 
+            <div class="collapse-title">
+            Radio Information
+            </div>
+            <div class="collapse-content">
+                <div>Mountpoint: <span class="link text-cyan-700">{listenurl}</span></div>
+                <div>Bitrate (kbps): {bitrate}</div>
+                <div>Current Listeners: {listeners}</div>
+                <div>Cadence Radio Version: {version}</div>
+                <div>
+                    <a class="link text-cyan-700" target="_blank" href="https://github.com/kenellorando/cadence">GitHub</a> •
+                    <a class="link text-cyan-700" target="_blank" href="https://github.com/kenellorando/cadence/wiki/API-Reference">API Reference</a>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

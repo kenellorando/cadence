@@ -10,12 +10,13 @@ ARG ARCH=
 FROM ${ARCH}golang:1.21-alpine
 LABEL maintainer="Ken Ellorando (kenellorando.com)"
 LABEL source="github.com/kenellorando/cadence"
-COPY --from=api-builder /api-builder/cadence-api /cadence/cadence-api
+COPY --from=api-builder /api-builder/public/ /cadence/api/public
+COPY --from=api-builder /api-builder/cadence-api /cadence/api/cadence-api
 
 RUN adduser --disabled-password --gecos "" cadence
-RUN chown cadence /cadence/ /cadence/* /cadence/cadence-api
+RUN chown cadence /cadence/ /cadence/* /cadence/api/cadence-api
 RUN chmod u+wrx /cadence/ /cadence/* 
 
 EXPOSE 8080
 USER cadence
-CMD [ "/cadence/cadence-api" ]
+CMD [ "/cadence/api/cadence-api" ]

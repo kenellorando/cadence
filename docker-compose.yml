@@ -21,7 +21,7 @@ services:
 
   icecast2:
     build:
-      dockerfile: ./cadence/icecast2.Dockerfile
+      dockerfile: ./src/icecast2.Dockerfile
     image: kenellorando/cadence_icecast2:latest
     container_name: icecast2
     restart: always
@@ -35,13 +35,13 @@ services:
 
   liquidsoap:
     build:
-      dockerfile: ./cadence/liquidsoap.Dockerfile
+      dockerfile: ./src/liquidsoap.Dockerfile
     image: kenellorando/cadence_liquidsoap:latest
     container_name: liquidsoap
     restart: always
     volumes:
       - ./config/liquidsoap.liq:/etc/liquidsoap/cadence.liq
-      - /music:/music
+      - /music/:/music/
     depends_on:
       - icecast2
     expose:
@@ -52,7 +52,7 @@ services:
 
   cadence:
     build:
-      context: ./cadence
+      context: ./src/
       dockerfile: ./cadence.Dockerfile
     image: kenellorando/cadence
     container_name: cadence
@@ -62,7 +62,7 @@ services:
     env_file:
       - ./config/cadence.env
     volumes:
-      - /music:/music
+      - /music/:/music/
     depends_on:
       - icecast2
       - liquidsoap

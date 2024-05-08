@@ -14,7 +14,7 @@ echo ""
 echo "[2/5] Stream Host Address"
 echo "Set the stream host address. This may be a DNS name, public IP, or private IP."
 echo "Use localhost:8000 if your Cadence instance is meant for local use only."
-read -p "      Stream address: " CADENCE_HOST
+read -p "      Stream address: " CADENCE_STREAM_HOST
 echo ""
 echo "[3/5] Rate Limiter Timeout"
 echo "Set a rate limit timeout in integer seconds. This prevents the same listener"
@@ -33,9 +33,8 @@ read -p "      [y/N]: " ENABLE_REVERSE_PROXY
 
 if [[ "$ENABLE_REVERSE_PROXY" =~ ^([yY])$ ]]
 then
-      echo "Please provide your domain names (one audio domain, one web domain) here."
-      read -p "      Audio Stream Domain: " CADENCE_STREAM_DNS
-      read -p "      Web UI Domain: " CADENCE_WEB_DNS
+      echo "Please provide the domain name you will use for Cadence UI."
+      read -p "      Web UI Domain: " CADENCE_WEB_HOST
 else
       echo "No reverse proxy will be configured."
 fi
@@ -50,11 +49,11 @@ sed -i 's|CADENCE_PASS_EXAMPLE|'"$CADENCE_PASS"'|g' ./config/cadence.env
 sed -i 's|CADENCE_PASS_EXAMPLE|'"$CADENCE_PASS"'|g' ./config/icecast.xml
 sed -i 's|CADENCE_PASS_EXAMPLE|'"$CADENCE_PASS"'|g' ./config/liquidsoap.liq
 sed -i 's|CADENCE_RATE_EXAMPLE|'"$CADENCE_RATE"'|g' ./config/cadence.env
-sed -i 's|CADENCE_HOST_EXAMPLE|'"$CADENCE_HOST"'|g' ./config/icecast.xml
+sed -i 's|CADENCE_STREAM_HOST_EXAMPLE|'"$CADENCE_STREAM_HOST"'|g' ./config/icecast.xml
 sed -i 's|CADENCE_PATH_EXAMPLE|'"$CADENCE_PATH"'|g' ./config/cadence.env
 sed -i 's|CADENCE_PATH_EXAMPLE|'"$CADENCE_PATH"'|g' ./config/liquidsoap.liq
-sed -i 's|CADENCE_STREAM_DNS_EXAMPLE|'"$CADENCE_STREAM_DNS"'|g' ./config/nginx.conf
-sed -i 's|CADENCE_WEB_DNS_EXAMPLE|'"$CADENCE_WEB_DNS"'|g' ./config/nginx.conf
+sed -i 's|CADENCE_STREAM_HOST_EXAMPLE|'"$CADENCE_STREAM_HOST"'|g' ./config/nginx.conf
+sed -i 's|CADENCE_WEB_HOST_EXAMPLE|'"$CADENCE_WEB_HOST"'|g' ./config/nginx.conf
 sed -i 's|CADENCE_PATH_EXAMPLE|'"$CADENCE_PATH"'|g' ./docker-compose.yml
 
 echo ""

@@ -40,7 +40,7 @@ services:
     restart: always
     volumes:
       - ./config/liquidsoap.liq:/etc/liquidsoap/cadence.liq
-      - /music:/music
+      - /music/:/music/
     depends_on:
       - icecast2
     expose:
@@ -61,7 +61,7 @@ services:
     env_file:
       - ./config/cadence.env
     volumes:
-      - /music:/music
+      - /music/:/music/
     depends_on:
       - icecast2
       - liquidsoap

@@ -2,7 +2,7 @@
 
 **Cadence** (or *CadenceRadio*) is an all-in-one internet radio suite. 
 
-The project ships with *Icecast* and *Liquidsoap* working out-of-the-box, made complete with a *Cadence API* providing library search, song request, album artwork, and real-time stream information in a browser UI. Install and deploy in minutes.
+The project ships *Icecast* and *Liquidsoap* working out-of-the-box, made complete by a *Cadence API* providing song request, library search, album artwork, and real-time stream information in a browser UI.
 
 **See a live demo on [cadenceradio.com](https://cadenceradio.com/)!**
 
@@ -10,7 +10,7 @@ The project ships with *Icecast* and *Liquidsoap* working out-of-the-box, made c
 
 ## 🏃 Get Started
 
-An interactive installation script is provided. Users familiar with Docker can be up and running in ~5 minutes. Alternate installation methods, including manual configuration and Kubernetes deployments, are respectively described on the [Installation Guide](https://github.com/kenellorando/cadence/wiki/Installation) and in [cadence-k8s](https://github.com/kenellorando/cadence-k8s).
+An interactive installation script is provided. Users familiar with Docker can be up and running in ~5 minutes.
 
 ### Server Preparation
 
@@ -26,9 +26,11 @@ $ chmod +x ./install.sh
 $ ./install.sh
 ```
 
-You will be prompted to provide the absolute path to a directory containing your music, a stream hostname, a rate limit timeout, a service password, and optional DNS. If you need help figuring out what values to use, refer to the [Installation Guide](https://github.com/kenellorando/cadence/wiki/Installation#interactive-prompt-guide). Your radio stack will automatically launch and Cadence's web UI will become accessible at `localhost:8080`.
+You will be prompted to provide an absolute path to a directory containing music, a stream hostname, a rate limit timeout, a service password, and optional reverse proxy configuration. If you need help figuring out what values to use, refer to the [Installation Guide](https://github.com/kenellorando/cadence/wiki/Installation#interactive-prompt-guide). 
 
-After initial installation, simply run `docker compose pull` to check for container updates, then `docker compose up` to start your station again. Run `./install.sh` again at any time to reconfigure. If you make your own changes locally to Cadence's code, run `docker compose up --build` to build and run.
+Your radio stack will automatically launch and Cadence's web UI will become accessible at `localhost:8080`.
+
+After initial installation, simply run `docker compose pull` to check for container updates, then `docker compose up` to start your station again. Run `./install.sh` again at any time to reconfigure. If you make changes to code locally, run `docker compose up --build` to build and run.
 
 ## 🔬 Technical Details
 

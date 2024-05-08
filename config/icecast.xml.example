@@ -23,7 +23,7 @@
         <admin-password>CADENCE_PASS_EXAMPLE</admin-password>
     </authentication>
 
-    <hostname>CADENCE_HOST_EXAMPLE</hostname>
+    <hostname>CADENCE_STREAM_HOST_EXAMPLE</hostname>
 
     <listen-socket>
         <port>8000</port>

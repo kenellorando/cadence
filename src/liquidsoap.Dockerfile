@@ -12,7 +12,7 @@ RUN ln -s /usr/bin/dpkg-split /usr/sbin/dpkg-split && \
 RUN apt clean all
 RUN apt update
 RUN apt install liquidsoap=1.4.3-3 -y
-RUN apt autoremove
+RUN apt autoremove --purge
 EXPOSE 1234
 USER liquidsoap
 CMD [ "liquidsoap", "-t", "/etc/liquidsoap/cadence.liq" ]

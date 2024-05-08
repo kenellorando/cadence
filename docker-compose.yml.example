@@ -73,6 +73,7 @@ services:
       external_services:
 
   nginx:
+    profiles: ["nginx"]
     image: nginx:latest
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf

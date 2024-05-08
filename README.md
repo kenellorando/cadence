@@ -42,7 +42,7 @@ After initial installation, simply run `docker compose pull` to check for contai
 
 </details>
 
-If you're interested in implementation details, [Cadence: Self-Hosted Web Radio Suite](https://cuddle.fish/posts/2022-11-08-cadence) does a dive into how a typical *Icecast/Liquidsoap* web radio works and the value Cadence provides.
+If you're interested in implementation details, [this blog post](https://cuddle.fish/posts/2022-11-08-cadence) does a dive into how a basic *Icecast/Liquidsoap* web radio works and the value Cadence provides.
 
 ### API Reference for Custom Clients
 Cadence's GitHub Wiki also hosts an [API Reference](https://github.com/kenellorando/cadence/wiki/API-Reference) with complete request/response details, useful for anyone developing custom scripts or clients for their station.

@@ -32,7 +32,7 @@ type ServerConfig struct {
 	RedisPort         string
 	WhitelistPath     string
 	DevMode           bool
-	LogLevel		  string
+	LogLevel          string
 }
 
 func parseLogLevel(level string) slog.Level {

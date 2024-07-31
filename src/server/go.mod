@@ -1,6 +1,6 @@
 module github.com/kenellorando/cadence
 
-go 1.2
+go 1.22
 
 require (
 	github.com/Jeffail/gabs v1.4.0

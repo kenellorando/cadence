@@ -1,0 +1,13 @@
+# NOTE: Leading indentation in this file must be retained. Do not apply Prettier!
+  nginx:
+    image: nginx:latest
+    volumes:
+        - ./config/nginx.conf:/etc/nginx/nginx.conf
+    container_name: nginx
+    restart: on-failure
+    ports:
+        - 80:80
+    depends_on:
+        - cadence
+    networks:
+        external_services:

@@ -20,11 +20,11 @@ https://github.com/kenellorando/cadence/wiki/Installation
 Set a path to a directory containing audio files (e.g. mp3, flac) to be played
 on the radio. The target will be recursively searched.
 END
-read -p "      Music path: " CADENCE_PATH
+read -ep "      Music path: " CADENCE_PATH
 while [ ! -d "$CADENCE_PATH" ]
 do
       echo "Music path must point to a directory that exists and is readable."
-      read -p "      Music path: " CADENCE_PATH
+      read -ep "      Music path: " CADENCE_PATH
 done
 # We do need to use absolute paths here - Make sure they end up that way.
 # realpath -s is used here instead of readlink -f to retain symlinks - Else,

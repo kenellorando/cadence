@@ -49,10 +49,11 @@ jobs:
               run: |
                   [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]
                   auto=$?
-                  manual="${{ github.inputs.push }}"
+                  [ "${{ github.inputs.push }}" = "true" ]
+                  manual=$?
                   [ "${{ github.event_name }}" = "release" ]
                   release=$?
-                  push=`($auto || $manual || $release) && echo 'true' || echo 'false'`
+                  push=`[[ $auto || $manual || $release ]] && echo 'true' || echo 'false'`
                   echo "do_push=$push" >> $GITHUB_ENV
             - name: Build Cadence server image
               run: |

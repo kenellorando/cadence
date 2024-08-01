@@ -38,12 +38,6 @@ jobs:
               if: github.event_name != 'workflow_dispatch'
               run: |
                   release=$(git tag --points-at HEAD)
-                  if $?
-                  then
-                    release="$release"
-                  else
-                    release=""
-                  fi
                   echo "tags=\"latest $(git rev-parse --short HEAD)\" $release" >> $GITHUB_ENV
             - name: Check push configuration
               run: |

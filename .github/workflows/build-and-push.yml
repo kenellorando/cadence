@@ -47,12 +47,25 @@ jobs:
                   echo "tags=\"-t \$IMAGE:latest -t \$IMAGE:$(git rev-parse --short HEAD)\" $release" >> $GITHUB_ENV
             - name: Check push configuration
               run: |
-                  [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]
-                  auto=$?
-                  [ "${{ github.inputs.push }}" = "true" ]
-                  manual=$?
-                  [ "${{ github.event_name }}" = "release" ]
-                  release=$?
+                  auto=1
+                  manual=1
+                  release=1
+
+                  if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]
+                  then
+                    auto=0
+                  fi
+
+                  if [ "${{ github.inputs.push }}" = "true" ]
+                  then
+                    manual=0
+                  fi
+
+                  if [ "${{ github.event_name }}" = "release" ]
+                  then
+                    release=0
+                  fi
+
                   push=`[[ $auto -eq 0 || $manual -eq 0 || $release -eq 0 ]] && echo 'true' || echo 'false'`
                   echo "do_push=$push" >> $GITHUB_ENV
             - name: Build Cadence server image

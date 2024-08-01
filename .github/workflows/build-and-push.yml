@@ -1,0 +1,79 @@
+name: "Docker Build and Push"
+
+on:
+    release:
+        types: ["published"]
+    push:
+        branches: ["master"]
+    pull_request:
+        branches: ["master"]
+    workflow_dispatch:
+        inputs:
+            push:
+                type: boolean
+                description: "Push image after build"
+                default: false
+            tags:
+                type: string
+                description: "Tags to apply to built image in addition to commit ID (separated by spaces)"
+                default: ""
+
+jobs:
+    build:
+        name: Build and push docker images
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Prepare tag list (manual trigger)
+              if: github.event_name == 'workflow_dispatch'
+              run: |
+                  declare -a tags
+                  for tag in ${{ github.inputs.tags }}
+                  do
+                    tags+=("-t \$IMAGE:$tag")
+                  done
+                  tags+=("-t \$IMAGE:$(git rev-parse --short HEAD)")
+                  echo "tags=\"${tags[@]}\"" >> $GITHUB_ENV
+            - name: Prepare tag list (push trigger)
+              if: github.event_name != 'workflow_dispatch'
+              run: |
+                  release=$(git tag --points-at HEAD)
+                  if $?
+                  then
+                    release="-t \$IMAGE:$release"
+                  else
+                    release=""
+                  fi
+                  echo "tags=\"-t \$IMAGE:latest -t \$IMAGE:$(git rev-parse --short HEAD)\" $release" >> $GITHUB_ENV
+            - name: Check push configuration
+              run: |
+                  auto=[ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]
+                  manual="${{ github.inputs.push }}"
+                  release=[ "${{ github.event_name }}" = "release" ]
+                  push=($auto || $manual || $release) && 'true' || 'false'
+                  echo "do_push=$push" >> $GITHUB_ENV
+            - name: Build Cadence server image
+              run: |
+                  IMAGE=kenellorando/cadence
+                  docker build ${{ env.tags }} -f src/cadence.Dockerfile src
+            - name: Build icecast2 image
+              run: |
+                  IMAGE=kenellorando/cadence_icecast2
+                  docker build ${{ env.tags }} -f src/icecast2.Dockerfile src
+            - name: Build liquidsoap image
+              run: |
+                  IMAGE=kenellorando/cadence_liquidsoap
+                  docker build ${{ env.tags }} -f src/liquidsoap.Dockerfile src
+            - name: Login to Docker Hub
+              if: env.push == 'true'
+              uses: docker/login-action@v3
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+            - name: Push Cadence images
+              if: env.push == 'true'
+              run: |
+                  sha=$(git rev-parse --short HEAD)
+                  docker push --all-tags kenellorando/cadence:$sha
+                  docker push --all-tags kenellorando/cadence_icecast2:$sha
+                  docker push --all-tags kenellorando/cadence_liquidsoap:$sha

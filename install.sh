@@ -58,7 +58,7 @@ Set a rate limit timeout in integer seconds. This prevents the same listener
 from requesting songs within the configured timeframe. Set to 0 to disable.
 END
 read -p "      Rate limit (0): " CADENCE_RATE
-while ! [[ "$CADENCE_RATE" =~ ^\d*$ ]]
+while ! [[ "$CADENCE_RATE" =~ ^[0-9]*$ ]]
 do
       echo "Rate limit must be an integer!"
       read -p "      Rate limit (0): " CADENCE_RATE

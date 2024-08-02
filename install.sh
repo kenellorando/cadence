@@ -115,14 +115,13 @@ cp ./config/cadence.env.example ./config/cadence.env
 cp ./config/icecast.xml.example ./config/icecast.xml
 cp ./config/liquidsoap.liq.example ./config/liquidsoap.liq
 cp ./config/nginx.conf.example ./config/nginx.conf
-cp ./docker-compose.yml.example ./docker-compose.yml
 
 if [[ "$ENABLE_REVERSE_PROXY" =~ ^([yY])$ ]]
 then
-      awk -i inplace -v "c=$(cat ./nginx-compose-section.yml)" \
-          '{gsub(/NGINX_CONFIG_SECTION/,c)}1' docker-compose.yml
+      awk -v "c=$(cat ./nginx-compose-section.yml)" \
+          '{gsub(/NGINX_CONFIG_SECTION/,c)}1' ./docker-compose.yml.example > ./docker-compose.yml
 else
-      sed -i 's|NGINX_CONFIG_SECTION||g' ./docker-compose.yml
+      sed -e 's|NGINX_CONFIG_SECTION||g' ./docker-compose.yml.example > ./docker-compose.yml
 fi
 
 sed -i 's|CADENCE_PASS_EXAMPLE|'"$CADENCE_PASS"'|g' ./config/cadence.env

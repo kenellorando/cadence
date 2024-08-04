@@ -73,19 +73,7 @@ services:
       internal_services:
       external_services:
 
-  nginx:
-    profiles: ["nginx"]
-    image: nginx:latest
-    volumes:
-      - ./config/nginx.conf:/etc/nginx/nginx.conf
-    container_name: nginx
-    restart: on-failure
-    ports:
-      - 80:80
-    depends_on:
-      - cadence
-    networks:
-      external_services:
+NGINX_CONFIG_SECTION
 
 networks:
   external_services:

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var c = ServerConfig{}
@@ -31,6 +32,27 @@ type ServerConfig struct {
 	RedisPort         string
 	WhitelistPath     string
 	DevMode           bool
+	LogLevel          string
+}
+
+func parseLogLevel(level string) slog.Level {
+	if level == "" {
+		return slog.LevelInfo
+	}
+
+	switch strings.ToLower(level) {
+	case "debug":
+		return slog.LevelDebug
+	case "info":
+		return slog.LevelInfo
+	case "warn":
+		return slog.LevelWarn
+	case "error":
+		return slog.LevelError
+	default:
+		slog.Warn(fmt.Sprintf("Unrecognized log level %s!", level), "func", "parseLogLevel")
+		return slog.LevelInfo
+	}
 }
 
 func main() {
@@ -54,6 +76,9 @@ func main() {
 	c.RedisPort = os.Getenv("CSERVER_REDISPORT")
 	c.WhitelistPath = os.Getenv("CSERVER_WHITELIST_PATH")
 	c.DevMode, _ = strconv.ParseBool(os.Getenv("CSERVER_DEVMODE"))
+	c.LogLevel = os.Getenv("CSERVER_LOGLEVEL")
+
+	slog.SetLogLoggerLevel(parseLogLevel(c.LogLevel))
 
 	if postgresInit() == nil {
 		if postgresPopulate() != nil {

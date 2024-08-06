@@ -60,8 +60,6 @@ services:
       - 8080:8080
     env_file:
       - ./config/cadence.env
-    environment:
-        - CSERVER_LOGLEVEL=${LOG_LEVEL:-info}
     volumes:
       - CADENCE_PATH_EXAMPLE:CADENCE_PATH_EXAMPLE
     depends_on:

@@ -1,12 +1,26 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
 	"strconv"
 	"strings"
+	"syscall"
+	"time"
+)
+
+const (
+	// A client that has connected but not sent a complete request header is
+	// holding a connection open for nothing.
+	readHeaderTimeout = 10 * time.Second
+	readTimeout       = 30 * time.Second
+	idleTimeout       = 120 * time.Second
+	// How long in-flight requests are given to finish once a stop is requested.
+	shutdownTimeout = 15 * time.Second
 )
 
 var c = ServerConfig{}
@@ -87,8 +101,40 @@ func main() {
 	go filesystemMonitor()
 	go icecastMonitor()
 
+	server := &http.Server{
+		Addr:    c.Port,
+		Handler: routes(),
+		// WriteTimeout is deliberately left unset. /api/radiodata/sse holds its
+		// response open for the lifetime of the client, and any write deadline
+		// would sever every event stream on expiry. Header reads, body reads and
+		// idle keep-alive connections are still bounded.
+		ReadHeaderTimeout: readHeaderTimeout,
+		ReadTimeout:       readTimeout,
+		IdleTimeout:       idleTimeout,
+	}
+
+	serverErr := make(chan error, 1)
+	go func() {
+		serverErr <- server.ListenAndServe()
+	}()
 	slog.Info(fmt.Sprintf("Starting Cadence on port <%s>.", c.Port), "func", "main")
-	if http.ListenAndServe(c.Port, routes()) != nil {
-		slog.Error("Cadence failed to start!", "func", "main")
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	select {
+	case err := <-serverErr:
+		slog.Error("Cadence failed to start!", "func", "main", "error", err)
+	case sig := <-stop:
+		slog.Info(fmt.Sprintf("Received signal <%s>, shutting down.", sig), "func", "main")
+		// Event stream consumers never close their side, so they are dropped
+		// first. Otherwise Shutdown has nothing to wait for but its own timeout.
+		radiodata_sse.Close()
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+		defer cancel()
+		if err := server.Shutdown(shutdownCtx); err != nil {
+			slog.Error("Shutdown did not complete cleanly.", "func", "main", "error", err)
+		}
+		slog.Info("Cadence stopped.", "func", "main")
 	}
 }

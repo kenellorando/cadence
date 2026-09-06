@@ -19,6 +19,13 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
+// Every outbound call in this file talks to a service on the same compose
+// network. None of them are allowed to hang: the monitor polls on a one second
+// cadence, and a stalled request would silently stop all stream updates.
+const serviceTimeout = 5 * time.Second
+
+var icecastClient = &http.Client{Timeout: serviceTimeout}
+
 var now = RadioInfo{}
 
 // icecastMonitor writes now and history from its own goroutine once a second
@@ -150,12 +157,16 @@ func getPathById(id int) (path string, err error) {
 func liquidsoapRequest(path string) (message string, err error) {
 	// Telnet to liquidsoap
 	slog.Debug("Connecting to liquidsoap service...", "func", "liquidsoapRequest")
-	conn, err := net.Dial("tcp", c.LiquidsoapAddress+c.LiquidsoapPort)
+	conn, err := net.DialTimeout("tcp", c.LiquidsoapAddress+c.LiquidsoapPort, serviceTimeout)
 	if err != nil {
 		slog.Error("Failed to connect to audio source server.", "func", "liquidsoapRequest", "error", err)
 		return "", err
 	}
 	defer conn.Close()
+	if err = conn.SetDeadline(time.Now().Add(serviceTimeout)); err != nil {
+		slog.Error("Failed to set a deadline on the audio source connection.", "func", "liquidsoapRequest", "error", err)
+		return "", err
+	}
 	// Push song request to source service, listen for a response, and quit the telnet session.
 	fmt.Fprintf(conn, "request.push "+path+"\n")
 	message, err = bufio.NewReader(conn).ReadString('\n')
@@ -169,12 +180,16 @@ func liquidsoapRequest(path string) (message string, err error) {
 
 func liquidsoapSkip() (message string, err error) {
 	slog.Debug("Connecting to liquidsoap service...", "func", "liquidsoapSkip")
-	conn, err := net.Dial("tcp", c.LiquidsoapAddress+c.LiquidsoapPort)
+	conn, err := net.DialTimeout("tcp", c.LiquidsoapAddress+c.LiquidsoapPort, serviceTimeout)
 	if err != nil {
 		slog.Error("Failed to connect to audio source server.", "func", "liquidsoapSkip", "error", err)
 		return "", err
 	}
 	defer conn.Close()
+	if err = conn.SetDeadline(time.Now().Add(serviceTimeout)); err != nil {
+		slog.Error("Failed to set a deadline on the audio source connection.", "func", "liquidsoapSkip", "error", err)
+		return "", err
+	}
 	fmt.Fprintf(conn, "cadence1.skip\n")
 	// Listen for response
 	message, err = bufio.NewReader(conn).ReadString('\n')
@@ -263,7 +278,7 @@ func icecastMonitor() {
 		now.Listeners = -1
 	}
 	checkIcecastStatus := func() {
-		resp, err := http.Get("http://" + c.IcecastAddress + c.IcecastPort + "/status-json.xsl")
+		resp, err := icecastClient.Get("http://" + c.IcecastAddress + c.IcecastPort + "/status-json.xsl")
 		if err != nil {
 			slog.Error("Unable to stream data from the Icecast service.", "func", "icecastMonitor", "error", err)
 			icecastDataReset()

@@ -16,6 +16,11 @@ import (
 	"github.com/dhowden/tag"
 )
 
+// The largest request body any endpoint here has a use for. Every one of them
+// decodes a single short string, so anything beyond this is a client sending
+// something it should not.
+const maxRequestBody = 4096
+
 // POST /api/search
 // Receives a search query, which it looks in the database for.
 // Returns a JSON list of text metadata (excluding art and path) of any matching songs.
@@ -26,6 +31,7 @@ func Search() http.HandlerFunc {
 			Query string `json:"search"`
 		}
 		var search Search
+		r.Body = http.MaxBytesReader(w, r.Body, maxRequestBody)
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&search)
 		if err != nil {
@@ -64,6 +70,7 @@ func RequestID() http.HandlerFunc {
 			ID string `json:"ID"`
 		}
 		var request Request
+		r.Body = http.MaxBytesReader(w, r.Body, maxRequestBody)
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&request)
 		if err != nil {
@@ -103,6 +110,7 @@ func RequestBestMatch() http.HandlerFunc {
 			Query string `json:"Search"`
 		}
 		var rbm RequestBestMatch
+		r.Body = http.MaxBytesReader(w, r.Body, maxRequestBody)
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&rbm)
 		if err != nil {

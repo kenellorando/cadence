@@ -7,26 +7,17 @@
 </script>
 
 {#if entries.length === 0}
-	<p class="my-2 text-center text-sm">No history available (yet).</p>
+	<p class="py-10 text-center text-sm text-white/35">Nothing has played yet.</p>
 {:else}
-	<div class="overflow-x-auto">
-		<table class="w-full text-left">
-			<thead class="border-b border-neutral-300 dark:border-neutral-700">
-				<tr>
-					<th class="py-2 pr-4 font-medium">Ended</th>
-					<th class="py-2 pr-4 font-medium">Artist</th>
-					<th class="py-2 font-medium">Title</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each entries as song (song.Ended)}
-					<tr class="border-b border-neutral-200 dark:border-neutral-800">
-						<td class="py-2 pr-4 whitespace-nowrap">{timeAgo(song.Ended)}</td>
-						<td class="py-2 pr-4">{song.Artist}</td>
-						<td class="py-2">{song.Title}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
+	<ul class="divide-y divide-white/5 overflow-hidden rounded-xl border border-white/10">
+		{#each entries as song (song.Ended)}
+			<li class="flex items-center gap-4 bg-white/[0.02] px-4 py-3">
+				<div class="min-w-0 flex-1">
+					<p class="truncate font-medium text-white" title={song.Title}>{song.Title}</p>
+					<p class="truncate text-sm text-white/45" title={song.Artist}>{song.Artist}</p>
+				</div>
+				<span class="shrink-0 text-xs whitespace-nowrap text-white/35">{timeAgo(song.Ended)}</span>
+			</li>
+		{/each}
+	</ul>
 {/if}

@@ -1,9 +1,130 @@
 @import 'tailwindcss';
 
 @theme {
-	--font-sans: 'Roboto Condensed', ui-sans-serif, system-ui, sans-serif;
+	--font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+	--color-surface: #0b0b12;
+	--color-surface-raised: #14141f;
+	--color-line: #26263a;
+	--color-accent: #a78bfa;
+	--color-accent-strong: #7c3aed;
 }
 
-html {
-	color-scheme: light dark;
+/* A single dark theme: this is a media player, and the ambient art backdrop
+   below only reads correctly against a dark ground. */
+:root {
+	color-scheme: dark;
+}
+
+html,
+body {
+	min-height: 100%;
+	background-color: var(--color-surface);
+}
+
+/* The range input is styled by hand because the native control cannot be
+   restyled through utility classes alone in either engine. */
+.volume {
+	-webkit-appearance: none;
+	appearance: none;
+	background: transparent;
+	cursor: pointer;
+}
+
+.volume::-webkit-slider-runnable-track {
+	height: 4px;
+	border-radius: 9999px;
+	background: linear-gradient(
+		to right,
+		var(--color-accent) 0%,
+		var(--color-accent) var(--fill, 30%),
+		#2e2e42 var(--fill, 30%),
+		#2e2e42 100%
+	);
+}
+
+.volume::-moz-range-track {
+	height: 4px;
+	border-radius: 9999px;
+	background: #2e2e42;
+}
+
+.volume::-moz-range-progress {
+	height: 4px;
+	border-radius: 9999px;
+	background: var(--color-accent);
+}
+
+.volume::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	margin-top: -5px;
+	height: 14px;
+	width: 14px;
+	border-radius: 9999px;
+	background: #fff;
+	box-shadow: 0 0 0 1px rgb(0 0 0 / 0.3);
+	transition: transform 150ms ease;
+}
+
+.volume::-moz-range-thumb {
+	height: 14px;
+	width: 14px;
+	border: none;
+	border-radius: 9999px;
+	background: #fff;
+	transition: transform 150ms ease;
+}
+
+.volume:hover::-webkit-slider-thumb,
+.volume:focus-visible::-webkit-slider-thumb {
+	transform: scale(1.15);
+}
+
+.volume:hover::-moz-range-thumb {
+	transform: scale(1.15);
+}
+
+@keyframes onair {
+	0%,
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.45;
+		transform: scale(0.82);
+	}
+}
+
+.onair-dot {
+	animation: onair 2s ease-in-out infinite;
+}
+
+@keyframes rise {
+	0%,
+	100% {
+		transform: scaleY(0.35);
+	}
+	50% {
+		transform: scaleY(1);
+	}
+}
+
+/* Three bars that bounce while audio is playing. */
+.bar {
+	transform-origin: bottom;
+	animation: rise 900ms ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.onair-dot,
+	.bar {
+		animation: none;
+	}
+}
+
+::selection {
+	background: var(--color-accent-strong);
+	color: #fff;
 }

@@ -16,8 +16,12 @@ radio = fallback([ request.queue(id="request"), default])
 # the log while the live fallback never worked at all.
 full = fallback(track_sensitive=false, [input.http("http://icecast2:8000/live.ogg"), radio])
 
-# Output the full stream in OGG
+# Output the full stream in MP3. Not Vorbis: Safari and iOS cannot decode Ogg in
+# any container, so a Vorbis mount is unplayable on every Apple device. MP3 is
+# the format every browser accepts. It also changes what Icecast publishes --
+# a single "Artist - Title" ICY string rather than separate tags -- which the
+# server reads back apart.
 # The id sets the telnet namespace Cadence uses to skip tracks ("cadence1.skip").
 # Liquidsoap 1.4 derived it from the mount name; 2.x needs it stated, or the
 # namespace falls back to "output.icecast" and skip requests are refused.
-output.icecast(id="cadence1", %vorbis.cbr(bitrate=192), host="icecast2",port=8000,password="CADENCE_PASS_EXAMPLE", mount="cadence1",full)
+output.icecast(id="cadence1", %mp3(bitrate=192), host="icecast2",port=8000,password="CADENCE_PASS_EXAMPLE", mount="cadence1",full)

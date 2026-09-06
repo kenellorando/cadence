@@ -178,6 +178,21 @@ func postgresPopulate() error {
 		return err
 	}
 
+	// Search filters with a leading-wildcard ILIKE and ranks with levenshtein,
+	// neither of which a B-tree can serve. Trigram indexes cover both, and cost
+	// nothing to have on a small library.
+	if _, err := dbp.Exec("CREATE EXTENSION IF NOT EXISTS pg_trgm"); err != nil {
+		slog.Warn("Couldn't enable pg_trgm; search will scan the whole table.", "func", "postgresPopulate", "error", err)
+	} else {
+		for _, column := range []string{"title", "artist"} {
+			index := fmt.Sprintf("CREATE INDEX IF NOT EXISTS %s_%s_trgm_idx ON %s USING gin (%s gin_trgm_ops)",
+				c.PostgresTableName, column, c.PostgresTableName, column)
+			if _, err := dbp.Exec(index); err != nil {
+				slog.Warn(fmt.Sprintf("Couldn't index %s for search.", column), "func", "postgresPopulate", "error", err)
+			}
+		}
+	}
+
 	slog.Debug("Verifying music metadata directory is accessible.")
 	if _, err := os.Stat(c.MusicDir); err != nil {
 		slog.Error(fmt.Sprintf("Could not open music directory <%s> for verification.", c.MusicDir), "func", "postgresPopulate", "error", err)

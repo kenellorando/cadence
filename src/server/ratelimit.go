@@ -18,11 +18,18 @@ const (
 	// Buckets keep the two limiters independent within one table.
 	bucketRequest = "request"
 	bucketArt     = "art"
+	bucketSongArt = "songart"
 	// How long an artwork allowance lasts, and how many fetches it permits. One
 	// song's worth of headroom: enough for a client that legitimately refetches,
 	// not enough to make artwork a bandwidth amplifier.
 	artWindow = 200 * time.Second
 	artLimit  = 16
+	// Artwork for arbitrary songs is looked up by id, so a result list fetches
+	// several at once and a scripted client could ask for every track in the
+	// library. Generous enough for browsing, bounded enough that each request
+	// opening a file cannot be turned into a lever.
+	songArtWindow = 60 * time.Second
+	songArtLimit  = 120
 	// Bounds a limiter query so a slow database cannot hold a request open.
 	rateLimitTimeout = 3 * time.Second
 )
@@ -115,6 +122,30 @@ func rateLimitRequest(next http.Handler) http.Handler {
 		// One request per window: anything past the first is over the limit.
 		if count > 1 {
 			slog.Info(fmt.Sprintf("IP <%s> is rate limited.", ip), "func", "rateLimitRequest")
+			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// Bounds artwork fetched by song id, which a search result list does in bulk.
+func rateLimitSongArt(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ip, err := checkIP(r)
+		if err != nil {
+			slog.Error("Couldn't start IP address check for song artwork.", "func", "rateLimitSongArt", "error", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
+		count, err := rateLimitHit(bucketSongArt, ip, songArtWindow)
+		if err != nil {
+			slog.Error("Couldn't check the client's song artwork allowance.", "func", "rateLimitSongArt", "error", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
+		if count > songArtLimit {
+			slog.Info(fmt.Sprintf("IP <%s> is rate limited for song artwork.", ip), "func", "rateLimitSongArt")
 			w.WriteHeader(http.StatusTooManyRequests) // 429 Too Many Requests
 			return
 		}

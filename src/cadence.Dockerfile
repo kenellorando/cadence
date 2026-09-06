@@ -13,7 +13,10 @@ ARG TARGETPLATFORM BUILDPLATFORM TARGETOS TARGETARCH
 WORKDIR /cadence
 COPY server/ ./
 RUN go mod download
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s" -o /cadence-server
+ARG VERSION=
+# The version is stamped in rather than read from the environment, so what the
+# footer reports is the build that produced the binary.
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s -X main.version=${VERSION}" -o /cadence-server
 
 ARG ARCH=
 # The build above is CGO_ENABLED=0, so the binary is static and the runtime

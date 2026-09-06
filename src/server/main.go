@@ -23,6 +23,10 @@ const (
 	shutdownTimeout = 15 * time.Second
 )
 
+// Stamped at build time with -ldflags "-X main.version=...". The env var
+// remains a fallback so a hand-built binary still reports something.
+var version = ""
+
 var c = ServerConfig{}
 
 type ServerConfig struct {
@@ -67,7 +71,10 @@ func parseLogLevel(level string) slog.Level {
 }
 
 func main() {
-	c.Version = os.Getenv("CSERVER_VERSION")
+	c.Version = version
+	if c.Version == "" {
+		c.Version = os.Getenv("CSERVER_VERSION")
+	}
 	c.RootPath = os.Getenv("CSERVER_ROOTPATH")
 	c.RequestRateLimit, _ = strconv.Atoi(os.Getenv("CSERVER_REQRATELIMIT"))
 	c.Port = os.Getenv("CSERVER_PORT")

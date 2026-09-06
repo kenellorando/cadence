@@ -4,7 +4,9 @@
 package main
 
 import (
+	"io"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -58,10 +60,23 @@ func serveListener(w http.ResponseWriter, r *http.Request) {
 	// Live audio must not be buffered anywhere along the way, or the listener
 	// hears nothing until a buffer happens to fill.
 	w.Header().Set("X-Accel-Buffering", "no")
+
+	// Players that want track names ask for them; browsers never do. Only a
+	// client that asked gets metadata woven into its audio, so the stream a
+	// browser receives is unaffected by any of it.
+	var sink io.Writer = w
+	if r.Header.Get("Icy-MetaData") == "1" {
+		w.Header().Set("icy-metaint", strconv.Itoa(icyMetaInt))
+		w.Header().Set("icy-name", nowPlaying().Mountpoint)
+		if bitrate := nowPlaying().Bitrate; bitrate > 0 {
+			w.Header().Set("icy-br", strconv.Itoa(int(bitrate)))
+		}
+		sink = newICYWriter(w, icyTitle)
+	}
 	w.WriteHeader(http.StatusOK)
 
 	if len(opening) > 0 {
-		if _, err := w.Write(opening); err != nil {
+		if _, err := sink.Write(opening); err != nil {
 			return
 		}
 		flusher.Flush()
@@ -73,7 +88,7 @@ func serveListener(w http.ResponseWriter, r *http.Request) {
 			if !open {
 				return
 			}
-			if _, err := w.Write(chunk); err != nil {
+			if _, err := sink.Write(chunk); err != nil {
 				return
 			}
 			flusher.Flush()

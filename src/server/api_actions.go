@@ -127,6 +127,29 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 
 // Takes a song ID integer.
 // Returns the absolute path of the audio file.
+// Finds the library row for a song the source has announced. Album breaks ties
+// where a title and artist appear more than once, and the id ordering makes the
+// result deterministic when even that is ambiguous.
+func resolvePlaying(title, artist, album string) (SongData, bool) {
+	title, artist, album = strings.TrimSpace(title), strings.TrimSpace(artist), strings.TrimSpace(album)
+	if title == "" || dbp == nil {
+		return SongData{}, false
+	}
+	statement := fmt.Sprintf(`SELECT id, artist, title, album, genre, year FROM %s
+		WHERE title = $1 AND artist = $2
+		ORDER BY (album = $3) DESC, id ASC
+		LIMIT 1`, c.PostgresTableName)
+
+	song := SongData{}
+	err := dbp.QueryRow(statement, title, artist, album).Scan(
+		&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
+	if err != nil {
+		slog.Debug("Could not resolve the playing song in the library.", "func", "resolvePlaying", "error", err)
+		return SongData{}, false
+	}
+	return song, true
+}
+
 func getPathById(id int) (path string, err error) {
 	slog.Debug(fmt.Sprintf("Searching database for the path of song: '%v'", id), "func", "getPathById")
 	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=$1", c.PostgresTableName)
@@ -332,6 +355,15 @@ func setNowPlaying(title, artist, album string) {
 	info.Song.Title = title
 	info.Song.Artist = artist
 	info.Song.Album = album
+	// Resolve to a library row once, here, rather than matching these strings
+	// again on every request for metadata or artwork. Holding the id is what
+	// lets artwork be fetched by identity instead of by search.
+	info.Song.ID = 0
+	if song, ok := resolvePlaying(title, artist, album); ok {
+		info.Song = song
+	} else {
+		slog.Warn(fmt.Sprintf("Playing a song that is not in the library: %s by %s", title, artist), "func", "setNowPlaying")
+	}
 	applyRadioInfo(info)
 }
 
@@ -350,7 +382,7 @@ func setStreamMount(mountpoint, audioInfo string) {
 func clearStreamMount() {
 	info := nowPlaying()
 	info.Mountpoint = "-"
-	info.Song.Title, info.Song.Artist, info.Song.Album = "-", "-", ""
+	info.Song = SongData{Title: "-", Artist: "-"}
 	info.Listeners = -1
 	applyRadioInfo(info)
 }

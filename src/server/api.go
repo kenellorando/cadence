@@ -156,19 +156,15 @@ func RequestBestMatch() http.HandlerFunc {
 // Gets text metadata (excludes album art and path) of the currently playing song.
 func NowPlayingMetadata() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		playing := nowPlaying()
-		queryResults, err := searchByTitleArtist(playing.Song.Title, playing.Song.Artist)
-		if err != nil {
-			slog.Error("Unable to search by title and artist.", "func", "NowPlayingMetadata", "error", err)
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
-			return
-		}
-		if len(queryResults) < 1 {
-			slog.Warn("The currently playing song could not be found in the database. The database may not be populated.", "func", "NowPlayingMetadata")
+		// The song was resolved when the source announced it, so this is the row
+		// itself rather than a fresh search for whatever string is playing.
+		playing := nowPlaying().Song
+		if playing.ID == 0 {
+			slog.Debug("Nothing resolved is playing.", "func", "NowPlayingMetadata")
 			w.WriteHeader(http.StatusNotFound) // 404 Not Found
 			return
 		}
-		jsonMarshal, err := json.Marshal(queryResults[0])
+		jsonMarshal, err := json.Marshal(playing)
 		if err != nil {
 			slog.Error("Failed to marshal results from the search.", "func", "NowPlayingMetadata", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
@@ -187,19 +183,16 @@ func NowPlayingMetadata() http.HandlerFunc {
 // Gets base64 encoded album art of the currently playing song.
 func NowPlayingAlbumArt() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		playing := nowPlaying()
-		queryResults, err := searchByTitleArtist(playing.Song.Title, playing.Song.Artist)
-		if err != nil {
-			slog.Error("Unable to search by title and artist.", "func", "NowPlayingAlbumArt", "error", err)
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
-			return
-		}
-		if len(queryResults) < 1 {
-			slog.Warn("The currently playing song could not be found in the database. The database may not be populated.", "func", "NowPlayingAlbumArt")
+		// Artwork comes from the file that is actually playing, found by id.
+		// Searching for it by title and artist could land on a different song
+		// that happens to share both.
+		playing := nowPlaying().Song
+		if playing.ID == 0 {
+			slog.Debug("Nothing resolved is playing.", "func", "NowPlayingAlbumArt")
 			w.WriteHeader(http.StatusNotFound) // 404 Not Found
 			return
 		}
-		path, err := getPathById(queryResults[0].ID)
+		path, err := getPathById(playing.ID)
 		if err != nil {
 			slog.Error("Unable to find file path by song ID.", "func", "NowPlayingAlbumArt", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error

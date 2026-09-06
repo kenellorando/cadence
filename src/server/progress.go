@@ -32,6 +32,11 @@ var (
 	// Seconds left when the source was last asked, and when that was.
 	trackRemaining float64
 	trackPolledAt  time.Time
+	// The track's total length, measured once and then held. Deriving it from
+	// elapsed on every read meant that once remaining reached zero -- the last
+	// seconds of a track, or a gap between them -- duration simply became
+	// elapsed, and the two climbed together without end.
+	trackDuration float64
 	// Set when a source connects to a broadcast already in progress. The first
 	// song it announces has been playing for an unknown length of time, and
 	// starting the clock then would report a nearly finished track as just
@@ -50,6 +55,7 @@ func suspendTrackClock() {
 	trackStartedAt = time.Time{}
 	trackRemaining = 0
 	trackPolledAt = time.Time{}
+	trackDuration = 0
 	trackPositionUnknown = true
 }
 
@@ -67,6 +73,7 @@ func markTrackStart() {
 	trackStartedAt = time.Now()
 	trackRemaining = 0
 	trackPolledAt = time.Time{}
+	trackDuration = 0
 }
 
 // Elapsed and total seconds for the current track. Duration is only known once
@@ -80,15 +87,16 @@ func trackProgress() (elapsed float64, duration float64, known bool) {
 		return 0, 0, false
 	}
 	elapsed = time.Since(trackStartedAt).Seconds()
-	if trackPolledAt.IsZero() {
+	if trackDuration <= 0 {
+		// Nothing has reported a length yet.
 		return elapsed, 0, false
 	}
-	// The reading ages at one second per second.
-	remaining := trackRemaining - time.Since(trackPolledAt).Seconds()
-	if remaining < 0 {
-		remaining = 0
+	// A track cannot run past its own length; if it appears to, the boundary
+	// has not been noticed yet and holding at the end is the honest answer.
+	if elapsed > trackDuration {
+		elapsed = trackDuration
 	}
-	return elapsed, elapsed + remaining, true
+	return elapsed, trackDuration, true
 }
 
 // Asks the audio source how much of the current track is left. The command is
@@ -137,11 +145,19 @@ func applyRemainingReading(remaining float64) {
 		projected := trackRemaining - time.Since(trackPolledAt).Seconds()
 		if remaining > projected+trackBoundarySlack.Seconds() {
 			trackStartedAt = time.Now()
+			trackDuration = 0
 			trackPositionUnknown = false
 		}
 	}
 	trackRemaining = remaining
 	trackPolledAt = time.Now()
+
+	// Take the length from a reading with time left in it. Near the end, and in
+	// the gap between tracks, remaining is zero or close to it and says nothing
+	// about how long the track was.
+	if !trackStartedAt.IsZero() && remaining > 1 {
+		trackDuration = time.Since(trackStartedAt).Seconds() + remaining
+	}
 }
 
 // Keeps the remaining-time reading fresh.

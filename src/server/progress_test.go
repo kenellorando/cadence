@@ -79,3 +79,29 @@ func TestRemainingFallingLeavesTheClockAlone(t *testing.T) {
 		t.Errorf("elapsed went backwards on a falling reading: %v then %v", before, after)
 	}
 }
+
+// Duration used to be recomputed from elapsed on every read, so once remaining
+// reached zero the two climbed together and a track ran past its own length.
+func TestDurationHoldsWhenRemainingRunsOut(t *testing.T) {
+	suspendTrackClock()
+	markTrackStart()
+	markTrackStart()
+
+	applyRemainingReading(100)
+	_, duration, known := trackProgress()
+	if !known || duration < 95 || duration > 105 {
+		t.Fatalf("duration = %v (known %v), want about 100", duration, known)
+	}
+
+	// The end of the track: nothing left to report.
+	applyRemainingReading(0)
+	time.Sleep(20 * time.Millisecond)
+	elapsed, after, _ := trackProgress()
+
+	if after != duration {
+		t.Errorf("duration moved from %v to %v once remaining hit zero", duration, after)
+	}
+	if elapsed > after {
+		t.Errorf("elapsed %v ran past the duration %v", elapsed, after)
+	}
+}

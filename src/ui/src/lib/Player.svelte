@@ -75,13 +75,18 @@
 			const source = context.createMediaElementSource(audio);
 			const node = context.createAnalyser();
 			node.fftSize = 256;
-			node.smoothingTimeConstant = 0.75;
+			node.smoothingTimeConstant = 0.6;
+			// The default range is wide enough that ordinary music sits near the
+			// bottom of it and barely registers.
+			node.minDecibels = -70;
+			node.maxDecibels = -25;
 			// Connected straight through to the speakers: inserting the analyser
 			// must not be audible.
 			source.connect(node);
 			node.connect(context.destination);
 			audioContext = context;
 			analyser = node;
+			console.info('Cadence: audio visualiser connected.');
 		} catch (cause) {
 			// Swallowing this silently left no way to tell a browser that refused
 			// to build the graph from one that built it and drew nothing.
@@ -110,20 +115,19 @@
 		}
 
 		loading = true;
-		// A unique URL per attempt. Playing the same src again lets the browser
-		// resume from its media cache, which restarts the audio wherever that
-		// cache begins -- potentially a long way behind live -- instead of
-		// opening a fresh connection and joining the broadcast where it is now.
-		// Assigning src schedules the load on its own; calling load() as well
-		// would detach the analyser node in Firefox.
-		audio.src = `${radio.streamURL}?t=${Date.now()}`;
-		// Built only once the element has its final source. Connecting first and
-		// changing src afterwards leaves the node fed by nothing in Firefox,
-		// which is why the visualiser worked on some browsers and not others.
+		// Built before the source is set. Reordering this on a theory about one
+		// browser broke it on the browser where it already worked, so it stays
+		// the way that was observed to work.
 		ensureAnalyser();
 		// A context created before a gesture starts suspended, and once the
 		// element is routed through the graph a suspended context means silence.
 		audioContext?.resume().catch(() => {});
+		// A unique URL per attempt. Playing the same src again lets the browser
+		// resume from its media cache, which restarts the audio wherever that
+		// cache begins -- potentially a long way behind live -- instead of
+		// opening a fresh connection and joining the broadcast where it is now.
+		audio.src = `${radio.streamURL}?t=${Date.now()}`;
+		audio.load();
 		try {
 			await audio.play();
 			playing = true;
@@ -281,6 +285,11 @@
 						{radio.bitrate ? `${radio.bitrate}k` : '—'}
 					</dd>
 				</div>
+				{#if playing && analyser}
+					<div class="min-w-32 flex-1 self-end pb-1">
+						<Spectrum {analyser} {playing} />
+					</div>
+				{/if}
 				{#if radio.connected}
 					<div class="ml-auto self-end">
 						<a
@@ -301,9 +310,4 @@
 		</div>
 	</div>
 
-	{#if playing && analyser}
-		<div class="border-t border-edge px-4 pb-4 sm:px-5">
-			<Spectrum {analyser} {playing} />
-		</div>
-	{/if}
 </section>

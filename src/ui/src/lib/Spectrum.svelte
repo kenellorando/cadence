@@ -4,7 +4,7 @@
 	// origin as the page: Web Audio refuses to expose samples from cross-origin
 	// media, and would hand back silence if the audio still came from a separate
 	// streaming host.
-	let { analyser = null, playing = false } = $props();
+	let { analyser = null, playing = false, bars = 16 } = $props();
 
 	let canvas = $state(null);
 
@@ -61,7 +61,7 @@
 			// The top of the range is mostly empty for a 192 kbps stream, so only
 			// the lower bins are drawn; the rest would be a flat dead tail.
 			const used = Math.floor(bins.length * 0.7);
-			const count = 40;
+			const count = bars;
 			const gap = 2;
 			const barWidth = Math.max(1, (width - gap * (count - 1)) / count);
 
@@ -73,7 +73,11 @@
 				for (let b = from; b < to && b < bins.length; b++) {
 					if (bins[b] > peak) peak = bins[b];
 				}
-				const level = peak / 255;
+				// The raw figure spends most of its time low, which reads as a
+				// barely moving row. Bending the curve upward trades absolute
+				// accuracy -- which nobody is reading off a bar chart -- for
+				// movement that actually tracks the music.
+				const level = Math.pow(peak / 255, 0.55);
 				const barHeight = Math.max(1, level * height);
 				context.fillStyle = level > 0.04 ? bar : quiet;
 				context.fillRect(i * (barWidth + gap), height - barHeight, barWidth, barHeight);
@@ -90,7 +94,7 @@
 {#if playing}
 	<canvas
 		bind:this={canvas}
-		class="mt-4 h-8 w-full"
+		class="h-6 w-full"
 		aria-hidden="true"
 	></canvas>
 {/if}

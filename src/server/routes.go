@@ -5,11 +5,9 @@ package main
 
 import (
 	"net/http"
-
-	"gopkg.in/antage/eventsource.v1"
 )
 
-var radiodata_sse = eventsource.New(nil, nil)
+var radiodata_sse = newEventStream()
 
 func routes() *http.ServeMux {
 	r := http.NewServeMux()

@@ -409,8 +409,8 @@ func icecastMonitor() {
 			// are sent out to reset artwork request count.
 			dbr.RateLimitArt.FlushDB(ctx)
 
-			radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
-			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
+			radiodata_sse.Send("title", now.Song.Title)
+			radiodata_sse.Send("artist", now.Song.Artist)
 			if (prev.Song.Title != "") && (prev.Song.Artist != "") {
 				radioMutex.Lock()
 				history = append(history, playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
@@ -418,16 +418,16 @@ func icecastMonitor() {
 					history = history[1:]
 				}
 				radioMutex.Unlock()
-				radiodata_sse.SendEventMessage("update", "history", "")
+				radiodata_sse.Send("history", "update")
 			}
 		}
 		if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
 			slog.Info(fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint), "func", "icecastMonitor")
-			radiodata_sse.SendEventMessage(now.Host+"/"+now.Mountpoint, "listenurl", "")
+			radiodata_sse.Send("listenurl", now.Host+"/"+now.Mountpoint)
 		}
 		if prev.Listeners != now.Listeners {
 			slog.Info(fmt.Sprintf("Listener count: <%v>", now.Listeners), "func", "icecastMonitor")
-			radiodata_sse.SendEventMessage(fmt.Sprint(now.Listeners), "listeners", "")
+			radiodata_sse.Send("listeners", fmt.Sprint(now.Listeners))
 		}
 		prev = now
 	}

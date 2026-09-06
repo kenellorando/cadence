@@ -102,12 +102,41 @@ class Radio {
 	connect() {
 		let source;
 		let retry;
+		let watchdog;
 		let closed = false;
 
+		// The server sends a keepalive comment every 20 seconds. Comments do not
+		// surface as events, but any traffic resets the browser's read state, so a
+		// stream that goes quiet for much longer than that has died in a way the
+		// connection itself will not report. Only the client can notice this: a
+		// half-open connection looks identical to an idle one from the server side.
+		const silenceLimit = 50000;
+
+		const reconnect = () => {
+			if (closed) return;
+			source?.close();
+			clearTimeout(retry);
+			retry = setTimeout(open, 5000);
+		};
+
+		const kick = () => {
+			clearTimeout(watchdog);
+			watchdog = setTimeout(reconnect, silenceLimit);
+		};
+
 		const open = () => {
+			if (closed) return;
 			source = new EventSource('/api/radiodata/sse');
 
+			// Events only fire on change, so a client that reconnects mid-song would
+			// otherwise keep showing whatever was playing when it dropped.
+			source.onopen = () => {
+				kick();
+				this.loadAll();
+			};
+
 			source.addEventListener('title', (event) => {
+				kick();
 				this.title = event.data;
 				// The stream announces the change; the art and the rest of the
 				// metadata still have to be fetched.
@@ -115,28 +144,30 @@ class Radio {
 				this.loadNowPlaying();
 			});
 			source.addEventListener('artist', (event) => {
+				kick();
 				this.artist = event.data;
 			});
 			source.addEventListener('listeners', (event) => {
+				kick();
 				this.listeners = Number(event.data);
 			});
 			source.addEventListener('listenurl', (event) => {
+				kick();
 				this.listenURL = event.data;
 			});
 			source.addEventListener('history', () => {
+				kick();
 				this.loadHistory();
 			});
 
-			source.onerror = () => {
-				source.close();
-				if (!closed) retry = setTimeout(open, 10000);
-			};
+			source.onerror = reconnect;
 		};
 
 		open();
 		return () => {
 			closed = true;
 			clearTimeout(retry);
+			clearTimeout(watchdog);
 			source?.close();
 		};
 	}

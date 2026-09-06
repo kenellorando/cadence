@@ -8,7 +8,6 @@ require (
 	github.com/fsnotify/fsnotify v1.10.1
 	github.com/lib/pq v1.12.3
 	github.com/redis/go-redis/v9 v9.22.0
-	gopkg.in/antage/eventsource.v1 v1.0.0-20150318155416-803f4c5af225
 )
 
 require (

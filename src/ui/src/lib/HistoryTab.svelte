@@ -13,10 +13,10 @@
 		{#each entries as song (song.Ended)}
 			<li class="flex items-center gap-4 border-b border-edge/60 px-4 py-2.5 sm:px-5">
 				<div class="min-w-0 flex-1">
-					<p class="truncate text-sm text-bone" title={song.Title}>{song.Title}</p>
-					<p class="truncate text-xs text-bone-faint" title={song.Artist}>{song.Artist}</p>
+					<p class="truncate text-sm text-ink" title={song.Title}>{song.Title}</p>
+					<p class="truncate text-xs text-ink-faint" title={song.Artist}>{song.Artist}</p>
 				</div>
-				<span class="shrink-0 font-mono text-xs whitespace-nowrap text-bone-faint tabular-nums">
+				<span class="shrink-0 font-mono text-xs whitespace-nowrap text-ink-faint tabular-nums">
 					{timeAgo(song.Ended)}
 				</span>
 			</li>

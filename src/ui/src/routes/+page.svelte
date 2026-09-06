@@ -1,12 +1,15 @@
 <script>
 	import { radio } from '$lib/radio.svelte.js';
+	import { theme } from '$lib/theme.svelte.js';
 	import Player from '$lib/Player.svelte';
 	import RequestTab from '$lib/RequestTab.svelte';
 	import HistoryTab from '$lib/HistoryTab.svelte';
+	import ThemeTab from '$lib/ThemeTab.svelte';
 
 	let tab = $state('request');
 
 	$effect(() => {
+		theme.load();
 		radio.loadAll();
 		// connect() hands back its own teardown, which is what $effect wants.
 		return radio.connect();
@@ -14,29 +17,25 @@
 
 	const tabs = [
 		{ id: 'request', label: 'Request' },
-		{ id: 'history', label: 'History' }
+		{ id: 'history', label: 'History' },
+		{ id: 'theme', label: 'Theme' }
 	];
 </script>
 
-<div class="mx-auto min-h-screen max-w-3xl px-4 pb-16 sm:px-6">
-	<header class="flex items-baseline justify-between pt-7">
-		<span class="font-label text-sm font-semibold tracking-[0.3em] text-bone uppercase">Cadence</span>
-		<span class="label">Web radio</span>
-	</header>
-
+<div class="mx-auto min-h-screen max-w-3xl px-4 pt-7 pb-16 sm:px-6">
 	<Player />
 
-	<!-- The two panes are one panel with a tabbed header, the way a piece of
+	<!-- The panes are one panel with a tabbed header, the way a piece of
 	     equipment switches what its display is showing. -->
 	<section class="panel mt-5">
-		<div class="flex border-b border-edge">
+		<div class="flex justify-center border-b border-edge">
 			{#each tabs as entry (entry.id)}
 				<button
 					onclick={() => (tab = entry.id)}
 					aria-current={tab === entry.id ? 'page' : undefined}
 					class="label border-b-2 px-4 py-3 transition sm:px-5 {tab === entry.id
 						? 'border-signal text-signal'
-						: 'border-transparent hover:text-bone-dim'}"
+						: 'border-transparent hover:text-ink-dim'}"
 				>
 					{entry.label}
 				</button>
@@ -45,17 +44,31 @@
 
 		{#if tab === 'request'}
 			<RequestTab />
-		{:else}
+		{:else if tab === 'history'}
 			<HistoryTab />
+		{:else}
+			<ThemeTab />
 		{/if}
 	</section>
 
-	<footer class="mt-8 flex items-center justify-between">
-		<span class="label">Cadence Radio</span>
-		<span class="label">
-			<a class="transition hover:text-signal" target="_blank" rel="noreferrer" href="https://github.com/kenellorando/cadence">Source</a>
-			<span class="px-2 text-edge-light">/</span>
-			<a class="transition hover:text-signal" target="_blank" rel="noreferrer" href="https://github.com/kenellorando/cadence/wiki/API-Reference">API</a>
-		</span>
+	<footer class="mt-12 flex flex-col items-center gap-2 text-center">
+		<span class="font-logo text-xl text-ink-dim sm:text-2xl">Cadence</span>
+		<div class="label flex items-center gap-2.5">
+			<span class="font-mono tracking-normal tabular-nums">{radio.version}</span>
+			<span class="text-edge-light">/</span>
+			<a
+				class="transition hover:text-signal"
+				target="_blank"
+				rel="noreferrer"
+				href="https://github.com/kenellorando/cadence">Source</a
+			>
+			<span class="text-edge-light">/</span>
+			<a
+				class="transition hover:text-signal"
+				target="_blank"
+				rel="noreferrer"
+				href="https://github.com/kenellorando/cadence/wiki/API-Reference">API</a
+			>
+		</div>
 	</footer>
 </div>

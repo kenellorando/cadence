@@ -21,12 +21,20 @@
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Archivo+Narrow:wght@400;500;600&family=Chivo+Mono:wght@400;500&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Rock+Salt&family=Archivo+Narrow:wght@400;500;600&family=Chivo+Mono:wght@400;500&display=swap"
 			rel="stylesheet"
 		/>
+		<script>
+			// Applied before first paint so a stored theme does not flash the
+			// default one first.
+			try {
+				var t = localStorage.getItem('themeKey');
+				if (t) document.documentElement.setAttribute('data-theme', t);
+			} catch (e) {}
+		</script>
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover" class="bg-panel font-display text-bone antialiased">
+	<body data-sveltekit-preload-data="hover" class="bg-surface font-display text-ink antialiased">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>

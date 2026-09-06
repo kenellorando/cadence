@@ -7,6 +7,10 @@
 	let error = $state('');
 	let volume = $state(0.3);
 
+	// Artist and album read as one credit line; the dash only earns its place
+	// when there is an album to separate.
+	const credit = $derived(radio.album ? `${radio.artist} - ${radio.album}` : radio.artist);
+
 	$effect(() => {
 		const stored = Number(localStorage.getItem('volumeKey'));
 		if (Number.isFinite(stored) && stored > 0) volume = stored;
@@ -72,25 +76,22 @@
 {#if radio.art}
 	<div
 		aria-hidden="true"
-		class="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-[0.14] blur-2xl saturate-50"
+		class="art-wash pointer-events-none fixed inset-0 -z-10 bg-cover bg-center blur-2xl saturate-50"
 		style="background-image: url({radio.art})"
 	></div>
 {/if}
-<div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 bg-panel/70"></div>
+<div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 bg-surface/75"></div>
 
-<section class="panel mt-5">
-	<!-- Header strip: tally lamp, station name, firmware-style version. -->
+<section class="panel">
+	<!-- Header strip: the on-air tally. -->
 	<div class="flex items-center gap-3 border-b border-edge px-4 py-2.5 sm:px-5">
 		{#if radio.connected}
 			<span class="tally" aria-hidden="true"></span>
-			<span class="label text-signal">On air</span>
+			<span class="label text-onair">On air</span>
 		{:else}
 			<span class="tally-off" aria-hidden="true"></span>
 			<span class="label">Offline</span>
 		{/if}
-		<span class="ml-auto font-mono text-[0.68rem] tracking-wide text-bone-faint tabular-nums">
-			{radio.version}
-		</span>
 	</div>
 
 	<div class="flex flex-col gap-5 p-4 sm:flex-row sm:gap-6 sm:p-5">
@@ -111,7 +112,7 @@
 
 			{#if playing}
 				<div
-					class="absolute bottom-2 left-2 flex h-6 items-end gap-[2px] bg-panel-well/85 px-2 py-1.5"
+					class="absolute bottom-2 left-2 flex h-6 items-end gap-[2px] bg-surface-inset/85 px-2 py-1.5"
 					aria-hidden="true"
 				>
 					<span class="level-bar h-2.5 w-[2px] bg-level" style="animation-delay:0ms"></span>
@@ -127,21 +128,14 @@
 			<!-- Announced to screen readers when the track changes, since the
 			     change arrives over the event stream rather than a navigation. -->
 			<div aria-live="polite" aria-atomic="true">
-				<p class="label">Artist</p>
-				<p class="truncate text-lg text-bone-dim" title={radio.artist}>{radio.artist}</p>
-
-				<hr class="my-2.5 border-edge" />
-
 				<p class="label">Now playing</p>
 				<h1
-					class="truncate font-display text-2xl font-semibold text-bone sm:text-[1.7rem]"
+					class="mt-1 truncate font-display text-2xl font-semibold text-ink sm:text-[1.7rem]"
 					title={radio.title}
 				>
 					{radio.title}
 				</h1>
-				{#if radio.album}
-					<p class="truncate text-sm text-bone-faint" title={radio.album}>{radio.album}</p>
-				{/if}
+				<p class="mt-0.5 truncate text-base text-ink-dim" title={credit}>{credit}</p>
 			</div>
 
 			<div class="mt-auto flex flex-wrap items-center gap-4 pt-5">
@@ -149,7 +143,7 @@
 					onclick={toggle}
 					disabled={!radio.connected || loading}
 					aria-label={playing ? 'Pause stream' : 'Play stream'}
-					class="grid h-11 w-14 shrink-0 place-items-center rounded-[3px] border border-edge-light bg-panel text-signal transition enabled:hover:border-signal enabled:hover:bg-panel-well enabled:active:translate-y-px disabled:cursor-not-allowed disabled:text-bone-faint disabled:opacity-50"
+					class="grid h-11 w-14 shrink-0 place-items-center rounded-[3px] border border-edge-light bg-surface text-signal transition enabled:hover:border-signal enabled:hover:bg-surface-inset enabled:active:translate-y-px disabled:cursor-not-allowed disabled:text-ink-faint disabled:opacity-50"
 				>
 					{#if loading}
 						<span
@@ -183,13 +177,13 @@
 			<dl class="mt-5 flex flex-wrap gap-x-8 gap-y-2 border-t border-edge pt-4">
 				<div>
 					<dt class="label">Listeners</dt>
-					<dd class="font-mono text-sm text-bone tabular-nums">
+					<dd class="font-mono text-sm text-ink tabular-nums">
 						{radio.listeners === -1 ? '—' : radio.listeners}
 					</dd>
 				</div>
 				<div>
 					<dt class="label">Bitrate</dt>
-					<dd class="font-mono text-sm text-bone tabular-nums">
+					<dd class="font-mono text-sm text-ink tabular-nums">
 						{radio.bitrate ? `${radio.bitrate}k` : '—'}
 					</dd>
 				</div>
@@ -208,7 +202,7 @@
 			{#if error}
 				<p class="mt-3 font-mono text-xs text-peak">{error}</p>
 			{:else if !radio.connected}
-				<p class="mt-3 font-mono text-xs text-bone-faint">No source connected to the broadcaster.</p>
+				<p class="mt-3 font-mono text-xs text-ink-faint">No source currently connected.</p>
 			{/if}
 		</div>
 	</div>

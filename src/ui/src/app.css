@@ -1,42 +1,100 @@
 @import 'tailwindcss';
 
-/* The palette comes from broadcast hardware rather than a UI kit: anodized
-   black with a warm olive bias (not the blue-black of a default dark theme),
-   silkscreened cream for labels, and a single amber lamp for signal. Red is
-   reserved for a fault, green for level, and neither is used decoratively. */
+/* Tokens are named for the role they play, not the colour they happen to hold,
+   because a light theme puts near-black ink in the same slot a dark one fills
+   with cream. The default below is the transmitter panel: anodized black with a
+   warm olive bias, silkscreened labels, an amber signal accent, and a red
+   on-air lamp. Red also means fault and green means level; neither is
+   decorative. */
 @theme {
 	--font-display: 'Archivo', ui-sans-serif, system-ui, sans-serif;
 	--font-label: 'Archivo Narrow', 'Archivo', ui-sans-serif, sans-serif;
 	--font-mono: 'Chivo Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+	/* The wordmark only. Rock Salt is a handwriting face and unreadable at
+	   text sizes, so it is never used for anything but the logo. */
+	--font-logo: 'Rock Salt', 'Archivo', cursive;
 
-	--color-panel: #17150f;
-	--color-panel-raised: #1e1b14;
-	--color-panel-well: #100e09;
+	--color-surface: #17150f;
+	--color-surface-raised: #1e1b14;
+	--color-surface-inset: #100e09;
 	--color-edge: #332e22;
 	--color-edge-light: #45402f;
-	--color-bone: #e8e2d2;
-	--color-bone-dim: #a39c89;
-	--color-bone-faint: #6e6857;
+	--color-ink: #e8e2d2;
+	--color-ink-dim: #a39c89;
+	--color-ink-faint: #6e6857;
 	--color-signal: #e0912f;
 	--color-signal-dim: #7d5219;
+	--color-onair: #e2452f;
 	--color-peak: #cf5341;
 	--color-level: #9bae6b;
 }
 
-@layer base {
-	:root {
-		color-scheme: dark;
-	}
+/* Theme overrides sit outside every layer so they win over the tokens Tailwind
+   emits into @layer theme. Only the values change; no component knows which
+   theme is active. */
+:root,
+[data-theme='transmitter'] {
+	color-scheme: dark;
+	--panel-highlight: rgb(255 255 255 / 0.045);
+	--well-shadow: rgb(0 0 0 / 0.7);
+	--onair-glow: rgb(226 69 47 / 0.5);
+	--art-wash: 0.14;
+}
 
+/* The printed card behind a tuning dial: warm ivory stock, dense ink, and a
+   single red pointer. */
+[data-theme='dial'] {
+	color-scheme: light;
+	--color-surface: #efe9db;
+	--color-surface-raised: #f8f4ea;
+	--color-surface-inset: #e2dbc9;
+	--color-edge: #cbc2ad;
+	--color-edge-light: #ada38b;
+	--color-ink: #1f1b14;
+	--color-ink-dim: #56503f;
+	--color-ink-faint: #857d68;
+	--color-signal: #a8452a;
+	--color-signal-dim: #e3d3c6;
+	--color-onair: #c0281a;
+	--color-peak: #a8321f;
+	--color-level: #5c7040;
+	--panel-highlight: rgb(255 255 255 / 0.7);
+	--well-shadow: rgb(0 0 0 / 0.16);
+	--onair-glow: rgb(192 40 26 / 0.35);
+	--art-wash: 0.1;
+}
+
+/* A cassette J-card: bone stock, black ink, one spot colour. */
+[data-theme='tape'] {
+	color-scheme: light;
+	--color-surface: #e6e2d6;
+	--color-surface-raised: #f1eee4;
+	--color-surface-inset: #d8d3c4;
+	--color-edge: #b2ab98;
+	--color-edge-light: #948d7a;
+	--color-ink: #14130d;
+	--color-ink-dim: #474334;
+	--color-ink-faint: #7a7462;
+	--color-signal: #1d5b66;
+	--color-signal-dim: #cbd7d8;
+	--color-onair: #b0231b;
+	--color-peak: #b0231b;
+	--color-level: #3d6b3d;
+	--panel-highlight: rgb(255 255 255 / 0.65);
+	--well-shadow: rgb(0 0 0 / 0.14);
+	--onair-glow: rgb(176 35 27 / 0.35);
+	--art-wash: 0.08;
+}
+
+@layer base {
 	html,
 	body {
 		min-height: 100%;
-		background-color: var(--color-panel);
+		background-color: var(--color-surface);
 	}
 
-	/* Every control gets the same amber focus ring, so keyboard use stays
-	   legible against a dark panel. :where() keeps specificity at zero so a
-	   component can still opt out. */
+	/* Every control gets the same focus ring, so keyboard use stays legible on
+	   any theme. :where() keeps specificity at zero so a component can opt out. */
 	:where(a, button, input, [tabindex]):focus-visible {
 		outline: 1px solid var(--color-signal);
 		outline-offset: 2px;
@@ -44,7 +102,7 @@
 
 	::selection {
 		background: var(--color-signal-dim);
-		color: var(--color-bone);
+		color: var(--color-ink);
 	}
 }
 
@@ -61,34 +119,34 @@
 		font-weight: 500;
 		letter-spacing: 0.16em;
 		text-transform: uppercase;
-		color: var(--color-bone-faint);
+		color: var(--color-ink-faint);
 	}
 
 	/* A rack panel: solid, with a hairline engraved edge and a single highlight
 	   along the top where the light catches it. No glass, no blur. */
 	.panel {
-		background: var(--color-panel-raised);
+		background: var(--color-surface-raised);
 		border: 1px solid var(--color-edge);
-		box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.045);
+		box-shadow: inset 0 1px 0 0 var(--panel-highlight);
 	}
 
 	/* Album art sits in a cut-out, so it is recessed rather than floating. */
 	.well {
-		background: var(--color-panel-well);
+		background: var(--color-surface-inset);
 		box-shadow:
-			inset 0 2px 6px rgb(0 0 0 / 0.7),
-			inset 0 0 0 1px rgb(0 0 0 / 0.6);
+			inset 0 2px 6px var(--well-shadow),
+			inset 0 0 0 1px var(--color-edge);
 	}
 
-	/* The on-air tally is a lamp behind a rectangular lens, not a dot. */
+	/* The on-air tally is a red lamp behind a rectangular lens, not a dot. */
 	.tally {
 		width: 0.5rem;
 		height: 0.9rem;
 		border-radius: 1px;
-		background: var(--color-signal);
+		background: var(--color-onair);
 		box-shadow:
-			0 0 6px var(--color-signal),
-			0 0 14px rgb(224 145 47 / 0.45);
+			0 0 6px var(--color-onair),
+			0 0 14px var(--onair-glow);
 		animation: tally-breathe 3.2s ease-in-out infinite;
 	}
 
@@ -99,8 +157,13 @@
 		background: var(--color-edge-light);
 	}
 
+	/* The artwork casts low, desaturated room light on the panel. */
+	.art-wash {
+		opacity: var(--art-wash);
+	}
+
 	/* Volume is a fader over a segmented scale. The segments are drawn by laying
-	   panel-coloured gaps over a two-stop fill, which keeps it a real range
+	   surface-coloured gaps over a two-stop fill, which keeps it a real range
 	   input -- and therefore still keyboard operable -- rather than a div that
 	   mimics one. */
 	.fader {
@@ -114,7 +177,7 @@
 	.fader::-webkit-slider-runnable-track {
 		height: 1.25rem;
 		background:
-			repeating-linear-gradient(90deg, transparent 0 5px, var(--color-panel-raised) 5px 8px),
+			repeating-linear-gradient(90deg, transparent 0 5px, var(--color-surface-raised) 5px 8px),
 			linear-gradient(
 				90deg,
 				var(--color-signal) 0 var(--fill, 30%),
@@ -125,7 +188,7 @@
 	.fader::-moz-range-track {
 		height: 1.25rem;
 		background:
-			repeating-linear-gradient(90deg, transparent 0 5px, var(--color-panel-raised) 5px 8px),
+			repeating-linear-gradient(90deg, transparent 0 5px, var(--color-surface-raised) 5px 8px),
 			linear-gradient(
 				90deg,
 				var(--color-signal) 0 var(--fill, 30%),
@@ -140,8 +203,8 @@
 		width: 0.3rem;
 		height: 1.25rem;
 		border-radius: 1px;
-		background: var(--color-bone);
-		box-shadow: 0 0 0 1px rgb(0 0 0 / 0.55);
+		background: var(--color-ink);
+		box-shadow: 0 0 0 1px var(--color-edge);
 	}
 
 	.fader::-moz-range-thumb {
@@ -149,13 +212,26 @@
 		height: 1.25rem;
 		border: none;
 		border-radius: 1px;
-		background: var(--color-bone);
-		box-shadow: 0 0 0 1px rgb(0 0 0 / 0.55);
+		background: var(--color-ink);
+		box-shadow: 0 0 0 1px var(--color-edge);
 	}
 
 	.fader:focus-visible {
 		outline: 1px solid var(--color-signal);
 		outline-offset: 3px;
+	}
+
+	/* An input has to look like somewhere you can type: inset, bordered, and a
+	   shade off the panel it sits on. */
+	.field {
+		background: var(--color-surface-inset);
+		border: 1px solid var(--color-edge-light);
+		border-radius: 2px;
+		box-shadow: inset 0 1px 2px var(--well-shadow);
+	}
+
+	.field:focus-within {
+		border-color: var(--color-signal);
 	}
 
 	/* Output level, shown only while audio is actually playing. */

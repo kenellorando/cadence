@@ -82,7 +82,10 @@
 			node.connect(context.destination);
 			audioContext = context;
 			analyser = node;
-		} catch {
+		} catch (cause) {
+			// Swallowing this silently left no way to tell a browser that refused
+			// to build the graph from one that built it and drew nothing.
+			console.warn('Cadence: audio visualiser unavailable.', cause);
 			analyser = null;
 		}
 	}
@@ -107,16 +110,20 @@
 		}
 
 		loading = true;
-		ensureAnalyser();
-		// A context created before a gesture starts suspended, and once the
-		// element is routed through the graph a suspended context means silence.
-		audioContext?.resume().catch(() => {});
 		// A unique URL per attempt. Playing the same src again lets the browser
 		// resume from its media cache, which restarts the audio wherever that
 		// cache begins -- potentially a long way behind live -- instead of
 		// opening a fresh connection and joining the broadcast where it is now.
+		// Assigning src schedules the load on its own; calling load() as well
+		// would detach the analyser node in Firefox.
 		audio.src = `${radio.streamURL}?t=${Date.now()}`;
-		audio.load();
+		// Built only once the element has its final source. Connecting first and
+		// changing src afterwards leaves the node fed by nothing in Firefox,
+		// which is why the visualiser worked on some browsers and not others.
+		ensureAnalyser();
+		// A context created before a gesture starts suspended, and once the
+		// element is routed through the graph a suspended context means silence.
+		audioContext?.resume().catch(() => {});
 		try {
 			await audio.play();
 			playing = true;

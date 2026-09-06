@@ -21,6 +21,10 @@
 
 		const bins = new Uint8Array(analyser.frequencyBinCount);
 		let frame;
+		// A graph that builds but never produces samples looks identical to a
+		// quiet track. Report it once so the difference is visible.
+		let silentFrames = 0;
+		let reported = false;
 
 		// Backing store matched to the display, so bars stay crisp rather than
 		// being scaled up from a smaller buffer.
@@ -41,6 +45,18 @@
 			context.clearRect(0, 0, width, height);
 
 			analyser.getByteFrequencyData(bins);
+
+			if (!reported) {
+				let sum = 0;
+				for (let i = 0; i < bins.length; i++) sum += bins[i];
+				silentFrames = sum === 0 ? silentFrames + 1 : 0;
+				if (silentFrames > 180) {
+					console.warn(
+						'Cadence: the audio graph is connected but returning no samples.'
+					);
+					reported = true;
+				}
+			}
 
 			// The top of the range is mostly empty for a 192 kbps stream, so only
 			// the lower bins are drawn; the rest would be a flat dead tail.

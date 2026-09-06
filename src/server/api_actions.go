@@ -168,7 +168,10 @@ func liquidsoapRequest(path string) (message string, err error) {
 		return "", err
 	}
 	// Push song request to source service, listen for a response, and quit the telnet session.
-	fmt.Fprintf(conn, "request.push %s\n", path)
+	// Liquidsoap 1.4 named this after the queue id ("request.push"). 2.x fixes the
+	// namespace at "request_queue" and ignores the id, so the old command comes
+	// back as "unknown command" and every song request is silently dropped.
+	fmt.Fprintf(conn, "request_queue.push %s\n", path)
 	message, err = bufio.NewReader(conn).ReadString('\n')
 	if err != nil {
 		slog.Error("Failed to read stream response message from audio source server.", "func", "liquidsoapRequest", "error", err)
@@ -267,6 +270,57 @@ func filesystemMonitor() {
 	<-done
 }
 
+// Icecast's status document is remote input, so every field below is read with
+// a checked assertion. An unchecked one took the whole server down when Icecast
+// 2.5 renamed a field: the monitor goroutine panicked on every poll, and a
+// panic there is fatal to the process, so the server crash-looped.
+func icecastString(parsed *gabs.Container, path string) (string, bool) {
+	value, ok := parsed.Path(path).Data().(string)
+	return value, ok
+}
+
+func icecastNumber(parsed *gabs.Container, path string) (float64, bool) {
+	value, ok := parsed.Path(path).Data().(float64)
+	return value, ok
+}
+
+// Reads stream state out of an Icecast status-json.xsl document, returning the
+// updated info and whether anything is playing. Fields Icecast omits keep the
+// value they already had rather than resetting, so a partial document does not
+// blank out good data.
+func parseIcecastStatus(parsed *gabs.Container, current RadioInfo) (RadioInfo, bool) {
+	artist, artistOK := icecastString(parsed, "icestats.source.artist")
+	title, titleOK := icecastString(parsed, "icestats.source.title")
+	if !artistOK || !titleOK {
+		return current, false
+	}
+	current.Song.Artist = artist
+	current.Song.Title = title
+
+	if host, ok := icecastString(parsed, "icestats.host"); ok {
+		current.Host = host
+	}
+	if mountpoint, ok := icecastString(parsed, "icestats.source.server_name"); ok {
+		current.Mountpoint = mountpoint
+	}
+	if listeners, ok := icecastNumber(parsed, "icestats.source.listeners"); ok {
+		current.Listeners = listeners
+	}
+
+	// Icecast 2.4 published the source bitrate in kbps as "bitrate". 2.5 dropped
+	// that key for "ice-bitrate", also kbps, alongside "audio_bitrate" in bps.
+	// Read whichever the server offers so both releases are supported.
+	if bitrate, ok := icecastNumber(parsed, "icestats.source.bitrate"); ok {
+		current.Bitrate = bitrate
+	} else if bitrate, ok := icecastNumber(parsed, "icestats.source.ice-bitrate"); ok {
+		current.Bitrate = bitrate
+	} else if bitrate, ok := icecastNumber(parsed, "icestats.source.audio_bitrate"); ok {
+		current.Bitrate = bitrate / 1000
+	}
+
+	return current, true
+}
+
 // Watches the Icecast status page and updates stream info for SSE.
 func icecastMonitor() {
 	var prev = RadioInfo{}
@@ -302,19 +356,15 @@ func icecastMonitor() {
 			icecastDataReset()
 			return
 		}
-		if jsonParsed.Path("icestats.source.title").Data() == nil || jsonParsed.Path("icestats.source.artist").Data() == nil {
+		info, playing := parseIcecastStatus(jsonParsed, nowPlaying())
+		if !playing {
 			slog.Debug("Connected to Icecast, but saw nothing playing.", "func", "icecastMonitor")
 			icecastDataReset()
 			return
 		}
 
 		radioMutex.Lock()
-		now.Song.Artist = jsonParsed.Path("icestats.source.artist").Data().(string)
-		now.Song.Title = jsonParsed.Path("icestats.source.title").Data().(string)
-		now.Host = jsonParsed.Path("icestats.host").Data().(string)
-		now.Mountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
-		now.Listeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
-		now.Bitrate = jsonParsed.Path("icestats.source.bitrate").Data().(float64)
+		now = info
 		radioMutex.Unlock()
 
 		if (prev.Song.Title != now.Song.Title) || (prev.Song.Artist != now.Song.Artist) {

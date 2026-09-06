@@ -111,6 +111,22 @@ fi
 SCRIPT_DIR="$(dirname $(readlink -f $0))"
 cd $SCRIPT_DIR
 
+# sed gives \, & and our | delimiter special meaning on the replacement side.
+# An unescaped & expands to the whole match, so a password like "p@ss&word"
+# would silently land in the config as "p@ssCADENCE_PASS_EXAMPLEword", and a
+# password containing | would abort the script mid-configuration.
+sed_escape() {
+      printf '%s' "$1" | sed 's/[\\&|]/\\&/g'
+}
+
+# GNU sed -i takes no argument while BSD/macOS sed requires one, so the same
+# invocation cannot work on both. Edit through a temporary file instead.
+replace_in_file() {
+      local placeholder="$1" value="$2" file="$3"
+      sed "s|${placeholder}|$(sed_escape "$value")|g" "$file" > "${file}.tmp"
+      mv "${file}.tmp" "$file"
+}
+
 cp ./config/cadence.env.example ./config/cadence.env
 cp ./config/icecast.xml.example ./config/icecast.xml
 cp ./config/liquidsoap.liq.example ./config/liquidsoap.liq
@@ -124,16 +140,16 @@ else
       sed -e 's|NGINX_CONFIG_SECTION||g' ./docker-compose.yml.example > ./docker-compose.yml
 fi
 
-sed -i 's|CADENCE_PASS_EXAMPLE|'"$CADENCE_PASS"'|g' ./config/cadence.env
-sed -i 's|CADENCE_PASS_EXAMPLE|'"$CADENCE_PASS"'|g' ./config/icecast.xml
-sed -i 's|CADENCE_PASS_EXAMPLE|'"$CADENCE_PASS"'|g' ./config/liquidsoap.liq
-sed -i 's|CADENCE_RATE_EXAMPLE|'"$CADENCE_RATE"'|g' ./config/cadence.env
-sed -i 's|CADENCE_STREAM_HOST_EXAMPLE|'"$CADENCE_STREAM_HOST"'|g' ./config/icecast.xml
-sed -i 's|CADENCE_PATH_EXAMPLE|'"$CADENCE_PATH"'|g' ./config/cadence.env
-sed -i 's|CADENCE_PATH_EXAMPLE|'"$CADENCE_PATH"'|g' ./config/liquidsoap.liq
-sed -i 's|CADENCE_STREAM_HOST_EXAMPLE|'"$CADENCE_STREAM_HOST"'|g' ./config/nginx.conf
-sed -i 's|CADENCE_WEB_HOST_EXAMPLE|'"$CADENCE_WEB_HOST"'|g' ./config/nginx.conf
-sed -i 's|CADENCE_PATH_EXAMPLE|'"$CADENCE_PATH"'|g' ./docker-compose.yml
+replace_in_file CADENCE_PASS_EXAMPLE "$CADENCE_PASS" ./config/cadence.env
+replace_in_file CADENCE_PASS_EXAMPLE "$CADENCE_PASS" ./config/icecast.xml
+replace_in_file CADENCE_PASS_EXAMPLE "$CADENCE_PASS" ./config/liquidsoap.liq
+replace_in_file CADENCE_RATE_EXAMPLE "$CADENCE_RATE" ./config/cadence.env
+replace_in_file CADENCE_STREAM_HOST_EXAMPLE "$CADENCE_STREAM_HOST" ./config/icecast.xml
+replace_in_file CADENCE_PATH_EXAMPLE "$CADENCE_PATH" ./config/cadence.env
+replace_in_file CADENCE_PATH_EXAMPLE "$CADENCE_PATH" ./config/liquidsoap.liq
+replace_in_file CADENCE_STREAM_HOST_EXAMPLE "$CADENCE_STREAM_HOST" ./config/nginx.conf
+replace_in_file CADENCE_WEB_HOST_EXAMPLE "$CADENCE_WEB_HOST" ./config/nginx.conf
+replace_in_file CADENCE_PATH_EXAMPLE "$CADENCE_PATH" ./docker-compose.yml
 
 echo ""
 echo "Configuration completed."

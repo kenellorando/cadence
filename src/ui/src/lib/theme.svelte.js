@@ -4,24 +4,27 @@ export const THEMES = [
 	{
 		id: 'chicago',
 		name: 'Chicago Evening',
-		note: 'Dusk sky, sodium street light',
 		logo: 'Cadence',
 		swatch: ['#101319', '#ece7de', '#fb9236', '#e2452f']
 	},
 	{
 		id: 'bartender',
 		name: 'Cyberpunk Bartender',
-		note: 'Cyan and hotpink after dark',
 		logo: 'Cadence',
 		swatch: ['#0c0a12', '#e9e6f5', '#00ffff', '#ff69b4']
 	},
 	{
+		id: 'lightmage',
+		name: 'Light Mage',
+		logo: 'Cadence',
+		swatch: ['#f2f4fb', '#2b2f46', '#3d8ee0', '#e0574a']
+	},
+	{
 		id: 'electromaster',
 		name: 'Electromaster',
-		note: 'Modern blue, mid-tone ground',
 		// Rendered in a Japanese hand; the same name, transliterated.
 		logo: 'ケイデンス',
-		swatch: ['#525d70', '#f4f7fc', '#62a0ff', '#ff6b5a']
+		swatch: ['#d8cdb6', '#241f16', '#0a6ef0', '#d1332a']
 	}
 ];
 

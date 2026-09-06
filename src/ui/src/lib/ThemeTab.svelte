@@ -4,11 +4,14 @@
 
 <ul>
 	{#each THEMES as option (option.id)}
+		{@const active = theme.current === option.id}
 		<li>
 			<button
 				onclick={() => theme.set(option.id)}
-				aria-pressed={theme.current === option.id}
-				class="flex w-full items-center gap-4 border-b border-edge/60 px-4 py-3 text-left transition hover:bg-surface-inset/60 sm:px-5"
+				aria-pressed={active}
+				class="flex w-full items-center gap-4 border-b border-edge/60 px-4 py-3 text-left transition sm:px-5 {active
+					? 'bg-surface-inset'
+					: 'hover:bg-surface-inset/50'}"
 			>
 				<!-- Literal values, not tokens: a swatch has to show its own theme's
 				     colours while a different theme is on screen. -->
@@ -17,13 +20,15 @@
 						<span class="h-6 w-3" style="background: {colour}"></span>
 					{/each}
 				</span>
-				<span class="min-w-0 flex-1">
-					<span class="block truncate text-sm text-ink">{option.name}</span>
-					<span class="block truncate text-xs text-ink-faint">{option.note}</span>
+				<span class="min-w-0 flex-1 truncate text-sm {active ? 'text-signal' : 'text-ink'}">
+					{option.name}
 				</span>
-				<span class="label shrink-0 {theme.current === option.id ? 'text-signal' : ''}">
-					{theme.current === option.id ? 'Active' : 'Select'}
-				</span>
+				<!-- The active row is marked by a lamp rather than a word, matching the
+				     on-air tally at the top of the panel. -->
+				<span
+					class="h-1.5 w-1.5 shrink-0 rounded-full {active ? 'bg-signal' : 'bg-transparent'}"
+					aria-hidden="true"
+				></span>
 			</button>
 		</li>
 	{/each}

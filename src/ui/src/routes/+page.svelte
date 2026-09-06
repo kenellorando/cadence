@@ -52,7 +52,7 @@
 	</section>
 
 	<footer class="mt-12 flex flex-col items-center gap-2 text-center">
-		<span class="font-logo text-[0.8rem] text-logo uppercase sm:text-sm">{theme.logo}</span>
+		<span class="font-logo text-base text-logo uppercase sm:text-lg">{theme.logo}</span>
 		<div class="label flex items-center gap-2.5">
 			<span class="font-mono tracking-normal tabular-nums">{radio.version}</span>
 			<span class="text-edge-light">/</span>

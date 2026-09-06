@@ -130,7 +130,7 @@
 			<div aria-live="polite" aria-atomic="true">
 				<p class="label">Now playing</p>
 				<h1
-					class="mt-1 truncate font-display text-2xl font-semibold text-ink sm:text-[1.7rem]"
+					class="mt-1 truncate font-display text-2xl font-medium text-ink sm:text-[1.7rem]"
 					title={radio.title}
 				>
 					{radio.title}

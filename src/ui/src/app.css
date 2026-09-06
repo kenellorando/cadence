@@ -6,12 +6,12 @@
    by sodium-vapour street lighting, which is where the orange comes from. Red
    means on air or fault, green means level; neither is decorative. */
 @theme {
-	--font-display: 'Archivo', ui-sans-serif, system-ui, sans-serif;
-	--font-label: 'Archivo Narrow', 'Archivo', ui-sans-serif, sans-serif;
-	--font-mono: 'Chivo Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+	--font-display: 'Roboto', ui-sans-serif, system-ui, sans-serif;
+	--font-label: 'Roboto Condensed', 'Roboto', ui-sans-serif, sans-serif;
+	--font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 	/* The wordmark only. Rock Salt is a handwriting face and unreadable at
 	   text sizes, so it is never used for anything but the logo. */
-	--font-logo: 'Rock Salt', 'Archivo', cursive;
+	--font-logo: 'Rock Salt', 'Roboto', cursive;
 
 	--color-surface: #101319;
 	--color-surface-raised: #171b23;
@@ -38,6 +38,7 @@
 	--panel-highlight: rgb(255 255 255 / 0.05);
 	--well-shadow: rgb(0 0 0 / 0.72);
 	--onair-glow: rgb(226 69 47 / 0.5);
+	--panel-glow: 0 0 0 0 transparent;
 	--art-wash: 0.16;
 }
 
@@ -62,32 +63,62 @@
 	--panel-highlight: rgb(0 255 255 / 0.06);
 	--well-shadow: rgb(0 0 0 / 0.75);
 	--onair-glow: rgb(255 105 180 / 0.5);
+	--panel-glow: 0 0 18px rgb(255 105 180 / 0.12);
 	--art-wash: 0.18;
 }
 
-/* Modern blue on a mid-tone ground rather than a dark one, and the wordmark
-   switches to a Japanese handwriting face. */
+/* Electric blue on warm beige card stock rather than a grey ground, and the
+   wordmark switches to a Japanese handwriting face. */
 [data-theme='electromaster'] {
-	color-scheme: dark;
+	color-scheme: light;
 	--font-logo: 'Yomogi', 'Rock Salt', cursive;
-	--color-surface: #525d70;
-	--color-surface-raised: #5d6a80;
-	--color-surface-inset: #47505f;
-	--color-edge: #78849a;
-	--color-edge-light: #8e9ab0;
-	--color-ink: #f4f7fc;
-	--color-ink-dim: #d6dde8;
-	--color-ink-faint: #bcc6d6;
-	--color-signal: #62a0ff;
-	--color-signal-dim: #2a4a7a;
-	--color-onair: #ff6b5a;
-	--color-peak: #ff6b5a;
-	--color-level: #86e3b4;
-	--color-logo: #f4f7fc;
-	--panel-highlight: rgb(255 255 255 / 0.14);
-	--well-shadow: rgb(0 0 0 / 0.3);
-	--onair-glow: rgb(255 107 90 / 0.45);
-	--art-wash: 0.12;
+	--color-surface: #d8cdb6;
+	--color-surface-raised: #e6dcc8;
+	--color-surface-inset: #c9bda3;
+	--color-edge: #ab9d81;
+	--color-edge-light: #8f8163;
+	--color-ink: #241f16;
+	--color-ink-dim: #554c3a;
+	--color-ink-faint: #6f6450;
+	/* Vivid, but kept dark enough to clear text contrast on beige -- a brighter
+	   electric blue fails as link and tab-label colour. */
+	--color-signal: #0a6ef0;
+	--color-signal-dim: #bcd8f7;
+	--color-onair: #d1332a;
+	--color-peak: #c0301f;
+	--color-level: #4f7a3f;
+	--color-logo: #0a6ef0;
+	--panel-highlight: rgb(255 255 255 / 0.6);
+	--well-shadow: rgb(0 0 0 / 0.18);
+	--onair-glow: rgb(209 51 42 / 0.35);
+	--panel-glow: 0 0 0 0 transparent;
+	--art-wash: 0.1;
+}
+
+/* Almost white, and lit rather than merely bright: panels carry a soft outer
+   glow and the ground is a pale blue-violet that keeps the light from reading
+   as plain paper. */
+[data-theme='lightmage'] {
+	color-scheme: light;
+	--color-surface: #f2f4fb;
+	--color-surface-raised: #fdfdff;
+	--color-surface-inset: #e9ecf8;
+	--color-edge: #dbe0f2;
+	--color-edge-light: #c3cae6;
+	--color-ink: #2b2f46;
+	--color-ink-dim: #5d6484;
+	--color-ink-faint: #8d94b3;
+	--color-signal: #3d8ee0;
+	--color-signal-dim: #cfe2f7;
+	--color-onair: #e0574a;
+	--color-peak: #cf4436;
+	--color-level: #58a37f;
+	--color-logo: #3d8ee0;
+	--panel-highlight: rgb(255 255 255 / 0.9);
+	--panel-glow: 0 0 26px rgb(120 170 255 / 0.35);
+	--well-shadow: rgb(60 80 140 / 0.14);
+	--onair-glow: rgb(224 87 74 / 0.35);
+	--art-wash: 0.08;
 }
 
 @layer base {
@@ -131,7 +162,9 @@
 	.panel {
 		background: var(--color-surface-raised);
 		border: 1px solid var(--color-edge);
-		box-shadow: inset 0 1px 0 0 var(--panel-highlight);
+		box-shadow:
+			inset 0 1px 0 0 var(--panel-highlight),
+			var(--panel-glow);
 	}
 
 	/* Album art sits in a cut-out, so it is recessed rather than floating. */
@@ -228,10 +261,9 @@
 	/* An input has to look like somewhere you can type: inset, bordered, and a
 	   shade off the panel it sits on. */
 	.field {
-		background: var(--color-surface-inset);
-		border: 1px solid var(--color-edge-light);
+		background: var(--color-surface);
+		border: 1px solid var(--color-edge);
 		border-radius: 2px;
-		box-shadow: inset 0 1px 2px var(--well-shadow);
 	}
 
 	.field:focus-within {

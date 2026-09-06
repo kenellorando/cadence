@@ -150,6 +150,9 @@ func liquidsoapSkip() (message string, err error) {
 	return message, nil
 }
 
+// How long the music library must be quiet before a change triggers a rebuild.
+const librarySettleDelay = 5 * time.Second
+
 // Watches the music directory (CSERVER_MUSICDIR) for any changes, and reconfigures the database.
 func filesystemMonitor() {
 	watcher, err := fsnotify.NewWatcher()
@@ -165,17 +168,42 @@ func filesystemMonitor() {
 	}
 	done := make(chan bool)
 	go func() {
+		// Rebuilding drops and repopulates the entire metadata table, and a bulk
+		// change to the library (copying an album in, a sync tool running) arrives
+		// as a burst of events. Rebuilding per event means dozens of destructive
+		// rebuilds, with search returning nothing for the duration of each. Wait
+		// for the burst to go quiet and rebuild once.
+		var settle *time.Timer
+		var settled <-chan time.Time
 		for {
 			select {
 			case _, ok := <-watcher.Events:
 				if !ok {
 					continue
 				}
-				slog.Info("Change detected in music library.", "func", "fileSystemMonitor")
-				err = postgresPopulate()
-				if err != nil {
+				slog.Debug("Change detected in music library.", "func", "fileSystemMonitor")
+				if settle == nil {
+					settle = time.NewTimer(librarySettleDelay)
+				} else {
+					// Stop reports false if the timer already fired, in which case
+					// its value is still waiting in the channel and must be drained
+					// before the timer can be reused.
+					if !settle.Stop() {
+						select {
+						case <-settle.C:
+						default:
+						}
+					}
+					settle.Reset(librarySettleDelay)
+				}
+				settled = settle.C
+			case <-settled:
+				settle, settled = nil, nil
+				slog.Info("Music library changes have settled, rebuilding database.", "func", "fileSystemMonitor")
+				// A failed rebuild is not a reason to stop watching. Giving up here
+				// left the library permanently stale until the service restarted.
+				if err := postgresPopulate(); err != nil {
 					slog.Error("Failed to populate.", "func", "fileSystemMonitor", "error", err)
-					return
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {

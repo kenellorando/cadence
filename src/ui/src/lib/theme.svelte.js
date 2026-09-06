@@ -13,19 +13,6 @@ export const THEMES = [
 		logo: 'Cadence',
 		swatch: ['#0c0a12', '#e9e6f5', '#00ffff', '#ff69b4']
 	},
-	{
-		id: 'lightmage',
-		name: 'Light Mage',
-		logo: 'Cadence',
-		swatch: ['#faf7ef', '#302c20', '#a8760f', '#dd5140']
-	},
-	{
-		id: 'electromaster',
-		name: 'Electromaster',
-		// Rendered in a Japanese hand; the same name, transliterated.
-		logo: 'ケイデンス',
-		swatch: ['#ece5d5', '#1c1f26', '#0b5fd4', '#c9372c']
-	}
 ];
 
 const STORAGE_KEY = 'themeKey';

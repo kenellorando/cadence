@@ -6,18 +6,32 @@ services:
     # that nothing here touches.
     image: redis:8.2-alpine
     container_name: redis
+    restart: always
     expose:
       - 6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     networks:
       internal_services:
 
   postgres:
     image: postgres:16-alpine
     container_name: postgres
+    restart: always
     expose:
       - 5432
     env_file:
       - ./config/cadence.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       internal_services:
 
@@ -43,7 +57,7 @@ services:
     restart: always
     volumes:
       - ./config/liquidsoap.liq:/etc/liquidsoap/cadence.liq
-      - CADENCE_PATH_EXAMPLE:CADENCE_PATH_EXAMPLE
+      - CADENCE_PATH_EXAMPLE:CADENCE_PATH_EXAMPLE:ro
     depends_on:
       - icecast2
     expose:
@@ -64,17 +78,24 @@ services:
     env_file:
       - ./config/cadence.env
     volumes:
-      - CADENCE_PATH_EXAMPLE:CADENCE_PATH_EXAMPLE
+      - CADENCE_PATH_EXAMPLE:CADENCE_PATH_EXAMPLE:ro
     depends_on:
-      - icecast2
-      - liquidsoap
-      - redis
-      - postgres
+      icecast2:
+        condition: service_started
+      liquidsoap:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     networks:
       internal_services:
       external_services:
 
 NGINX_CONFIG_SECTION
+
+volumes:
+  postgres_data:
 
 networks:
   external_services:

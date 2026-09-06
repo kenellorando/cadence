@@ -6,12 +6,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/dhowden/tag"
 )
@@ -20,6 +22,10 @@ import (
 // decodes a single short string, so anything beyond this is a client sending
 // something it should not.
 const maxRequestBody = 4096
+
+// Bounds the database check behind /ready so a wedged connection cannot hold a
+// health probe open.
+const readinessTimeout = 3 * time.Second
 
 // POST /api/search
 // Receives a search query, which it looks in the database for.
@@ -80,8 +86,8 @@ func RequestID() http.HandlerFunc {
 		}
 		reqID, err := strconv.Atoi(request.ID)
 		if err != nil {
-			slog.Error("Unable to convert request ID to an integer.", "func", "RequestID", "error", err)
-			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			slog.Warn("Rejecting a request whose ID is not an integer.", "func", "RequestID", "error", err)
+			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 			return
 		}
 		path, err := getPathById(reqID)
@@ -347,9 +353,24 @@ func Version() http.HandlerFunc {
 }
 
 // GET /ready
-// Gets 200 OK status. Primarily used for verifying health/readiness of the API.
+// Reports whether the server can actually serve requests. Returning 200
+// unconditionally made this useless as a readiness probe: the failure it most
+// needed to catch -- Postgres unreachable at startup, leaving an empty library
+// -- looked exactly like a healthy server.
 func Ready() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if dbp == nil {
+			slog.Debug("Readiness check failed: no database connection.", "func", "Ready")
+			w.WriteHeader(http.StatusServiceUnavailable) // 503 Service Unavailable
+			return
+		}
+		ctx, cancel := context.WithTimeout(r.Context(), readinessTimeout)
+		defer cancel()
+		if err := dbp.PingContext(ctx); err != nil {
+			slog.Debug("Readiness check failed: database unreachable.", "func", "Ready", "error", err)
+			w.WriteHeader(http.StatusServiceUnavailable) // 503 Service Unavailable
+			return
+		}
 		w.WriteHeader(http.StatusOK) // 200 OK
 	}
 }

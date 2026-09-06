@@ -25,6 +25,10 @@ const (
 	maintenanceDatabase = "postgres"
 	// Used only if CSERVER_POSTGRESDBNAME is unset.
 	defaultDatabase = "cadence"
+	// How long to keep waiting for Postgres to accept connections at startup,
+	// and how long to pause between attempts.
+	postgresStartupTimeout = 60 * time.Second
+	postgresRetryInterval  = 1 * time.Second
 )
 
 // Builds a connection string for one database on the configured server.
@@ -62,10 +66,37 @@ func postgresCreateDatabase() error {
 	return nil
 }
 
+// Waits for Postgres to start accepting connections. A fixed sleep was the
+// previous approach, which is simultaneously too long on a warm machine and too
+// short on a cold one -- and when it was too short, population failed and the
+// library stayed empty with nothing reporting it.
+func postgresAwait() error {
+	deadline := time.Now().Add(postgresStartupTimeout)
+	var lastErr error
+	for attempt := 1; ; attempt++ {
+		maintenance, err := sql.Open("postgres", postgresDSN(maintenanceDatabase))
+		if err == nil {
+			lastErr = maintenance.Ping()
+			maintenance.Close()
+			if lastErr == nil {
+				return nil
+			}
+		} else {
+			lastErr = err
+		}
+		if time.Now().After(deadline) {
+			slog.Error("Postgres did not become reachable in time.", "func", "postgresAwait", "error", lastErr)
+			return lastErr
+		}
+		slog.Debug(fmt.Sprintf("Postgres not ready yet, retrying (attempt %d).", attempt), "func", "postgresAwait")
+		time.Sleep(postgresRetryInterval)
+	}
+}
+
 func postgresInit() (err error) {
-	// We wait a bit to give some leeway for Postgres to finish startup.
-	// Obligatory: There's probably a better way to do this.
-	time.Sleep(5 * time.Second)
+	if err = postgresAwait(); err != nil {
+		return err
+	}
 	if c.PostgresDBName == "" {
 		slog.Warn(fmt.Sprintf("No database name configured, defaulting to <%s>.", defaultDatabase), "func", "postgresInit")
 		c.PostgresDBName = defaultDatabase

@@ -15,6 +15,10 @@ class Radio {
 	history = $state([]);
 	searchResults = $state([]);
 	searchStatus = $state('');
+	// Null until the first check, so the search pane can stay quiet rather than
+	// claiming an empty library before it knows.
+	indexing = $state(null);
+	tracks = $state(0);
 
 	// "-/-" is what the server reports when Icecast has no source connected.
 	get connected() {
@@ -77,6 +81,16 @@ class Radio {
 			this.history = (await api.getHistory()) ?? [];
 		} catch {
 			this.history = [];
+		}
+	}
+
+	async loadLibrary() {
+		try {
+			const status = await api.getLibrary();
+			this.indexing = status.Indexing;
+			this.tracks = status.Tracks;
+		} catch {
+			this.indexing = false;
 		}
 	}
 
@@ -170,6 +184,13 @@ class Radio {
 				kick();
 				this.loadHistory();
 			});
+			// The library finished being read; results that were empty a moment
+			// ago are now available.
+			source.addEventListener('library', () => {
+				kick();
+				this.loadLibrary();
+				this.runSearch('');
+			});
 
 			source.onerror = reconnect;
 		};
@@ -192,6 +213,7 @@ class Radio {
 			this.loadBitrate(),
 			this.loadHistory(),
 			this.loadVersion(),
+			this.loadLibrary(),
 			this.runSearch('')
 		]);
 	}

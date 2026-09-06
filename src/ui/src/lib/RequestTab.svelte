@@ -66,6 +66,14 @@
 	</ul>
 {:else}
 	<p class="label px-4 py-10 text-center sm:px-5">
-		{radio.searchStatus ? 'No matching tracks' : 'Loading library'}
+		{#if radio.indexing}
+			Reading the music library
+		{:else if radio.tracks === 0}
+			No music found in the configured library
+		{:else if radio.searchStatus}
+			No matching tracks
+		{:else}
+			Loading
+		{/if}
 	</p>
 {/if}

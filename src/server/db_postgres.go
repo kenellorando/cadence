@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/dhowden/tag"
@@ -132,7 +133,38 @@ func postgresInit() (err error) {
 	return nil
 }
 
+// Population state, so a client can tell an empty library from one that is
+// still being read. Walking and tag-reading a large library takes long enough
+// that a silent empty search looks like a broken install.
+var (
+	libraryMutex    sync.RWMutex
+	libraryIndexing bool
+	libraryTracks   int
+)
+
+func setLibraryIndexing(indexing bool) {
+	libraryMutex.Lock()
+	defer libraryMutex.Unlock()
+	libraryIndexing = indexing
+}
+
+func setLibraryTracks(tracks int) {
+	libraryMutex.Lock()
+	defer libraryMutex.Unlock()
+	libraryTracks = tracks
+}
+
+// Reports whether the library is being read, and how many tracks it holds.
+func libraryStatus() (indexing bool, tracks int) {
+	libraryMutex.RLock()
+	defer libraryMutex.RUnlock()
+	return libraryIndexing, libraryTracks
+}
+
 func postgresPopulate() error {
+	setLibraryIndexing(true)
+	defer setLibraryIndexing(false)
+
 	// Population is additive. Dropping and rebuilding the table renumbered every
 	// song on every restart and on every settled change to the library, because
 	// the id column is a serial. A search result held in an open tab, or a
@@ -264,10 +296,18 @@ func postgresPopulate() error {
 		slog.Info(fmt.Sprintf("Removed %d song(s) no longer present in the library.", count), "func", "postgresPopulate")
 	}
 
+	setLibraryTracks(len(seen))
+	// Tell any connected page the library has changed, so a listener who opened
+	// the site mid-scan sees results appear rather than an empty list.
+	radiodata_sse.Send("library", "update")
+
+	if len(seen) == 0 {
+		slog.Warn(fmt.Sprintf("No playable audio was found under <%s>. Check the configured music directory.", c.MusicDir), "func", "postgresPopulate")
+	}
 	if skipped > 0 {
 		slog.Warn(fmt.Sprintf("Database population completed, but %d file(s) were skipped.", skipped), "func", "postgresPopulate")
 		return nil
 	}
-	slog.Info("Database population completed.", "func", "postgresPopulate")
+	slog.Info(fmt.Sprintf("Database population completed: %d track(s).", len(seen)), "func", "postgresPopulate")
 	return nil
 }

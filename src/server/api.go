@@ -288,6 +288,29 @@ func SongArt() http.HandlerFunc {
 	}
 }
 
+// GET /api/library
+// Reports whether the music library is still being read and how many tracks it
+// holds, so a page can tell "nothing here" from "not finished yet".
+func Library() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		indexing, tracks := libraryStatus()
+		type Library struct {
+			Indexing bool
+			Tracks   int
+		}
+		jsonMarshal, err := json.Marshal(Library{Indexing: indexing, Tracks: tracks})
+		if err != nil {
+			slog.Error("Failed to marshal library status.", "func", "Library", "error", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if _, err = w.Write(jsonMarshal); err != nil {
+			slog.Error("Failed to write response.", "func", "Library", "error", err)
+		}
+	}
+}
+
 // GET /api/history
 // Gets a list of the ten last-played songs, noting the time each ended.
 func History() http.HandlerFunc {

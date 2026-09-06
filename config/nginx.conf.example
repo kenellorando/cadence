@@ -3,6 +3,29 @@ events {
 }
 
 http {
+	# This example listens on port 80 only. If this station is reachable from the
+	# internet, terminate TLS here: the request API and the audio stream share
+	# one origin, so a certificate for the web host covers both, and there is no
+	# second hostname to obtain one for.
+	#
+	# The shortest path is certbot, which will rewrite this file for you:
+	#
+	#     docker run --rm -p 80:80 -v ./config/certs:/etc/letsencrypt 	#         certbot/certbot certonly --standalone -d your.domain
+	#
+	# Then add a TLS server block alongside the one below, mount ./config/certs
+	# into the nginx service, and redirect port 80 to it:
+	#
+	#     server {
+	#         listen 443 ssl;
+	#         server_name CADENCE_WEB_HOST_EXAMPLE;
+	#         ssl_certificate     /etc/letsencrypt/live/your.domain/fullchain.pem;
+	#         ssl_certificate_key /etc/letsencrypt/live/your.domain/privkey.pem;
+	#         # ... the same location blocks as below ...
+	#     }
+	#
+	# Serving the page over HTTPS while the audio is plain HTTP would be blocked
+	# by the browser as mixed content, which is why they share an origin.
+
 	# This server forwards requests to the API/UI server.
 	server {
 		listen 80;

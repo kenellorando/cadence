@@ -1,11 +1,34 @@
 #!/bin/bash
 
-# Exit immediately upon error
-set -eo pipefail
+# Exit immediately upon error, and treat an unset variable as one.
+set -euo pipefail
+
+CADENCE_WEB_HOST=""
+ENABLE_REVERSE_PROXY=""
 
 if [ $# -gt 0 ]
 then
       echo "$(basename $0): No parameters allowed, $# given."
+      exit 1
+fi
+
+# Everything below ends in "docker compose up", so check that will work before
+# asking for any configuration. Failing after four prompts wastes the answers.
+if ! command -v docker > /dev/null 2>&1
+then
+      echo "Docker is not installed, or is not on PATH."
+      echo "Install Docker Engine: https://docs.docker.com/engine/install/"
+      exit 1
+fi
+if ! docker compose version > /dev/null 2>&1
+then
+      echo "Docker Compose V2 is not available ('docker compose version' failed)."
+      echo "Install Compose V2: https://docs.docker.com/compose/install/"
+      exit 1
+fi
+if ! docker info > /dev/null 2>&1
+then
+      echo "The Docker daemon is not responding. Start Docker and try again."
       exit 1
 fi
 
@@ -34,6 +57,15 @@ done
 # they don't get mounted inside our containers. Not a lot we can do about that.
 CADENCE_PATH=$(realpath -s "$CADENCE_PATH")
 
+# The station comes up either way, but silently empty is a confusing first
+# impression, so say so now rather than leaving it to be discovered.
+if [ -z "$(find "$CADENCE_PATH" -type f \( -iname '*.mp3' -o -iname '*.flac' -o -iname '*.ogg' \) -print -quit 2>/dev/null)" ]
+then
+      echo
+      echo "      Warning: no .mp3, .flac or .ogg files were found under this path."
+      echo "      Cadence will start, but the library and radio will be empty."
+fi
+
 echo
 
 cat <<END
@@ -56,12 +88,24 @@ cat <<END
 [3/4] Radio Service Password
 Set a secure, unique service password. Input is hidden.
 END
-read -s -p "      Password: " CADENCE_PASS
-while [ -z "$CADENCE_PASS" ]
+CADENCE_PASS=""
+CADENCE_PASS_CONFIRM=""
+while true
 do
-      echo
-      echo "Password cannot be empty!"
       read -s -p "      Password: " CADENCE_PASS
+      echo
+      if [ -z "$CADENCE_PASS" ]
+      then
+            echo "Password cannot be empty!"
+            continue
+      fi
+      read -s -p "      Confirm password: " CADENCE_PASS_CONFIRM
+      echo
+      if [ "$CADENCE_PASS" = "$CADENCE_PASS_CONFIRM" ]
+      then
+            break
+      fi
+      echo "Passwords did not match. Try again."
 done
 
 echo
@@ -132,8 +176,23 @@ replace_in_file CADENCE_WEB_HOST_EXAMPLE "$CADENCE_WEB_HOST" ./config/nginx.conf
 replace_in_file CADENCE_PATH_EXAMPLE "$CADENCE_PATH" ./docker-compose.yml
 
 echo ""
-echo "Configuration completed."
+echo "Configuration completed. Starting your station..."
+echo ""
 
-docker compose down
+docker compose down --remove-orphans
 docker compose pull
-docker compose up
+docker compose up -d
+
+cat <<END
+
+Cadence is running.
+
+      Web UI:  http://localhost:8080
+
+The music library is read in the background. A large library takes a while, and
+the search tab will say so until it has finished.
+
+      Follow the logs:  docker compose logs -f
+      Stop the station: docker compose down
+      Reconfigure:      ./install.sh
+END

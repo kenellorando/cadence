@@ -19,6 +19,7 @@ func routes() *http.ServeMux {
 	r.Handle("/api/nowplaying/albumart", rateLimitArt(NowPlayingAlbumArt()))
 	r.Handle("GET /api/song/{id}/art", rateLimitSongArt(SongArt()))
 	r.Handle("/api/history", History())
+	r.Handle("/api/library", Library())
 	r.Handle("/api/listenurl", ListenURL())
 	r.Handle("/api/listeners", Listeners())
 	r.Handle("/api/bitrate", Bitrate())

@@ -10,8 +10,11 @@ set("server.telnet.bind_addr", "0.0.0.0")
 default = mksafe(playlist(mode="randomize", "CADENCE_PATH_EXAMPLE"))
 # 2. Next priority: play user requests first if there are any in the queue.
 radio = fallback([ request.queue(id="request"), default])
-# 3. Next priority: play live input stream if one is connected. 
-full = fallback(track_sensitive=false, [input.http("http://localhost:8000/live.ogg"), radio])
+# 3. Next priority: play live input stream if one is connected.
+# The host is icecast2, not localhost: inside this container localhost is
+# Liquidsoap itself, so the connection failed every two seconds and filled
+# the log while the live fallback never worked at all.
+full = fallback(track_sensitive=false, [input.http("http://icecast2:8000/live.ogg"), radio])
 
 # Output the full stream in OGG
 # The id sets the telnet namespace Cadence uses to skip tracks ("cadence1.skip").

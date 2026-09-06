@@ -103,7 +103,9 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
 	title, artist = strings.TrimSpace(title), strings.TrimSpace(artist)
 	slog.Debug(fmt.Sprintf("Searching database for: %s by %s", title, artist), "func", "searchByTitleArtist")
-	selectStatement := fmt.Sprintf("SELECT id,artist,title,album,genre,year FROM %s WHERE title LIKE $1 AND artist LIKE $2;",
+	// An exact match, so = rather than LIKE: song titles legitimately contain %
+	// and _, which LIKE would treat as wildcards.
+	selectStatement := fmt.Sprintf("SELECT id,artist,title,album,genre,year FROM %s WHERE title = $1 AND artist = $2;",
 		c.PostgresTableName)
 	rows, err := dbp.Query(selectStatement, title, artist)
 	if err != nil {

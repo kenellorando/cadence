@@ -116,6 +116,11 @@ func RequestBestMatch() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
 			return
 		}
+		if len(queryResults) < 1 {
+			slog.Info("A best-match request returned no results.", "func", "RequestBestMatch")
+			w.WriteHeader(http.StatusNotFound) // 404 Not Found
+			return
+		}
 		path, err := getPathById(queryResults[0].ID)
 		if err != nil {
 			slog.Error("Unable to find file path by song ID", "func", "RequestBestMatch", "error", err)

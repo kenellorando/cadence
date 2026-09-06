@@ -252,7 +252,7 @@ func icecastMonitor() {
 		}
 		if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
 			slog.Info(fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint), "func", "icecastMonitor")
-			radiodata_sse.SendEventMessage(fmt.Sprintf(now.Host, "/", now.Mountpoint), "listenurl", "")
+			radiodata_sse.SendEventMessage(now.Host+"/"+now.Mountpoint, "listenurl", "")
 		}
 		if prev.Listeners != now.Listeners {
 			slog.Info(fmt.Sprintf("Listener count: <%v>", now.Listeners), "func", "icecastMonitor")

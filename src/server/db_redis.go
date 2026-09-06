@@ -5,10 +5,12 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -37,6 +39,13 @@ func redisInit() {
 
 func rateLimitRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// A rate limit of zero means the limiter is disabled. This must be handled
+		// before anything is written to Redis, which reads a zero expiry as
+		// "never expire" and would block the client permanently.
+		if c.RequestRateLimit <= 0 {
+			next.ServeHTTP(w, r)
+			return
+		}
 		ip, err := checkIP(r)
 		if err != nil {
 			slog.Error("Couldn't start IP address check for request API.", "func", "rateLimitRequest", "error", err)
@@ -115,20 +124,32 @@ func rateLimitArt(next http.Handler) http.Handler {
 	})
 }
 
-func checkIP(r *http.Request) (ip string, err error) {
+func checkIP(r *http.Request) (string, error) {
 	// We look at the remote address and check the IP.
 	// If for some reason no remote IP is there, we error to reject.
-	if r.RemoteAddr != "" {
-		ip, _, err := net.SplitHostPort(r.RemoteAddr)
-		if err != nil {
-			slog.Error("Couldn't split client address IP from port. The request will be rejected.", "func", "checkIP", "error", err)
-			return "", err
-		}
-		if ip == "" {
-			slog.Warn("A client IP was blank and could not be checked. The request will be rejected.", "func", "checkIP")
-			return "", err
-		}
-		return ip, nil
+	if r.RemoteAddr == "" {
+		slog.Warn("A client address was blank and could not be checked. The request will be rejected.", "func", "checkIP")
+		return "", errors.New("request has no remote address")
 	}
-	return "", err
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		slog.Error("Couldn't split client address IP from port. The request will be rejected.", "func", "checkIP", "error", err)
+		return "", err
+	}
+	if ip == "" {
+		slog.Warn("A client IP was blank and could not be checked. The request will be rejected.", "func", "checkIP")
+		return "", errors.New("request has a blank remote IP")
+	}
+	// Requests arriving through the bundled nginx proxy all carry the proxy's
+	// own address, which would rate limit every listener as if they were one
+	// client. Where the immediate peer is on a private network we take nginx's
+	// X-Real-IP instead. The header is ignored for peers reaching the API
+	// directly over a public address, where a client could set it themselves
+	// to evade the limit.
+	if peer := net.ParseIP(ip); peer != nil && (peer.IsLoopback() || peer.IsPrivate()) {
+		if forwarded := net.ParseIP(strings.TrimSpace(r.Header.Get("X-Real-IP"))); forwarded != nil {
+			return forwarded.String(), nil
+		}
+	}
+	return ip, nil
 }

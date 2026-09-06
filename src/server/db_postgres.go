@@ -5,6 +5,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -40,7 +41,8 @@ func postgresInit() (err error) {
 	enableExtension := "CREATE EXTENSION fuzzystrmatch"
 	_, err = dbp.Exec(enableExtension)
 	if err != nil {
-		if err.(*pq.Error).Code == "42710" {
+		var pqErr *pq.Error
+		if errors.As(err, &pqErr) && pqErr.Code == "42710" {
 			// 42710 also indicates an existing Postgres instance configured by another Cadence instance is still running.
 			slog.Debug("fuzzystrmatch already enabled on metadata database.", "func", "postgresInit")
 		} else {
@@ -91,7 +93,8 @@ func postgresPopulate() error {
 	slog.Debug(fmt.Sprintf("Creating table <%s>...", c.PostgresTableName), "func", "postgresPopulate")
 	_, err = dbp.Exec(createTable)
 	if err != nil {
-		if err.(*pq.Error).Code == "42P07" {
+		var pqErr *pq.Error
+		if errors.As(err, &pqErr) && pqErr.Code == "42P07" {
 			// 42P10 indicates an existing metadata table configured by another Cadence instance is still running.
 			slog.Info("Metadata database already exists", "func", "postgresPopulate")
 		} else {

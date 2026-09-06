@@ -67,57 +67,60 @@
 	--art-wash: 0.18;
 }
 
-/* Electric blue on warm beige card stock rather than a grey ground, and the
-   wordmark switches to a Japanese handwriting face. */
+/* Electric blue on warm paper. The ink is deliberately cool rather than the
+   brown-black the paper suggests: a warm ground with warm ink and a cold accent
+   reads as two unrelated palettes, where cool ink and a blue accent over warm
+   stock is the blueprint-on-manila combination they came from. */
 [data-theme='electromaster'] {
 	color-scheme: light;
-	--font-logo: 'Yomogi', 'Rock Salt', cursive;
-	--color-surface: #d8cdb6;
-	--color-surface-raised: #e6dcc8;
-	--color-surface-inset: #c9bda3;
-	--color-edge: #ab9d81;
-	--color-edge-light: #8f8163;
-	--color-ink: #241f16;
-	--color-ink-dim: #554c3a;
-	--color-ink-faint: #6f6450;
-	/* Vivid, but kept dark enough to clear text contrast on beige -- a brighter
-	   electric blue fails as link and tab-label colour. */
-	--color-signal: #0a6ef0;
-	--color-signal-dim: #bcd8f7;
-	--color-onair: #d1332a;
-	--color-peak: #c0301f;
-	--color-level: #4f7a3f;
-	--color-logo: #0a6ef0;
-	--panel-highlight: rgb(255 255 255 / 0.6);
-	--well-shadow: rgb(0 0 0 / 0.18);
-	--onair-glow: rgb(209 51 42 / 0.35);
+	--font-logo: 'Yusei Magic', 'Rock Salt', cursive;
+	--color-surface: #ece5d5;
+	--color-surface-raised: #f5f0e4;
+	--color-surface-inset: #ded5c1;
+	--color-edge: #cabfa6;
+	--color-edge-light: #ab9f83;
+	--color-ink: #1c1f26;
+	--color-ink-dim: #4a5261;
+	--color-ink-faint: #7b8290;
+	--color-signal: #0b5fd4;
+	--color-signal-dim: #cfe0f8;
+	--color-onair: #c9372c;
+	--color-peak: #c9372c;
+	--color-level: #4a7a45;
+	--color-logo: #0b5fd4;
+	--panel-highlight: rgb(255 255 255 / 0.65);
 	--panel-glow: 0 0 0 0 transparent;
+	--well-shadow: rgb(28 31 38 / 0.16);
+	--onair-glow: rgb(201 55 44 / 0.35);
 	--art-wash: 0.1;
 }
 
-/* Almost white, and lit rather than merely bright: panels carry a soft outer
-   glow and the ground is a pale blue-violet that keeps the light from reading
-   as plain paper. */
+/* Almost white, and lit rather than merely bright: panels carry a soft golden
+   glow over a warm near-white, so it reads as illuminated rather than as plain
+   paper. */
 [data-theme='lightmage'] {
 	color-scheme: light;
-	--color-surface: #f2f4fb;
-	--color-surface-raised: #fdfdff;
-	--color-surface-inset: #e9ecf8;
-	--color-edge: #dbe0f2;
-	--color-edge-light: #c3cae6;
-	--color-ink: #2b2f46;
-	--color-ink-dim: #5d6484;
-	--color-ink-faint: #8d94b3;
-	--color-signal: #3d8ee0;
-	--color-signal-dim: #cfe2f7;
-	--color-onair: #e0574a;
+	--color-surface: #faf7ef;
+	--color-surface-raised: #fffdf8;
+	--color-surface-inset: #f2ede0;
+	--color-edge: #e6dfcd;
+	--color-edge-light: #d3c9ae;
+	--color-ink: #302c20;
+	--color-ink-dim: #6a6350;
+	--color-ink-faint: #837b64;
+	/* Deep gold rather than a bright yellow: this also has to serve as link and
+	   tab-label colour, and a luminous yellow is unreadable on near-white. The
+	   brightness lives in the glow below, where contrast does not apply. */
+	--color-signal: #a8760f;
+	--color-signal-dim: #f6e6bd;
+	--color-onair: #dd5140;
 	--color-peak: #cf4436;
-	--color-level: #58a37f;
-	--color-logo: #3d8ee0;
+	--color-level: #6a9a5a;
+	--color-logo: #a8760f;
 	--panel-highlight: rgb(255 255 255 / 0.9);
-	--panel-glow: 0 0 26px rgb(120 170 255 / 0.35);
-	--well-shadow: rgb(60 80 140 / 0.14);
-	--onair-glow: rgb(224 87 74 / 0.35);
+	--panel-glow: 0 0 26px rgb(255 205 90 / 0.45);
+	--well-shadow: rgb(120 100 40 / 0.14);
+	--onair-glow: rgb(221 81 64 / 0.35);
 	--art-wash: 0.08;
 }
 

@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dhowden/tag"
@@ -236,6 +237,60 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 		if err != nil {
 			slog.Error("Failed to write response.", "func", "NowPlayingAlbumArt", "error", err)
 			return
+		}
+	}
+}
+
+// GET /api/song/{id}/art
+// Returns the embedded artwork for one song as an image, so a list of search
+// results can show a thumbnail per row. The now-playing endpoint cannot serve
+// this: it only ever knows about the current track, and it answers in JSON,
+// which an <img> cannot use as a source.
+func SongArt() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil {
+			slog.Debug("Rejecting an artwork request whose ID is not an integer.", "func", "SongArt")
+			w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
+			return
+		}
+		path, err := getPathById(id)
+		if err != nil {
+			slog.Debug("No song found for an artwork request.", "func", "SongArt", "error", err)
+			w.WriteHeader(http.StatusNotFound) // 404 Not Found
+			return
+		}
+		file, err := os.Open(path)
+		if err != nil {
+			slog.Error("Unable to open a file for album art extraction.", "func", "SongArt", "error", err)
+			w.WriteHeader(http.StatusNotFound) // 404 Not Found
+			return
+		}
+		defer file.Close()
+		tags, err := tag.ReadFrom(file)
+		if err != nil {
+			slog.Debug("Unable to read tags for album art extraction.", "func", "SongArt", "error", err)
+			w.WriteHeader(http.StatusNotFound) // 404 Not Found
+			return
+		}
+		picture := tags.Picture()
+		if picture == nil {
+			// 404 rather than 204, so the browser treats it as a failed image and
+			// the page can fall back to an empty frame.
+			w.WriteHeader(http.StatusNotFound) // 404 Not Found
+			return
+		}
+		// Tags carry whatever the encoder wrote, which is not always a media type.
+		mediaType := picture.MIMEType
+		if !strings.HasPrefix(mediaType, "image/") {
+			mediaType = "image/jpeg"
+		}
+		w.Header().Set("Content-Type", mediaType)
+		// Artwork for a given song does not change while the file does not, and a
+		// result list asks for many at once.
+		w.Header().Set("Cache-Control", "public, max-age=3600")
+		if _, err = w.Write(picture.Data); err != nil {
+			slog.Debug("Failed to write album art.", "func", "SongArt", "error", err)
 		}
 	}
 }

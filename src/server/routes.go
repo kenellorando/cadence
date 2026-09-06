@@ -17,6 +17,7 @@ func routes() *http.ServeMux {
 	r.Handle("/api/request/bestmatch", rateLimitRequest(RequestBestMatch()))
 	r.Handle("/api/nowplaying/metadata", NowPlayingMetadata())
 	r.Handle("/api/nowplaying/albumart", rateLimitArt(NowPlayingAlbumArt()))
+	r.Handle("GET /api/song/{id}/art", SongArt())
 	r.Handle("/api/history", History())
 	r.Handle("/api/listenurl", ListenURL())
 	r.Handle("/api/listeners", Listeners())

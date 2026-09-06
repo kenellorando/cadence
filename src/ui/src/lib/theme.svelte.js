@@ -17,14 +17,14 @@ export const THEMES = [
 		id: 'lightmage',
 		name: 'Light Mage',
 		logo: 'Cadence',
-		swatch: ['#f2f4fb', '#2b2f46', '#3d8ee0', '#e0574a']
+		swatch: ['#faf7ef', '#302c20', '#a8760f', '#dd5140']
 	},
 	{
 		id: 'electromaster',
 		name: 'Electromaster',
 		// Rendered in a Japanese hand; the same name, transliterated.
 		logo: 'ケイデンス',
-		swatch: ['#d8cdb6', '#241f16', '#0a6ef0', '#d1332a']
+		swatch: ['#ece5d5', '#1c1f26', '#0b5fd4', '#c9372c']
 	}
 ];
 

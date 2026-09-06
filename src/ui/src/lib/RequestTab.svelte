@@ -34,12 +34,21 @@
 
 {#if radio.searchResults.length > 0}
 	<ul>
-		{#each radio.searchResults as song, index (song.ID)}
+		{#each radio.searchResults as song (song.ID)}
 			<li
 				class="flex items-center gap-4 border-b border-edge/60 px-4 py-2.5 transition hover:bg-surface-inset/60 sm:px-5"
 			>
-				<span class="w-6 shrink-0 font-mono text-xs text-ink-faint tabular-nums">
-					{String(index + 1).padStart(2, '0')}
+				<!-- The frame stays whether or not there is artwork, so rows keep a
+				     consistent left edge. A song with no embedded art answers 404 and
+				     the image removes itself, leaving the empty frame. -->
+				<span class="well h-10 w-10 shrink-0 overflow-hidden">
+					<img
+						src="/api/song/{song.ID}/art"
+						alt=""
+						loading="lazy"
+						class="h-full w-full object-cover"
+						onerror={(event) => event.currentTarget.remove()}
+					/>
 				</span>
 				<div class="min-w-0 flex-1">
 					<p class="truncate text-sm text-ink" title={song.Title}>{song.Title}</p>

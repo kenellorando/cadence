@@ -1,22 +1,5 @@
 services:
 
-  redis:
-    # Cadence uses Redis only as a TTL keystore for rate limit counters. The
-    # redis-stack image additionally ships JSON, search and timeseries modules
-    # that nothing here touches.
-    image: redis:8.2-alpine
-    container_name: redis
-    restart: always
-    expose:
-      - 6379
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-    networks:
-      internal_services:
-
   postgres:
     image: postgres:16-alpine
     container_name: postgres
@@ -84,8 +67,6 @@ services:
         condition: service_started
       liquidsoap:
         condition: service_started
-      redis:
-        condition: service_healthy
       postgres:
         condition: service_healthy
     networks:

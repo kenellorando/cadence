@@ -42,8 +42,6 @@ type ServerConfig struct {
 	PostgresDBName    string
 	PostgresTableName string
 	PostgresSSL       string
-	RedisAddress      string
-	RedisPort         string
 	DevMode           bool
 	LogLevel          string
 }
@@ -85,19 +83,19 @@ func main() {
 	c.PostgresDBName = os.Getenv("CSERVER_POSTGRESDBNAME")
 	c.PostgresTableName = os.Getenv("CSERVER_POSTGRESTABLENAME")
 	c.PostgresSSL = os.Getenv("CSERVER_POSTGRESSSL")
-	c.RedisAddress = os.Getenv("CSERVER_REDISADDRESS")
-	c.RedisPort = os.Getenv("CSERVER_REDISPORT")
 	c.DevMode, _ = strconv.ParseBool(os.Getenv("CSERVER_DEVMODE"))
 	c.LogLevel = os.Getenv("CSERVER_LOGLEVEL")
 
 	slog.SetLogLoggerLevel(parseLogLevel(c.LogLevel))
 
 	if postgresInit() == nil {
+		if rateLimitInit() != nil {
+			slog.Warn("Rate limiting is unavailable.", "func", "main")
+		}
 		if postgresPopulate() != nil {
 			slog.Warn("Initial database population failed.", "func", "main")
 		}
 	}
-	go redisInit()
 	go filesystemMonitor()
 	go icecastMonitor()
 

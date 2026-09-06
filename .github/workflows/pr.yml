@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
+          go-version: '1.22'
           cache: false
       - uses: actions/checkout@v3
       - name: golangci-lint
@@ -22,3 +22,18 @@ jobs:
         with:
           version: latest
           working-directory: src/server/
+
+  test-go:
+    name: Run Go Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+      - uses: actions/checkout@v3
+      - name: go build
+        working-directory: src/server/
+        run: go build ./...
+      - name: go test
+        working-directory: src/server/
+        run: go test -race ./...

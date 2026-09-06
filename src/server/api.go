@@ -141,7 +141,8 @@ func RequestBestMatch() http.HandlerFunc {
 // Gets text metadata (excludes album art and path) of the currently playing song.
 func NowPlayingMetadata() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		queryResults, err := searchByTitleArtist(now.Song.Title, now.Song.Artist)
+		playing := nowPlaying()
+		queryResults, err := searchByTitleArtist(playing.Song.Title, playing.Song.Artist)
 		if err != nil {
 			slog.Error("Unable to search by title and artist.", "func", "NowPlayingMetadata", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
@@ -171,7 +172,8 @@ func NowPlayingMetadata() http.HandlerFunc {
 // Gets base64 encoded album art of the currently playing song.
 func NowPlayingAlbumArt() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		queryResults, err := searchByTitleArtist(now.Song.Title, now.Song.Artist)
+		playing := nowPlaying()
+		queryResults, err := searchByTitleArtist(playing.Song.Title, playing.Song.Artist)
 		if err != nil {
 			slog.Error("Unable to search by title and artist.", "func", "NowPlayingAlbumArt", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
@@ -228,7 +230,7 @@ func NowPlayingAlbumArt() http.HandlerFunc {
 // Gets a list of the ten last-played songs, noting the time each ended.
 func History() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		jsonMarshal, err := json.Marshal(history)
+		jsonMarshal, err := json.Marshal(playHistory())
 		if err != nil {
 			slog.Error("Failed to marshal play history.", "func", "History", "error", err)
 			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
@@ -250,7 +252,8 @@ func ListenURL() http.HandlerFunc {
 		type ListenURL struct {
 			ListenURL string
 		}
-		listenurl := ListenURL{ListenURL: string(now.Host + "/" + now.Mountpoint)}
+		playing := nowPlaying()
+		listenurl := ListenURL{ListenURL: playing.Host + "/" + playing.Mountpoint}
 		jsonMarshal, err := json.Marshal(listenurl)
 		if err != nil {
 			slog.Error("Failed to marshal listen URL.", "func", "ListenURL", "error", err)
@@ -273,7 +276,7 @@ func Listeners() http.HandlerFunc {
 		type Listeners struct {
 			Listeners int
 		}
-		listeners := Listeners{Listeners: int(now.Listeners)}
+		listeners := Listeners{Listeners: int(nowPlaying().Listeners)}
 		jsonMarshal, err := json.Marshal(listeners)
 		if err != nil {
 			slog.Error("Failed to marshal listeners.", "func", "Listeners", "error", err)
@@ -296,7 +299,7 @@ func Bitrate() http.HandlerFunc {
 		type Bitrate struct {
 			Bitrate int
 		}
-		bitrate := Bitrate{Bitrate: int(now.Bitrate)}
+		bitrate := Bitrate{Bitrate: int(nowPlaying().Bitrate)}
 		jsonMarshal, err := json.Marshal(bitrate)
 		if err != nil {
 			slog.Error("Failed to marshal bitrate.", "func", "Bitrate", "error", err)

@@ -12,6 +12,7 @@ import (
 	"net/http"
 
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Jeffail/gabs"
@@ -19,6 +20,26 @@ import (
 )
 
 var now = RadioInfo{}
+
+// icecastMonitor writes now and history from its own goroutine once a second
+// while request handlers read them, so every access is guarded. The monitor is
+// the only writer, and therefore only needs the lock when it mutates; readers
+// outside it must go through nowPlaying and playHistory.
+var radioMutex sync.RWMutex
+
+// Returns a copy of the current radio state, safe to use off the monitor goroutine.
+func nowPlaying() RadioInfo {
+	radioMutex.RLock()
+	defer radioMutex.RUnlock()
+	return now
+}
+
+// Returns a copy of the recently played songs, oldest first.
+func playHistory() []playRecord {
+	radioMutex.RLock()
+	defer radioMutex.RUnlock()
+	return append([]playRecord(nil), history...)
+}
 
 type RadioInfo struct {
 	Song       SongData
@@ -221,6 +242,8 @@ func icecastMonitor() {
 	var prev = RadioInfo{}
 	// Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
 	icecastDataReset := func() {
+		radioMutex.Lock()
+		defer radioMutex.Unlock()
 		now.Song.Title, now.Song.Artist, now.Host, now.Mountpoint = "-", "-", "-", "-"
 		now.Listeners = -1
 	}
@@ -255,12 +278,14 @@ func icecastMonitor() {
 			return
 		}
 
+		radioMutex.Lock()
 		now.Song.Artist = jsonParsed.Path("icestats.source.artist").Data().(string)
 		now.Song.Title = jsonParsed.Path("icestats.source.title").Data().(string)
 		now.Host = jsonParsed.Path("icestats.host").Data().(string)
 		now.Mountpoint = jsonParsed.Path("icestats.source.server_name").Data().(string)
 		now.Listeners = jsonParsed.Path("icestats.source.listeners").Data().(float64)
 		now.Bitrate = jsonParsed.Path("icestats.source.bitrate").Data().(float64)
+		radioMutex.Unlock()
 
 		if (prev.Song.Title != now.Song.Title) || (prev.Song.Artist != now.Song.Artist) {
 			slog.Info(fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist), "func", "icecastMonitor")
@@ -271,10 +296,12 @@ func icecastMonitor() {
 			radiodata_sse.SendEventMessage(now.Song.Title, "title", "")
 			radiodata_sse.SendEventMessage(now.Song.Artist, "artist", "")
 			if (prev.Song.Title != "") && (prev.Song.Artist != "") {
+				radioMutex.Lock()
 				history = append(history, playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
 				if len(history) > 10 {
 					history = history[1:]
 				}
+				radioMutex.Unlock()
 				radiodata_sse.SendEventMessage("update", "history", "")
 			}
 		}

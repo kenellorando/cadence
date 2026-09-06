@@ -26,7 +26,7 @@
 	--color-onair: #e2452f;
 	--color-peak: #cf5341;
 	--color-level: #8fae7a;
-	--color-logo: #a49e93;
+	--color-logo: #6e6a64;
 }
 
 /* Theme overrides sit outside every layer so they win over the tokens Tailwind
@@ -59,7 +59,7 @@
 	--color-onair: hotpink;
 	--color-peak: #ff4d6d;
 	--color-level: #3ad1b6;
-	--color-logo: hotpink;
+	--color-logo: #6f6790;
 	--panel-highlight: rgb(0 255 255 / 0.06);
 	--well-shadow: rgb(0 0 0 / 0.75);
 	--onair-glow: rgb(255 105 180 / 0.5);

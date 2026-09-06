@@ -1,0 +1,9 @@
+version: "2"
+
+linters:
+  exclusions:
+    # errcheck flags idiomatic deferred cleanup -- defer rows.Close(),
+    # defer resp.Body.Close() -- whose errors there is nothing useful to do
+    # with. golangci-lint v1 excluded these by default; v2 requires saying so.
+    presets:
+      - std-error-handling

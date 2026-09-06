@@ -18,9 +18,11 @@ jobs:
           cache: false
       - uses: actions/checkout@v3
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v6
         with:
-          version: latest
+          # Pinned rather than "latest": v2 dropped the default exclusion
+          # presets, so an unpinned upgrade silently changes what fails.
+          version: v2.13.2
           working-directory: src/server/
 
   test-go:
@@ -37,3 +39,134 @@ jobs:
       - name: go test
         working-directory: src/server/
         run: go test -race ./...
+
+  # Unit tests and linting cannot see the seams between Cadence and the services
+  # it does not control. Both regressions that shipped in the 5.4 image lived
+  # exactly there: Icecast renamed a status field and crash-looped the server,
+  # and Liquidsoap renamed a telnet command so every song request was dropped
+  # while the API still answered 202. This job runs the real stack and asserts
+  # the round trips that would have caught them.
+  smoke-stack:
+    name: Run Stack Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate a test music library
+        run: |
+          mkdir -p /tmp/music
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          gen() {
+            ffmpeg -loglevel error -f lavfi -i "sine=frequency=$4:duration=30" \
+              -metadata title="$1" -metadata artist="$2" -metadata album="$3" \
+              -id3v2_version 3 "/tmp/music/$5" -y
+          }
+          gen "Midnight Signal" "The Antennas" "Night Transmissions" 440 track1.mp3
+          gen "Copper Wire"     "The Antennas" "Night Transmissions" 523 track2.mp3
+          gen "Slow Orbit"      "Vega Drift"   "Perihelion"          659 track3.mp3
+
+      - name: Generate configuration
+        run: |
+          set -eu
+          PASS=smoketest
+          sed -e "s|CADENCE_PATH_EXAMPLE|/tmp/music|g" \
+              -e "s|CADENCE_RATE_EXAMPLE|0|g" \
+              -e "s|CADENCE_PASS_EXAMPLE|$PASS|g" \
+              config/cadence.env.example > config/cadence.env
+          sed -e "s|CADENCE_PASS_EXAMPLE|$PASS|g" \
+              -e "s|CADENCE_STREAM_HOST_EXAMPLE|localhost:8000|g" \
+              config/icecast.xml.example > config/icecast.xml
+          sed -e "s|CADENCE_PATH_EXAMPLE|/tmp/music|g" \
+              -e "s|CADENCE_PASS_EXAMPLE|$PASS|g" \
+              config/liquidsoap.liq.example > config/liquidsoap.liq
+          sed -e "s|CADENCE_PATH_EXAMPLE|/tmp/music|g" \
+              -e "s|NGINX_CONFIG_SECTION||g" \
+              docker-compose.yml.example > docker-compose.yml
+
+      - name: Build and start the stack
+        run: docker compose up -d --build
+
+      - name: Wait for the server to report ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf -m 3 http://localhost:8080/ready > /dev/null; then
+              echo "ready after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "server never became ready"
+          docker compose logs --no-color
+          exit 1
+
+      - name: Assert the library populated and search works
+        run: |
+          set -eu
+          results=$(curl -sf -m 10 -X POST -H 'Content-Type: application/json' \
+            -d '{"search":"Antennas"}' http://localhost:8080/api/search)
+          echo "$results"
+          echo "$results" | grep -q "Midnight Signal"
+
+      - name: Assert Icecast metadata reaches the API
+        # Guards the field-rename class of failure: a status document Cadence
+        # cannot parse leaves the artist and title empty or the server dead.
+        run: |
+          set -eu
+          for i in $(seq 1 60); do
+            body=$(curl -sf -m 5 http://localhost:8080/api/nowplaying/metadata || true)
+            case "$body" in
+              *'"Artist":"'*) : ;;
+              *) sleep 2; continue ;;
+            esac
+            if [ "$(printf '%s' "$body" | grep -c '"Artist":""')" = "0" ]; then
+              echo "$body"; exit 0
+            fi
+            sleep 2
+          done
+          echo "never saw a populated now-playing artist"
+          docker compose logs --no-color cadence icecast2 liquidsoap
+          exit 1
+
+      - name: Assert a song request reaches Liquidsoap
+        # Guards the telnet-rename class of failure: the API answered 202 while
+        # every request was rejected by the audio source and silently dropped.
+        run: |
+          set -eu
+          id=$(curl -sf -m 10 -X POST -H 'Content-Type: application/json' \
+            -d '{"search":""}' http://localhost:8080/api/search \
+            | sed -n 's/.*"ID":\([0-9]*\).*/\1/p' | head -1)
+          echo "requesting song id $id"
+          code=$(curl -s -m 15 -o /dev/null -w '%{http_code}' -X POST \
+            -H 'Content-Type: application/json' -d "{\"ID\":\"$id\"}" \
+            http://localhost:8080/api/request/id)
+          [ "$code" = "202" ] || { echo "request returned $code"; exit 1; }
+          # A 202 alone proves nothing: the failure being guarded against
+          # returned 202 too. Liquidsoap logging an error is the real signal.
+          sleep 5
+          if docker compose logs --no-color cadence | grep -i "unknown command"; then
+            echo "the audio source rejected the request command"
+            exit 1
+          fi
+
+      - name: Assert the event stream sends keepalives
+        # Guards the frozen-metadata failure: without traffic on an idle
+        # connection, a dropped stream is indistinguishable from a quiet one.
+        run: |
+          set -eu
+          timeout 25 curl -sN http://localhost:8080/api/radiodata/sse > /tmp/sse.txt || true
+          cat /tmp/sse.txt
+          grep -q "keepalive" /tmp/sse.txt
+
+      - name: Assert the server did not panic
+        run: |
+          if docker compose logs --no-color cadence | grep -i "panic:"; then
+            echo "the server panicked"
+            exit 1
+          fi
+
+      - name: Dump logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

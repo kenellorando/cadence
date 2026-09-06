@@ -14,4 +14,7 @@ radio = fallback([ request.queue(id="request"), default])
 full = fallback(track_sensitive=false, [input.http("http://localhost:8000/live.ogg"), radio])
 
 # Output the full stream in OGG
-output.icecast(%vorbis.cbr(bitrate=192), host="icecast2",port=8000,password="CADENCE_PASS_EXAMPLE", mount="cadence1",full)
+# The id sets the telnet namespace Cadence uses to skip tracks ("cadence1.skip").
+# Liquidsoap 1.4 derived it from the mount name; 2.x needs it stated, or the
+# namespace falls back to "output.icecast" and skip requests are refused.
+output.icecast(id="cadence1", %vorbis.cbr(bitrate=192), host="icecast2",port=8000,password="CADENCE_PASS_EXAMPLE", mount="cadence1",full)

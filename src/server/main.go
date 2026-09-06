@@ -42,6 +42,9 @@ type ServerConfig struct {
 	PostgresDBName    string
 	PostgresTableName string
 	PostgresSSL       string
+	SourcePort        string
+	SourcePassword    string
+	InternalStream    bool
 	DevMode           bool
 	LogLevel          string
 }
@@ -83,6 +86,9 @@ func main() {
 	c.PostgresDBName = os.Getenv("CSERVER_POSTGRESDBNAME")
 	c.PostgresTableName = os.Getenv("CSERVER_POSTGRESTABLENAME")
 	c.PostgresSSL = os.Getenv("CSERVER_POSTGRESSSL")
+	c.SourcePort = os.Getenv("CSERVER_SOURCEPORT")
+	c.SourcePassword = os.Getenv("CSERVER_SOURCEPASSWORD")
+	c.InternalStream, _ = strconv.ParseBool(os.Getenv("CSERVER_INTERNALSTREAM"))
 	c.DevMode, _ = strconv.ParseBool(os.Getenv("CSERVER_DEVMODE"))
 	c.LogLevel = os.Getenv("CSERVER_LOGLEVEL")
 
@@ -97,7 +103,14 @@ func main() {
 		}
 	}
 	go filesystemMonitor()
-	go icecastMonitor()
+	// Only one of these may drive the radio state. With the built-in source the
+	// audio arrives here directly and metadata comes with it, so polling a
+	// separate streaming server would only overwrite what we already know.
+	if c.InternalStream {
+		startAudioSource()
+	} else {
+		go icecastMonitor()
+	}
 
 	server := &http.Server{
 		Addr:    c.Port,

@@ -294,6 +294,12 @@ func icecastAudioInfoBitrate(parsed *gabs.Container) (float64, bool) {
 	if !ok {
 		return 0, false
 	}
+	return audioInfoBitrate(info)
+}
+
+// Reads the kbps out of an audio_info string. The built-in source receives the
+// same format in an ice-audio-info header.
+func audioInfoBitrate(info string) (float64, bool) {
 	for _, field := range strings.Split(info, ";") {
 		name, value, found := strings.Cut(field, "=")
 		if !found || name != "bitrate" {
@@ -358,9 +364,88 @@ func parseIcecastStatus(parsed *gabs.Container, current RadioInfo) (RadioInfo, b
 	return current, true
 }
 
+// The state as of the last update, used to work out what actually changed.
+// Guarded by radioMutex.
+var previous = RadioInfo{}
+
+// Publishes a new view of the radio and announces whatever changed. Both the
+// Icecast poller and the built-in audio source feed this, so a song change
+// raises the same events and the same history entry either way.
+func applyRadioInfo(info RadioInfo) {
+	radioMutex.Lock()
+	prev := previous
+	now = info
+	previous = info
+	radioMutex.Unlock()
+
+	if (prev.Song.Title != info.Song.Title) || (prev.Song.Artist != info.Song.Artist) {
+		slog.Info(fmt.Sprintf("Now Playing: %s by %s", info.Song.Title, info.Song.Artist), "func", "applyRadioInfo")
+		// Clear artwork allowances before the update goes out: the artwork has
+		// changed with the song, so every client may fetch the new one.
+		rateLimitResetArt()
+
+		radiodata_sse.Send("title", info.Song.Title)
+		radiodata_sse.Send("artist", info.Song.Artist)
+		if (prev.Song.Title != "") && (prev.Song.Artist != "") {
+			radioMutex.Lock()
+			history = append(history, playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
+			if len(history) > 10 {
+				history = history[1:]
+			}
+			radioMutex.Unlock()
+			radiodata_sse.Send("history", "update")
+		}
+	}
+	if (prev.Host != info.Host) || (prev.Mountpoint != info.Mountpoint) {
+		slog.Info(fmt.Sprintf("Audio stream on: <%s/%s>", info.Host, info.Mountpoint), "func", "applyRadioInfo")
+		radiodata_sse.Send("listenurl", listenPath())
+	}
+	if prev.Listeners != info.Listeners {
+		slog.Info(fmt.Sprintf("Listener count: <%v>", info.Listeners), "func", "applyRadioInfo")
+		radiodata_sse.Send("listeners", fmt.Sprint(info.Listeners))
+	}
+}
+
+// Records the song the built-in source just announced. Title, artist and album
+// arrive as separate fields, so nothing has to be recovered from a combined
+// string the way an Icecast status document forces.
+func setNowPlaying(title, artist, album string) {
+	info := nowPlaying()
+	info.Song.Title = title
+	info.Song.Artist = artist
+	info.Song.Album = album
+	applyRadioInfo(info)
+}
+
+// Records the mount the built-in source connected on.
+func setStreamMount(mountpoint, audioInfo string) {
+	info := nowPlaying()
+	info.Mountpoint = mountpoint
+	if bitrate, ok := audioInfoBitrate(audioInfo); ok {
+		info.Bitrate = bitrate
+	}
+	applyRadioInfo(info)
+}
+
+// Forgets the mount when the source disconnects, so the player reports itself
+// offline rather than pointing at a stream nothing is feeding.
+func clearStreamMount() {
+	info := nowPlaying()
+	info.Mountpoint = "-"
+	info.Song.Title, info.Song.Artist, info.Song.Album = "-", "-", ""
+	info.Listeners = -1
+	applyRadioInfo(info)
+}
+
+// Reports the listener count the built-in fan-out is currently serving.
+func setListeners(count int) {
+	info := nowPlaying()
+	info.Listeners = float64(count)
+	applyRadioInfo(info)
+}
+
 // Watches the Icecast status page and updates stream info for SSE.
 func icecastMonitor() {
-	var prev = RadioInfo{}
 	// Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
 	icecastDataReset := func() {
 		radioMutex.Lock()
@@ -400,37 +485,7 @@ func icecastMonitor() {
 			return
 		}
 
-		radioMutex.Lock()
-		now = info
-		radioMutex.Unlock()
-
-		if (prev.Song.Title != now.Song.Title) || (prev.Song.Artist != now.Song.Artist) {
-			slog.Info(fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist), "func", "icecastMonitor")
-			// Clear artwork allowances before the update goes out: the artwork has
-			// changed with the song, so every client may fetch the new one.
-			rateLimitResetArt()
-
-			radiodata_sse.Send("title", now.Song.Title)
-			radiodata_sse.Send("artist", now.Song.Artist)
-			if (prev.Song.Title != "") && (prev.Song.Artist != "") {
-				radioMutex.Lock()
-				history = append(history, playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
-				if len(history) > 10 {
-					history = history[1:]
-				}
-				radioMutex.Unlock()
-				radiodata_sse.Send("history", "update")
-			}
-		}
-		if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
-			slog.Info(fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint), "func", "icecastMonitor")
-			radiodata_sse.Send("listenurl", listenPath())
-		}
-		if prev.Listeners != now.Listeners {
-			slog.Info(fmt.Sprintf("Listener count: <%v>", now.Listeners), "func", "icecastMonitor")
-			radiodata_sse.Send("listeners", fmt.Sprint(now.Listeners))
-		}
-		prev = now
+		applyRadioInfo(info)
 	}
 	go func() {
 		for {

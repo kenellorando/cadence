@@ -54,7 +54,11 @@
 		}
 
 		loading = true;
-		audio.src = radio.streamURL;
+		// A unique URL per attempt. Playing the same src again lets the browser
+		// resume from its media cache, which restarts the audio wherever that
+		// cache begins -- potentially a long way behind live -- instead of
+		// opening a fresh connection and joining the broadcast where it is now.
+		audio.src = `${radio.streamURL}?t=${Date.now()}`;
 		audio.load();
 		try {
 			await audio.play();

@@ -19,6 +19,11 @@ import (
 // only has to correct the drift.
 const progressPollInterval = 5 * time.Second
 
+// How much a remaining-time reading may rise before it is taken as a new track
+// rather than jitter. Within one track the figure only falls, and a real track
+// change moves it by tens of seconds at least, so this only has to clear noise.
+const trackBoundarySlack = 5 * time.Second
+
 var (
 	progressMutex sync.RWMutex
 	// When the current track started, taken from the moment its metadata
@@ -116,6 +121,29 @@ func liquidsoapRemaining() (float64, error) {
 	return remaining, nil
 }
 
+// Records a fresh reading, and restarts the clock if it reveals a new track.
+//
+// Time remaining only falls while one track plays, so a reading that jumps
+// upward means another has begun. Metadata cannot always tell us that: the
+// change is detected by title and artist, and the same song played twice in a
+// row -- a listener requesting what is already queued, say -- announces exactly
+// the same pair both times. Without this, elapsed keeps running across both
+// plays and the reported duration comes out at roughly double the track.
+func applyRemainingReading(remaining float64) {
+	progressMutex.Lock()
+	defer progressMutex.Unlock()
+
+	if !trackPolledAt.IsZero() {
+		projected := trackRemaining - time.Since(trackPolledAt).Seconds()
+		if remaining > projected+trackBoundarySlack.Seconds() {
+			trackStartedAt = time.Now()
+			trackPositionUnknown = false
+		}
+	}
+	trackRemaining = remaining
+	trackPolledAt = time.Now()
+}
+
 // Keeps the remaining-time reading fresh.
 func trackProgressMonitor() {
 	for {
@@ -128,9 +156,6 @@ func trackProgressMonitor() {
 			slog.Debug("Couldn't read remaining track time.", "func", "trackProgressMonitor", "error", err)
 			continue
 		}
-		progressMutex.Lock()
-		trackRemaining = remaining
-		trackPolledAt = time.Now()
-		progressMutex.Unlock()
+		applyRemainingReading(remaining)
 	}
 }

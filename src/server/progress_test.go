@@ -30,3 +30,52 @@ func TestTrackClockStaysUnsetForATrackAlreadyInProgress(t *testing.T) {
 		t.Errorf("elapsed = %v, want the clock running for the next track", elapsed)
 	}
 }
+
+// The same song twice in a row announces identical metadata, so the change
+// cannot be seen there. Time remaining rising is the reliable signal, and
+// missing it made the reported duration come out at roughly double the track.
+func TestRemainingRisingRestartsTheTrackClock(t *testing.T) {
+	suspendTrackClock()
+	markTrackStart() // the track already playing when the source connected
+	markTrackStart() // a real track start, so the clock is running
+
+	// Most of the way through a four minute track.
+	applyRemainingReading(30)
+	time.Sleep(20 * time.Millisecond)
+	elapsedBefore, _, _ := trackProgress()
+	if elapsedBefore <= 0 {
+		t.Fatalf("clock should be running, elapsed = %v", elapsedBefore)
+	}
+
+	// The same song begins again: remaining jumps back up to a full track.
+	applyRemainingReading(240)
+
+	elapsedAfter, duration, known := trackProgress()
+	if !known {
+		t.Fatal("progress should still be known after a track boundary")
+	}
+	if elapsedAfter >= elapsedBefore {
+		t.Errorf("elapsed = %v, want it reset below %v", elapsedAfter, elapsedBefore)
+	}
+	// Roughly one track, not two.
+	if duration < 200 || duration > 260 {
+		t.Errorf("duration = %v, want about one track length", duration)
+	}
+}
+
+// A falling reading is the normal case and must not be mistaken for a boundary.
+func TestRemainingFallingLeavesTheClockAlone(t *testing.T) {
+	suspendTrackClock()
+	markTrackStart()
+	markTrackStart()
+
+	applyRemainingReading(240)
+	time.Sleep(20 * time.Millisecond)
+	before, _, _ := trackProgress()
+	applyRemainingReading(235)
+	after, _, _ := trackProgress()
+
+	if after < before {
+		t.Errorf("elapsed went backwards on a falling reading: %v then %v", before, after)
+	}
+}

@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -284,6 +285,35 @@ func SongArt() http.HandlerFunc {
 		w.Header().Set("Cache-Control", "public, max-age=3600")
 		if _, err = w.Write(picture.Data); err != nil {
 			slog.Debug("Failed to write album art.", "func", "SongArt", "error", err)
+		}
+	}
+}
+
+// GET /api/nowplaying/progress
+// Reports how far through the current track the broadcast is. Duration is only
+// known once the audio source has been asked, so Known says whether it is safe
+// to draw a bar rather than just a running time.
+func NowPlayingProgress() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		elapsed, duration, known := trackProgress()
+		type Progress struct {
+			Elapsed  float64
+			Duration float64
+			Known    bool
+		}
+		jsonMarshal, err := json.Marshal(Progress{
+			Elapsed:  math.Round(elapsed*10) / 10,
+			Duration: math.Round(duration*10) / 10,
+			Known:    known,
+		})
+		if err != nil {
+			slog.Error("Failed to marshal track progress.", "func", "NowPlayingProgress", "error", err)
+			w.WriteHeader(http.StatusInternalServerError) // 500 Internal Server Error
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if _, err = w.Write(jsonMarshal); err != nil {
+			slog.Error("Failed to write response.", "func", "NowPlayingProgress", "error", err)
 		}
 	}
 }

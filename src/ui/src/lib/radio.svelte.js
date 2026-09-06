@@ -19,6 +19,11 @@ class Radio {
 	// claiming an empty library before it knows.
 	indexing = $state(null);
 	tracks = $state(0);
+	// Track position. The server is asked occasionally; the page counts the
+	// seconds in between, so the bar moves smoothly rather than in steps.
+	elapsed = $state(0);
+	duration = $state(0);
+	progressKnown = $state(false);
 
 	// "-/-" is what the server reports when Icecast has no source connected.
 	get connected() {
@@ -94,6 +99,24 @@ class Radio {
 		}
 	}
 
+	async loadProgress() {
+		try {
+			const progress = await api.getProgress();
+			this.elapsed = progress.Elapsed;
+			this.duration = progress.Duration;
+			this.progressKnown = progress.Known;
+		} catch {
+			this.progressKnown = false;
+		}
+	}
+
+	// Advances the local count between server readings. Stops at the duration
+	// rather than running past it while waiting for the next track.
+	tick(seconds) {
+		if (!this.progressKnown) return;
+		this.elapsed = Math.min(this.elapsed + seconds, this.duration);
+	}
+
 	async loadVersion() {
 		try {
 			this.version = (await api.getVersion()).Version;
@@ -163,6 +186,10 @@ class Radio {
 			source.addEventListener('title', (event) => {
 				kick();
 				this.title = event.data;
+				// A new track restarts the clock, so read it rather than waiting
+				// for the next poll to notice.
+				this.elapsed = 0;
+				this.loadProgress();
 				// The stream announces the change; the art and the rest of the
 				// metadata still have to be fetched.
 				this.loadArt();
@@ -214,6 +241,7 @@ class Radio {
 			this.loadHistory(),
 			this.loadVersion(),
 			this.loadLibrary(),
+			this.loadProgress(),
 			this.runSearch('')
 		]);
 	}

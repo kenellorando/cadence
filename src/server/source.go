@@ -237,6 +237,7 @@ func startAudioSource() {
 	slog.Info(fmt.Sprintf("Listening for an audio source on <%s>.", port), "func", "startAudioSource")
 	go serveSource(listener)
 	go trackListenerCount()
+	go trackProgressMonitor()
 }
 
 // Publishes the listener count as it changes. Nothing pushes this, so it is

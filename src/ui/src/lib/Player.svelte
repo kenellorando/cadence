@@ -9,6 +9,30 @@
 
 	// Artist and album read as one credit line; the dash only earns its place
 	// when there is an album to separate.
+	// The bar advances locally each second and is corrected against the server
+	// every 15, so it moves smoothly without polling once a second.
+	$effect(() => {
+		const tick = setInterval(() => radio.tick(1), 1000);
+		const sync = setInterval(() => radio.loadProgress(), 15000);
+		return () => {
+			clearInterval(tick);
+			clearInterval(sync);
+		};
+	});
+
+	function clock(seconds) {
+		if (!Number.isFinite(seconds) || seconds < 0) seconds = 0;
+		const total = Math.floor(seconds);
+		const minutes = Math.floor(total / 60);
+		return `${minutes}:${String(total % 60).padStart(2, '0')}`;
+	}
+
+	const progress = $derived(
+		radio.progressKnown && radio.duration > 0
+			? Math.min(100, (radio.elapsed / radio.duration) * 100)
+			: 0
+	);
+
 	const credit = $derived(radio.album ? `${radio.artist} - ${radio.album}` : radio.artist);
 
 	$effect(() => {
@@ -141,6 +165,25 @@
 				</h1>
 				<p class="mt-0.5 truncate text-base text-ink-dim" title={credit}>{credit}</p>
 			</div>
+
+			{#if radio.progressKnown}
+				<!-- Position through the track. The audio source reports how much is
+				     left; this is that, counted forward. -->
+				<div class="mt-4 flex items-center gap-3">
+					<span class="font-mono text-[0.7rem] text-ink-faint tabular-nums">{clock(radio.elapsed)}</span>
+					<div
+						class="h-[3px] flex-1 overflow-hidden rounded-full bg-edge"
+						role="progressbar"
+						aria-label="Track position"
+						aria-valuemin="0"
+						aria-valuemax={Math.round(radio.duration)}
+						aria-valuenow={Math.round(radio.elapsed)}
+					>
+						<div class="h-full bg-signal transition-[width] duration-1000 ease-linear" style="width: {progress}%"></div>
+					</div>
+					<span class="font-mono text-[0.7rem] text-ink-faint tabular-nums">{clock(radio.duration)}</span>
+				</div>
+			{/if}
 
 			<div class="mt-auto flex flex-wrap items-center gap-4 pt-5">
 				<button

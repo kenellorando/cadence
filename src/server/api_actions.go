@@ -168,13 +168,13 @@ func liquidsoapRequest(path string) (message string, err error) {
 		return "", err
 	}
 	// Push song request to source service, listen for a response, and quit the telnet session.
-	fmt.Fprintf(conn, "request.push "+path+"\n")
+	fmt.Fprintf(conn, "request.push %s\n", path)
 	message, err = bufio.NewReader(conn).ReadString('\n')
 	if err != nil {
 		slog.Error("Failed to read stream response message from audio source server.", "func", "liquidsoapRequest", "error", err)
 	}
 	slog.Info(fmt.Sprintf("Message from audio source server: %s", message), "func", "liquidsoapRequest")
-	fmt.Fprintf(conn, "quit"+"\n")
+	fmt.Fprint(conn, "quit\n")
 	return message, nil
 }
 
@@ -190,14 +190,14 @@ func liquidsoapSkip() (message string, err error) {
 		slog.Error("Failed to set a deadline on the audio source connection.", "func", "liquidsoapSkip", "error", err)
 		return "", err
 	}
-	fmt.Fprintf(conn, "cadence1.skip\n")
+	fmt.Fprint(conn, "cadence1.skip\n")
 	// Listen for response
 	message, err = bufio.NewReader(conn).ReadString('\n')
 	if err != nil {
 		slog.Error("Failed to read stream response message from audio source server.", "func", "liquidsoapSkip", "error", err)
 	}
 	slog.Debug(fmt.Sprintf("Message from audio source server: %s", message), "func", "liquidsoapSkip")
-	fmt.Fprintf(conn, "quit"+"\n")
+	fmt.Fprint(conn, "quit\n")
 	return message, nil
 }
 

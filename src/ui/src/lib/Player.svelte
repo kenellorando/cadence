@@ -206,24 +206,31 @@
 				<p class="mt-0.5 truncate text-base text-ink-dim" title={credit}>{credit}</p>
 			</div>
 
-			{#if radio.progressKnown}
-				<!-- Position through the track. The audio source reports how much is
-				     left; this is that, counted forward. -->
-				<div class="mt-4 flex items-center gap-3">
-					<span class="font-mono text-[0.7rem] text-ink-faint tabular-nums">{clock(radio.elapsed)}</span>
+			<!-- Position through the track. The audio source reports how much is
+			     left; this is that, counted forward. The row is always laid out,
+			     even while the position is unknown between tracks, so nothing
+			     below it shifts. -->
+			<div class="mt-4 flex items-center gap-3">
+				<span class="font-mono text-[0.7rem] text-ink-faint tabular-nums">
+					{radio.progressKnown ? clock(radio.elapsed) : '--:--'}
+				</span>
+				<div
+					class="h-[3px] flex-1 overflow-hidden rounded-full bg-edge"
+					role="progressbar"
+					aria-label="Track position"
+					aria-valuemin="0"
+					aria-valuemax={Math.round(radio.duration)}
+					aria-valuenow={radio.progressKnown ? Math.round(radio.elapsed) : 0}
+				>
 					<div
-						class="h-[3px] flex-1 overflow-hidden rounded-full bg-edge"
-						role="progressbar"
-						aria-label="Track position"
-						aria-valuemin="0"
-						aria-valuemax={Math.round(radio.duration)}
-						aria-valuenow={Math.round(radio.elapsed)}
-					>
-						<div class="h-full bg-signal transition-[width] duration-1000 ease-linear" style="width: {progress}%"></div>
-					</div>
-					<span class="font-mono text-[0.7rem] text-ink-faint tabular-nums">{clock(radio.duration)}</span>
+						class="h-full bg-signal transition-[width] duration-1000 ease-linear"
+						style="width: {radio.progressKnown ? progress : 0}%"
+					></div>
 				</div>
-			{/if}
+				<span class="font-mono text-[0.7rem] text-ink-faint tabular-nums">
+					{radio.progressKnown ? clock(radio.duration) : '--:--'}
+				</span>
+			</div>
 
 			<div class="mt-auto flex flex-wrap items-center gap-4 pt-5">
 				<button

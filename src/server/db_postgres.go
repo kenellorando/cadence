@@ -105,7 +105,7 @@ func postgresPopulate() error {
 	slog.Debug("Verifying music metadata directory is accessible.")
 	_, err = os.Stat(c.MusicDir)
 	if err != nil {
-		slog.Error(fmt.Sprintf("Could not open music directory <%s> for verification.", c.MusicDir), "func", postgresPopulate, "error", err)
+		slog.Error(fmt.Sprintf("Could not open music directory <%s> for verification.", c.MusicDir), "func", "postgresPopulate", "error", err)
 		if os.IsNotExist(err) {
 			slog.Error("The configured target music directory was not found.", "func", "postgresPopulate", "error", err)
 			return err
@@ -114,10 +114,15 @@ func postgresPopulate() error {
 
 	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6", c.PostgresTableName, "title", "album", "artist", "genre", "year", "path")
 	slog.Debug(fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir), "func", "postgresPopulate")
+	// A file we can't read is a reason to skip that file, not to abandon the
+	// rest of the library. Anything skipped here is counted and reported once
+	// the walk finishes.
+	skipped := 0
 	err = filepath.Walk(c.MusicDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			slog.Error("Error during filepath walk", "func", "postgresPopulate", "error", err)
-			return err
+			slog.Error(fmt.Sprintf("Could not access <%s> during walk, skipping.", path), "func", "postgresPopulate", "error", err)
+			skipped++
+			return nil
 		}
 		slog.Debug(fmt.Sprintf("Populate analyzing file: <%s>", path), "func", "postgresPopulate")
 		if info.IsDir() {
@@ -129,14 +134,16 @@ func postgresPopulate() error {
 			if strings.HasSuffix(path, ext) {
 				file, err := os.Open(path)
 				if err != nil {
-					slog.Error(fmt.Sprintf("Problem opening directory <%s> for music population.", path), "func", "postgresPopulate", "error", err)
-					return err
+					slog.Error(fmt.Sprintf("Problem opening <%s> for music population, skipping.", path), "func", "postgresPopulate", "error", err)
+					skipped++
+					return nil
 				}
 				defer file.Close()
 				tags, err := tag.ReadFrom(file)
 				if err != nil {
-					slog.Error(fmt.Sprintf("Problem fetching tags from <%s>.", path), "func", "postgresPopulate", "error", err)
-					return err
+					slog.Error(fmt.Sprintf("Problem fetching tags from <%s>, skipping.", path), "func", "postgresPopulate", "error", err)
+					skipped++
+					return nil
 				}
 				_, err = dbp.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
 				if err != nil {
@@ -152,6 +159,10 @@ func postgresPopulate() error {
 	if err != nil {
 		slog.Error("Music metadata database population failed, or may be incomplete.", "func", "postgresPopulate", "error", err)
 		return err
+	}
+	if skipped > 0 {
+		slog.Warn(fmt.Sprintf("Database population completed, but %d file(s) were skipped.", skipped), "func", "postgresPopulate")
+		return nil
 	}
 	slog.Info("Database population completed.", "func", "postgresPopulate")
 	return nil

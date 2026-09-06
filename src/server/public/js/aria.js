@@ -1,5 +1,17 @@
 var streamSrcURL = "";
 
+// Song metadata comes from ID3 tags on files in the music library, which are
+// attacker-controlled for anything downloaded from the internet. Anything
+// interpolated into markup has to be escaped first.
+function escapeHTML(value) {
+	return String(value === null || value === undefined ? "" : value)
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
+}
+
 $(document).ready(function() {
 	getListenURL()
 	getHistory()
@@ -120,7 +132,7 @@ function getHistory() {
 						timeAgo = Math.floor(delta / hour) + ' hours ago';
 					}
 
-					table += "<tr><td>" + timeAgo + "</td><td>" + song.Artist + "</td><td>" + song.Title + "</td></tr>";
+					table += "<tr><td>" + escapeHTML(timeAgo) + "</td><td>" + escapeHTML(song.Artist) + "</td><td>" + escapeHTML(song.Title) + "</td></tr>";
 				})
 				table += "</tbody>"		
 				document.getElementById("historyStatus").innerHTML = "";
@@ -160,11 +172,11 @@ function postSearch() {
 				data.forEach(function (song) {
 					table +=
 						"<tr><td>" +
-						song.Artist +
+						escapeHTML(song.Artist) +
 						"</td><td>" +
-						song.Title +
+						escapeHTML(song.Title) +
 						"</td><td><button class='button is-small is-light requestButton' data-id='" +
-						escape(song.ID) +
+						escapeHTML(song.ID) +
 						"'>Request</button></td></tr>";
 				});
 				table += "</tbody>";
@@ -182,7 +194,7 @@ function postSearch() {
 function postRequestID() {
 	$(document).on("click", ".requestButton", function (e) {
 		var data = {};
-		data.ID = unescape(this.dataset.id);
+		data.ID = this.dataset.id;
 		$.ajax({
 			type: "POST",
 			url: "/api/request/id",
@@ -221,9 +233,14 @@ function connectRadioData() {
 			$("#listeners").html(event.data);
 		}
 	})
-	eventSource.addEventListener("title" || "artist" || "history", function() {
-		getNowPlayingAlbumArt()
+	// "a" || "b" evaluates to "a", so this previously registered a second
+	// title listener and never subscribed to history at all.
+	eventSource.addEventListener("history", function() {
 		getHistory()
+	})
+	eventSource.addEventListener("title", function() {
+		getNowPlayingAlbumArt()
+		getNowPlayingMetadata()
 	})
 	eventSource.addEventListener("listenurl", function(event) {
 		if (event.data == "-/-") {

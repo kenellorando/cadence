@@ -1,7 +1,10 @@
 services:
 
   redis:
-    image: redis/redis-stack-server:latest
+    # Cadence uses Redis only as a TTL keystore for rate limit counters. The
+    # redis-stack image additionally ships JSON, search and timeseries modules
+    # that nothing here touches.
+    image: redis:8.2-alpine
     container_name: redis
     expose:
       - 6379

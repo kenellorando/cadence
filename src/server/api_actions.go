@@ -71,6 +71,7 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 		slog.Error("Database search failed.", "func", "searchByQuery", "error", err)
 		return nil, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		song := &SongData{}
 		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
@@ -80,6 +81,10 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 		}
 		queryResults = append(queryResults,
 			SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
+	}
+	if err = rows.Err(); err != nil {
+		slog.Error("Failed while reading search results.", "func", "searchByQuery", "error", err)
+		return nil, err
 	}
 	return queryResults, nil
 }
@@ -97,6 +102,7 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 		slog.Error("Could not query DB.", "func", "searchByTitleArtist", "error", err)
 		return nil, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		song := &SongData{}
 		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
@@ -107,6 +113,10 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 		queryResults = append(queryResults,
 			SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
 	}
+	if err = rows.Err(); err != nil {
+		slog.Error("Failed while reading search results.", "func", "searchByTitleArtist", "error", err)
+		return nil, err
+	}
 	return queryResults, nil
 }
 
@@ -114,18 +124,23 @@ func searchByTitleArtist(title string, artist string) (queryResults []SongData, 
 // Returns the absolute path of the audio file.
 func getPathById(id int) (path string, err error) {
 	slog.Debug(fmt.Sprintf("Searching database for the path of song: '%v'", id), "func", "getPathById")
-	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=%v", c.PostgresTableName, id)
-	rows, err := dbp.Query(selectWhereStatement)
+	selectWhereStatement := fmt.Sprintf("SELECT \"path\" FROM %s WHERE id=$1", c.PostgresTableName)
+	rows, err := dbp.Query(selectWhereStatement, id)
 	if err != nil {
 		slog.Error("Database search failed.", "func", "getPathById", "error", err)
 		return "", err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&path)
 		if err != nil {
 			slog.Error("Data scan failed.", "func", "getPathById", "error", err)
 			return "", err
 		}
+	}
+	if err = rows.Err(); err != nil {
+		slog.Error("Failed while reading path result.", "func", "getPathById", "error", err)
+		return "", err
 	}
 	return path, nil
 }

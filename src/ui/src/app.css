@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+@theme {
+	--font-sans: 'Roboto Condensed', ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+	color-scheme: light dark;
+}

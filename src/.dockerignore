@@ -1,0 +1,4 @@
+# Build artifacts and dependencies are produced inside the image, never copied in.
+ui/node_modules
+ui/build
+ui/.svelte-kit

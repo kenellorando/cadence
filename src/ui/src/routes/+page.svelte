@@ -52,7 +52,7 @@
 	</section>
 
 	<footer class="mt-12 flex flex-col items-center gap-2 text-center">
-		<span class="font-logo text-xl text-ink-dim sm:text-2xl">Cadence</span>
+		<span class="font-logo text-lg text-ink-dim uppercase sm:text-xl">Cadence</span>
 		<div class="label flex items-center gap-2.5">
 			<span class="font-mono tracking-normal tabular-nums">{radio.version}</span>
 			<span class="text-edge-light">/</span>

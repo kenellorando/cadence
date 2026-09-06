@@ -3,7 +3,9 @@ events {
 }
 
 http {
-	# This server forwards requests to the Icecast service.
+	# This server forwards requests to the Icecast service. The web UI no longer
+	# needs it -- listeners reach the stream through the site's own origin at
+	# /stream/ -- but it is kept so existing direct stream URLs keep working.
 	server {
 		listen 80;
 		server_name CADENCE_STREAM_HOST_EXAMPLE;
@@ -30,6 +32,19 @@ http {
 			proxy_buffering off;
 			proxy_cache off;
 			proxy_pass http://cadence:8080/api/radiodata/sse;
+		}
+		# The audio stream is served from the site's own origin, by Cadence. It is
+		# an endless response, so it must not be buffered or read-timed-out the
+		# way a normal request is.
+		location /stream/ {
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_http_version 1.1;
+			proxy_read_timeout 86400;
+			proxy_send_timeout 86400;
+			proxy_buffering off;
+			proxy_cache off;
+			proxy_pass http://cadence:8080/stream/;
 		}
 		location / {
 			proxy_set_header X-Real-IP $remote_addr;

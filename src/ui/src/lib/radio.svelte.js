@@ -20,8 +20,10 @@ class Radio {
 		return this.listenURL !== '' && this.listenURL !== '-/-';
 	}
 
+	// The server hands back a same-origin path, so it is played as-is. Building
+	// a URL here is what used to drop the port and guess at the scheme.
 	get streamURL() {
-		return this.connected ? `${location.protocol}//${this.listenURL}` : '';
+		return this.connected ? this.listenURL : '';
 	}
 
 	async loadNowPlaying() {

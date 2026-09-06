@@ -147,6 +147,24 @@ jobs:
             exit 1
           fi
 
+      - name: Assert the audio stream is served same-origin and playable
+        # Guards two things at once: that the mount is a format every browser
+        # can decode -- Safari and iOS cannot play Ogg, which kept the stream
+        # unplayable on Apple devices -- and that it is reachable from the
+        # site's own origin rather than a second host on a guessed scheme.
+        run: |
+          set -eu
+          path=$(curl -sf -m 5 http://localhost:8080/api/listenurl | sed -n 's/.*"ListenURL":"\([^"]*\)".*/\1/p')
+          echo "listen path: $path"
+          case "$path" in
+            /stream/*) : ;;
+            *) echo "expected a same-origin /stream/ path"; exit 1 ;;
+          esac
+          type=$(curl -s -m 8 -o /tmp/stream.bin -w '%{content_type}' "http://localhost:8080$path" || true)
+          echo "content type: $type"
+          [ "$type" = "audio/mpeg" ] || { echo "stream is not MP3"; exit 1; }
+          [ -s /tmp/stream.bin ] || { echo "no audio came through"; exit 1; }
+
       - name: Assert the event stream sends keepalives
         # Guards the frozen-metadata failure: without traffic on an idle
         # connection, a dropped stream is indistinguishable from a quiet one.

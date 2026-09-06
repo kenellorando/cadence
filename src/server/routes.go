@@ -26,6 +26,7 @@ func routes() *http.ServeMux {
 	if c.DevMode {
 		r.Handle("/api/dev/skip", DevSkip())
 	}
+	r.Handle(streamPrefix, Stream())
 	r.Handle("/", http.FileServer(http.Dir(c.RootPath+"./public/")))
 	return r
 }

@@ -266,8 +266,9 @@ func ListenURL() http.HandlerFunc {
 		type ListenURL struct {
 			ListenURL string
 		}
-		playing := nowPlaying()
-		listenurl := ListenURL{ListenURL: playing.Host + "/" + playing.Mountpoint}
+		// A path, not a host and mount for the client to reassemble into a URL.
+		// Reassembly is what dropped the port and assumed the scheme.
+		listenurl := ListenURL{ListenURL: listenPath()}
 		jsonMarshal, err := json.Marshal(listenurl)
 		if err != nil {
 			slog.Error("Failed to marshal listen URL.", "func", "ListenURL", "error", err)

@@ -406,9 +406,9 @@ func icecastMonitor() {
 
 		if (prev.Song.Title != now.Song.Title) || (prev.Song.Artist != now.Song.Artist) {
 			slog.Info(fmt.Sprintf("Now Playing: %s by %s", now.Song.Title, now.Song.Artist), "func", "icecastMonitor")
-			// Dump the artwork rate limiter database first thing before updates
-			// are sent out to reset artwork request count.
-			dbr.RateLimitArt.FlushDB(ctx)
+			// Clear artwork allowances before the update goes out: the artwork has
+			// changed with the song, so every client may fetch the new one.
+			rateLimitResetArt()
 
 			radiodata_sse.Send("title", now.Song.Title)
 			radiodata_sse.Send("artist", now.Song.Artist)
@@ -424,7 +424,7 @@ func icecastMonitor() {
 		}
 		if (prev.Host != now.Host) || (prev.Mountpoint != now.Mountpoint) {
 			slog.Info(fmt.Sprintf("Audio stream on: <%s/%s>", now.Host, now.Mountpoint), "func", "icecastMonitor")
-			radiodata_sse.Send("listenurl", now.Host+"/"+now.Mountpoint)
+			radiodata_sse.Send("listenurl", listenPath())
 		}
 		if prev.Listeners != now.Listeners {
 			slog.Info(fmt.Sprintf("Listener count: <%v>", now.Listeners), "func", "icecastMonitor")

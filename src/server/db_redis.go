@@ -116,7 +116,7 @@ func rateLimitArt(next http.Handler) http.Handler {
 				w.WriteHeader(http.StatusNotModified) // 304 Not Modified
 				return
 			} else {
-				slog.Info(fmt.Sprintf("IP <%s> is rate limited.", ip), "func", "rateLimitArt")
+				slog.Debug(fmt.Sprintf("IP <%s> has requested artwork %d time(s) for this song.", ip, count), "func", "rateLimitArt")
 				dbr.RateLimitArt.Set(ctx, ip, count+1, time.Duration(200)*time.Second)
 				next.ServeHTTP(w, r)
 			}

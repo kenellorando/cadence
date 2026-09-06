@@ -9,7 +9,7 @@
         <queue-size>1048576</queue-size>
         <client-timeout>30</client-timeout>
         <header-timeout>15</header-timeout>
-        <source-timeout>10</source-timeout>\
+        <source-timeout>10</source-timeout>
         <burst-on-connect>1</burst-on-connect>
     </limits>
 

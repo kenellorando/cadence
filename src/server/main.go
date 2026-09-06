@@ -30,7 +30,6 @@ type ServerConfig struct {
 	PostgresSSL       string
 	RedisAddress      string
 	RedisPort         string
-	WhitelistPath     string
 	DevMode           bool
 	LogLevel          string
 }
@@ -74,7 +73,6 @@ func main() {
 	c.PostgresSSL = os.Getenv("CSERVER_POSTGRESSSL")
 	c.RedisAddress = os.Getenv("CSERVER_REDISADDRESS")
 	c.RedisPort = os.Getenv("CSERVER_REDISPORT")
-	c.WhitelistPath = os.Getenv("CSERVER_WHITELIST_PATH")
 	c.DevMode, _ = strconv.ParseBool(os.Getenv("CSERVER_DEVMODE"))
 	c.LogLevel = os.Getenv("CSERVER_LOGLEVEL")
 

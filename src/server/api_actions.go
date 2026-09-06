@@ -300,7 +300,7 @@ func applyRadioInfo(info RadioInfo) {
 		radiodata_sse.Send("artist", info.Song.Artist)
 		if (prev.Song.Title != "") && (prev.Song.Artist != "") {
 			radioMutex.Lock()
-			history = append(history, playRecord{Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
+			history = append(history, playRecord{ID: prev.Song.ID, Title: prev.Song.Title, Artist: prev.Song.Artist, Ended: time.Now()})
 			if len(history) > 10 {
 				history = history[1:]
 			}
@@ -368,6 +368,10 @@ func setListeners(count int) {
 var history = make([]playRecord, 0, 10)
 
 type playRecord struct {
+	// The library row this was, so a client can ask for its artwork by identity
+	// rather than searching for the title again. Zero when the song was not in
+	// the library.
+	ID     int
 	Title  string
 	Artist string
 	Ended  time.Time

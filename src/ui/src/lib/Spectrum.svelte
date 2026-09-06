@@ -4,12 +4,17 @@
 	// origin as the page: Web Audio refuses to expose samples from cross-origin
 	// media, and would hand back silence if the audio still came from a separate
 	// streaming host.
+	import { theme } from './theme.svelte.js';
+
 	let { analyser = null, playing = false, bars = 16 } = $props();
 
 	let canvas = $state(null);
 
 	$effect(() => {
 		if (!canvas || !analyser || !playing) return;
+		// Read so the loop is rebuilt when the palette changes; the colours below
+		// are sampled once per loop, not once per frame.
+		theme.current;
 
 		const context = canvas.getContext('2d');
 		if (!context) return;

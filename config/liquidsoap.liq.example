@@ -10,18 +10,17 @@ set("server.telnet.bind_addr", "0.0.0.0")
 default = mksafe(playlist(mode="randomize", "CADENCE_PATH_EXAMPLE"))
 # 2. Next priority: play user requests first if there are any in the queue.
 radio = fallback([ request.queue(id="request"), default])
-# 3. Next priority: play live input stream if one is connected.
-# The host is icecast2, not localhost: inside this container localhost is
-# Liquidsoap itself, so the connection failed every two seconds and filled
-# the log while the live fallback never worked at all.
-full = fallback(track_sensitive=false, [input.http("http://icecast2:8000/live.ogg"), radio])
 
 # Output the full stream in MP3. Not Vorbis: Safari and iOS cannot decode Ogg in
 # any container, so a Vorbis mount is unplayable on every Apple device. MP3 is
 # the format every browser accepts. It also changes what Icecast publishes --
 # a single "Artist - Title" ICY string rather than separate tags -- which the
 # server reads back apart.
+# Cadence receives the stream itself, so output.icecast points at it rather
+# than at a separate streaming server. The protocol is unchanged -- this is the
+# same source connection Icecast accepted.
+#
 # The id sets the telnet namespace Cadence uses to skip tracks ("cadence1.skip").
 # Liquidsoap 1.4 derived it from the mount name; 2.x needs it stated, or the
 # namespace falls back to "output.icecast" and skip requests are refused.
-output.icecast(id="cadence1", %mp3(bitrate=192), host="icecast2",port=8000,password="CADENCE_PASS_EXAMPLE", mount="cadence1",full)
+output.icecast(id="cadence1", %mp3(bitrate=192), host="cadence",port=8081,password="CADENCE_PASS_EXAMPLE", mount="cadence1",radio)

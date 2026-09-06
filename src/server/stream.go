@@ -4,10 +4,7 @@
 package main
 
 import (
-	"log/slog"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
 	"strings"
 )
 
@@ -25,22 +22,7 @@ const streamPrefix = "/stream/"
 // path has none of those failure modes, and it works whether or not the
 // bundled nginx is deployed.
 func Stream() http.Handler {
-	if c.InternalStream {
-		return http.HandlerFunc(serveListener)
-	}
-	target := &url.URL{Scheme: "http", Host: c.IcecastAddress + c.IcecastPort}
-	proxy := httputil.NewSingleHostReverseProxy(target)
-
-	// Audio is an endless response. Without an explicit flush interval the
-	// proxy buffers, and the listener hears nothing until the buffer fills.
-	proxy.FlushInterval = -1
-
-	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
-		slog.Error("Couldn't proxy the audio stream.", "func", "Stream", "error", err)
-		w.WriteHeader(http.StatusBadGateway) // 502 Bad Gateway
-	}
-
-	return http.StripPrefix(strings.TrimSuffix(streamPrefix, "/"), proxy)
+	return http.StripPrefix(strings.TrimSuffix(streamPrefix, "/"), http.HandlerFunc(serveListener))
 }
 
 // The path a browser should play, or "-/-" when nothing is being broadcast.

@@ -16,7 +16,7 @@ installation documentation is available on GitHub:
 https://github.com/kenellorando/cadence/wiki/Installation
 ***************************************************************
 
-[1/5] Path to Music Directory
+[1/4] Path to Music Directory
 Set a path to a directory containing audio files (e.g. mp3, flac) to be played
 on the radio. The target will be recursively searched.
 END
@@ -37,23 +37,7 @@ CADENCE_PATH=$(realpath -s "$CADENCE_PATH")
 echo
 
 cat <<END
-[2/5] Stream Host Address
-Set the stream host address. This may be a DNS name, public IP, or private IP.
-Use localhost:8000 if your Cadence instance is meant for local use only.
-Default: localhost:8000
-END
-read -p "      Stream address: " CADENCE_STREAM_HOST
-if [ -z "$CADENCE_STREAM_HOST" ]
-then
-      echo "Streaming to localhost:8000."
-      CADENCE_STREAM_HOST='localhost:8000'
-fi
-
-
-echo
-
-cat <<END
-[3/5] Rate Limiter Timeout
+[2/4] Rate Limiter Timeout
 Set a rate limit timeout in integer seconds. This prevents the same listener
 from requesting songs within the configured timeframe. Set to 0 to disable.
 END
@@ -69,7 +53,7 @@ done
 echo
 
 cat <<END
-[4/5] Radio Service Password
+[3/4] Radio Service Password
 Set a secure, unique service password. Input is hidden.
 END
 read -s -p "      Password: " CADENCE_PASS
@@ -84,7 +68,7 @@ echo
 echo
 
 cat <<END
-[5/5] Enable Reverse Proxy?
+[4/4] Enable Reverse Proxy?
 Do you want to enable a reverse proxy? Skip if you are broadcasting locally only
 or have your own reverse proxy configured. Skip if you do not know what this means.
 END
@@ -128,7 +112,6 @@ replace_in_file() {
 }
 
 cp ./config/cadence.env.example ./config/cadence.env
-cp ./config/icecast.xml.example ./config/icecast.xml
 cp ./config/liquidsoap.liq.example ./config/liquidsoap.liq
 cp ./config/nginx.conf.example ./config/nginx.conf
 
@@ -141,13 +124,10 @@ else
 fi
 
 replace_in_file CADENCE_PASS_EXAMPLE "$CADENCE_PASS" ./config/cadence.env
-replace_in_file CADENCE_PASS_EXAMPLE "$CADENCE_PASS" ./config/icecast.xml
 replace_in_file CADENCE_PASS_EXAMPLE "$CADENCE_PASS" ./config/liquidsoap.liq
 replace_in_file CADENCE_RATE_EXAMPLE "$CADENCE_RATE" ./config/cadence.env
-replace_in_file CADENCE_STREAM_HOST_EXAMPLE "$CADENCE_STREAM_HOST" ./config/icecast.xml
 replace_in_file CADENCE_PATH_EXAMPLE "$CADENCE_PATH" ./config/cadence.env
 replace_in_file CADENCE_PATH_EXAMPLE "$CADENCE_PATH" ./config/liquidsoap.liq
-replace_in_file CADENCE_STREAM_HOST_EXAMPLE "$CADENCE_STREAM_HOST" ./config/nginx.conf
 replace_in_file CADENCE_WEB_HOST_EXAMPLE "$CADENCE_WEB_HOST" ./config/nginx.conf
 replace_in_file CADENCE_PATH_EXAMPLE "$CADENCE_PATH" ./docker-compose.yml
 

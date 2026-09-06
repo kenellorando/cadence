@@ -3,18 +3,6 @@ events {
 }
 
 http {
-	# This server forwards requests to the Icecast service. The web UI no longer
-	# needs it -- listeners reach the stream through the site's own origin at
-	# /stream/ -- but it is kept so existing direct stream URLs keep working.
-	server {
-		listen 80;
-		server_name CADENCE_STREAM_HOST_EXAMPLE;
-		access_log off;
-		location / {
-			proxy_pass http://icecast2:8000/;
-		}
-	}
-
 	# This server forwards requests to the API/UI server.
 	server {
 		listen 80;

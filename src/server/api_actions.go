@@ -1,22 +1,19 @@
 // api_actions.go
-// API interactions for Postgres, Icecast, Liquidsoap.
+// API interactions for Postgres, Liquidsoap, and the audio source.
 
 package main
 
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"log/slog"
 	"net"
-	"net/http"
 
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/Jeffail/gabs"
 	"github.com/fsnotify/fsnotify"
 )
 
@@ -24,8 +21,6 @@ import (
 // network. None of them are allowed to hang: the monitor polls on a one second
 // cadence, and a stalled request would silently stop all stream updates.
 const serviceTimeout = 5 * time.Second
-
-var icecastClient = &http.Client{Timeout: serviceTimeout}
 
 var now = RadioInfo{}
 
@@ -272,31 +267,6 @@ func filesystemMonitor() {
 	<-done
 }
 
-// Icecast's status document is remote input, so every field below is read with
-// a checked assertion. An unchecked one took the whole server down when Icecast
-// 2.5 renamed a field: the monitor goroutine panicked on every poll, and a
-// panic there is fatal to the process, so the server crash-looped.
-func icecastString(parsed *gabs.Container, path string) (string, bool) {
-	value, ok := parsed.Path(path).Data().(string)
-	return value, ok
-}
-
-func icecastNumber(parsed *gabs.Container, path string) (float64, bool) {
-	value, ok := parsed.Path(path).Data().(float64)
-	return value, ok
-}
-
-// MP3 and AAC mounts publish no bitrate field of their own, only an audio_info
-// string of the form "channels=2;samplerate=44100;bitrate=192". Reading the
-// kbps back out of it is the only way those mounts report a bitrate at all.
-func icecastAudioInfoBitrate(parsed *gabs.Container) (float64, bool) {
-	info, ok := icecastString(parsed, "icestats.source.audio_info")
-	if !ok {
-		return 0, false
-	}
-	return audioInfoBitrate(info)
-}
-
 // Reads the kbps out of an audio_info string. The built-in source receives the
 // same format in an ice-audio-info header.
 func audioInfoBitrate(info string) (float64, bool) {
@@ -314,58 +284,6 @@ func audioInfoBitrate(info string) (float64, bool) {
 	return 0, false
 }
 
-// Reads stream state out of an Icecast status-json.xsl document, returning the
-// updated info and whether anything is playing. Fields Icecast omits keep the
-// value they already had rather than resetting, so a partial document does not
-// blank out good data.
-func parseIcecastStatus(parsed *gabs.Container, current RadioInfo) (RadioInfo, bool) {
-	title, titleOK := icecastString(parsed, "icestats.source.title")
-	if !titleOK {
-		return current, false
-	}
-	artist, artistOK := icecastString(parsed, "icestats.source.artist")
-	if !artistOK {
-		// Only Ogg carries structured tags that Icecast can split into separate
-		// artist and title fields. MP3 and AAC mounts carry ICY metadata, which
-		// is a single "Artist - Title" string and no artist key at all, so
-		// requiring both fields reports a perfectly healthy stream as silent.
-		var found bool
-		artist, title, found = strings.Cut(title, " - ")
-		if !found {
-			return current, false
-		}
-	}
-	current.Song.Artist = artist
-	current.Song.Title = title
-
-	if host, ok := icecastString(parsed, "icestats.host"); ok {
-		current.Host = host
-	}
-	if mountpoint, ok := icecastString(parsed, "icestats.source.server_name"); ok {
-		current.Mountpoint = mountpoint
-	}
-	if listeners, ok := icecastNumber(parsed, "icestats.source.listeners"); ok {
-		current.Listeners = listeners
-	}
-
-	// Icecast 2.4 published the source bitrate in kbps as "bitrate". 2.5 dropped
-	// that key for "ice-bitrate", also kbps, alongside "audio_bitrate" in bps.
-	// Read whichever the server offers so both releases are supported.
-	if bitrate, ok := icecastNumber(parsed, "icestats.source.bitrate"); ok {
-		current.Bitrate = bitrate
-	} else if bitrate, ok := icecastNumber(parsed, "icestats.source.ice-bitrate"); ok {
-		current.Bitrate = bitrate
-	} else if bitrate, ok := icecastNumber(parsed, "icestats.source.audio_bitrate"); ok {
-		current.Bitrate = bitrate / 1000
-	} else if bitrate, ok := icecastAudioInfoBitrate(parsed); ok {
-		current.Bitrate = bitrate
-	}
-
-	return current, true
-}
-
-// The state as of the last update, used to work out what actually changed.
-// Guarded by radioMutex.
 var previous = RadioInfo{}
 
 // Publishes a new view of the radio and announces whatever changed. Both the
@@ -442,57 +360,6 @@ func setListeners(count int) {
 	info := nowPlaying()
 	info.Listeners = float64(count)
 	applyRadioInfo(info)
-}
-
-// Watches the Icecast status page and updates stream info for SSE.
-func icecastMonitor() {
-	// Resets now playing, stream URL, and listener global variables to defaults. Used when Icecast is unreachable.
-	icecastDataReset := func() {
-		radioMutex.Lock()
-		defer radioMutex.Unlock()
-		now.Song.Title, now.Song.Artist, now.Host, now.Mountpoint = "-", "-", "-", "-"
-		now.Listeners = -1
-	}
-	checkIcecastStatus := func() {
-		resp, err := icecastClient.Get("http://" + c.IcecastAddress + c.IcecastPort + "/status-json.xsl")
-		if err != nil {
-			slog.Error("Unable to stream data from the Icecast service.", "func", "icecastMonitor", "error", err)
-			icecastDataReset()
-			return
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode != http.StatusOK {
-			slog.Debug("Unable to connect to Icecast.", "func", "icecastMonitor")
-			icecastDataReset()
-			return
-		}
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			slog.Debug("Connected to Icecast but unable to read response.", "func", "icecastMonitor")
-			icecastDataReset()
-			return
-		}
-		jsonParsed, err := gabs.ParseJSON([]byte(body))
-		if err != nil {
-			slog.Debug("Connected to Icecast but unable to parse response.", "func", "icecastMonitor")
-			icecastDataReset()
-			return
-		}
-		info, playing := parseIcecastStatus(jsonParsed, nowPlaying())
-		if !playing {
-			slog.Debug("Connected to Icecast, but saw nothing playing.", "func", "icecastMonitor")
-			icecastDataReset()
-			return
-		}
-
-		applyRadioInfo(info)
-	}
-	go func() {
-		for {
-			time.Sleep(1 * time.Second)
-			checkIcecastStatus()
-		}
-	}()
 }
 
 var history = make([]playRecord, 0, 10)

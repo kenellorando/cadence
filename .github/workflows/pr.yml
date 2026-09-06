@@ -41,11 +41,11 @@ jobs:
         run: go test -race ./...
 
   # Unit tests and linting cannot see the seams between Cadence and the services
-  # it does not control. Both regressions that shipped in the 5.4 image lived
-  # exactly there: Icecast renamed a status field and crash-looped the server,
-  # and Liquidsoap renamed a telnet command so every song request was dropped
-  # while the API still answered 202. This job runs the real stack and asserts
-  # the round trips that would have caught them.
+  # it does not control. Every regression that shipped in the 5.4 images lived
+  # exactly there: a renamed status field crash-looped the server, and a renamed
+  # Liquidsoap telnet command dropped every song request while the API still
+  # answered 202. This job runs the real stack and asserts the round trips that
+  # would have caught them.
   smoke-stack:
     name: Run Stack Smoke Test
     runs-on: ubuntu-latest
@@ -73,9 +73,6 @@ jobs:
               -e "s|CADENCE_RATE_EXAMPLE|0|g" \
               -e "s|CADENCE_PASS_EXAMPLE|$PASS|g" \
               config/cadence.env.example > config/cadence.env
-          sed -e "s|CADENCE_PASS_EXAMPLE|$PASS|g" \
-              -e "s|CADENCE_STREAM_HOST_EXAMPLE|localhost:8000|g" \
-              config/icecast.xml.example > config/icecast.xml
           sed -e "s|CADENCE_PATH_EXAMPLE|/tmp/music|g" \
               -e "s|CADENCE_PASS_EXAMPLE|$PASS|g" \
               config/liquidsoap.liq.example > config/liquidsoap.liq
@@ -106,9 +103,10 @@ jobs:
           echo "$results"
           echo "$results" | grep -q "Midnight Signal"
 
-      - name: Assert Icecast metadata reaches the API
-        # Guards the field-rename class of failure: a status document Cadence
-        # cannot parse leaves the artist and title empty or the server dead.
+      - name: Assert source metadata reaches the API
+        # The source sends title and artist on their own connection. If that
+        # path breaks, the site shows a blank now-playing while audio keeps
+        # playing, which is exactly how the Icecast round trip used to fail.
         run: |
           set -eu
           for i in $(seq 1 60); do
@@ -123,7 +121,7 @@ jobs:
             sleep 2
           done
           echo "never saw a populated now-playing artist"
-          docker compose logs --no-color cadence icecast2 liquidsoap
+          docker compose logs --no-color cadence liquidsoap
           exit 1
 
       - name: Assert a song request reaches Liquidsoap
@@ -164,6 +162,22 @@ jobs:
           echo "content type: $type"
           [ "$type" = "audio/mpeg" ] || { echo "stream is not MP3"; exit 1; }
           [ -s /tmp/stream.bin ] || { echo "no audio came through"; exit 1; }
+
+      - name: Assert the stream fans out to concurrent listeners
+        # Cadence serves the audio itself now, so one listener working proves
+        # less than it used to: the failure that matters is a second listener
+        # stalling the first, or the source.
+        run: |
+          set -eu
+          path=$(curl -sf -m 5 http://localhost:8080/api/listenurl | sed -n 's/.*"ListenURL":"\([^"]*\)".*/\1/p')
+          timeout 6 curl -s -o /tmp/a.bin "http://localhost:8080$path" &
+          timeout 6 curl -s -o /tmp/b.bin "http://localhost:8080$path" &
+          sleep 3
+          curl -sf -m 5 http://localhost:8080/api/listeners
+          wait || true
+          a=$(stat -c%s /tmp/a.bin); b=$(stat -c%s /tmp/b.bin)
+          echo "listener bytes: $a and $b"
+          [ "$a" -gt 20000 ] && [ "$b" -gt 20000 ] || { echo "a listener received too little audio"; exit 1; }
 
       - name: Assert the event stream sends keepalives
         # Guards the frozen-metadata failure: without traffic on an idle

@@ -18,20 +18,6 @@ services:
     networks:
       internal_services:
 
-  icecast2:
-    build:
-      dockerfile: ./src/icecast2.Dockerfile
-    image: kenellorando/cadence_icecast2:latest
-    container_name: icecast2
-    restart: always
-    ports:
-      - 8000:8000
-    volumes:
-      - ./config/icecast.xml:/etc/icecast/cadence.xml
-    networks:
-      external_services:
-      stream_delivery:
-
   liquidsoap:
     build:
       dockerfile: ./src/liquidsoap.Dockerfile
@@ -42,12 +28,11 @@ services:
       - ./config/liquidsoap.liq:/etc/liquidsoap/cadence.liq
       - CADENCE_PATH_EXAMPLE:CADENCE_PATH_EXAMPLE:ro
     depends_on:
-      - icecast2
+      - cadence
     expose:
       - 1234
     networks:
       internal_services:
-      stream_delivery:
 
   cadence:
     build:
@@ -58,15 +43,15 @@ services:
     restart: always
     ports:
       - 8080:8080
+    # The audio source port is exposed to the other services but never
+    # published: the source password should not be reachable from outside.
+    expose:
+      - 8081
     env_file:
       - ./config/cadence.env
     volumes:
       - CADENCE_PATH_EXAMPLE:CADENCE_PATH_EXAMPLE:ro
     depends_on:
-      icecast2:
-        condition: service_started
-      liquidsoap:
-        condition: service_started
       postgres:
         condition: service_healthy
     networks:
@@ -82,6 +67,4 @@ networks:
   external_services:
     driver: bridge
   internal_services:
-    driver: bridge
-  stream_delivery:
     driver: bridge

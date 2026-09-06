@@ -33,8 +33,6 @@ type ServerConfig struct {
 	MusicDir          string
 	LiquidsoapAddress string
 	LiquidsoapPort    string
-	IcecastAddress    string
-	IcecastPort       string
 	PostgresAddress   string
 	PostgresPort      string
 	PostgresUser      string
@@ -44,7 +42,6 @@ type ServerConfig struct {
 	PostgresSSL       string
 	SourcePort        string
 	SourcePassword    string
-	InternalStream    bool
 	DevMode           bool
 	LogLevel          string
 }
@@ -77,8 +74,6 @@ func main() {
 	c.MusicDir = os.Getenv("CSERVER_MUSIC_DIR")
 	c.LiquidsoapAddress = os.Getenv("CSERVER_LIQUIDSOAPADDRESS")
 	c.LiquidsoapPort = os.Getenv("CSERVER_LIQUIDSOAPPORT")
-	c.IcecastAddress = os.Getenv("CSERVER_ICECASTADDRESS")
-	c.IcecastPort = os.Getenv("CSERVER_ICECASTPORT")
 	c.PostgresAddress = os.Getenv("CSERVER_POSTGRESADDRESS")
 	c.PostgresPort = os.Getenv("CSERVER_POSTGRESPORT")
 	c.PostgresUser = os.Getenv("CSERVER_POSTGRESUSER")
@@ -88,7 +83,6 @@ func main() {
 	c.PostgresSSL = os.Getenv("CSERVER_POSTGRESSSL")
 	c.SourcePort = os.Getenv("CSERVER_SOURCEPORT")
 	c.SourcePassword = os.Getenv("CSERVER_SOURCEPASSWORD")
-	c.InternalStream, _ = strconv.ParseBool(os.Getenv("CSERVER_INTERNALSTREAM"))
 	c.DevMode, _ = strconv.ParseBool(os.Getenv("CSERVER_DEVMODE"))
 	c.LogLevel = os.Getenv("CSERVER_LOGLEVEL")
 
@@ -103,14 +97,7 @@ func main() {
 		}
 	}
 	go filesystemMonitor()
-	// Only one of these may drive the radio state. With the built-in source the
-	// audio arrives here directly and metadata comes with it, so polling a
-	// separate streaming server would only overwrite what we already know.
-	if c.InternalStream {
-		startAudioSource()
-	} else {
-		go icecastMonitor()
-	}
+	startAudioSource()
 
 	server := &http.Server{
 		Addr:    c.Port,

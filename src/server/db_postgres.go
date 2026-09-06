@@ -19,13 +19,61 @@ import (
 
 var dbp *sql.DB
 
+const (
+	// Postgres always ships this database, and it is where a connection is made
+	// to create the one Cadence actually uses.
+	maintenanceDatabase = "postgres"
+	// Used only if CSERVER_POSTGRESDBNAME is unset.
+	defaultDatabase = "cadence"
+)
+
+// Builds a connection string for one database on the configured server.
+func postgresDSN(database string) string {
+	return fmt.Sprintf("host='%s' port='%s' user='%s' password='%s' dbname='%s' sslmode='%s'",
+		c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, database, c.PostgresSSL)
+}
+
+// Creates the configured metadata database if it does not already exist.
+// A database cannot be created from a connection already inside it, so this
+// connects to the default maintenance database to do the work.
+func postgresCreateDatabase() error {
+	maintenance, err := sql.Open("postgres", postgresDSN(maintenanceDatabase))
+	if err != nil {
+		slog.Error("Couldn't open a connection to the maintenance database.", "func", "postgresCreateDatabase", "error", err)
+		return err
+	}
+	defer maintenance.Close()
+	if err = maintenance.Ping(); err != nil {
+		slog.Error("Couldn't ping the maintenance database.", "func", "postgresCreateDatabase", "error", err)
+		return err
+	}
+	_, err = maintenance.Exec(fmt.Sprintf("CREATE DATABASE %s", pq.QuoteIdentifier(c.PostgresDBName)))
+	if err != nil {
+		var pqErr *pq.Error
+		if errors.As(err, &pqErr) && pqErr.Code == "42P04" {
+			// 42P04 is duplicate_database, which is the normal case on any restart.
+			slog.Debug(fmt.Sprintf("Database <%s> already exists.", c.PostgresDBName), "func", "postgresCreateDatabase")
+			return nil
+		}
+		slog.Error(fmt.Sprintf("Couldn't create database <%s>.", c.PostgresDBName), "func", "postgresCreateDatabase", "error", err)
+		return err
+	}
+	slog.Info(fmt.Sprintf("Created database <%s>.", c.PostgresDBName), "func", "postgresCreateDatabase")
+	return nil
+}
+
 func postgresInit() (err error) {
 	// We wait a bit to give some leeway for Postgres to finish startup.
 	// Obligatory: There's probably a better way to do this.
 	time.Sleep(5 * time.Second)
-	dsn := fmt.Sprintf("host='%s' port='%s' user='%s' password='%s' sslmode='%s'",
-		c.PostgresAddress, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresSSL)
-	dbp, err = sql.Open("postgres", dsn)
+	if c.PostgresDBName == "" {
+		slog.Warn(fmt.Sprintf("No database name configured, defaulting to <%s>.", defaultDatabase), "func", "postgresInit")
+		c.PostgresDBName = defaultDatabase
+	}
+	if err = postgresCreateDatabase(); err != nil {
+		return err
+	}
+	dbp, err = sql.Open("postgres", postgresDSN(c.PostgresDBName))
 	if err != nil {
 		slog.Error("Couldn't open a connection to database.", "func", "postgresInit", "error", err)
 		return err
@@ -54,8 +102,6 @@ func postgresInit() (err error) {
 }
 
 func postgresPopulate() error {
-	dropDatabase := fmt.Sprintf("DROP DATABASE IF EXISTS %s", c.PostgresDBName)
-	createDatabase := fmt.Sprintf("CREATE DATABASE %s", c.PostgresDBName)
 	dropTable := fmt.Sprintf("DROP TABLE IF EXISTS %s", c.PostgresTableName)
 	createTable := fmt.Sprintf(`CREATE TABLE %s
 	(
@@ -71,21 +117,9 @@ func postgresPopulate() error {
 	   OIDS = FALSE
 	)`, c.PostgresTableName)
 
-	// Drop the database and rebuild it to start fresh.
-	slog.Debug(fmt.Sprintf("Deleting existing databases named <%s>...", c.PostgresDBName), "func", "postgresPopulate")
-	_, err := dbp.Exec(dropDatabase)
-	if err != nil {
-		slog.Error("Failed to remove existing dbp. Skipping remaining autoconfig steps.", "func", "postgresPopulate", "error", err)
-		return err
-	}
-	slog.Debug(fmt.Sprintf("Creating database <%s>...", c.PostgresDBName), "func", "postgresPopulate")
-	_, err = dbp.Exec(createDatabase)
-	if err != nil {
-		slog.Error("Failed to create database. Skipping remaining autoconfig steps.", "func", "postgresPopulate", "error", err)
-		return err
-	}
+	// Drop the metadata table and rebuild it to start fresh.
 	slog.Debug(fmt.Sprintf("Dropping table <%s>...", c.PostgresTableName), "func", "postgresPopulate")
-	_, err = dbp.Exec(dropTable)
+	_, err := dbp.Exec(dropTable)
 	if err != nil {
 		slog.Error("Failed to drop table. Skipping remaining autoconfig steps.", "func", "postgresPopulate", "error", err)
 		return err

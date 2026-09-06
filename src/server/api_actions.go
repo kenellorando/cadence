@@ -92,39 +92,6 @@ func searchByQuery(query string) (queryResults []SongData, err error) {
 	return queryResults, nil
 }
 
-// Takes a title and artist string to find a song which exactly matches.
-// Returns a list of SongData whose first result [0] is the first (best) match.
-// This will not work if multiple songs share the exact same title and artist.
-func searchByTitleArtist(title string, artist string) (queryResults []SongData, err error) {
-	title, artist = strings.TrimSpace(title), strings.TrimSpace(artist)
-	slog.Debug(fmt.Sprintf("Searching database for: %s by %s", title, artist), "func", "searchByTitleArtist")
-	// An exact match, so = rather than LIKE: song titles legitimately contain %
-	// and _, which LIKE would treat as wildcards.
-	selectStatement := fmt.Sprintf("SELECT id,artist,title,album,genre,year FROM %s WHERE title = $1 AND artist = $2;",
-		c.PostgresTableName)
-	rows, err := dbp.Query(selectStatement, title, artist)
-	if err != nil {
-		slog.Error("Could not query DB.", "func", "searchByTitleArtist", "error", err)
-		return nil, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		song := &SongData{}
-		err = rows.Scan(&song.ID, &song.Artist, &song.Title, &song.Album, &song.Genre, &song.Year)
-		if err != nil {
-			slog.Error("Data scan failed.", "func", "searchByTitleArtist", "error", err)
-			continue
-		}
-		queryResults = append(queryResults,
-			SongData{ID: song.ID, Artist: song.Artist, Title: song.Title, Album: song.Album, Genre: song.Genre, Year: song.Year})
-	}
-	if err = rows.Err(); err != nil {
-		slog.Error("Failed while reading search results.", "func", "searchByTitleArtist", "error", err)
-		return nil, err
-	}
-	return queryResults, nil
-}
-
 // Takes a song ID integer.
 // Returns the absolute path of the audio file.
 // Finds the library row for a song the source has announced. Album breaks ties

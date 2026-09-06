@@ -107,6 +107,7 @@ func acceptSource(conn net.Conn, reader *bufio.Reader, mount string, headers map
 	mountpoint := strings.TrimPrefix(mount, "/")
 	slog.Info(fmt.Sprintf("Audio source connected on mount <%s>.", mountpoint), "func", "acceptSource", "type", contentType)
 
+	suspendTrackClock()
 	setStreamMount(mountpoint, headers["ice-audio-info"])
 	hub.sourceConnected(contentType)
 	defer func() {

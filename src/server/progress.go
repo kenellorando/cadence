@@ -27,13 +27,38 @@ var (
 	// Seconds left when the source was last asked, and when that was.
 	trackRemaining float64
 	trackPolledAt  time.Time
+	// Set when a source connects to a broadcast already in progress. The first
+	// song it announces has been playing for an unknown length of time, and
+	// starting the clock then would report a nearly finished track as just
+	// beginning -- with a duration shrunk to whatever was left of it.
+	trackPositionUnknown bool
 )
+
+// Called when a source connects. Liquidsoap keeps playing across a Cadence
+// restart, so the track it announces first is already part-way through and
+// there is no way to ask how far: the source reports time remaining, not
+// elapsed, and its request metadata carries no duration. Rather than showing a
+// wrong position, the clock stays unset until the next real track change.
+func suspendTrackClock() {
+	progressMutex.Lock()
+	defer progressMutex.Unlock()
+	trackStartedAt = time.Time{}
+	trackRemaining = 0
+	trackPolledAt = time.Time{}
+	trackPositionUnknown = true
+}
 
 // Starts the clock for a new track. Called when the song actually changes, not
 // on every metadata update, so a repeated announcement does not rewind it.
 func markTrackStart() {
 	progressMutex.Lock()
 	defer progressMutex.Unlock()
+	if trackPositionUnknown {
+		// This is the track that was already playing when the source connected.
+		// The one after it starts under observation, so the clock resumes then.
+		trackPositionUnknown = false
+		return
+	}
 	trackStartedAt = time.Now()
 	trackRemaining = 0
 	trackPolledAt = time.Time{}

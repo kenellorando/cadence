@@ -288,7 +288,10 @@ func applyRadioInfo(info RadioInfo) {
 
 	if (prev.Song.Title != info.Song.Title) || (prev.Song.Artist != info.Song.Artist) {
 		slog.Info(fmt.Sprintf("Now Playing: %s by %s", info.Song.Title, info.Song.Artist), "func", "applyRadioInfo")
-		markTrackStart()
+		// Going quiet is not a track starting.
+		if info.Song.Title != "" && info.Song.Title != "-" {
+			markTrackStart()
+		}
 		// Clear artwork allowances before the update goes out: the artwork has
 		// changed with the song, so every client may fetch the new one.
 		rateLimitResetArt()

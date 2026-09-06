@@ -133,8 +133,13 @@ func postgresInit() (err error) {
 }
 
 func postgresPopulate() error {
-	dropTable := fmt.Sprintf("DROP TABLE IF EXISTS %s", c.PostgresTableName)
-	createTable := fmt.Sprintf(`CREATE TABLE %s
+	// Population is additive. Dropping and rebuilding the table renumbered every
+	// song on every restart and on every settled change to the library, because
+	// the id column is a serial. A search result held in an open tab, or a
+	// request submitted moments later, then resolved to a different song
+	// entirely -- silently, with a 202 Accepted. It also left a window on each
+	// rebuild where the table did not exist and search returned nothing.
+	createTable := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s
 	(
 	   id serial PRIMARY KEY,
 	   title character varying(255),
@@ -143,33 +148,38 @@ func postgresPopulate() error {
 	   genre character varying(255),
 	   year character varying(4),
 	   path character varying(510)
-	)
-	WITH (
-	   OIDS = FALSE
 	)`, c.PostgresTableName)
+	// A table built by an older version has no uniqueness on path and may hold
+	// duplicates, which would make the index below fail. Collapse them first,
+	// keeping the lowest id so existing references stay valid.
+	deduplicate := fmt.Sprintf(`DELETE FROM %s a USING %s b
+		WHERE a.id > b.id AND a.path = b.path`, c.PostgresTableName, c.PostgresTableName)
+	// The path is the identity of a track: it is what upserts key on, and what
+	// makes a rebuild leave ids alone.
+	createIndex := fmt.Sprintf(`CREATE UNIQUE INDEX IF NOT EXISTS %s_path_idx ON %s (path)`,
+		c.PostgresTableName, c.PostgresTableName)
+	upsert := fmt.Sprintf(`INSERT INTO %s (title, album, artist, genre, year, path)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		ON CONFLICT (path) DO UPDATE SET
+		   title = EXCLUDED.title, album = EXCLUDED.album, artist = EXCLUDED.artist,
+		   genre = EXCLUDED.genre, year = EXCLUDED.year`, c.PostgresTableName)
 
-	// Drop the metadata table and rebuild it to start fresh.
-	slog.Debug(fmt.Sprintf("Dropping table <%s>...", c.PostgresTableName), "func", "postgresPopulate")
-	_, err := dbp.Exec(dropTable)
-	if err != nil {
-		slog.Error("Failed to drop table. Skipping remaining autoconfig steps.", "func", "postgresPopulate", "error", err)
+	slog.Debug(fmt.Sprintf("Ensuring table <%s> exists...", c.PostgresTableName), "func", "postgresPopulate")
+	if _, err := dbp.Exec(createTable); err != nil {
+		slog.Error("Failed to build database table!", "func", "postgresPopulate", "error", err)
 		return err
 	}
-	slog.Debug(fmt.Sprintf("Creating table <%s>...", c.PostgresTableName), "func", "postgresPopulate")
-	_, err = dbp.Exec(createTable)
-	if err != nil {
-		var pqErr *pq.Error
-		if errors.As(err, &pqErr) && pqErr.Code == "42P07" {
-			// 42P10 indicates an existing metadata table configured by another Cadence instance is still running.
-			slog.Info("Metadata database already exists", "func", "postgresPopulate")
-		} else {
-			slog.Error("Failed to build database table!", "func", "postgresPopulate", "error", err)
-			return err
-		}
+	if _, err := dbp.Exec(deduplicate); err != nil {
+		slog.Error("Failed to remove duplicate paths from the metadata table.", "func", "postgresPopulate", "error", err)
+		return err
 	}
+	if _, err := dbp.Exec(createIndex); err != nil {
+		slog.Error("Failed to index the metadata table by path.", "func", "postgresPopulate", "error", err)
+		return err
+	}
+
 	slog.Debug("Verifying music metadata directory is accessible.")
-	_, err = os.Stat(c.MusicDir)
-	if err != nil {
+	if _, err := os.Stat(c.MusicDir); err != nil {
 		slog.Error(fmt.Sprintf("Could not open music directory <%s> for verification.", c.MusicDir), "func", "postgresPopulate", "error", err)
 		if os.IsNotExist(err) {
 			slog.Error("The configured target music directory was not found.", "func", "postgresPopulate", "error", err)
@@ -177,13 +187,13 @@ func postgresPopulate() error {
 		}
 	}
 
-	insertInto := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT $1, $2, $3, $4, $5, $6", c.PostgresTableName, "title", "album", "artist", "genre", "year", "path")
 	slog.Debug(fmt.Sprintf("Extracting metadata from audio files in: <%s>", c.MusicDir), "func", "postgresPopulate")
 	// A file we can't read is a reason to skip that file, not to abandon the
 	// rest of the library. Anything skipped here is counted and reported once
 	// the walk finishes.
 	skipped := 0
-	err = filepath.Walk(c.MusicDir, func(path string, info os.FileInfo, err error) error {
+	seen := make([]string, 0)
+	err := filepath.Walk(c.MusicDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			slog.Error(fmt.Sprintf("Could not access <%s> during walk, skipping.", path), "func", "postgresPopulate", "error", err)
 			skipped++
@@ -210,11 +220,12 @@ func postgresPopulate() error {
 					skipped++
 					return nil
 				}
-				_, err = dbp.Exec(insertInto, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
+				_, err = dbp.Exec(upsert, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
 				if err != nil {
 					slog.Error(fmt.Sprintf("Problem populating metadata for <%s>.", path), "func", "postgresPopulate", "error", err)
 					return err
 				}
+				seen = append(seen, path)
 				slog.Debug(fmt.Sprintf("Finished populating track: %s by %s", tags.Title(), tags.Artist()), "func", "postgresPopulate")
 				break
 			}
@@ -225,6 +236,19 @@ func postgresPopulate() error {
 		slog.Error("Music metadata database population failed, or may be incomplete.", "func", "postgresPopulate", "error", err)
 		return err
 	}
+
+	// Only prune once the walk has finished cleanly. Removing everything the
+	// walk did not reach would empty the library if it had been abandoned
+	// partway, which is exactly when the data is most worth keeping.
+	removed, err := dbp.Exec(fmt.Sprintf("DELETE FROM %s WHERE NOT (path = ANY($1))", c.PostgresTableName), pq.Array(seen))
+	if err != nil {
+		slog.Error("Failed to remove songs that are no longer in the library.", "func", "postgresPopulate", "error", err)
+		return err
+	}
+	if count, err := removed.RowsAffected(); err == nil && count > 0 {
+		slog.Info(fmt.Sprintf("Removed %d song(s) no longer present in the library.", count), "func", "postgresPopulate")
+	}
+
 	if skipped > 0 {
 		slog.Warn(fmt.Sprintf("Database population completed, but %d file(s) were skipped.", skipped), "func", "postgresPopulate")
 		return nil

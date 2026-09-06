@@ -225,11 +225,10 @@ func filesystemMonitor() {
 	}
 	done := make(chan bool)
 	go func() {
-		// Rebuilding drops and repopulates the entire metadata table, and a bulk
-		// change to the library (copying an album in, a sync tool running) arrives
-		// as a burst of events. Rebuilding per event means dozens of destructive
-		// rebuilds, with search returning nothing for the duration of each. Wait
-		// for the burst to go quiet and rebuild once.
+		// A bulk change to the library (copying an album in, a sync tool running)
+		// arrives as a burst of events, and rescanning per event means walking the
+		// whole library dozens of times over. Wait for the burst to go quiet and
+		// rescan once.
 		var settle *time.Timer
 		var settled <-chan time.Time
 		for {

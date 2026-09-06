@@ -1,5 +1,6 @@
 <script>
 	import { radio } from './radio.svelte.js';
+	import Spectrum from './Spectrum.svelte';
 
 	let audio = $state(null);
 	let playing = $state(false);
@@ -58,6 +59,34 @@
 		return () => window.removeEventListener('keydown', onKey);
 	});
 
+	let analyser = $state(null);
+	let audioContext = null;
+
+	// Routes the element through an analyser so the page can draw what is
+	// playing. Everything the listener hears passes through this graph, so it is
+	// built in one guarded step and abandoned whole if any part of it fails --
+	// a missing visualiser is a cosmetic loss, a broken audio path is not.
+	function ensureAnalyser() {
+		if (analyser || !audio) return;
+		const AudioCtx = window.AudioContext ?? window.webkitAudioContext;
+		if (!AudioCtx) return;
+		try {
+			const context = new AudioCtx();
+			const source = context.createMediaElementSource(audio);
+			const node = context.createAnalyser();
+			node.fftSize = 256;
+			node.smoothingTimeConstant = 0.75;
+			// Connected straight through to the speakers: inserting the analyser
+			// must not be audible.
+			source.connect(node);
+			node.connect(context.destination);
+			audioContext = context;
+			analyser = node;
+		} catch {
+			analyser = null;
+		}
+	}
+
 	function setVolume(event) {
 		volume = Number(event.currentTarget.value);
 		localStorage.setItem('volumeKey', String(volume));
@@ -78,6 +107,10 @@
 		}
 
 		loading = true;
+		ensureAnalyser();
+		// A context created before a gesture starts suspended, and once the
+		// element is routed through the graph a suspended context means silence.
+		audioContext?.resume().catch(() => {});
 		// A unique URL per attempt. Playing the same src again lets the browser
 		// resume from its media cache, which restarts the audio wherever that
 		// cache begins -- potentially a long way behind live -- instead of
@@ -253,4 +286,10 @@
 			{/if}
 		</div>
 	</div>
+
+	{#if playing && analyser}
+		<div class="border-t border-edge px-4 pb-4 sm:px-5">
+			<Spectrum {analyser} {playing} />
+		</div>
+	{/if}
 </section>

@@ -5,13 +5,13 @@ export const THEMES = [
 		id: 'chicago',
 		name: 'Chicago Evening',
 		logo: 'Cadence',
-		swatch: ['#0d1015', '#f4f1ea', '#fb9236', '#e2452f']
+		swatch: ['#0f131a', '#f4f1ea', '#fb9236', '#e2452f']
 	},
 	{
 		id: 'bartender',
 		name: 'Cyberpunk Bartender',
 		logo: 'Cadence',
-		swatch: ['#09070f', '#f3f0fd', '#00ffff', '#ff69b4']
+		swatch: ['#0b0911', '#f3f0fd', '#00ffff', '#ff69b4']
 	},
 ];
 

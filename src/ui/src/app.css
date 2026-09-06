@@ -13,9 +13,9 @@
 	   text sizes, so it is never used for anything but the logo. */
 	--font-logo: 'Rock Salt', 'Roboto', cursive;
 
-	--color-surface: #0d1015;
-	--color-surface-raised: #1e2431;
-	--color-surface-inset: #13171f;
+	--color-surface: #0f131a;
+	--color-surface-raised: #1a202b;
+	--color-surface-inset: #12161d;
 	--color-edge: #343d4c;
 	--color-edge-light: #4b5668;
 	--color-ink: #f4f1ea;
@@ -46,9 +46,9 @@
    near-black with a violet cast. */
 [data-theme='bartender'] {
 	color-scheme: dark;
-	--color-surface: #09070f;
-	--color-surface-raised: #1c1731;
-	--color-surface-inset: #100c1b;
+	--color-surface: #0b0911;
+	--color-surface-raised: #191429;
+	--color-surface-inset: #0f0c19;
 	--color-edge: #392d59;
 	--color-edge-light: #52427c;
 	--color-ink: #f3f0fd;

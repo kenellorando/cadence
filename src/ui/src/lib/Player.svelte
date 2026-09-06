@@ -182,16 +182,6 @@
 				{/if}
 			</div>
 
-			{#if playing}
-				<div
-					class="absolute bottom-2 left-2 flex h-6 items-end gap-[2px] bg-surface-inset/85 px-2 py-1.5"
-					aria-hidden="true"
-				>
-					<span class="level-bar h-2.5 w-[2px] bg-level" style="animation-delay:0ms"></span>
-					<span class="level-bar h-3.5 w-[2px] bg-level" style="animation-delay:130ms"></span>
-					<span class="level-bar h-2 w-[2px] bg-signal" style="animation-delay:260ms"></span>
-				</div>
-			{/if}
 		</div>
 
 		<div class="flex min-w-0 flex-1 flex-col">

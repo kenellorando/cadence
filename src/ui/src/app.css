@@ -216,11 +216,6 @@
 		border-color: var(--color-signal);
 	}
 
-	/* Output level, shown only while audio is actually playing. */
-	.level-bar {
-		transform-origin: bottom;
-		animation: level 820ms ease-in-out infinite;
-	}
 }
 
 @keyframes tally-breathe {
@@ -233,19 +228,8 @@
 	}
 }
 
-@keyframes level {
-	0%,
-	100% {
-		transform: scaleY(0.28);
-	}
-	50% {
-		transform: scaleY(1);
-	}
-}
-
 @media (prefers-reduced-motion: reduce) {
-	.tally,
-	.level-bar {
+	.tally {
 		animation: none;
 	}
 }

@@ -7,16 +7,18 @@
 </script>
 
 {#if entries.length === 0}
-	<p class="py-10 text-center text-sm text-white/35">Nothing has played yet.</p>
+	<p class="label px-4 py-10 text-center sm:px-5">Nothing logged yet</p>
 {:else}
-	<ul class="divide-y divide-white/5 overflow-hidden rounded-xl border border-white/10">
+	<ul>
 		{#each entries as song (song.Ended)}
-			<li class="flex items-center gap-4 bg-white/[0.02] px-4 py-3">
+			<li class="flex items-center gap-4 border-b border-edge/60 px-4 py-2.5 sm:px-5">
 				<div class="min-w-0 flex-1">
-					<p class="truncate font-medium text-white" title={song.Title}>{song.Title}</p>
-					<p class="truncate text-sm text-white/45" title={song.Artist}>{song.Artist}</p>
+					<p class="truncate text-sm text-bone" title={song.Title}>{song.Title}</p>
+					<p class="truncate text-xs text-bone-faint" title={song.Artist}>{song.Artist}</p>
 				</div>
-				<span class="shrink-0 text-xs whitespace-nowrap text-white/35">{timeAgo(song.Ended)}</span>
+				<span class="shrink-0 font-mono text-xs whitespace-nowrap text-bone-faint tabular-nums">
+					{timeAgo(song.Ended)}
+				</span>
 			</li>
 		{/each}
 	</ul>

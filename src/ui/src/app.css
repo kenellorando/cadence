@@ -1,130 +1,193 @@
 @import 'tailwindcss';
 
+/* The palette comes from broadcast hardware rather than a UI kit: anodized
+   black with a warm olive bias (not the blue-black of a default dark theme),
+   silkscreened cream for labels, and a single amber lamp for signal. Red is
+   reserved for a fault, green for level, and neither is used decoratively. */
 @theme {
-	--font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+	--font-display: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+	--font-label: 'Archivo Narrow', 'Archivo', ui-sans-serif, sans-serif;
+	--font-mono: 'Chivo Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-	--color-surface: #0b0b12;
-	--color-surface-raised: #14141f;
-	--color-line: #26263a;
-	--color-accent: #a78bfa;
-	--color-accent-strong: #7c3aed;
+	--color-panel: #17150f;
+	--color-panel-raised: #1e1b14;
+	--color-panel-well: #100e09;
+	--color-edge: #332e22;
+	--color-edge-light: #45402f;
+	--color-bone: #e8e2d2;
+	--color-bone-dim: #a39c89;
+	--color-bone-faint: #6e6857;
+	--color-signal: #e0912f;
+	--color-signal-dim: #7d5219;
+	--color-peak: #cf5341;
+	--color-level: #9bae6b;
 }
 
-/* A single dark theme: this is a media player, and the ambient art backdrop
-   below only reads correctly against a dark ground. */
-:root {
-	color-scheme: dark;
+@layer base {
+	:root {
+		color-scheme: dark;
+	}
+
+	html,
+	body {
+		min-height: 100%;
+		background-color: var(--color-panel);
+	}
+
+	/* Every control gets the same amber focus ring, so keyboard use stays
+	   legible against a dark panel. :where() keeps specificity at zero so a
+	   component can still opt out. */
+	:where(a, button, input, [tabindex]):focus-visible {
+		outline: 1px solid var(--color-signal);
+		outline-offset: 2px;
+	}
+
+	::selection {
+		background: var(--color-signal-dim);
+		color: var(--color-bone);
+	}
 }
 
-html,
-body {
-	min-height: 100%;
-	background-color: var(--color-surface);
+/* These live in the components layer on purpose. Un-layered rules outrank every
+   Tailwind utility, so a bare .label would beat any hover: or disabled: colour
+   set alongside it -- the state would simply never paint. In this layer the
+   utilities win, which is what a utility is for. */
+@layer components {
+	/* Panel labels are silkscreened onto equipment: narrow, small, tracked out,
+	   and always uppercase. */
+	.label {
+		font-family: var(--font-label);
+		font-size: 0.68rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--color-bone-faint);
+	}
+
+	/* A rack panel: solid, with a hairline engraved edge and a single highlight
+	   along the top where the light catches it. No glass, no blur. */
+	.panel {
+		background: var(--color-panel-raised);
+		border: 1px solid var(--color-edge);
+		box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.045);
+	}
+
+	/* Album art sits in a cut-out, so it is recessed rather than floating. */
+	.well {
+		background: var(--color-panel-well);
+		box-shadow:
+			inset 0 2px 6px rgb(0 0 0 / 0.7),
+			inset 0 0 0 1px rgb(0 0 0 / 0.6);
+	}
+
+	/* The on-air tally is a lamp behind a rectangular lens, not a dot. */
+	.tally {
+		width: 0.5rem;
+		height: 0.9rem;
+		border-radius: 1px;
+		background: var(--color-signal);
+		box-shadow:
+			0 0 6px var(--color-signal),
+			0 0 14px rgb(224 145 47 / 0.45);
+		animation: tally-breathe 3.2s ease-in-out infinite;
+	}
+
+	.tally-off {
+		width: 0.5rem;
+		height: 0.9rem;
+		border-radius: 1px;
+		background: var(--color-edge-light);
+	}
+
+	/* Volume is a fader over a segmented scale. The segments are drawn by laying
+	   panel-coloured gaps over a two-stop fill, which keeps it a real range
+	   input -- and therefore still keyboard operable -- rather than a div that
+	   mimics one. */
+	.fader {
+		-webkit-appearance: none;
+		appearance: none;
+		background: transparent;
+		height: 1.25rem;
+		cursor: pointer;
+	}
+
+	.fader::-webkit-slider-runnable-track {
+		height: 1.25rem;
+		background:
+			repeating-linear-gradient(90deg, transparent 0 5px, var(--color-panel-raised) 5px 8px),
+			linear-gradient(
+				90deg,
+				var(--color-signal) 0 var(--fill, 30%),
+				var(--color-edge) var(--fill, 30%) 100%
+			);
+	}
+
+	.fader::-moz-range-track {
+		height: 1.25rem;
+		background:
+			repeating-linear-gradient(90deg, transparent 0 5px, var(--color-panel-raised) 5px 8px),
+			linear-gradient(
+				90deg,
+				var(--color-signal) 0 var(--fill, 30%),
+				var(--color-edge) var(--fill, 30%) 100%
+			);
+	}
+
+	/* A fader cap: a narrow vertical bar, the way a console slider reads. */
+	.fader::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 0.3rem;
+		height: 1.25rem;
+		border-radius: 1px;
+		background: var(--color-bone);
+		box-shadow: 0 0 0 1px rgb(0 0 0 / 0.55);
+	}
+
+	.fader::-moz-range-thumb {
+		width: 0.3rem;
+		height: 1.25rem;
+		border: none;
+		border-radius: 1px;
+		background: var(--color-bone);
+		box-shadow: 0 0 0 1px rgb(0 0 0 / 0.55);
+	}
+
+	.fader:focus-visible {
+		outline: 1px solid var(--color-signal);
+		outline-offset: 3px;
+	}
+
+	/* Output level, shown only while audio is actually playing. */
+	.level-bar {
+		transform-origin: bottom;
+		animation: level 820ms ease-in-out infinite;
+	}
 }
 
-/* The range input is styled by hand because the native control cannot be
-   restyled through utility classes alone in either engine. */
-.volume {
-	-webkit-appearance: none;
-	appearance: none;
-	background: transparent;
-	cursor: pointer;
-}
-
-.volume::-webkit-slider-runnable-track {
-	height: 4px;
-	border-radius: 9999px;
-	background: linear-gradient(
-		to right,
-		var(--color-accent) 0%,
-		var(--color-accent) var(--fill, 30%),
-		#2e2e42 var(--fill, 30%),
-		#2e2e42 100%
-	);
-}
-
-.volume::-moz-range-track {
-	height: 4px;
-	border-radius: 9999px;
-	background: #2e2e42;
-}
-
-.volume::-moz-range-progress {
-	height: 4px;
-	border-radius: 9999px;
-	background: var(--color-accent);
-}
-
-.volume::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	appearance: none;
-	margin-top: -5px;
-	height: 14px;
-	width: 14px;
-	border-radius: 9999px;
-	background: #fff;
-	box-shadow: 0 0 0 1px rgb(0 0 0 / 0.3);
-	transition: transform 150ms ease;
-}
-
-.volume::-moz-range-thumb {
-	height: 14px;
-	width: 14px;
-	border: none;
-	border-radius: 9999px;
-	background: #fff;
-	transition: transform 150ms ease;
-}
-
-.volume:hover::-webkit-slider-thumb,
-.volume:focus-visible::-webkit-slider-thumb {
-	transform: scale(1.15);
-}
-
-.volume:hover::-moz-range-thumb {
-	transform: scale(1.15);
-}
-
-@keyframes onair {
+@keyframes tally-breathe {
 	0%,
 	100% {
 		opacity: 1;
-		transform: scale(1);
 	}
 	50% {
-		opacity: 0.45;
-		transform: scale(0.82);
+		opacity: 0.62;
 	}
 }
 
-.onair-dot {
-	animation: onair 2s ease-in-out infinite;
-}
-
-@keyframes rise {
+@keyframes level {
 	0%,
 	100% {
-		transform: scaleY(0.35);
+		transform: scaleY(0.28);
 	}
 	50% {
 		transform: scaleY(1);
 	}
 }
 
-/* Three bars that bounce while audio is playing. */
-.bar {
-	transform-origin: bottom;
-	animation: rise 900ms ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
-	.onair-dot,
-	.bar {
+	.tally,
+	.level-bar {
 		animation: none;
 	}
-}
-
-::selection {
-	background: var(--color-accent-strong);
-	color: #fff;
 }

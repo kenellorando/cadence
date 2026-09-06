@@ -22,6 +22,7 @@ export const getNowPlaying = () => getJSON('/api/nowplaying/metadata');
 export const getAlbumArt = () => getJSON('/api/nowplaying/albumart');
 export const getListenURL = () => getJSON('/api/listenurl');
 export const getListeners = () => getJSON('/api/listeners');
+export const getBitrate = () => getJSON('/api/bitrate');
 export const getHistory = () => getJSON('/api/history');
 
 export const search = (query) => postJSON('/api/search', { search: query }).then((r) => r.json());

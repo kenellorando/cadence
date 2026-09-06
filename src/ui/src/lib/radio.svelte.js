@@ -9,6 +9,7 @@ class Radio {
 	album = $state('');
 	art = $state('');
 	listeners = $state(-1);
+	bitrate = $state(0);
 	listenURL = $state('');
 	version = $state('-');
 	history = $state([]);
@@ -60,6 +61,14 @@ class Radio {
 			this.listeners = (await api.getListeners()).Listeners;
 		} catch {
 			this.listeners = -1;
+		}
+	}
+
+	async loadBitrate() {
+		try {
+			this.bitrate = (await api.getBitrate()).Bitrate;
+		} catch {
+			this.bitrate = 0;
 		}
 	}
 
@@ -180,6 +189,7 @@ class Radio {
 			this.loadArt(),
 			this.loadListenURL(),
 			this.loadListeners(),
+			this.loadBitrate(),
 			this.loadHistory(),
 			this.loadVersion(),
 			this.runSearch('')

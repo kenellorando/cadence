@@ -15,42 +15,46 @@
 	}
 </script>
 
-<div class="relative">
-	<span class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-white/30">⌕</span>
+<div class="flex items-center gap-3 border-b border-edge px-4 py-3 sm:px-5">
+	<label for="search" class="label shrink-0">Search</label>
 	<input
+		id="search"
 		type="text"
 		bind:value={query}
 		onkeyup={onKey}
-		placeholder="Search for a song or artist, then press Enter"
-		aria-label="Search for a song or artist"
-		class="w-full rounded-xl border border-white/10 bg-white/5 py-3 pr-4 pl-10 text-white placeholder:text-white/25 transition outline-none focus:border-accent/60 focus:bg-white/[0.07]"
+		placeholder="Artist or title, then Enter"
+		class="w-full bg-transparent font-display text-sm text-bone placeholder:text-bone-faint focus:outline-none"
 	/>
+	{#if radio.searchStatus}
+		<span class="label shrink-0 whitespace-nowrap">{radio.searchStatus}</span>
+	{/if}
 </div>
 
 {#if radio.searchResults.length > 0}
-	<ul class="mt-4 divide-y divide-white/5 overflow-hidden rounded-xl border border-white/10">
-		{#each radio.searchResults as song (song.ID)}
+	<ul>
+		{#each radio.searchResults as song, index (song.ID)}
 			<li
-				class="flex items-center gap-4 bg-white/[0.02] px-4 py-3 transition hover:bg-white/[0.06]"
+				class="flex items-center gap-4 border-b border-edge/60 px-4 py-2.5 transition hover:bg-panel-well/60 sm:px-5"
 			>
+				<span class="w-6 shrink-0 font-mono text-xs text-bone-faint tabular-nums">
+					{String(index + 1).padStart(2, '0')}
+				</span>
 				<div class="min-w-0 flex-1">
-					<p class="truncate font-medium text-white" title={song.Title}>{song.Title}</p>
-					<p class="truncate text-sm text-white/45" title={song.Artist}>{song.Artist}</p>
+					<p class="truncate text-sm text-bone" title={song.Title}>{song.Title}</p>
+					<p class="truncate text-xs text-bone-faint" title={song.Artist}>{song.Artist}</p>
 				</div>
 				<button
 					onclick={() => request(song.ID)}
 					disabled={requested.has(song.ID)}
-					class="shrink-0 rounded-full border border-white/15 px-4 py-1.5 text-sm transition hover:border-accent/60 hover:bg-accent/10 hover:text-white disabled:cursor-default disabled:border-emerald-500/30 disabled:bg-emerald-500/10 disabled:text-emerald-400"
+					class="label shrink-0 rounded-[2px] border border-edge-light px-3 py-1 transition hover:border-signal hover:text-signal disabled:cursor-default disabled:border-level/40 disabled:text-level"
 				>
 					{requested.has(song.ID) ? 'Queued' : 'Request'}
 				</button>
 			</li>
 		{/each}
 	</ul>
-{:else if radio.searchStatus}
-	<p class="py-10 text-center text-sm text-white/35">No songs matched that search.</p>
-{/if}
-
-{#if radio.searchStatus}
-	<p class="mt-4 text-center text-sm text-white/45">{radio.searchStatus}</p>
+{:else}
+	<p class="label px-4 py-10 text-center sm:px-5">
+		{radio.searchStatus ? 'No matching tracks' : 'Loading library'}
+	</p>
 {/if}

@@ -13,20 +13,20 @@
 	   text sizes, so it is never used for anything but the logo. */
 	--font-logo: 'Rock Salt', 'Roboto', cursive;
 
-	--color-surface: #101319;
-	--color-surface-raised: #171b23;
-	--color-surface-inset: #0b0e13;
-	--color-edge: #272d38;
-	--color-edge-light: #39414f;
-	--color-ink: #ece7de;
-	--color-ink-dim: #a49e93;
-	--color-ink-faint: #6e6a64;
+	--color-surface: #0d1015;
+	--color-surface-raised: #1e2431;
+	--color-surface-inset: #13171f;
+	--color-edge: #343d4c;
+	--color-edge-light: #4b5668;
+	--color-ink: #f4f1ea;
+	--color-ink-dim: #b8b1a4;
+	--color-ink-faint: #8a847a;
 	--color-signal: #fb9236;
 	--color-signal-dim: #7a4614;
 	--color-onair: #e2452f;
 	--color-peak: #cf5341;
 	--color-level: #8fae7a;
-	--color-logo: #6e6a64;
+	--color-logo: #8a847a;
 }
 
 /* Theme overrides sit outside every layer so they win over the tokens Tailwind
@@ -35,7 +35,7 @@
 :root,
 [data-theme='chicago'] {
 	color-scheme: dark;
-	--panel-highlight: rgb(255 255 255 / 0.05);
+	--panel-highlight: rgb(255 255 255 / 0.07);
 	--well-shadow: rgb(0 0 0 / 0.72);
 	--onair-glow: rgb(226 69 47 / 0.5);
 	--panel-glow: 0 0 0 0 transparent;
@@ -46,21 +46,21 @@
    near-black with a violet cast. */
 [data-theme='bartender'] {
 	color-scheme: dark;
-	--color-surface: #0c0a12;
-	--color-surface-raised: #141020;
-	--color-surface-inset: #08060d;
-	--color-edge: #2a2140;
-	--color-edge-light: #3f3260;
-	--color-ink: #e9e6f5;
-	--color-ink-dim: #a89fc4;
-	--color-ink-faint: #6f6790;
+	--color-surface: #09070f;
+	--color-surface-raised: #1c1731;
+	--color-surface-inset: #100c1b;
+	--color-edge: #392d59;
+	--color-edge-light: #52427c;
+	--color-ink: #f3f0fd;
+	--color-ink-dim: #bcb3da;
+	--color-ink-faint: #8b82ad;
 	--color-signal: cyan;
 	--color-signal-dim: #0b4f56;
 	--color-onair: hotpink;
 	--color-peak: #ff4d6d;
 	--color-level: #3ad1b6;
-	--color-logo: #6f6790;
-	--panel-highlight: rgb(0 255 255 / 0.06);
+	--color-logo: #8b82ad;
+	--panel-highlight: rgb(0 255 255 / 0.09);
 	--well-shadow: rgb(0 0 0 / 0.75);
 	--onair-glow: rgb(255 105 180 / 0.5);
 	--panel-glow: 0 0 18px rgb(255 105 180 / 0.12);

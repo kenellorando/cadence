@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/http"
 
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -284,15 +285,48 @@ func icecastNumber(parsed *gabs.Container, path string) (float64, bool) {
 	return value, ok
 }
 
+// MP3 and AAC mounts publish no bitrate field of their own, only an audio_info
+// string of the form "channels=2;samplerate=44100;bitrate=192". Reading the
+// kbps back out of it is the only way those mounts report a bitrate at all.
+func icecastAudioInfoBitrate(parsed *gabs.Container) (float64, bool) {
+	info, ok := icecastString(parsed, "icestats.source.audio_info")
+	if !ok {
+		return 0, false
+	}
+	for _, field := range strings.Split(info, ";") {
+		name, value, found := strings.Cut(field, "=")
+		if !found || name != "bitrate" {
+			continue
+		}
+		bitrate, err := strconv.ParseFloat(value, 64)
+		if err != nil {
+			return 0, false
+		}
+		return bitrate, true
+	}
+	return 0, false
+}
+
 // Reads stream state out of an Icecast status-json.xsl document, returning the
 // updated info and whether anything is playing. Fields Icecast omits keep the
 // value they already had rather than resetting, so a partial document does not
 // blank out good data.
 func parseIcecastStatus(parsed *gabs.Container, current RadioInfo) (RadioInfo, bool) {
-	artist, artistOK := icecastString(parsed, "icestats.source.artist")
 	title, titleOK := icecastString(parsed, "icestats.source.title")
-	if !artistOK || !titleOK {
+	if !titleOK {
 		return current, false
+	}
+	artist, artistOK := icecastString(parsed, "icestats.source.artist")
+	if !artistOK {
+		// Only Ogg carries structured tags that Icecast can split into separate
+		// artist and title fields. MP3 and AAC mounts carry ICY metadata, which
+		// is a single "Artist - Title" string and no artist key at all, so
+		// requiring both fields reports a perfectly healthy stream as silent.
+		var found bool
+		artist, title, found = strings.Cut(title, " - ")
+		if !found {
+			return current, false
+		}
 	}
 	current.Song.Artist = artist
 	current.Song.Title = title
@@ -316,6 +350,8 @@ func parseIcecastStatus(parsed *gabs.Container, current RadioInfo) (RadioInfo, b
 		current.Bitrate = bitrate
 	} else if bitrate, ok := icecastNumber(parsed, "icestats.source.audio_bitrate"); ok {
 		current.Bitrate = bitrate / 1000
+	} else if bitrate, ok := icecastAudioInfoBitrate(parsed); ok {
+		current.Bitrate = bitrate
 	}
 
 	return current, true

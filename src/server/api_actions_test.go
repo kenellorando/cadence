@@ -112,3 +112,68 @@ func TestParseIcecastStatusNoSource(t *testing.T) {
 		t.Errorf("state should be returned untouched, got %+v", info)
 	}
 }
+
+// MP3 and AAC mounts carry ICY metadata: one combined "Artist - Title" string
+// and no artist field. Requiring a separate artist reported those streams as
+// silent, which is what kept Cadence from serving a format iOS can play.
+func TestParseIcecastStatusICYMetadata(t *testing.T) {
+	const icy = `{"icestats":{"host":"radio.example.com","source":{"title":"Vega Drift - Slow Orbit","server_name":"cadence1","listeners":2,"ice-bitrate":192}}}`
+	parsed, err := gabs.ParseJSON([]byte(icy))
+	if err != nil {
+		t.Fatalf("parsing fixture: %v", err)
+	}
+	info, playing := parseIcecastStatus(parsed, RadioInfo{})
+	if !playing {
+		t.Fatal("an MP3 mount with ICY metadata should count as playing")
+	}
+	if info.Song.Artist != "Vega Drift" {
+		t.Errorf("got artist %q, want %q", info.Song.Artist, "Vega Drift")
+	}
+	if info.Song.Title != "Slow Orbit" {
+		t.Errorf("got title %q, want %q", info.Song.Title, "Slow Orbit")
+	}
+}
+
+// A title with no separator carries no artist to recover, and a hyphen in the
+// song name must not be mistaken for one.
+func TestParseIcecastStatusICYEdgeCases(t *testing.T) {
+	for _, tc := range []struct {
+		name, title  string
+		playing      bool
+		artist, want string
+	}{
+		{"no separator", "Untitled", false, "", ""},
+		{"hyphen inside title", "Vega Drift - Slow - Orbit", true, "Vega Drift", "Slow - Orbit"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			body := `{"icestats":{"source":{"title":"` + tc.title + `"}}}`
+			parsed, err := gabs.ParseJSON([]byte(body))
+			if err != nil {
+				t.Fatalf("parsing fixture: %v", err)
+			}
+			info, playing := parseIcecastStatus(parsed, RadioInfo{})
+			if playing != tc.playing {
+				t.Fatalf("playing = %v, want %v", playing, tc.playing)
+			}
+			if playing && (info.Song.Artist != tc.artist || info.Song.Title != tc.want) {
+				t.Errorf("got %q / %q, want %q / %q", info.Song.Artist, info.Song.Title, tc.artist, tc.want)
+			}
+		})
+	}
+}
+
+// MP3 and AAC mounts publish no bitrate field, only an audio_info string.
+func TestParseIcecastStatusAudioInfoBitrate(t *testing.T) {
+	const body = `{"icestats":{"source":{"artist":"Vega Drift","title":"Slow Orbit","audio_info":"channels=2;samplerate=44100;bitrate=192"}}}`
+	parsed, err := gabs.ParseJSON([]byte(body))
+	if err != nil {
+		t.Fatalf("parsing fixture: %v", err)
+	}
+	info, playing := parseIcecastStatus(parsed, RadioInfo{})
+	if !playing {
+		t.Fatal("expected a playing stream")
+	}
+	if info.Bitrate != 192 {
+		t.Errorf("got bitrate %v, want 192", info.Bitrate)
+	}
+}

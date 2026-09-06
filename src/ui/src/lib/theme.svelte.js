@@ -2,29 +2,33 @@
 // know which one is active.
 export const THEMES = [
 	{
-		id: 'transmitter',
-		name: 'Transmitter',
-		note: 'Anodized black, amber signal',
-		swatch: ['#17150f', '#e8e2d2', '#e0912f', '#e2452f']
+		id: 'chicago',
+		name: 'Chicago Evening',
+		note: 'Dusk sky, sodium street light',
+		logo: 'Cadence',
+		swatch: ['#101319', '#ece7de', '#fb9236', '#e2452f']
 	},
 	{
-		id: 'dial',
-		name: 'Dial card',
-		note: 'Ivory stock, red pointer',
-		swatch: ['#efe9db', '#1f1b14', '#a8452a', '#c0281a']
+		id: 'bartender',
+		name: 'Cyberpunk Bartender',
+		note: 'Cyan and hotpink after dark',
+		logo: 'Cadence',
+		swatch: ['#0c0a12', '#e9e6f5', '#00ffff', '#ff69b4']
 	},
 	{
-		id: 'tape',
-		name: 'Tape',
-		note: 'Bone card, teal spot',
-		swatch: ['#e6e2d6', '#14130d', '#1d5b66', '#b0231b']
+		id: 'electromaster',
+		name: 'Electromaster',
+		note: 'Modern blue, mid-tone ground',
+		// Rendered in a Japanese hand; the same name, transliterated.
+		logo: 'ケイデンス',
+		swatch: ['#525d70', '#f4f7fc', '#62a0ff', '#ff6b5a']
 	}
 ];
 
 const STORAGE_KEY = 'themeKey';
 
 class Theme {
-	current = $state('transmitter');
+	current = $state('chicago');
 
 	load() {
 		try {
@@ -45,6 +49,12 @@ class Theme {
 			// Not persisting is survivable; the change still applies this session.
 		}
 		this.apply();
+	}
+
+	// The wordmark is not the same string in every theme, so it travels with the
+	// theme rather than being hardcoded in the footer.
+	get logo() {
+		return THEMES.find((t) => t.id === this.current)?.logo ?? 'Cadence';
 	}
 
 	apply() {
